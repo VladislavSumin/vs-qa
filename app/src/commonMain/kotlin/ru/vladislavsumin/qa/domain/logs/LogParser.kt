@@ -27,11 +27,11 @@ class AnimeLogParser() : LogParser {
                         line = index,
                         order = ++order,
                         raw = line,
-                        time = matches.groupValues[0],
-                        thread = matches.groupValues[1],
-                        level = matches.groupValues[2],
-                        tag = matches.groupValues[3],
-                        message = matches.groupValues[4],
+                        time = matches.groupValues[1],
+                        thread = matches.groupValues[2],
+                        level = matches.groupValues[3],
+                        tag = matches.groupValues[4],
+                        message = matches.groupValues[5],
                     )
                 } else {
                     val oldCache = cache!!
@@ -49,7 +49,7 @@ class AnimeLogParser() : LogParser {
 
     companion object {
         private val LOG_REGEX = Regex(
-            pattern = "^(\\d{4}-\\d{2}-\\d{2}T\\+\\d{2}:\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}) ([^ ]+) ([A-Z]) (.*)",
+            pattern = "^(\\d{4}-\\d{2}-\\d{2}T\\+\\d{2}:\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}) ([^ ]+) ([A-Z]) ([^ ]+) (.*)",
         )
     }
 }
