@@ -1,6 +1,8 @@
 package ru.vladislavsumin.qa
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
@@ -9,6 +11,7 @@ import com.arkivanov.decompose.extensions.compose.lifecycle.LifecycleController
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import ru.vladislavsumin.core.logger.manager.LoggerManager
 import ru.vladislavsumin.core.logger.platform.initDefault
+import ru.vladislavsumin.qa.ui.component.logViewerComponent.LogViewerComponent
 import javax.swing.SwingUtilities
 import kotlin.system.exitProcess
 
@@ -21,8 +24,9 @@ fun main() {
     // Создаем рутовый Decompose lifecycle.
     val lifecycle = LifecycleRegistry()
 
-    val context = runOnUiThread {
-        DefaultComponentContext(lifecycle)
+    val component = runOnUiThread {
+        val context = DefaultComponentContext(lifecycle)
+        LogViewerComponent(context)
     }
 
     application {
@@ -34,10 +38,9 @@ fun main() {
             title = "vs-qa",
             onCloseRequest = ::exitApplication,
         ) {
-            Text("Hello world")
+            component.Render(Modifier.fillMaxSize())
         }
     }
-
 }
 
 /**
