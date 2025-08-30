@@ -12,48 +12,52 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import ru.vladislavsumin.qa.ui.utils.colorize
 
 @Composable
 internal fun LogViewerContent(viewModel: LogViewerViewModel, modifier: Modifier) {
-    val state by viewModel.state.collectAsState()
-    Row(modifier) {
-        val lazyListState = rememberLazyListState()
-        Box(Modifier.weight(1f)) {
-            SelectionContainer {
-                LazyColumn(
-                    state = lazyListState,
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    items(state, { it.order }) {
-                        Box {
-                            DisableSelection {
+    Surface {
+        val state by viewModel.state.collectAsState()
+        Row(modifier) {
+            val lazyListState = rememberLazyListState()
+            Box(Modifier.weight(1f)) {
+                SelectionContainer {
+                    LazyColumn(
+                        state = lazyListState,
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        items(state, { it.order }) {
+                            Box {
+                                DisableSelection {
+                                    Text(
+                                        text = it.order.toString(),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier
+                                    )
+                                }
                                 Text(
-                                    text = it.order.toString(),
-                                    color = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier
+                                    text = it.colorize(),
+                                    modifier = Modifier.padding(start = 28.dp)
                                 )
                             }
-                            Text(
-                                text = it.raw,
-                                modifier = Modifier.padding(start = 28.dp)
-                            )
                         }
                     }
                 }
+                VerticalDivider(Modifier.padding(start = 24.dp))
             }
-            VerticalDivider(Modifier.padding(start = 24.dp))
+            VerticalScrollbar(
+                adapter = rememberScrollbarAdapter(lazyListState),
+                modifier = Modifier.fillMaxHeight(),
+            )
         }
-        VerticalScrollbar(
-            adapter = rememberScrollbarAdapter(lazyListState),
-            modifier = Modifier.fillMaxHeight(),
-        )
     }
 }
