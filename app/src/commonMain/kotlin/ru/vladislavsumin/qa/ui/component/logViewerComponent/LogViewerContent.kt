@@ -39,8 +39,20 @@ internal fun LogViewerContent(
         Column {
             LogsFilter(viewModel, state)
             LogsContent(state, Modifier.weight(1f))
-            Row(Modifier.background(QaTheme.colorScheme.surfaceVariant)) {
+            Row(
+                Modifier.background(QaTheme.colorScheme.surfaceVariant),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Box(Modifier.weight(1f))
+                Text(
+                    text = "Total records: ${state.value.logs.size}",
+                    style = MaterialTheme.typography.bodySmall,
+                    fontFamily = FontFamily.Monospace,
+                    modifier = Modifier.padding(
+                        vertical = 2.dp,
+                        horizontal = 8.dp,
+                    ),
+                )
                 memoryIndicator.Render(Modifier)
             }
         }
