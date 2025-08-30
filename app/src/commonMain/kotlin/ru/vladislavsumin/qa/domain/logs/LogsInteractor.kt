@@ -1,9 +1,5 @@
 package ru.vladislavsumin.qa.domain.logs
 
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.joinAll
 import ru.vladislavsumin.qa.LogLogger
 import ru.vladislavsumin.qa.utils.measureTimeMillisWithResult
 import java.nio.file.Path
@@ -11,6 +7,7 @@ import java.nio.file.Path
 
 interface LogsInteractor {
     suspend fun filterLogs(filter: String): List<RawLogRecord>
+    suspend fun filterLogs(filter: Regex): List<RawLogRecord>
 }
 
 class LogsInteractorImpl(
@@ -22,10 +19,15 @@ class LogsInteractorImpl(
         return AnimeLogParser().parseLog(logPath)
     }
 
-    override suspend fun filterLogs(filter: String): List<RawLogRecord> {
-        // На таком простом фильтре наивный многопоточный фильтр дает выигрыш порядка 40%
-        // Производительность фильтра порядка 8кк записаей в секунду
-        val (time, result) = measureTimeMillisWithResult { logs.filter { it.raw.contains(filter) } }
+    override suspend fun filterLogs(filter: String): List<RawLogRecord> = filterLogs { it.raw.contains(filter) }
+    override suspend fun filterLogs(filter: Regex): List<RawLogRecord> = filterLogs { it.raw.matches(filter) }
+
+    private fun filterLogs(filter: (RawLogRecord) -> Boolean): List<RawLogRecord> {
+        val (time, result) = measureTimeMillisWithResult {
+            logs.parallelStream()
+                .filter(filter)
+                .toList()
+        }
         LogLogger.d { "Log filtered at ${time}ms, size = ${result.size}" }
         return result
     }
