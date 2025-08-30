@@ -20,7 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.qa.ui.utils.colorize
 
@@ -28,6 +32,11 @@ import ru.vladislavsumin.qa.ui.utils.colorize
 internal fun LogViewerContent(viewModel: LogViewerViewModel, modifier: Modifier) {
     Surface {
         val state by viewModel.state.collectAsState()
+        val logs = state.logs
+        val textSizeDp = measureTextWidth(
+            " ".repeat(state.maxLogNumberDigits),
+            MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace)
+        )
         Row(modifier) {
             val lazyListState = rememberLazyListState()
             Box(Modifier.weight(1f)) {
@@ -36,7 +45,7 @@ internal fun LogViewerContent(viewModel: LogViewerViewModel, modifier: Modifier)
                         state = lazyListState,
                         modifier = Modifier.fillMaxSize(),
                     ) {
-                        items(state, { it.order }) {
+                        items(logs, { it.order }) {
                             Box {
                                 DisableSelection {
                                     Text(
@@ -51,13 +60,13 @@ internal fun LogViewerContent(viewModel: LogViewerViewModel, modifier: Modifier)
                                     text = it.colorize(),
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontFamily = FontFamily.Monospace,
-                                    modifier = Modifier.padding(start = 28.dp),
+                                    modifier = Modifier.padding(start = textSizeDp + 6.dp),
                                 )
                             }
                         }
                     }
                 }
-                VerticalDivider(Modifier.padding(start = 24.dp))
+                VerticalDivider(Modifier.padding(start = textSizeDp + 2.dp))
             }
             VerticalScrollbar(
                 adapter = rememberScrollbarAdapter(lazyListState),
@@ -65,4 +74,11 @@ internal fun LogViewerContent(viewModel: LogViewerViewModel, modifier: Modifier)
             )
         }
     }
+}
+
+@Composable
+private fun measureTextWidth(text: String, style: TextStyle): Dp {
+    val textMeasurer = rememberTextMeasurer()
+    val widthInPixels = textMeasurer.measure(text, style).size.width
+    return with(LocalDensity.current) { widthInPixels.toDp() }
 }
