@@ -7,6 +7,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.arkivanov.decompose.DefaultComponentContext
@@ -15,6 +16,7 @@ import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import ru.vladislavsumin.core.logger.manager.LoggerManager
 import ru.vladislavsumin.core.logger.platform.initDefault
 import ru.vladislavsumin.qa.ui.component.logViewerComponent.LogViewerComponent
+import ru.vladislavsumin.qa.ui.theme.QaTheme
 import javax.swing.SwingUtilities
 import kotlin.system.exitProcess
 
@@ -33,17 +35,19 @@ fun main() {
     }
 
     application {
+        val windowState = rememberWindowState(
+            placement = WindowPlacement.Maximized,
+        )
+
         // Связываем рутовый Decompose lifecycle с жизненным циклом окна.
-        val windowState = rememberWindowState()
         LifecycleController(lifecycle, windowState)
 
         Window(
             title = "vs-qa",
             onCloseRequest = ::exitApplication,
+            state = windowState,
         ) {
-            MaterialTheme(
-                colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme(),
-            ) {
+            QaTheme {
                 component.Render(Modifier.fillMaxSize())
             }
         }
