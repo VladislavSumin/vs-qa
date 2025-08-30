@@ -25,6 +25,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
+import ru.vladislavsumin.qa.ui.design.QaToggleIconButton
 import ru.vladislavsumin.qa.ui.theme.QaTheme
 import ru.vladislavsumin.qa.ui.utils.colorize
 
@@ -80,7 +81,7 @@ private fun LogsFilter(
                 Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null)
             },
             trailingIcon = {
-                FilledIconToggleButton(
+                QaToggleIconButton(
                     checked = state.value.isFilterUseRegex,
                     onCheckedChange = viewModel::onClickFilterUseRegex,
                 ) { Text(".*") }
