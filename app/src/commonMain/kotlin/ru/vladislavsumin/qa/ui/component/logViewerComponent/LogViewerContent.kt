@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.qa.ui.utils.colorize
 
@@ -41,12 +42,14 @@ internal fun LogViewerContent(viewModel: LogViewerViewModel, modifier: Modifier)
                                     Text(
                                         text = it.order.toString(),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        fontFamily = FontFamily.Monospace,
                                         modifier = Modifier
                                     )
                                 }
                                 Text(
                                     text = it.colorize(),
-                                    modifier = Modifier.padding(start = 28.dp)
+                                    fontFamily = FontFamily.Monospace,
+                                    modifier = Modifier.padding(start = 28.dp),
                                 )
                             }
                         }
