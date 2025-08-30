@@ -42,12 +42,14 @@ internal fun LogViewerContent(viewModel: LogViewerViewModel, modifier: Modifier)
                                     Text(
                                         text = it.order.toString(),
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        style = MaterialTheme.typography.bodyMedium,
                                         fontFamily = FontFamily.Monospace,
                                         modifier = Modifier
                                     )
                                 }
                                 Text(
                                     text = it.colorize(),
+                                    style = MaterialTheme.typography.bodyMedium,
                                     fontFamily = FontFamily.Monospace,
                                     modifier = Modifier.padding(start = 28.dp),
                                 )
