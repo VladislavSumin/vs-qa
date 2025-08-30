@@ -15,6 +15,7 @@ kotlin {
             implementation(vsCoreLibs.decompose.extensions.composeExperimental)
 
             implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
         }
 
         jvmMain.dependencies {

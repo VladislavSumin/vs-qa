@@ -2,26 +2,21 @@ package ru.vladislavsumin.qa.ui.component.logViewerComponent
 
 import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.VerticalScrollbar
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.VerticalDivider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilterAlt
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -37,8 +32,8 @@ internal fun LogViewerContent(viewModel: LogViewerViewModel, modifier: Modifier)
     Surface(modifier = modifier) {
         val state = viewModel.state.collectAsState()
         Column {
-            LogsContent(state, Modifier.weight(1f))
             LogsFilter(viewModel, state)
+            LogsContent(state, Modifier.weight(1f))
         }
     }
 }
@@ -47,12 +42,28 @@ internal fun LogViewerContent(viewModel: LogViewerViewModel, modifier: Modifier)
 private fun LogsFilter(
     viewModel: LogViewerViewModel,
     state: State<LogViewerViewState>,
+    modifier: Modifier = Modifier,
 ) {
-    Row {
-        TextField(
-            state.value.filter,
+    Row(
+        modifier
+            .background(QaTheme.colorScheme.surfaceVariant)
+            .padding(vertical = 4.dp, horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        OutlinedTextField(
+            value = state.value.filter,
             onValueChange = viewModel::onFilterChange,
-            Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            placeholder = { Text("Filter...") },
+            leadingIcon = {
+                Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null)
+            },
+            trailingIcon = {
+                FilledIconToggleButton(
+                    checked = state.value.isFilterUseRegex,
+                    onCheckedChange = viewModel::onClickFilterUseRegex,
+                ) { Text(".*") }
+            }
         )
     }
 }
