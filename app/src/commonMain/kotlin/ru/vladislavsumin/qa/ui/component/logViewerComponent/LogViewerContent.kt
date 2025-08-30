@@ -24,16 +24,25 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.qa.ui.theme.QaTheme
 import ru.vladislavsumin.qa.ui.utils.colorize
 
 @Composable
-internal fun LogViewerContent(viewModel: LogViewerViewModel, modifier: Modifier) {
+internal fun LogViewerContent(
+    viewModel: LogViewerViewModel,
+    memoryIndicator: ComposeComponent,
+    modifier: Modifier,
+) {
     Surface(modifier = modifier) {
         val state = viewModel.state.collectAsState()
         Column {
             LogsFilter(viewModel, state)
             LogsContent(state, Modifier.weight(1f))
+            Row(Modifier.background(QaTheme.colorScheme.surfaceVariant)) {
+                Box(Modifier.weight(1f))
+                memoryIndicator.Render(Modifier)
+            }
         }
     }
 }
