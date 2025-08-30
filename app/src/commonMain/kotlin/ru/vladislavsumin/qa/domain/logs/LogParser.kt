@@ -27,17 +27,20 @@ class AnimeLogParser() : LogParser {
                         line = index,
                         order = ++order,
                         raw = line,
-                        time = matches.groupValues[1],
-                        thread = matches.groupValues[2],
-                        level = matches.groupValues[3],
-                        tag = matches.groupValues[4],
-                        message = matches.groupValues[5],
+                        time = matches.groups[1]!!.range,
+                        thread = matches.groups[2]!!.range,
+                        level = matches.groups[3]!!.range,
+                        tag = matches.groups[4]!!.range,
+                        message = matches.groups[5]!!.range,
                     )
                 } else {
                     val oldCache = cache!!
                     cache = oldCache.copy(
                         raw = oldCache.raw + "\n" + line,
-                        message = oldCache.message + "\n" + line
+                        message = IntRange(
+                            start = oldCache.message.start,
+                            endInclusive = oldCache.message.last + line.length + 1,
+                        )
                     )
                 }
             }
