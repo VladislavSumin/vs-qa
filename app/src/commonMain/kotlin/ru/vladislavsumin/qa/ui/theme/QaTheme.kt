@@ -13,6 +13,7 @@ internal val LocalQaColorScheme = staticCompositionLocalOf { QaColorScheme() }
 @Immutable
 data class QaColorScheme(
     val surface: Color = Color(0xFF1E1F22),
+    val surfaceVariant: Color = Color(0xFF2B2D30),
     val onSurface: Color = Color(0xFFDFE1E5),
     val onSurfaceVariant: Color = Color(0xFFA1A2AA),
 )

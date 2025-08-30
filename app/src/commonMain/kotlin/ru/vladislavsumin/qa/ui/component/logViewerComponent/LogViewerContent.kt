@@ -1,9 +1,10 @@
 package ru.vladislavsumin.qa.ui.component.logViewerComponent
 
+import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,11 +17,11 @@ import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -28,21 +29,38 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import ru.vladislavsumin.qa.ui.theme.QaTheme
 import ru.vladislavsumin.qa.ui.utils.colorize
 
 @Composable
 internal fun LogViewerContent(viewModel: LogViewerViewModel, modifier: Modifier) {
     Surface(modifier = modifier) {
         val state = viewModel.state.collectAsState()
-        Row {
-            LogsContent(state)
+        Column {
+            LogsContent(state, Modifier.weight(1f))
+            LogsFilter(viewModel, state)
         }
     }
 }
 
 @Composable
-private fun RowScope.LogsContent(
-    state: State<LogViewerViewState>
+private fun LogsFilter(
+    viewModel: LogViewerViewModel,
+    state: State<LogViewerViewState>,
+) {
+    Row {
+        TextField(
+            state.value.filter,
+            onValueChange = viewModel::onFilterChange,
+            Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun LogsContent(
+    state: State<LogViewerViewState>,
+    modifier: Modifier,
 ) {
     val logs = state.value.logs
     val textSizeDp = measureTextWidth(
@@ -50,39 +68,45 @@ private fun RowScope.LogsContent(
         MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace)
     )
     val lazyListState = rememberLazyListState()
-    Box(Modifier.weight(1f)) {
-        SelectionContainer {
-            LazyColumn(
-                state = lazyListState,
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                items(logs, { it.order }) {
-                    Box {
-                        DisableSelection {
+    Row(modifier) {
+        Box(Modifier.weight(1f)) {
+            SelectionContainer {
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    items(logs, { it.order }) {
+                        Box {
+                            DisableSelection {
+                                Text(
+                                    text = it.order.toString(),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontFamily = FontFamily.Monospace,
+                                    modifier = Modifier
+                                )
+                            }
                             Text(
-                                text = it.order.toString(),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                text = it.colorize(),
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontFamily = FontFamily.Monospace,
-                                modifier = Modifier
+                                modifier = Modifier.padding(start = textSizeDp + 6.dp),
                             )
                         }
-                        Text(
-                            text = it.colorize(),
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontFamily = FontFamily.Monospace,
-                            modifier = Modifier.padding(start = textSizeDp + 6.dp),
-                        )
                     }
                 }
             }
+            VerticalDivider(Modifier.padding(start = textSizeDp + 2.dp))
         }
-        VerticalDivider(Modifier.padding(start = textSizeDp + 2.dp))
+        VerticalScrollbar(
+            adapter = rememberScrollbarAdapter(lazyListState),
+            style = LocalScrollbarStyle.current.copy(
+                hoverColor = QaTheme.colorScheme.onSurface,
+                unhoverColor = QaTheme.colorScheme.onSurfaceVariant,
+            ),
+            modifier = Modifier.fillMaxHeight(),
+        )
     }
-    VerticalScrollbar(
-        adapter = rememberScrollbarAdapter(lazyListState),
-        modifier = Modifier.fillMaxHeight(),
-    )
 }
 
 @Composable

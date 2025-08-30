@@ -8,6 +8,7 @@ import ru.vladislavsumin.qa.domain.logs.RawLogRecord
  */
 @Immutable
 data class LogViewerViewState(
+    val filter: String,
     val logs: List<RawLogRecord>,
     val maxLogNumberDigits: Int,
 )
