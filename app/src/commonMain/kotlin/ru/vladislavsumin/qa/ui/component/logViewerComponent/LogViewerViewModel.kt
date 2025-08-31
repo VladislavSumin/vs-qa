@@ -23,11 +23,16 @@ internal class LogViewerViewModel : ViewModel() {
     ) { filter, search, isFilterUseRegex, isSearchUseRegex ->
         // TODO regex use?
         val filteredLogs = logsInteractor.filterAndSearchLogs(filter, search)
+        val searchResults = if (search.isEmpty()) 0 else {
+            filteredLogs.count { it.searchHighlight != null }
+        }
+
         LogViewerViewState(
             filter = filter,
             search = search,
             isFilterUseRegex = isFilterUseRegex,
             isSearchUseRegex = isSearchUseRegex,
+            searchResults = searchResults,
             logs = filteredLogs,
             maxLogNumberDigits = logsInteractor.logs.last().order.toString().length,
         )
@@ -37,10 +42,15 @@ internal class LogViewerViewModel : ViewModel() {
             search = "",
             isFilterUseRegex = false,
             isSearchUseRegex = false,
+            searchResults = 0,
             logs = emptyList(),
             maxLogNumberDigits = 0,
         )
     )
+
+    fun onVisibleItemsChanged(firstIndex: Int, lastIndex: Int) {
+        println("QWQW fi=$firstIndex, li=$lastIndex")
+    }
 
     fun onFilterChange(newValue: String) {
         filter.value = newValue

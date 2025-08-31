@@ -17,8 +17,10 @@ import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -27,6 +29,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.qa.ui.design.QaIconButton
 import ru.vladislavsumin.qa.ui.design.QaToggleIconButton
@@ -43,7 +48,7 @@ internal fun LogViewerContent(
         val state = viewModel.state.collectAsState()
         Column {
             LogsSearch(viewModel, state)
-            LogsContent(state, Modifier.weight(1f))
+            LogsContent(viewModel, state, Modifier.weight(1f))
             LogsFilter(viewModel, state)
             Row(
                 Modifier.background(QaTheme.colorScheme.surfaceVariant),
@@ -125,7 +130,7 @@ private fun LogsSearch(
                         onClick = {}
                     ) { Icon(Icons.Default.ArrowUpward, null) }
 
-                    Text("0 result")
+                    Text("${state.value.searchResults} results")
 
 
                     QaToggleIconButton(
@@ -140,6 +145,7 @@ private fun LogsSearch(
 
 @Composable
 private fun LogsContent(
+    viewModel: LogViewerViewModel,
     state: State<LogViewerViewState>,
     modifier: Modifier,
 ) {
@@ -149,6 +155,14 @@ private fun LogsContent(
         MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace)
     )
     val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(lazyListState) {
+        snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo }
+            .map { (it.firstOrNull()?.index ?: 0) to (it.lastOrNull()?.index ?: 0) }
+            .distinctUntilChanged()
+            .collectLatest { (f, l) -> viewModel.onVisibleItemsChanged(f, l) }
+    }
+
     Row(modifier) {
         Box(Modifier.weight(1f)) {
             SelectionContainer {

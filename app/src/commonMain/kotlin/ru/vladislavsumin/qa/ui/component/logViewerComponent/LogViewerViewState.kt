@@ -14,6 +14,7 @@ data class LogViewerViewState(
     val search: String,
     val isFilterUseRegex: Boolean,
     val isSearchUseRegex: Boolean,
+    val searchResults: Int,
     val logs: List<RawLogRecord>,
     val maxLogNumberDigits: Int,
 )
