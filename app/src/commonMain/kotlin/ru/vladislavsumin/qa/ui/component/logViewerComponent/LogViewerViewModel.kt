@@ -8,10 +8,12 @@ import kotlinx.coroutines.flow.combine
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.qa.domain.logs.LogsInteractorImpl
 import ru.vladislavsumin.qa.domain.logs.RawLogRecord
-import kotlin.io.path.Path
+import java.nio.file.Path
 
 @Stable
-internal class LogViewerViewModel : ViewModel() {
+internal class LogViewerViewModel(
+    logPath: Path,
+) : ViewModel() {
     private val filter = MutableStateFlow("")
     private val search = MutableStateFlow("")
     private val selectedSearchIndex = MutableStateFlow(0)
@@ -19,7 +21,7 @@ internal class LogViewerViewModel : ViewModel() {
     private val isSearchUseRegex = MutableStateFlow(false)
     private val visibleIndexes = MutableStateFlow(Pair(0, 0))
 
-    private val logsInteractor = LogsInteractorImpl(Path("../test_log.log"))
+    private val logsInteractor = LogsInteractorImpl(logPath)
     private val internalState = combine(
         filter,
         search,

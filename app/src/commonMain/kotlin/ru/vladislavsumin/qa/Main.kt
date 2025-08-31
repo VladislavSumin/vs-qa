@@ -18,20 +18,23 @@ import ru.vladislavsumin.core.logger.platform.initDefault
 import ru.vladislavsumin.qa.ui.component.logViewerComponent.LogViewerComponent
 import ru.vladislavsumin.qa.ui.theme.QaTheme
 import javax.swing.SwingUtilities
+import kotlin.io.path.Path
 import kotlin.system.exitProcess
 
-fun main() {
+fun main(args: Array<String>) {
     setExitOnUncaughtException()
 
     LoggerManager.initDefault()
     MainLogger.i("Initialization...")
+
+    val logPath = Path(args[0])
 
     // Создаем рутовый Decompose lifecycle.
     val lifecycle = LifecycleRegistry()
 
     val component = runOnUiThread {
         val context = DefaultComponentContext(lifecycle)
-        LogViewerComponent(context)
+        LogViewerComponent(logPath, context)
     }
 
     application {
