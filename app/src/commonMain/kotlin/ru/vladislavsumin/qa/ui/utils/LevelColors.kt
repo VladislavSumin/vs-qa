@@ -13,7 +13,7 @@ object LevelColors {
             "W" -> Color.Yellow // TODO сделать тему с цветами
             "I" -> MaterialTheme.colorScheme.onSurface
             "D" -> MaterialTheme.colorScheme.onSurfaceVariant
-            "T" -> MaterialTheme.colorScheme.outline
+            "V" -> MaterialTheme.colorScheme.outline
             else -> {
                 LevelColorLogger.w { "Unknown level $level" }
                 MaterialTheme.colorScheme.onSurface
