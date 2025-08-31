@@ -1,12 +1,15 @@
 package ru.vladislavsumin.qa.ui.theme
 
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 internal val LocalQaColorScheme = staticCompositionLocalOf { QaColorScheme() }
 
@@ -21,14 +24,16 @@ data class QaColorScheme(
 @Composable
 fun QaTheme(content: @Composable () -> Unit) {
     val colorScheme = QaTheme.colorScheme
-    MaterialTheme(
-        colorScheme = darkColorScheme(
-            surface = colorScheme.surface,
-            onSurface = colorScheme.onSurface,
-            onSurfaceVariant = colorScheme.onSurfaceVariant,
-        ),
-        content = content,
-    )
+    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 24.dp) {
+        MaterialTheme(
+            colorScheme = darkColorScheme(
+                surface = colorScheme.surface,
+                onSurface = colorScheme.onSurface,
+                onSurfaceVariant = colorScheme.onSurfaceVariant,
+            ),
+            content = content,
+        )
+    }
 }
 
 object QaTheme {
