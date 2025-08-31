@@ -3,7 +3,6 @@ package ru.vladislavsumin.qa.ui.component.logViewerComponent
 import androidx.compose.runtime.Stable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.update
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.qa.domain.logs.LogsInteractorImpl
 import kotlin.io.path.Path
@@ -23,7 +22,7 @@ internal class LogViewerViewModel : ViewModel() {
         isSearchUseRegex
     ) { filter, search, isFilterUseRegex, isSearchUseRegex ->
         // TODO regex use?
-        val filteredLogs = logsInteractor.filterLogs(filter)
+        val filteredLogs = logsInteractor.filterAndSearchLogs(filter, search)
         LogViewerViewState(
             filter = filter,
             search = search,

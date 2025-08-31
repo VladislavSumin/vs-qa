@@ -14,6 +14,9 @@ fun RawLogRecord.colorize(): AnnotatedString {
         append(raw)
         addStyle(SpanStyle(color = QaTheme.colorScheme.onSurfaceVariant), time)
         addStyle(SpanStyle(color = levelColor), level)
+        searchHighlight?.let { index ->
+            addStyle(SpanStyle(background = QaTheme.colorScheme.onSurfaceVariant), index)
+        }
     }
 }
 

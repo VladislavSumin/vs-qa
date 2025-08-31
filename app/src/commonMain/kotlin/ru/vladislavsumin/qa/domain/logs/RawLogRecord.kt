@@ -20,4 +20,7 @@ data class RawLogRecord(
     val thread: IntRange,
     val tag: IntRange,
     val message: IntRange,
+
+    // TODO сделать отдельные модели?
+    val searchHighlight: IntRange? = null,
 )
