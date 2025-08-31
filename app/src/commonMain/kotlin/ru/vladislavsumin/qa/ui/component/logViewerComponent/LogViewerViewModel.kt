@@ -1,21 +1,26 @@
 package ru.vladislavsumin.qa.ui.component.logViewerComponent
 
 import androidx.compose.runtime.Stable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.qa.domain.logs.LogsInteractorImpl
+import ru.vladislavsumin.qa.domain.logs.RawLogRecord
 import kotlin.io.path.Path
 
 @Stable
 internal class LogViewerViewModel : ViewModel() {
     private val filter = MutableStateFlow("")
     private val search = MutableStateFlow("")
+    private val selectedSearchIndex = MutableStateFlow(0)
     private val isFilterUseRegex = MutableStateFlow(false)
     private val isSearchUseRegex = MutableStateFlow(false)
+    private val visibleIndexes = MutableStateFlow(Pair(0, 0))
 
     private val logsInteractor = LogsInteractorImpl(Path("../test_log.log"))
-    val state = combine(
+    private val internalState = combine(
         filter,
         search,
         isFilterUseRegex,
@@ -23,33 +28,103 @@ internal class LogViewerViewModel : ViewModel() {
     ) { filter, search, isFilterUseRegex, isSearchUseRegex ->
         // TODO regex use?
         val filteredLogs = logsInteractor.filterAndSearchLogs(filter, search)
+
         val searchResults = if (search.isEmpty()) 0 else {
             filteredLogs.count { it.searchHighlight != null }
         }
 
-        LogViewerViewState(
+        val searchIndex: List<Pair<Int, RawLogRecord>> = if (search.isNotEmpty()) {
+            filteredLogs.mapIndexedNotNull { index, record ->
+                if (record.searchHighlight != null) index to record else null
+            }
+        } else {
+            emptyList()
+        }
+
+        selectedSearchIndex.value = 0
+
+        if (searchIndex.size > 0) {
+            scrollToIndex(searchIndex[selectedSearchIndex.value].first)
+        }
+
+        IntermediateState(
             filter = filter,
             search = search,
             isFilterUseRegex = isFilterUseRegex,
             isSearchUseRegex = isSearchUseRegex,
             searchResults = searchResults,
+            searchIndex = searchIndex,
             logs = filteredLogs,
             maxLogNumberDigits = logsInteractor.logs.last().order.toString().length,
         )
     }.stateIn(
-        LogViewerViewState(
+        IntermediateState(
             filter = "",
             search = "",
             isFilterUseRegex = false,
             isSearchUseRegex = false,
             searchResults = 0,
+            searchIndex = emptyList(),
             logs = emptyList(),
             maxLogNumberDigits = 0,
         )
     )
 
+    val state = combine(
+        internalState, selectedSearchIndex,
+    ) { internalState, selectedSearchIndex ->
+        LogViewerViewState(
+            filter = internalState.filter,
+            search = internalState.search,
+            isFilterUseRegex = internalState.isFilterUseRegex,
+            isSearchUseRegex = internalState.isSearchUseRegex,
+            searchResults = internalState.searchResults,
+            selectedSearchIndex = selectedSearchIndex,
+            searchIndex = internalState.searchIndex,
+            logs = internalState.logs,
+            maxLogNumberDigits = internalState.maxLogNumberDigits,
+        )
+    }
+        .stateIn(
+            LogViewerViewState(
+                filter = "",
+                search = "",
+                isFilterUseRegex = false,
+                isSearchUseRegex = false,
+                searchResults = 0,
+                selectedSearchIndex = 0,
+                searchIndex = emptyList(),
+                logs = emptyList(),
+                maxLogNumberDigits = 0,
+            )
+        )
+
+    val events = Channel<LogViewerEvents>()
+
+    private fun scrollToIndex(index: Int) {
+        // TODO котсылина временная
+        launch(Dispatchers.Main) {
+            events.send(LogViewerEvents.ScrollToIndex(index))
+        }
+    }
+
+    fun onClickPrevIndex() {
+        if (internalState.value.searchIndex.isNotEmpty()) {
+            selectedSearchIndex.value = (selectedSearchIndex.value - 1).coerceAtLeast(0)
+            scrollToIndex(internalState.value.searchIndex[selectedSearchIndex.value].first)
+        }
+    }
+
+    fun onClickNextIndex() {
+        if (internalState.value.searchIndex.isNotEmpty()) {
+            selectedSearchIndex.value =
+                (selectedSearchIndex.value + 1).coerceAtMost(internalState.value.searchIndex.size - 1)
+            scrollToIndex(internalState.value.searchIndex[selectedSearchIndex.value].first)
+        }
+    }
+
     fun onVisibleItemsChanged(firstIndex: Int, lastIndex: Int) {
-        println("QWQW fi=$firstIndex, li=$lastIndex")
+        visibleIndexes.value = firstIndex to lastIndex
     }
 
     fun onFilterChange(newValue: String) {
@@ -67,4 +142,15 @@ internal class LogViewerViewModel : ViewModel() {
     fun onClickSearchUseRegex(newValue: Boolean) {
         isFilterUseRegex.value = newValue
     }
+
+    private data class IntermediateState(
+        val filter: String,
+        val search: String,
+        val isFilterUseRegex: Boolean,
+        val isSearchUseRegex: Boolean,
+        val searchResults: Int,
+        val searchIndex: List<Pair<Int, RawLogRecord>>,
+        val logs: List<RawLogRecord>,
+        val maxLogNumberDigits: Int,
+    )
 }

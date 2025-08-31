@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.qa.ui.design.QaIconButton
 import ru.vladislavsumin.qa.ui.design.QaToggleIconButton
@@ -123,14 +124,14 @@ private fun LogsSearch(
             trailingIcon = {
                 Row {
                     QaIconButton(
-                        onClick = {}
+                        onClick = viewModel::onClickNextIndex,
                     ) { Icon(Icons.Default.ArrowDownward, null) }
 
                     QaIconButton(
-                        onClick = {}
+                        onClick = viewModel::onClickPrevIndex,
                     ) { Icon(Icons.Default.ArrowUpward, null) }
 
-                    Text("${state.value.searchResults} results")
+                    Text("${state.value.selectedSearchIndex + 1} of ${state.value.searchResults} results")
 
 
                     QaToggleIconButton(
@@ -155,6 +156,14 @@ private fun LogsContent(
         MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace)
     )
     val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(lazyListState) {
+        viewModel.events.receiveAsFlow().collect { event ->
+            when (event) {
+                is LogViewerEvents.ScrollToIndex -> lazyListState.scrollToItem(event.index)
+            }
+        }
+    }
 
     LaunchedEffect(lazyListState) {
         snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo }
