@@ -11,7 +11,9 @@ import ru.vladislavsumin.qa.domain.logs.RawLogRecord
 @Immutable
 data class LogViewerViewState(
     val filter: String,
+    val search: String,
     val isFilterUseRegex: Boolean,
+    val isSearchUseRegex: Boolean,
     val logs: List<RawLogRecord>,
     val maxLogNumberDigits: Int,
 )

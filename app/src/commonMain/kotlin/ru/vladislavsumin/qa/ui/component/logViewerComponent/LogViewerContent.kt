@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterAlt
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -38,8 +39,9 @@ internal fun LogViewerContent(
     Surface(modifier = modifier) {
         val state = viewModel.state.collectAsState()
         Column {
-            LogsFilter(viewModel, state)
+            LogsSearch(viewModel, state)
             LogsContent(state, Modifier.weight(1f))
+            LogsFilter(viewModel, state)
             Row(
                 Modifier.background(QaTheme.colorScheme.surfaceVariant),
                 verticalAlignment = Alignment.CenterVertically,
@@ -84,6 +86,36 @@ private fun LogsFilter(
                 QaToggleIconButton(
                     checked = state.value.isFilterUseRegex,
                     onCheckedChange = viewModel::onClickFilterUseRegex,
+                ) { Text(".*") }
+            }
+        )
+    }
+}
+
+@Composable
+private fun LogsSearch(
+    viewModel: LogViewerViewModel,
+    state: State<LogViewerViewState>,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier
+            .background(QaTheme.colorScheme.surfaceVariant)
+            .padding(vertical = 4.dp, horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        OutlinedTextField(
+            value = state.value.search,
+            onValueChange = viewModel::onSearchChange,
+            modifier = Modifier.weight(1f),
+            placeholder = { Text("Search...") },
+            leadingIcon = {
+                Icon(imageVector = Icons.Default.Search, contentDescription = null)
+            },
+            trailingIcon = {
+                QaToggleIconButton(
+                    checked = state.value.isSearchUseRegex,
+                    onCheckedChange = viewModel::onClickSearchUseRegex,
                 ) { Text(".*") }
             }
         )

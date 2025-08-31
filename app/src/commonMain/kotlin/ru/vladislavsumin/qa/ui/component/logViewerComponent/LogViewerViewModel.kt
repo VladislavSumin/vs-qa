@@ -11,25 +11,33 @@ import kotlin.io.path.Path
 @Stable
 internal class LogViewerViewModel : ViewModel() {
     private val filter = MutableStateFlow("")
+    private val search = MutableStateFlow("")
     private val isFilterUseRegex = MutableStateFlow(false)
+    private val isSearchUseRegex = MutableStateFlow(false)
 
     private val logsInteractor = LogsInteractorImpl(Path("../test_log.log"))
     val state = combine(
         filter,
+        search,
         isFilterUseRegex,
-    ) { filter, isFilterUseRegex ->
+        isSearchUseRegex
+    ) { filter, search, isFilterUseRegex, isSearchUseRegex ->
         // TODO regex use?
         val filteredLogs = logsInteractor.filterLogs(filter)
         LogViewerViewState(
             filter = filter,
+            search = search,
             isFilterUseRegex = isFilterUseRegex,
+            isSearchUseRegex = isSearchUseRegex,
             logs = filteredLogs,
             maxLogNumberDigits = logsInteractor.logs.last().order.toString().length,
         )
     }.stateIn(
         LogViewerViewState(
             filter = "",
+            search = "",
             isFilterUseRegex = false,
+            isSearchUseRegex = false,
             logs = emptyList(),
             maxLogNumberDigits = 0,
         )
@@ -39,7 +47,15 @@ internal class LogViewerViewModel : ViewModel() {
         filter.value = newValue
     }
 
+    fun onSearchChange(newValue: String) {
+        search.value = newValue
+    }
+
     fun onClickFilterUseRegex(newValue: Boolean) {
+        isFilterUseRegex.value = newValue
+    }
+
+    fun onClickSearchUseRegex(newValue: Boolean) {
         isFilterUseRegex.value = newValue
     }
 }
