@@ -67,7 +67,6 @@ class AnimeLogParser() : LogParser {
                     message = matches.groups[5]!!.range,
                 )
             } else {
-                println(line)
                 val oldCache = cache!!
                 cache = oldCache.copy(
                     raw = oldCache.raw + "\n" + line,
