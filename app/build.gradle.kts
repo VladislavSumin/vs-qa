@@ -1,9 +1,23 @@
+import ru.vladislavsumin.utils.fatJar
+
 plugins {
     id("ru.vladislavsumin.convention.kmp.jvm")
     id("ru.vladislavsumin.convention.compose")
 }
 
+
 kotlin {
+    val mainClassName = "ru.vladislavsumin.qa.MainKt"
+    jvm {
+        fatJar(
+            mainClass = mainClassName,
+            jarName = "vs-qa",
+            duplicatesStrategy = DuplicatesStrategy.WARN
+        )
+        mainRun {
+            mainClass.set(mainClassName)
+        }
+    }
     sourceSets {
         commonMain.dependencies {
             implementation(vsCoreLibs.vs.core.logger.api)
