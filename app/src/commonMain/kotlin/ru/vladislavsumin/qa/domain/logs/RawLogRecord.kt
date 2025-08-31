@@ -12,7 +12,7 @@ package ru.vladislavsumin.qa.domain.logs
  * несколько похожих компий одной строки.
  */
 data class RawLogRecord(
-    val line: Int,
+    // val line: Int,
     val order: Int,
     val raw: String,
     val time: IntRange,

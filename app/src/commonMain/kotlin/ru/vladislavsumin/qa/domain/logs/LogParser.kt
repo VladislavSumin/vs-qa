@@ -26,7 +26,7 @@ class AnimeLogParser() : LogParser {
                 parseLogFile(filePath, result)
             }
         }
-        LogParserLogger.d { "Parsed file $filePath at ${totalParseTime}ms. Lines = ${result.last().line}, logs = ${result.size}}" }
+        LogParserLogger.d { "Parsed file $filePath at ${totalParseTime}ms. logs = ${result.size}}" }
         return result
     }
 
@@ -51,13 +51,12 @@ class AnimeLogParser() : LogParser {
 
     private fun parseLines(lines: Sequence<String>, result: MutableList<RawLogRecord>) {
         var cache: RawLogRecord? = null
-        var order = 0
-        for ((index, line) in lines.withIndex()) {
+        var order = result.size
+        for (line in lines) {
             val matches = LOG_REGEX.matchEntire(line)
             if (matches != null) {
                 cache?.let(result::add)
                 cache = RawLogRecord(
-                    line = index,
                     order = ++order,
                     raw = line,
                     time = matches.groups[1]!!.range,
