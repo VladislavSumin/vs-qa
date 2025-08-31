@@ -11,6 +11,8 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -26,6 +28,7 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
+import ru.vladislavsumin.qa.ui.design.QaIconButton
 import ru.vladislavsumin.qa.ui.design.QaToggleIconButton
 import ru.vladislavsumin.qa.ui.theme.QaTheme
 import ru.vladislavsumin.qa.ui.utils.colorize
@@ -113,10 +116,23 @@ private fun LogsSearch(
                 Icon(imageVector = Icons.Default.Search, contentDescription = null)
             },
             trailingIcon = {
-                QaToggleIconButton(
-                    checked = state.value.isSearchUseRegex,
-                    onCheckedChange = viewModel::onClickSearchUseRegex,
-                ) { Text(".*") }
+                Row {
+                    QaIconButton(
+                        onClick = {}
+                    ) { Icon(Icons.Default.ArrowDownward, null) }
+
+                    QaIconButton(
+                        onClick = {}
+                    ) { Icon(Icons.Default.ArrowUpward, null) }
+
+                    Text("0 result")
+
+
+                    QaToggleIconButton(
+                        checked = state.value.isSearchUseRegex,
+                        onCheckedChange = viewModel::onClickSearchUseRegex,
+                    ) { Text(".*") }
+                }
             }
         )
     }

@@ -19,6 +19,33 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 
 @Composable
+fun QaIconButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
+    content: @Composable () -> Unit,
+) {
+    val colors = IconButtonDefaults.outlinedIconToggleButtonColors()
+    Surface(
+        onClick = onClick,
+        modifier = modifier.semantics { role = Role.Checkbox },
+        enabled = enabled,
+        shape = RoundedCornerShape(4.dp),
+        color = colors.containerColor(enabled, false).value,
+        contentColor = colors.contentColor(enabled, false).value,
+        interactionSource = interactionSource
+    ) {
+        Box(
+            modifier = Modifier.size(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            content()
+        }
+    }
+}
+
+@Composable
 fun QaToggleIconButton(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
