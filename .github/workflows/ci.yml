@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Assemble jvm client
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - name: Clone vs-qa repository
+        uses: actions/checkout@v4
+        with:
+          path: vs-qa
+
+      - name: Clone vs-core repository
+        uses: actions/checkout@v4
+        with:
+          repository: VladislavSumin/vs-core
+          path: vs-core
+
+      - name: Run gradle
+        uses: ./vs-qa/.github/actions/run_gradle_default
+        with:
+          key: "build"
+          gradle_command: :app:buildFatJarMain
