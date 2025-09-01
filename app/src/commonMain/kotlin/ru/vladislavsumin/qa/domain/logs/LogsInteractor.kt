@@ -39,7 +39,10 @@ class LogsInteractorImpl(
                 value = LogIndexProgress(
                     isFilteringNow = filterProgress.isFilteringNow,
                     isSearchingNow = search.isNotEmpty(),
-                    lastSuccessIndex = LogIndex(logs),
+                    lastSuccessIndex = LogIndex(
+                        logs = logs,
+                        searchIndex = LogIndex.SearchIndex.NoSearch,
+                    ),
                 ),
             )
 
@@ -53,11 +56,25 @@ class LogsInteractorImpl(
                     }
                     range?.let { log.copy(searchHighlight = it) } ?: log
                 }.toList()
+
+                val searchIndex = searchedLogs.mapIndexedNotNull { index, record ->
+                    if (record.searchHighlight != null) index else null
+                }
+
                 emit(
                     value = LogIndexProgress(
                         isFilteringNow = false,
                         isSearchingNow = false,
-                        lastSuccessIndex = LogIndex(searchedLogs),
+                        lastSuccessIndex = LogIndex(
+                            logs = searchedLogs,
+                            searchIndex = if (searchIndex.isNotEmpty()) {
+                                LogIndex.SearchIndex.Search(
+                                    searchIndex,
+                                )
+                            } else {
+                                LogIndex.SearchIndex.EmptySearch
+                            },
+                        ),
                     ),
                 )
             }

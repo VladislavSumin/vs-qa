@@ -31,7 +31,8 @@ internal class LogViewerViewModel(
     ) { logIndexProgress, filter, search, isFilterUseRegex, isSearchUseRegex ->
         // TODO весь код ниже это пока один большой костыль. Работает на честном слове.
 
-        val filteredLogs = logIndexProgress.lastSuccessIndex.logs
+        val logsIndex = logIndexProgress.lastSuccessIndex
+        val filteredLogs = logsIndex.logs
 
         val searchResults = if (search.isEmpty()) {
             0
@@ -39,17 +40,11 @@ internal class LogViewerViewModel(
             filteredLogs.count { it.searchHighlight != null }
         }
 
-        val searchIndex: List<Int> = if (search.isNotEmpty()) {
-            filteredLogs.mapIndexedNotNull { index, record ->
-                if (record.searchHighlight != null) index else null
-            }
-        } else {
-            emptyList()
-        }
+        val searchIndex = logsIndex.searchIndex.index
 
         selectedSearchIndex.value = 0
 
-        if (searchIndex.size > 0) {
+        if (searchIndex.isNotEmpty()) {
             scrollToIndex(searchIndex[selectedSearchIndex.value])
         }
 
