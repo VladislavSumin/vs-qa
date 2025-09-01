@@ -1,6 +1,7 @@
 package ru.vladislavsumin.qa.ui.component.logViewerComponent
 
 import androidx.compose.runtime.Immutable
+import ru.vladislavsumin.qa.domain.logs.LogRecord
 import ru.vladislavsumin.qa.domain.logs.RawLogRecord
 
 /**
@@ -16,7 +17,7 @@ data class LogViewerViewState(
     val isSearchUseRegex: Boolean,
     val searchResults: Int,
     val selectedSearchIndex: Int,
-    val searchIndex: List<Pair<Int, RawLogRecord>>,
-    val logs: List<RawLogRecord>,
+    val searchIndex: List<Pair<Int, LogRecord>>,
+    val logs: List<LogRecord>,
     val maxLogNumberDigits: Int,
 )

@@ -6,8 +6,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import ru.vladislavsumin.core.decompose.components.ViewModel
+import ru.vladislavsumin.qa.domain.logs.LogRecord
 import ru.vladislavsumin.qa.domain.logs.LogsInteractorImpl
-import ru.vladislavsumin.qa.domain.logs.RawLogRecord
 import java.nio.file.Path
 
 @Stable
@@ -23,19 +23,22 @@ internal class LogViewerViewModel(
 
     private val logsInteractor = LogsInteractorImpl(logPath)
     private val internalState = combine(
+        logsInteractor.observeLogIndex(filter, search),
         filter,
         search,
         isFilterUseRegex,
         isSearchUseRegex
-    ) { filter, search, isFilterUseRegex, isSearchUseRegex ->
-        // TODO regex use?
-        val filteredLogs = logsInteractor.filterAndSearchLogs(filter, search)
+    ) { logIndexProgress, filter, search, isFilterUseRegex, isSearchUseRegex ->
+        // TODO весь код ниже это пока один большой костыль. Работает на честном слове.
+
+
+        val filteredLogs = logIndexProgress.lastSuccessIndex.logs
 
         val searchResults = if (search.isEmpty()) 0 else {
             filteredLogs.count { it.searchHighlight != null }
         }
 
-        val searchIndex: List<Pair<Int, RawLogRecord>> = if (search.isNotEmpty()) {
+        val searchIndex: List<Pair<Int, LogRecord>> = if (search.isNotEmpty()) {
             filteredLogs.mapIndexedNotNull { index, record ->
                 if (record.searchHighlight != null) index to record else null
             }
@@ -151,8 +154,8 @@ internal class LogViewerViewModel(
         val isFilterUseRegex: Boolean,
         val isSearchUseRegex: Boolean,
         val searchResults: Int,
-        val searchIndex: List<Pair<Int, RawLogRecord>>,
-        val logs: List<RawLogRecord>,
+        val searchIndex: List<Pair<Int, LogRecord>>,
+        val logs: List<LogRecord>,
         val maxLogNumberDigits: Int,
     )
 }

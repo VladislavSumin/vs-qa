@@ -6,11 +6,11 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import ru.vladislavsumin.qa.domain.logs.RawLogRecord
+import ru.vladislavsumin.qa.domain.logs.LogRecord
 import ru.vladislavsumin.qa.ui.theme.QaTheme
 
 @Composable
-fun RawLogRecord.colorize(): AnnotatedString {
+fun LogRecord.colorize(): AnnotatedString {
     val (levelColor, onLevelColor) = LevelColors.getLevelColor(raw.substring(level))
     return buildAnnotatedString {
         append(raw)
