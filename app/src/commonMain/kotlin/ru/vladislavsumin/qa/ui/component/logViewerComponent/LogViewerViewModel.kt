@@ -39,9 +39,9 @@ internal class LogViewerViewModel(
             filteredLogs.count { it.searchHighlight != null }
         }
 
-        val searchIndex: List<Pair<Int, LogRecord>> = if (search.isNotEmpty()) {
+        val searchIndex: List<Int> = if (search.isNotEmpty()) {
             filteredLogs.mapIndexedNotNull { index, record ->
-                if (record.searchHighlight != null) index to record else null
+                if (record.searchHighlight != null) index else null
             }
         } else {
             emptyList()
@@ -50,7 +50,7 @@ internal class LogViewerViewModel(
         selectedSearchIndex.value = 0
 
         if (searchIndex.size > 0) {
-            scrollToIndex(searchIndex[selectedSearchIndex.value].first)
+            scrollToIndex(searchIndex[selectedSearchIndex.value])
         }
 
         IntermediateState(
@@ -118,7 +118,7 @@ internal class LogViewerViewModel(
     fun onClickPrevIndex() {
         if (internalState.value.searchIndex.isNotEmpty()) {
             selectedSearchIndex.value = (selectedSearchIndex.value - 1).coerceAtLeast(0)
-            scrollToIndex(internalState.value.searchIndex[selectedSearchIndex.value].first)
+            scrollToIndex(internalState.value.searchIndex[selectedSearchIndex.value])
         }
     }
 
@@ -126,7 +126,7 @@ internal class LogViewerViewModel(
         if (internalState.value.searchIndex.isNotEmpty()) {
             selectedSearchIndex.value =
                 (selectedSearchIndex.value + 1).coerceAtMost(internalState.value.searchIndex.size - 1)
-            scrollToIndex(internalState.value.searchIndex[selectedSearchIndex.value].first)
+            scrollToIndex(internalState.value.searchIndex[selectedSearchIndex.value])
         }
     }
 
@@ -156,7 +156,7 @@ internal class LogViewerViewModel(
         val isFilterUseRegex: Boolean,
         val isSearchUseRegex: Boolean,
         val searchResults: Int,
-        val searchIndex: List<Pair<Int, LogRecord>>,
+        val searchIndex: List<Int>,
         val logs: List<LogRecord>,
         val maxLogNumberDigits: Int,
     )
