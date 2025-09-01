@@ -9,7 +9,6 @@ import ru.vladislavsumin.qa.LogLogger
 import ru.vladislavsumin.qa.utils.measureTimeMillisWithResult
 import java.nio.file.Path
 
-
 interface LogsInteractor {
     fun observeLogIndex(
         filter: Flow<String>,
@@ -41,7 +40,7 @@ class LogsInteractorImpl(
                     isFilteringNow = filterProgress.isFilteringNow,
                     isSearchingNow = search.isNotEmpty(),
                     lastSuccessIndex = LogIndex(logs),
-                )
+                ),
             )
 
             if (!filterProgress.isFilteringNow && search.isNotEmpty()) {
@@ -59,7 +58,7 @@ class LogsInteractorImpl(
                         isFilteringNow = false,
                         isSearchingNow = false,
                         lastSuccessIndex = LogIndex(searchedLogs),
-                    )
+                    ),
                 )
             }
         }

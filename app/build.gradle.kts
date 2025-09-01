@@ -5,14 +5,13 @@ plugins {
     id("ru.vladislavsumin.convention.compose")
 }
 
-
 kotlin {
     val mainClassName = "ru.vladislavsumin.qa.MainKt"
     jvm {
         fatJar(
             mainClass = mainClassName,
             jarName = "vs-qa",
-            duplicatesStrategy = DuplicatesStrategy.WARN
+            duplicatesStrategy = DuplicatesStrategy.WARN,
         )
         mainRun {
             mainClass.set(mainClassName)

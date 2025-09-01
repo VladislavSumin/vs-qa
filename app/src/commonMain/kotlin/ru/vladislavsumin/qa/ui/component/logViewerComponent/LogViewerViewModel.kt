@@ -27,14 +27,15 @@ internal class LogViewerViewModel(
         filter,
         search,
         isFilterUseRegex,
-        isSearchUseRegex
+        isSearchUseRegex,
     ) { logIndexProgress, filter, search, isFilterUseRegex, isSearchUseRegex ->
         // TODO весь код ниже это пока один большой костыль. Работает на честном слове.
 
-
         val filteredLogs = logIndexProgress.lastSuccessIndex.logs
 
-        val searchResults = if (search.isEmpty()) 0 else {
+        val searchResults = if (search.isEmpty()) {
+            0
+        } else {
             filteredLogs.count { it.searchHighlight != null }
         }
 
@@ -72,11 +73,12 @@ internal class LogViewerViewModel(
             searchIndex = emptyList(),
             logs = emptyList(),
             maxLogNumberDigits = 0,
-        )
+        ),
     )
 
     val state = combine(
-        internalState, selectedSearchIndex,
+        internalState,
+        selectedSearchIndex,
     ) { internalState, selectedSearchIndex ->
         LogViewerViewState(
             filter = internalState.filter,
@@ -101,7 +103,7 @@ internal class LogViewerViewModel(
                 searchIndex = emptyList(),
                 logs = emptyList(),
                 maxLogNumberDigits = 0,
-            )
+            ),
         )
 
     val events = Channel<LogViewerEvents>()

@@ -13,7 +13,7 @@ interface LogParser {
     fun parseLog(filePath: Path): List<RawLogRecord>
 }
 
-class AnimeLogParser() : LogParser {
+class AnimeLogParser : LogParser {
     override fun parseLog(filePath: Path): List<RawLogRecord> {
         // Производительность тут примеррно 1,2кк строк в секунду, поэтому дополнительные оптимизации пока не нужны.
         LogParserLogger.i { "Start parsing file $filePath with ${this.javaClass.simpleName}" }
@@ -72,7 +72,7 @@ class AnimeLogParser() : LogParser {
                     message = IntRange(
                         start = oldCache.message.start,
                         endInclusive = oldCache.message.last + line.length + 1,
-                    )
+                    ),
                 )
             }
         }
@@ -80,6 +80,7 @@ class AnimeLogParser() : LogParser {
     }
 
     companion object {
+        @Suppress("MaxLineLength")
         private val LOG_REGEX = Regex(
             pattern = "^(\\d{4}-\\d{2}-\\d{2}T\\+\\d{2}:\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}) ([^ ]+) ([A-Z]) ([^ ]+) (.*)",
         )

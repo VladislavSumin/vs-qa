@@ -3,7 +3,12 @@ package ru.vladislavsumin.qa.ui.component.logViewerComponent
 import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -15,7 +20,12 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -96,7 +106,7 @@ private fun LogsFilter(
                     checked = state.value.isFilterUseRegex,
                     onCheckedChange = viewModel::onClickFilterUseRegex,
                 ) { Text(".*") }
-            }
+            },
         )
     }
 }
@@ -133,18 +143,18 @@ private fun LogsSearch(
 
                     Text("${state.value.selectedSearchIndex + 1} of ${state.value.searchResults} results")
 
-
                     QaToggleIconButton(
                         checked = state.value.isSearchUseRegex,
                         onCheckedChange = viewModel::onClickSearchUseRegex,
                     ) { Text(".*") }
                 }
-            }
+            },
         )
     }
 }
 
 @Composable
+@Suppress("LongMethod") // TODO
 private fun LogsContent(
     viewModel: LogViewerViewModel,
     state: State<LogViewerViewState>,
@@ -153,7 +163,7 @@ private fun LogsContent(
     val logs = state.value.logs
     val textSizeDp = measureTextWidth(
         " ".repeat(state.value.maxLogNumberDigits),
-        MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace)
+        MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
     )
     val lazyListState = rememberLazyListState()
 
@@ -187,7 +197,7 @@ private fun LogsContent(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontFamily = FontFamily.Monospace,
-                                    modifier = Modifier
+                                    modifier = Modifier,
                                 )
                             }
                             Text(

@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 internal val LocalQaColorScheme = staticCompositionLocalOf { QaColorScheme() }
 
 @Immutable
+@Suppress("MagicNumber")
 data class QaColorScheme(
     val surface: Color = Color(0xFF1E1F22),
     val surfaceVariant: Color = Color(0xFF2B2D30),
@@ -50,5 +51,6 @@ fun QaTheme(content: @Composable () -> Unit) {
 
 object QaTheme {
     val colorScheme: QaColorScheme
-        @Composable @ReadOnlyComposable get() = LocalQaColorScheme.current
+        @Composable @ReadOnlyComposable
+        get() = LocalQaColorScheme.current
 }

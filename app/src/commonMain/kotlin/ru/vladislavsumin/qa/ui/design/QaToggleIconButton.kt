@@ -34,11 +34,11 @@ fun QaIconButton(
         shape = RoundedCornerShape(4.dp),
         color = colors.containerColor(enabled, false).value,
         contentColor = colors.contentColor(enabled, false).value,
-        interactionSource = interactionSource
+        interactionSource = interactionSource,
     ) {
         Box(
             modifier = Modifier.size(24.dp),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             content()
         }
@@ -63,11 +63,11 @@ fun QaToggleIconButton(
         shape = RoundedCornerShape(4.dp),
         color = colors.containerColor(enabled, checked).value,
         contentColor = colors.contentColor(enabled, checked).value,
-        interactionSource = interactionSource
+        interactionSource = interactionSource,
     ) {
         Box(
             modifier = Modifier.size(24.dp),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
             content()
         }

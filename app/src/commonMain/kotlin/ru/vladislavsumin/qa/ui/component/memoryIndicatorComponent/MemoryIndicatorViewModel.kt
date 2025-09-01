@@ -11,14 +11,20 @@ internal class MemoryIndicatorViewModel : ViewModel() {
     val state: StateFlow<Pair<Long, Long>> = flow {
         val runtime = Runtime.getRuntime()
         while (true) {
-            val total = runtime.totalMemory() / 1024 / 1024
-            val used = total - runtime.freeMemory() / 1024 / 1024
+            val total = runtime.totalMemory() / MB
+            val used = total - runtime.freeMemory() / MB
             emit(used to total)
-            delay(500L)
+            delay(CHECK_INTERVAL)
         }
     }.stateIn(initialValue = 1L to 1L)
 
+    @Suppress("ExplicitGarbageCollectionCall")
     fun onClick() {
         Runtime.getRuntime().gc()
+    }
+
+    companion object {
+        private const val MB = 1024 * 1024
+        private const val CHECK_INTERVAL = 500L
     }
 }

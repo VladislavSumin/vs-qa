@@ -2,7 +2,6 @@ package ru.vladislavsumin.qa.ui.component.logViewerComponent
 
 import androidx.compose.runtime.Immutable
 import ru.vladislavsumin.qa.domain.logs.LogRecord
-import ru.vladislavsumin.qa.domain.logs.RawLogRecord
 
 /**
  * @param filter строка для фильтрации логов
