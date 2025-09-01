@@ -33,13 +33,6 @@ internal class LogViewerViewModel(
 
         val logsIndex = logIndexProgress.lastSuccessIndex
         val filteredLogs = logsIndex.logs
-
-        val searchResults = if (search.isEmpty()) {
-            0
-        } else {
-            filteredLogs.count { it.searchHighlight != null }
-        }
-
         val searchIndex = logsIndex.searchIndex.index
 
         selectedSearchIndex.value = 0
@@ -53,7 +46,7 @@ internal class LogViewerViewModel(
             search = search,
             isFilterUseRegex = isFilterUseRegex,
             isSearchUseRegex = isSearchUseRegex,
-            searchResults = searchResults,
+            searchResults = searchIndex.size,
             searchIndex = searchIndex,
             logs = filteredLogs,
             maxLogNumberDigits = logsInteractor.logs.last().order.toString().length,
