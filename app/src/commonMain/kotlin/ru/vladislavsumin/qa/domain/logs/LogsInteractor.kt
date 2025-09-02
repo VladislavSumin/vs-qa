@@ -47,34 +47,12 @@ class LogsInteractorImpl(
             )
 
             if (!filterProgress.isFilteringNow && search.search.isNotEmpty()) {
-                val searchedLogs = logs.parallelStream().map { log ->
-                    val index = log.raw.indexOfAny(listOf(search.search), ignoreCase = !search.matchCase)
-                    val range = if (index >= 0) {
-                        IntRange(index, index + search.search.length - 1)
-                    } else {
-                        null
-                    }
-                    range?.let { log.copy(searchHighlight = it) } ?: log
-                }.toList()
-
-                val searchIndex = searchedLogs.mapIndexedNotNull { index, record ->
-                    if (record.searchHighlight != null) index else null
-                }
-
+                val logIndex = logs.searchLogs(search)
                 emit(
                     value = LogIndexProgress(
                         isFilteringNow = false,
                         isSearchingNow = false,
-                        lastSuccessIndex = LogIndex(
-                            logs = searchedLogs,
-                            searchIndex = if (searchIndex.isNotEmpty()) {
-                                LogIndex.SearchIndex.Search(
-                                    searchIndex,
-                                )
-                            } else {
-                                LogIndex.SearchIndex.EmptySearch
-                            },
-                        ),
+                        lastSuccessIndex = logIndex,
                     ),
                 )
             }
@@ -101,6 +79,48 @@ class LogsInteractorImpl(
         }
         LogLogger.d { "Log filtered at ${time}ms, size = ${result.size}" }
         return result
+    }
+
+    private fun List<LogRecord>.searchLogs(search: SearchRequest): LogIndex {
+        val regex = runCatching {
+            Regex(
+                pattern = search.search,
+                options = buildSet {
+                    if (!search.useRegex) {
+                        add(RegexOption.LITERAL)
+                    }
+                    if (!search.matchCase) {
+                        add(RegexOption.IGNORE_CASE)
+                    }
+                },
+            )
+        }.getOrElse {
+            return LogIndex(
+                logs = this,
+                searchIndex = LogIndex.SearchIndex.BadRegex,
+            )
+        }
+
+        val searchedLogs = this.parallelStream().map { log ->
+            val math = regex.find(log.raw)
+            val range = math?.range
+            range?.let { log.copy(searchHighlight = it) } ?: log
+        }.toList()
+
+        val searchIndex = searchedLogs.mapIndexedNotNull { index, record ->
+            if (record.searchHighlight != null) index else null
+        }
+
+        return LogIndex(
+            logs = searchedLogs,
+            searchIndex = if (searchIndex.isNotEmpty()) {
+                LogIndex.SearchIndex.Search(
+                    searchIndex,
+                )
+            } else {
+                LogIndex.SearchIndex.EmptySearch
+            },
+        )
     }
 
     private data class FilterLogProgress(

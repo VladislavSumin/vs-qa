@@ -5,6 +5,7 @@ internal data class LogSearchBarViewState(
 
     val isMatchCase: Boolean,
     val isRegex: Boolean,
+    val isBadRegex: Boolean,
 
     val currentSearchResultIndex: Int,
     val totalSearchResults: Int,
@@ -14,6 +15,7 @@ internal data class LogSearchBarViewState(
             searchRequest = "",
             isMatchCase = false,
             isRegex = false,
+            isBadRegex = false,
             currentSearchResultIndex = 0,
             totalSearchResults = 0,
         )

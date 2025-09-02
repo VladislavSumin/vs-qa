@@ -9,21 +9,17 @@ data class LogIndex(
          * Индекс поиска. Тут ключ это номер поискового результата,
          * а значение номер соответствующей записи в [LogIndex.logs].
          */
-        val index: List<Int>
+        val index: List<Int> get() = emptyList()
 
         /**
          * Пустой поисковый запрос.
          */
-        data object NoSearch : SearchIndex {
-            override val index: List<Int> = emptyList()
-        }
+        data object NoSearch : SearchIndex
 
         /**
          * Поиск с нулевым количеством совпадений.
          */
-        data object EmptySearch : SearchIndex {
-            override val index: List<Int> = emptyList()
-        }
+        data object EmptySearch : SearchIndex
 
         /**
          * Поиск с как минимум одним результатом.
@@ -31,5 +27,10 @@ data class LogIndex(
         data class Search(
             override val index: List<Int>,
         ) : SearchIndex
+
+        /**
+         * Ошибка поиска, некорректный Regex.
+         */
+        data object BadRegex : SearchIndex
     }
 }

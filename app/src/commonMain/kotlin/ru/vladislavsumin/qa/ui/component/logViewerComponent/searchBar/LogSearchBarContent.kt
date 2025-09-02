@@ -57,6 +57,7 @@ internal fun LogsSearchBarContent(
             leadingIcon = {
                 Icon(imageVector = Icons.Default.Search, contentDescription = null)
             },
+            isError = state.isBadRegex,
             trailingIcon = {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -70,7 +71,13 @@ internal fun LogsSearchBarContent(
                         onClick = viewModel::onClickPrevIndex,
                     ) { Icon(Icons.Default.ArrowUpward, null) }
 
-                    Text("${state.currentSearchResultIndex + 1} of ${state.totalSearchResults} results")
+                    Text(
+                        text = if (state.isBadRegex) {
+                            "bad pattern"
+                        } else {
+                            "${state.currentSearchResultIndex + 1} of ${state.totalSearchResults} results"
+                        },
+                    )
 
                     QaToggleIconButton(
                         checked = state.isMatchCase,

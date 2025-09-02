@@ -5,10 +5,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import ru.vladislavsumin.core.decompose.components.ViewModel
+import ru.vladislavsumin.qa.domain.logs.LogIndex
 import ru.vladislavsumin.qa.domain.logs.LogsInteractorImpl
 import ru.vladislavsumin.qa.domain.logs.SearchRequest
 import ru.vladislavsumin.qa.ui.component.logViewerComponent.searchBar.LogSearchBarViewState
@@ -19,7 +19,7 @@ internal class LogViewerViewModel(
     logPath: Path,
 ) : ViewModel() {
     private val filter = MutableStateFlow("")
-    private val search = MutableStateFlow(InternalSearchState())
+    private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
     private val isFilterUseRegex = MutableStateFlow(false)
     private val visibleIndexes = MutableStateFlow(Pair(0, 0))
@@ -29,7 +29,7 @@ internal class LogViewerViewModel(
     val state = combine(
         logsInteractor.observeLogIndex(
             filter = filter,
-            search = search.map { SearchRequest(it.searchRequest, it.isMatchCase) },
+            search = search,
         )
             .onEach {
                 // TODO убрать эту жесть.
@@ -50,9 +50,11 @@ internal class LogViewerViewModel(
             logs = logIndexProgress.lastSuccessIndex.logs,
             maxLogNumberDigits = logsInteractor.logs.last().order.toString().length,
             searchState = LogSearchBarViewState(
-                searchRequest = search.searchRequest,
-                isMatchCase = search.isMatchCase,
-                isRegex = search.isRegex,
+                searchRequest = search.search,
+                isMatchCase = search.matchCase,
+                isRegex = search.useRegex,
+                isBadRegex = !logIndexProgress.isSearchingNow &&
+                    logIndexProgress.lastSuccessIndex.searchIndex is LogIndex.SearchIndex.BadRegex,
                 currentSearchResultIndex = selectedSearchIndex,
                 totalSearchResults = logIndexProgress.lastSuccessIndex.searchIndex.index.size,
             ),
@@ -101,17 +103,11 @@ internal class LogViewerViewModel(
         filter.value = newValue
     }
 
-    fun onSearchChange(newValue: String) = search.update { it.copy(searchRequest = newValue) }
-    fun onClickSearchMatchCase(newValue: Boolean) = search.update { it.copy(isMatchCase = newValue) }
-    fun onClickSearchUseRegex(newValue: Boolean) = search.update { it.copy(isRegex = newValue) }
+    fun onSearchChange(newValue: String) = search.update { it.copy(search = newValue) }
+    fun onClickSearchMatchCase(newValue: Boolean) = search.update { it.copy(matchCase = newValue) }
+    fun onClickSearchUseRegex(newValue: Boolean) = search.update { it.copy(useRegex = newValue) }
 
     fun onClickFilterUseRegex(newValue: Boolean) {
         isFilterUseRegex.value = newValue
     }
-
-    private data class InternalSearchState(
-        val searchRequest: String = "",
-        val isMatchCase: Boolean = false,
-        val isRegex: Boolean = false,
-    )
 }
