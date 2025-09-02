@@ -1,9 +1,11 @@
 package ru.vladislavsumin.qa.domain.logs
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.transformLatest
 import ru.vladislavsumin.qa.LogLogger
 import ru.vladislavsumin.qa.utils.measureTimeMillisWithResult
@@ -57,6 +59,7 @@ class LogsInteractorImpl(
                 )
             }
         }
+            .flowOn(Dispatchers.Default)
     }
 
     private fun createFilterProgressFlow(filter: Flow<String>): Flow<FilterLogProgress> = flow {
@@ -82,45 +85,53 @@ class LogsInteractorImpl(
     }
 
     private fun List<LogRecord>.searchLogs(search: SearchRequest): LogIndex {
-        val regex = runCatching {
-            Regex(
-                pattern = search.search,
-                options = buildSet {
-                    if (!search.useRegex) {
-                        add(RegexOption.LITERAL)
-                    }
-                    if (!search.matchCase) {
-                        add(RegexOption.IGNORE_CASE)
-                    }
+        val (time, result) = measureTimeMillisWithResult {
+            val regex = runCatching {
+                Regex(
+                    pattern = search.search,
+                    options = buildSet {
+                        if (!search.useRegex) {
+                            add(RegexOption.LITERAL)
+                        }
+                        if (!search.matchCase) {
+                            add(RegexOption.IGNORE_CASE)
+                        }
+                    },
+                )
+            }.getOrElse {
+                return@measureTimeMillisWithResult LogIndex(
+                    logs = this,
+                    searchIndex = LogIndex.SearchIndex.BadRegex,
+                )
+            }
+
+            val searchedLogs = this.parallelStream().map { log ->
+                val math = regex.find(log.raw)
+                val range = math?.range
+                range?.let { log.copy(searchHighlight = it) } ?: log
+            }.toList()
+
+            val searchIndex = searchedLogs.mapIndexedNotNull { index, record ->
+                if (record.searchHighlight != null) index else null
+            }
+
+            LogIndex(
+                logs = searchedLogs,
+                searchIndex = if (searchIndex.isNotEmpty()) {
+                    LogIndex.SearchIndex.Search(
+                        searchIndex,
+                    )
+                } else {
+                    LogIndex.SearchIndex.EmptySearch
                 },
             )
-        }.getOrElse {
-            return LogIndex(
-                logs = this,
-                searchIndex = LogIndex.SearchIndex.BadRegex,
-            )
         }
 
-        val searchedLogs = this.parallelStream().map { log ->
-            val math = regex.find(log.raw)
-            val range = math?.range
-            range?.let { log.copy(searchHighlight = it) } ?: log
-        }.toList()
-
-        val searchIndex = searchedLogs.mapIndexedNotNull { index, record ->
-            if (record.searchHighlight != null) index else null
+        LogLogger.d {
+            "Log searched at ${time}ms, size = ${result.logs.size}, results = ${result.searchIndex.index.size}"
         }
 
-        return LogIndex(
-            logs = searchedLogs,
-            searchIndex = if (searchIndex.isNotEmpty()) {
-                LogIndex.SearchIndex.Search(
-                    searchIndex,
-                )
-            } else {
-                LogIndex.SearchIndex.EmptySearch
-            },
-        )
+        return result
     }
 
     private data class FilterLogProgress(
