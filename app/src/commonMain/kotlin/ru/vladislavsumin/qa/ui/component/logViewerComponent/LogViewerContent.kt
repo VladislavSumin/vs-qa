@@ -3,6 +3,8 @@ package ru.vladislavsumin.qa.ui.component.logViewerComponent
 import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,8 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
@@ -32,19 +32,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -64,12 +68,36 @@ internal fun LogViewerContent(
     memoryIndicator: ComposeComponent,
     modifier: Modifier,
 ) {
-    Surface(modifier = modifier) {
+    val rootFocusRequester = remember { FocusRequester() }
+    LaunchedEffect(rootFocusRequester) {
+        rootFocusRequester.requestFocus()
+    }
+    val searchFocusRequester = remember { FocusRequester() }
+    val filterFocusRequester = remember { FocusRequester() }
+    Surface(
+        modifier = modifier
+            .focusRequester(rootFocusRequester)
+            .focusable(interactionSource = remember { MutableInteractionSource() })
+            .onPreviewKeyEvent { event ->
+                if (event.type == KeyEventType.KeyDown) {
+                    when {
+                        event.isShiftPressed && event.isMetaPressed && event.key == Key.F -> {
+                            filterFocusRequester.requestFocus()
+                        }
+
+                        event.isMetaPressed && event.key == Key.F -> searchFocusRequester.requestFocus()
+                        else -> false
+                    }
+                } else {
+                    false
+                }
+            },
+    ) {
         val state = viewModel.state.collectAsState()
         Column {
-            LogsSearch(viewModel, state)
+            LogsSearch(viewModel, state, searchFocusRequester, rootFocusRequester)
             LogsContent(viewModel, state, Modifier.weight(1f))
-            LogsFilter(viewModel, state)
+            LogsFilter(viewModel, state, filterFocusRequester, rootFocusRequester)
             Row(
                 Modifier.background(QaTheme.colorScheme.surfaceVariant),
                 verticalAlignment = Alignment.CenterVertically,
@@ -94,6 +122,8 @@ internal fun LogViewerContent(
 private fun LogsFilter(
     viewModel: LogViewerViewModel,
     state: State<LogViewerViewState>,
+    focusRequester: FocusRequester,
+    rootFocusRequester: FocusRequester,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -105,7 +135,23 @@ private fun LogsFilter(
         OutlinedTextField(
             value = state.value.filter,
             onValueChange = viewModel::onFilterChange,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .weight(1f)
+                .onKeyEvent { event ->
+                    if (event.type == KeyEventType.KeyDown) {
+                        when {
+                            event.key == Key.Escape -> {
+                                rootFocusRequester.requestFocus()
+                                true
+                            }
+
+                            else -> false
+                        }
+                    } else {
+                        false
+                    }
+                },
             placeholder = { Text("Filter...") },
             leadingIcon = {
                 Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null)
@@ -124,6 +170,8 @@ private fun LogsFilter(
 private fun LogsSearch(
     viewModel: LogViewerViewModel,
     state: State<LogViewerViewState>,
+    focusRequester: FocusRequester,
+    rootFocusRequester: FocusRequester,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -136,12 +184,23 @@ private fun LogsSearch(
             value = state.value.search,
             onValueChange = viewModel::onSearchChange,
             modifier = Modifier
+                .focusRequester(focusRequester)
                 .weight(1f)
-                .onKeyEvent { event ->
+                .onPreviewKeyEvent { event ->
                     if (event.type == KeyEventType.KeyDown) {
                         when {
                             event.isShiftPressed && event.key == Key.Enter -> {
                                 viewModel.onClickPrevIndex()
+                                true
+                            }
+
+                            event.key == Key.Enter -> {
+                                viewModel.onClickNextIndex()
+                                true
+                            }
+
+                            event.key == Key.Escape -> {
+                                rootFocusRequester.requestFocus()
                                 true
                             }
 
@@ -151,12 +210,6 @@ private fun LogsSearch(
                         false
                     }
                 },
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    viewModel.onClickNextIndex()
-                },
-            ),
             singleLine = true,
             placeholder = { Text("Search...") },
             leadingIcon = {
