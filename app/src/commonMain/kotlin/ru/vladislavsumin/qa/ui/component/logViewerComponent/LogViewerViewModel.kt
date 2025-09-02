@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.qa.domain.logs.LogsInteractorImpl
+import ru.vladislavsumin.qa.domain.logs.SearchRequest
 import java.nio.file.Path
 
 @Stable
@@ -17,6 +18,7 @@ internal class LogViewerViewModel(
 ) : ViewModel() {
     private val filter = MutableStateFlow("")
     private val search = MutableStateFlow("")
+    private val isSearchMatchCase = MutableStateFlow(false)
     private val selectedSearchIndex = MutableStateFlow(0)
     private val isFilterUseRegex = MutableStateFlow(false)
     private val isSearchUseRegex = MutableStateFlow(false)
@@ -25,7 +27,13 @@ internal class LogViewerViewModel(
     private val logsInteractor = LogsInteractorImpl(logPath)
 
     val state = combine(
-        logsInteractor.observeLogIndex(filter, search)
+        logsInteractor.observeLogIndex(
+            filter = filter,
+            search = combine(
+                search,
+                isSearchMatchCase,
+            ) { search, matchCase -> SearchRequest(search, matchCase) },
+        )
             .onEach {
                 // TODO убрать эту жесть.
                 selectedSearchIndex.value = 0
@@ -37,13 +45,15 @@ internal class LogViewerViewModel(
         search,
         isFilterUseRegex,
         isSearchUseRegex,
+        isSearchMatchCase,
         selectedSearchIndex,
-    ) { logIndexProgress, filter, search, isFilterUseRegex, isSearchUseRegex, selectedSearchIndex ->
+    ) { logIndexProgress, filter, search, isFilterUseRegex, isSearchUseRegex, isSearchMatchCase, selectedSearchIndex ->
         LogViewerViewState(
             filter = filter,
             search = search,
             isFilterUseRegex = isFilterUseRegex,
             isSearchUseRegex = isSearchUseRegex,
+            isSearchMatchCase = isSearchMatchCase,
             searchResults = logIndexProgress.lastSuccessIndex.searchIndex.index.size,
             selectedSearchIndex = selectedSearchIndex,
             searchIndex = logIndexProgress.lastSuccessIndex.searchIndex.index,
@@ -57,6 +67,7 @@ internal class LogViewerViewModel(
                 search = "",
                 isFilterUseRegex = false,
                 isSearchUseRegex = false,
+                isSearchMatchCase = false,
                 searchResults = 0,
                 selectedSearchIndex = 0,
                 searchIndex = emptyList(),
@@ -101,6 +112,10 @@ internal class LogViewerViewModel(
         search.value = newValue
     }
 
+    fun onClickSearchMatchCase(newValue: Boolean) {
+        isSearchMatchCase.value = newValue
+    }
+
     fun onClickFilterUseRegex(newValue: Boolean) {
         isFilterUseRegex.value = newValue
     }
@@ -128,5 +143,27 @@ private fun <T1, T2, T3, T4, T5, T6, R> combine(
         args[3] as T4,
         args[4] as T5,
         args[5] as T6,
+    )
+}
+
+@Suppress("MagicNumber")
+private fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
+    flow: Flow<T1>,
+    flow2: Flow<T2>,
+    flow3: Flow<T3>,
+    flow4: Flow<T4>,
+    flow5: Flow<T5>,
+    flow6: Flow<T6>,
+    flow7: Flow<T7>,
+    transform: suspend (T1, T2, T3, T4, T5, T6, T7) -> R,
+): Flow<R> = combine(flow, flow2, flow3, flow4, flow5, flow6, flow7) { args: Array<*> ->
+    transform(
+        args[0] as T1,
+        args[1] as T2,
+        args[2] as T3,
+        args[3] as T4,
+        args[4] as T5,
+        args[5] as T6,
+        args[6] as T7,
     )
 }

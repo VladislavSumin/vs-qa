@@ -167,6 +167,7 @@ private fun LogsFilter(
 }
 
 @Composable
+@Suppress("LongMethod") // TODO
 private fun LogsSearch(
     viewModel: LogViewerViewModel,
     state: State<LogViewerViewState>,
@@ -226,6 +227,11 @@ private fun LogsSearch(
                     ) { Icon(Icons.Default.ArrowUpward, null) }
 
                     Text("${state.value.selectedSearchIndex + 1} of ${state.value.searchResults} results")
+
+                    QaToggleIconButton(
+                        checked = state.value.isSearchMatchCase,
+                        onCheckedChange = viewModel::onClickSearchMatchCase,
+                    ) { Text("Cc") }
 
                     QaToggleIconButton(
                         checked = state.value.isSearchUseRegex,

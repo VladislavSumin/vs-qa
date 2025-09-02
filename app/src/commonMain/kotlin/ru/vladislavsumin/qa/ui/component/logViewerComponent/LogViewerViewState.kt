@@ -13,6 +13,7 @@ data class LogViewerViewState(
     val filter: String,
     val search: String,
     val isFilterUseRegex: Boolean,
+    val isSearchMatchCase: Boolean,
     val isSearchUseRegex: Boolean,
     val searchResults: Int,
     val selectedSearchIndex: Int,

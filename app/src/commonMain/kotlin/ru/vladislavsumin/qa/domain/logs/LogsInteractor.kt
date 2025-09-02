@@ -12,7 +12,7 @@ import java.nio.file.Path
 interface LogsInteractor {
     fun observeLogIndex(
         filter: Flow<String>,
-        search: Flow<String>,
+        search: Flow<SearchRequest>,
     ): Flow<LogIndexProgress>
 }
 
@@ -28,7 +28,7 @@ class LogsInteractorImpl(
 
     override fun observeLogIndex(
         filter: Flow<String>,
-        search: Flow<String>,
+        search: Flow<SearchRequest>,
     ): Flow<LogIndexProgress> {
         return combineTransform(
             createFilterProgressFlow(filter),
@@ -38,7 +38,7 @@ class LogsInteractorImpl(
             emit(
                 value = LogIndexProgress(
                     isFilteringNow = filterProgress.isFilteringNow,
-                    isSearchingNow = search.isNotEmpty(),
+                    isSearchingNow = search.search.isNotEmpty(),
                     lastSuccessIndex = LogIndex(
                         logs = logs,
                         searchIndex = LogIndex.SearchIndex.NoSearch,
@@ -46,11 +46,11 @@ class LogsInteractorImpl(
                 ),
             )
 
-            if (!filterProgress.isFilteringNow && search.isNotEmpty()) {
+            if (!filterProgress.isFilteringNow && search.search.isNotEmpty()) {
                 val searchedLogs = logs.parallelStream().map { log ->
-                    val index = log.raw.indexOfAny(listOf(search))
+                    val index = log.raw.indexOfAny(listOf(search.search), ignoreCase = !search.matchCase)
                     val range = if (index >= 0) {
-                        IntRange(index, index + search.length - 1)
+                        IntRange(index, index + search.search.length - 1)
                     } else {
                         null
                     }
