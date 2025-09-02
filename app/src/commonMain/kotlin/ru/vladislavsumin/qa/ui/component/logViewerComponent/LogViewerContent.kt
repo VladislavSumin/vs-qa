@@ -18,10 +18,7 @@ import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.FilterAlt
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -32,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -57,7 +55,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
-import ru.vladislavsumin.qa.ui.design.QaIconButton
+import ru.vladislavsumin.qa.ui.component.logViewerComponent.searchBar.LogsSearchBarContent
 import ru.vladislavsumin.qa.ui.design.QaToggleIconButton
 import ru.vladislavsumin.qa.ui.theme.QaTheme
 import ru.vladislavsumin.qa.ui.utils.colorize
@@ -94,8 +92,9 @@ internal fun LogViewerContent(
             },
     ) {
         val state = viewModel.state.collectAsState()
+        val searchState = derivedStateOf { state.value.searchState }
         Column {
-            LogsSearch(viewModel, state, searchFocusRequester, rootFocusRequester)
+            LogsSearchBarContent(viewModel, searchState, searchFocusRequester, rootFocusRequester)
             LogsContent(viewModel, state, Modifier.weight(1f))
             LogsFilter(viewModel, state, filterFocusRequester, rootFocusRequester)
             Row(
@@ -161,83 +160,6 @@ private fun LogsFilter(
                     checked = state.value.isFilterUseRegex,
                     onCheckedChange = viewModel::onClickFilterUseRegex,
                 ) { Text(".*") }
-            },
-        )
-    }
-}
-
-@Composable
-@Suppress("LongMethod") // TODO
-private fun LogsSearch(
-    viewModel: LogViewerViewModel,
-    state: State<LogViewerViewState>,
-    focusRequester: FocusRequester,
-    rootFocusRequester: FocusRequester,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier
-            .background(QaTheme.colorScheme.surfaceVariant)
-            .padding(vertical = 4.dp, horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        OutlinedTextField(
-            value = state.value.search,
-            onValueChange = viewModel::onSearchChange,
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .weight(1f)
-                .onPreviewKeyEvent { event ->
-                    if (event.type == KeyEventType.KeyDown) {
-                        when {
-                            event.isShiftPressed && event.key == Key.Enter -> {
-                                viewModel.onClickPrevIndex()
-                                true
-                            }
-
-                            event.key == Key.Enter -> {
-                                viewModel.onClickNextIndex()
-                                true
-                            }
-
-                            event.key == Key.Escape -> {
-                                rootFocusRequester.requestFocus()
-                                true
-                            }
-
-                            else -> false
-                        }
-                    } else {
-                        false
-                    }
-                },
-            singleLine = true,
-            placeholder = { Text("Search...") },
-            leadingIcon = {
-                Icon(imageVector = Icons.Default.Search, contentDescription = null)
-            },
-            trailingIcon = {
-                Row {
-                    QaIconButton(
-                        onClick = viewModel::onClickNextIndex,
-                    ) { Icon(Icons.Default.ArrowDownward, null) }
-
-                    QaIconButton(
-                        onClick = viewModel::onClickPrevIndex,
-                    ) { Icon(Icons.Default.ArrowUpward, null) }
-
-                    Text("${state.value.selectedSearchIndex + 1} of ${state.value.searchResults} results")
-
-                    QaToggleIconButton(
-                        checked = state.value.isSearchMatchCase,
-                        onCheckedChange = viewModel::onClickSearchMatchCase,
-                    ) { Text("Cc") }
-
-                    QaToggleIconButton(
-                        checked = state.value.isSearchUseRegex,
-                        onCheckedChange = viewModel::onClickSearchUseRegex,
-                    ) { Text(".*") }
-                }
             },
         )
     }

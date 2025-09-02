@@ -2,6 +2,7 @@ package ru.vladislavsumin.qa.ui.component.logViewerComponent
 
 import androidx.compose.runtime.Immutable
 import ru.vladislavsumin.qa.domain.logs.LogRecord
+import ru.vladislavsumin.qa.ui.component.logViewerComponent.searchBar.LogSearchBarViewState
 
 /**
  * @param filter строка для фильтрации логов
@@ -9,15 +10,11 @@ import ru.vladislavsumin.qa.domain.logs.LogRecord
  * @param maxLogNumberDigits - количество цифр у максимально возможного номера лога. Нужно для выравнивания номера логов
  */
 @Immutable
-data class LogViewerViewState(
+internal data class LogViewerViewState(
     val filter: String,
-    val search: String,
     val isFilterUseRegex: Boolean,
-    val isSearchMatchCase: Boolean,
-    val isSearchUseRegex: Boolean,
-    val searchResults: Int,
-    val selectedSearchIndex: Int,
     val searchIndex: List<Int>,
     val logs: List<LogRecord>,
     val maxLogNumberDigits: Int,
+    val searchState: LogSearchBarViewState,
 )

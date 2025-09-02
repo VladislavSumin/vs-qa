@@ -3,13 +3,15 @@ package ru.vladislavsumin.qa.ui.component.logViewerComponent
 import androidx.compose.runtime.Stable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.qa.domain.logs.LogsInteractorImpl
 import ru.vladislavsumin.qa.domain.logs.SearchRequest
+import ru.vladislavsumin.qa.ui.component.logViewerComponent.searchBar.LogSearchBarViewState
 import java.nio.file.Path
 
 @Stable
@@ -17,11 +19,9 @@ internal class LogViewerViewModel(
     logPath: Path,
 ) : ViewModel() {
     private val filter = MutableStateFlow("")
-    private val search = MutableStateFlow("")
-    private val isSearchMatchCase = MutableStateFlow(false)
+    private val search = MutableStateFlow(InternalSearchState())
     private val selectedSearchIndex = MutableStateFlow(0)
     private val isFilterUseRegex = MutableStateFlow(false)
-    private val isSearchUseRegex = MutableStateFlow(false)
     private val visibleIndexes = MutableStateFlow(Pair(0, 0))
 
     private val logsInteractor = LogsInteractorImpl(logPath)
@@ -29,10 +29,7 @@ internal class LogViewerViewModel(
     val state = combine(
         logsInteractor.observeLogIndex(
             filter = filter,
-            search = combine(
-                search,
-                isSearchMatchCase,
-            ) { search, matchCase -> SearchRequest(search, matchCase) },
+            search = search.map { SearchRequest(it.searchRequest, it.isMatchCase) },
         )
             .onEach {
                 // TODO убрать эту жесть.
@@ -44,35 +41,31 @@ internal class LogViewerViewModel(
         filter,
         search,
         isFilterUseRegex,
-        isSearchUseRegex,
-        isSearchMatchCase,
         selectedSearchIndex,
-    ) { logIndexProgress, filter, search, isFilterUseRegex, isSearchUseRegex, isSearchMatchCase, selectedSearchIndex ->
+    ) { logIndexProgress, filter, search, isFilterUseRegex, selectedSearchIndex ->
         LogViewerViewState(
             filter = filter,
-            search = search,
             isFilterUseRegex = isFilterUseRegex,
-            isSearchUseRegex = isSearchUseRegex,
-            isSearchMatchCase = isSearchMatchCase,
-            searchResults = logIndexProgress.lastSuccessIndex.searchIndex.index.size,
-            selectedSearchIndex = selectedSearchIndex,
             searchIndex = logIndexProgress.lastSuccessIndex.searchIndex.index,
             logs = logIndexProgress.lastSuccessIndex.logs,
             maxLogNumberDigits = logsInteractor.logs.last().order.toString().length,
+            searchState = LogSearchBarViewState(
+                searchRequest = search.searchRequest,
+                isMatchCase = search.isMatchCase,
+                isRegex = search.isRegex,
+                currentSearchResultIndex = selectedSearchIndex,
+                totalSearchResults = logIndexProgress.lastSuccessIndex.searchIndex.index.size,
+            ),
         )
     }
         .stateIn(
             LogViewerViewState(
                 filter = "",
-                search = "",
                 isFilterUseRegex = false,
-                isSearchUseRegex = false,
-                isSearchMatchCase = false,
-                searchResults = 0,
-                selectedSearchIndex = 0,
                 searchIndex = emptyList(),
                 logs = emptyList(),
                 maxLogNumberDigits = 0,
+                searchState = LogSearchBarViewState.STUB,
             ),
         )
 
@@ -108,62 +101,17 @@ internal class LogViewerViewModel(
         filter.value = newValue
     }
 
-    fun onSearchChange(newValue: String) {
-        search.value = newValue
-    }
-
-    fun onClickSearchMatchCase(newValue: Boolean) {
-        isSearchMatchCase.value = newValue
-    }
+    fun onSearchChange(newValue: String) = search.update { it.copy(searchRequest = newValue) }
+    fun onClickSearchMatchCase(newValue: Boolean) = search.update { it.copy(isMatchCase = newValue) }
+    fun onClickSearchUseRegex(newValue: Boolean) = search.update { it.copy(isRegex = newValue) }
 
     fun onClickFilterUseRegex(newValue: Boolean) {
         isFilterUseRegex.value = newValue
     }
 
-    fun onClickSearchUseRegex(newValue: Boolean) {
-        isFilterUseRegex.value = newValue
-    }
-}
-
-// TODO и эту жесть убрать
-@Suppress("MagicNumber")
-private fun <T1, T2, T3, T4, T5, T6, R> combine(
-    flow: Flow<T1>,
-    flow2: Flow<T2>,
-    flow3: Flow<T3>,
-    flow4: Flow<T4>,
-    flow5: Flow<T5>,
-    flow6: Flow<T6>,
-    transform: suspend (T1, T2, T3, T4, T5, T6) -> R,
-): Flow<R> = combine(flow, flow2, flow3, flow4, flow5, flow6) { args: Array<*> ->
-    transform(
-        args[0] as T1,
-        args[1] as T2,
-        args[2] as T3,
-        args[3] as T4,
-        args[4] as T5,
-        args[5] as T6,
-    )
-}
-
-@Suppress("MagicNumber")
-private fun <T1, T2, T3, T4, T5, T6, T7, R> combine(
-    flow: Flow<T1>,
-    flow2: Flow<T2>,
-    flow3: Flow<T3>,
-    flow4: Flow<T4>,
-    flow5: Flow<T5>,
-    flow6: Flow<T6>,
-    flow7: Flow<T7>,
-    transform: suspend (T1, T2, T3, T4, T5, T6, T7) -> R,
-): Flow<R> = combine(flow, flow2, flow3, flow4, flow5, flow6, flow7) { args: Array<*> ->
-    transform(
-        args[0] as T1,
-        args[1] as T2,
-        args[2] as T3,
-        args[3] as T4,
-        args[4] as T5,
-        args[5] as T6,
-        args[6] as T7,
+    private data class InternalSearchState(
+        val searchRequest: String = "",
+        val isMatchCase: Boolean = false,
+        val isRegex: Boolean = false,
     )
 }
