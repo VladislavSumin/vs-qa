@@ -5,9 +5,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import ru.vladislavsumin.core.decompose.components.ViewModel
+import ru.vladislavsumin.qa.domain.logs.FilterRequest
 import ru.vladislavsumin.qa.domain.logs.LogIndex
 import ru.vladislavsumin.qa.domain.logs.LogsInteractorImpl
 import ru.vladislavsumin.qa.domain.logs.SearchRequest
@@ -28,7 +30,17 @@ internal class LogViewerViewModel(
 
     val state = combine(
         logsInteractor.observeLogIndex(
-            filter = filter,
+            filter = filter.map {
+                FilterRequest(
+                    mapOf(
+                        FilterRequest.Field.All to listOf(
+                            FilterRequest.Operation.Contains(
+                                it,
+                            ),
+                        ),
+                    ),
+                )
+            },
             search = search,
         )
             .onEach {

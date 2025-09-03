@@ -13,7 +13,7 @@ import java.nio.file.Path
 
 interface LogsInteractor {
     fun observeLogIndex(
-        filter: Flow<String>,
+        filter: Flow<FilterRequest>,
         search: Flow<SearchRequest>,
     ): Flow<LogIndexProgress>
 }
@@ -29,7 +29,7 @@ class LogsInteractorImpl(
     }
 
     override fun observeLogIndex(
-        filter: Flow<String>,
+        filter: Flow<FilterRequest>,
         search: Flow<SearchRequest>,
     ): Flow<LogIndexProgress> {
         return combineTransform(
@@ -62,22 +62,38 @@ class LogsInteractorImpl(
             .flowOn(Dispatchers.Default)
     }
 
-    private fun createFilterProgressFlow(filter: Flow<String>): Flow<FilterLogProgress> = flow {
+    private fun createFilterProgressFlow(filter: Flow<FilterRequest>): Flow<FilterLogProgress> = flow {
         var filteredCache = emptyList<RawLogRecord>()
         filter
             .distinctUntilChanged()
             .transformLatest { filter ->
                 emit(FilterLogProgress(isFilteringNow = true, filteredCache))
-                filteredCache = filterLogs { it.raw.contains(filter) }
+                filteredCache = filterLogs(filter)
                 emit(FilterLogProgress(isFilteringNow = false, filteredCache))
             }
             .collect(this)
     }
 
-    private fun filterLogs(filter: (RawLogRecord) -> Boolean): List<RawLogRecord> {
+    private fun filterLogs(filter: FilterRequest): List<RawLogRecord> {
         val (time, result) = measureTimeMillisWithResult {
             logs.parallelStream()
-                .filter(filter)
+                .filter { log ->
+                    filter.filters.all { (field, filter) ->
+                        val range: IntRange = when (field) {
+                            FilterRequest.Field.All -> 0..log.raw.length
+                            FilterRequest.Field.Tag -> log.tag
+                            FilterRequest.Field.Thread -> log.thread
+                            FilterRequest.Field.Message -> log.message
+                        }
+
+                        filter.any { operation ->
+                            when (operation) {
+                                is FilterRequest.Operation.Contains -> log.raw.contains(operation.data)
+                                is FilterRequest.Operation.Exactly -> log.raw.substring(range) == operation.data
+                            }
+                        }
+                    }
+                }
                 .toList()
         }
         LogLogger.d { "Log filtered at ${time}ms, size = ${result.size}" }
