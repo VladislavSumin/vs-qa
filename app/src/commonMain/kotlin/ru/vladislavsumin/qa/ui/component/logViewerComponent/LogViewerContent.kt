@@ -58,7 +58,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.qa.ui.component.logViewerComponent.searchBar.LogsSearchBarContent
-import ru.vladislavsumin.qa.ui.design.QaToggleIconButton
 import ru.vladislavsumin.qa.ui.theme.QaTheme
 import ru.vladislavsumin.qa.ui.utils.colorize
 
@@ -157,12 +156,7 @@ private fun LogsFilter(
             leadingIcon = {
                 Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null)
             },
-            trailingIcon = {
-                QaToggleIconButton(
-                    checked = state.value.isFilterUseRegex,
-                    onCheckedChange = viewModel::onClickFilterUseRegex,
-                ) { Text(".*") }
-            },
+            isError = !state.value.isFilterValid,
         )
     }
 }

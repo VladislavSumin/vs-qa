@@ -12,7 +12,7 @@ import ru.vladislavsumin.qa.ui.component.logViewerComponent.searchBar.LogSearchB
 @Immutable
 internal data class LogViewerViewState(
     val filter: String,
-    val isFilterUseRegex: Boolean,
+    val isFilterValid: Boolean,
     val searchIndex: List<Int>,
     val logs: List<LogRecord>,
     val maxLogNumberDigits: Int,

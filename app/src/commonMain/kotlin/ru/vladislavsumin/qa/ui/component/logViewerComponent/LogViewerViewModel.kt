@@ -5,12 +5,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import ru.vladislavsumin.core.decompose.components.ViewModel
+import ru.vladislavsumin.qa.domain.logs.FilterRequest
 import ru.vladislavsumin.qa.domain.logs.LogIndex
 import ru.vladislavsumin.qa.domain.logs.LogsInteractorImpl
 import ru.vladislavsumin.qa.domain.logs.SearchRequest
+import ru.vladislavsumin.qa.ui.component.logViewerComponent.filterBar.FilterRequestParser
 import ru.vladislavsumin.qa.ui.component.logViewerComponent.searchBar.LogSearchBarViewState
 import java.nio.file.Path
 
@@ -18,17 +22,24 @@ import java.nio.file.Path
 internal class LogViewerViewModel(
     logPath: Path,
 ) : ViewModel() {
+    private val filterRequestParser = FilterRequestParser()
+
     private val filter = MutableStateFlow("")
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
-    private val isFilterUseRegex = MutableStateFlow(false)
     private val visibleIndexes = MutableStateFlow(Pair(0, 0))
 
     private val logsInteractor = LogsInteractorImpl(logPath)
 
+    private val filterState = filter.map { filter ->
+        filterRequestParser.tokenize(filter)
+            .map { FilterState.Valid(it) }
+            .getOrElse { FilterState.Invalid }
+    }
+
     val state = combine(
         logsInteractor.observeLogIndex(
-            filter = filter,
+            filter = filterState.filterIsInstance<FilterState.Valid>().map { it.request },
             search = search,
         )
             .onEach {
@@ -39,13 +50,13 @@ internal class LogViewerViewModel(
                 }
             },
         filter,
+        filterState.map { it is FilterState.Valid },
         search,
-        isFilterUseRegex,
         selectedSearchIndex,
-    ) { logIndexProgress, filter, search, isFilterUseRegex, selectedSearchIndex ->
+    ) { logIndexProgress, filter, isFilterValid, search, selectedSearchIndex ->
         LogViewerViewState(
             filter = filter,
-            isFilterUseRegex = isFilterUseRegex,
+            isFilterValid = isFilterValid,
             searchIndex = logIndexProgress.lastSuccessIndex.searchIndex.index,
             logs = logIndexProgress.lastSuccessIndex.logs,
             maxLogNumberDigits = logsInteractor.logs.last().order.toString().length,
@@ -63,7 +74,7 @@ internal class LogViewerViewModel(
         .stateIn(
             LogViewerViewState(
                 filter = "",
-                isFilterUseRegex = false,
+                isFilterValid = true,
                 searchIndex = emptyList(),
                 logs = emptyList(),
                 maxLogNumberDigits = 0,
@@ -107,7 +118,8 @@ internal class LogViewerViewModel(
     fun onClickSearchMatchCase(newValue: Boolean) = search.update { it.copy(matchCase = newValue) }
     fun onClickSearchUseRegex(newValue: Boolean) = search.update { it.copy(useRegex = newValue) }
 
-    fun onClickFilterUseRegex(newValue: Boolean) {
-        isFilterUseRegex.value = newValue
+    sealed interface FilterState {
+        data object Invalid : FilterState
+        data class Valid(val request: FilterRequest) : FilterState
     }
 }

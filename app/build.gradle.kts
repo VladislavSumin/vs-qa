@@ -29,6 +29,8 @@ kotlin {
 
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
+
+            implementation("com.github.h0tk3y.betterParse:better-parse:0.4.4")
         }
 
         jvmMain.dependencies {
