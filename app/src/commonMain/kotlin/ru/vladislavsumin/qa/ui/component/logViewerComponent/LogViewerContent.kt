@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
@@ -217,7 +218,9 @@ private fun LogsContent(
                                 text = it.colorize(),
                                 style = MaterialTheme.typography.bodyMedium,
                                 fontFamily = FontFamily.Monospace,
-                                modifier = Modifier.padding(start = textSizeDp + 6.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth() // Что бы выделение работало после конца текста
+                                    .padding(start = textSizeDp + 6.dp),
                             )
                             TextSelectionSeparator()
                         }
