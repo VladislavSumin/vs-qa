@@ -4,6 +4,7 @@ import com.github.h0tk3y.betterParse.combinators.OrCombinator
 import com.github.h0tk3y.betterParse.combinators.and
 import com.github.h0tk3y.betterParse.combinators.asJust
 import com.github.h0tk3y.betterParse.combinators.map
+import com.github.h0tk3y.betterParse.combinators.or
 import com.github.h0tk3y.betterParse.combinators.zeroOrMore
 import com.github.h0tk3y.betterParse.grammar.Grammar
 import com.github.h0tk3y.betterParse.lexer.literalToken
@@ -15,6 +16,7 @@ import kotlin.collections.listOf
 class FilterRequestParser {
 
     enum class Field {
+        All,
         Tag,
         Thread,
         Message,
@@ -39,8 +41,14 @@ class FilterRequestParser {
 
             val exactly by literalToken(":=")
             val contains by literalToken("=")
+
+            // Строка в кавычках, может содержать экранированные кавычки внутри
             val stingLiteral by regexToken("\"(\\\\\"|[^\"])+\"")
+
+            // Любая строка без пробелов
             val any by regexToken("[^ ]+")
+
+            // Пробел, определяется последним чтобы он не перебивал собой другие токены, например stringLiteral
             val ws by regexToken("\\s+", ignore = true)
 
             // Поля по которым можно вести поиск.
@@ -72,9 +80,11 @@ class FilterRequestParser {
                 ),
             )
 
+            val allFilter = filters map { Filter(Field.All, Operation.Contains, it) }
+
             val filter = (fields and operations and filters) map { (a, b, c) -> Filter(a, b, c) }
 
-            override val rootParser: Parser<Any> = zeroOrMore(filter)
+            override val rootParser: Parser<Any> = zeroOrMore(filter or allFilter)
         }
 
         val tokens = grammar.tokenizer.tokenize(data)
@@ -90,5 +100,10 @@ class FilterRequestParser {
         tokenize("thread=\"\\\"\"")
         tokenize("thread=\"dem\\\"o\"")
         tokenize("thread:=om tag=test")
+        tokenize("sdfsdfds")
+        tokenize("\"sdfsdfds\"")
+        tokenize("\"sdfs dd dfds\"")
+        tokenize("sdfsdfds sdvsvdf sdf")
+        tokenize("sdfsdfds tag:=testTag sdvsvdf sdf")
     }
 }
