@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -218,6 +219,7 @@ private fun LogsContent(
                                 fontFamily = FontFamily.Monospace,
                                 modifier = Modifier.padding(start = textSizeDp + 6.dp),
                             )
+                            TextSelectionSeparator()
                         }
                     }
                 }
@@ -240,4 +242,17 @@ private fun measureTextWidth(text: String, style: TextStyle): Dp {
     val textMeasurer = rememberTextMeasurer()
     val widthInPixels = textMeasurer.measure(text, style).size.width
     return with(LocalDensity.current) { widthInPixels.toDp() }
+}
+
+/**
+ * Invisible text to separate text blocks in selected text.
+ *
+ * Workaround for [this issue](https://issuetracker.google.com/issues/285036739)
+ */
+@Composable
+fun TextSelectionSeparator(text: String = "\n") {
+    Text(
+        modifier = Modifier.sizeIn(maxWidth = 0.dp, maxHeight = 0.dp),
+        text = text,
+    )
 }
