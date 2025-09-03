@@ -2,6 +2,10 @@ package ru.vladislavsumin.qa.domain.logs
 
 import ru.vladislavsumin.qa.LogParserLogger
 import java.nio.file.Path
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.temporal.ChronoField
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
 import kotlin.io.path.absolutePathString
@@ -60,6 +64,10 @@ class AnimeLogParser : LogParser {
                     order = ++order,
                     raw = line,
                     time = matches.groups[1]!!.range,
+                    timeInstant = OffsetDateTime.parse(
+                        matches.groups[1]!!.value,
+                        DATE_FORMATTER,
+                    ).toInstant(),
                     thread = matches.groups[2]!!.range,
                     level = matches.groups[3]!!.range,
                     tag = matches.groups[4]!!.range,
@@ -84,5 +92,18 @@ class AnimeLogParser : LogParser {
         private val LOG_REGEX = Regex(
             pattern = "^(\\d{4}-\\d{2}-\\d{2}T\\+\\d{2}:\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}) ([^ ]+) ([A-Z]) ([^ ]+) (.*)",
         )
+
+        private val DATE_FORMATTER = DateTimeFormatterBuilder()
+            .append(DateTimeFormatter.ISO_LOCAL_DATE)
+            .appendLiteral('T')
+            .appendOffset("+HH:MM", "+00:00") // парсим смещение
+            .appendLiteral(' ')
+            .appendValue(ChronoField.HOUR_OF_DAY, 2)
+            .appendLiteral(':')
+            .appendValue(ChronoField.MINUTE_OF_HOUR, 2)
+            .appendLiteral(':')
+            .appendValue(ChronoField.SECOND_OF_MINUTE, 2)
+            .appendFraction(ChronoField.MILLI_OF_SECOND, 3, 3, true)
+            .toFormatter()
     }
 }

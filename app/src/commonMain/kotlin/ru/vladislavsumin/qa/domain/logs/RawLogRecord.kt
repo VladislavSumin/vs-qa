@@ -1,5 +1,7 @@
 package ru.vladislavsumin.qa.domain.logs
 
+import java.time.Instant
+
 /**
  * Сырая log запись.
  *
@@ -16,6 +18,7 @@ data class RawLogRecord(
     val order: Int,
     val raw: String,
     val time: IntRange,
+    val timeInstant: Instant,
     val level: IntRange,
     val thread: IntRange,
     val tag: IntRange,

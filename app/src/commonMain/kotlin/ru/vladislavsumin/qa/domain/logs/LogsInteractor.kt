@@ -144,6 +144,7 @@ private fun RawLogRecord.toLogRecord() = LogRecord(
     order = order,
     raw = raw,
     time = time,
+    timeInstant = timeInstant,
     level = level,
     thread = thread,
     tag = tag,
