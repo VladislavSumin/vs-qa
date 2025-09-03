@@ -80,7 +80,7 @@ class LogsInteractorImpl(
                 .filter { log ->
                     filter.filters.all { (field, filter) ->
                         val range: IntRange = when (field) {
-                            FilterRequest.Field.All -> 0..log.raw.length
+                            FilterRequest.Field.All -> 0..<log.raw.length
                             FilterRequest.Field.Tag -> log.tag
                             FilterRequest.Field.Thread -> log.thread
                             FilterRequest.Field.Message -> log.message
@@ -88,8 +88,11 @@ class LogsInteractorImpl(
 
                         filter.any { operation ->
                             when (operation) {
-                                is FilterRequest.Operation.Contains -> log.raw.contains(operation.data)
-                                is FilterRequest.Operation.Exactly -> log.raw.substring(range) == operation.data
+                                is FilterRequest.Operation.Contains -> log.raw.substring(range)
+                                    .contains(operation.data, ignoreCase = true)
+
+                                is FilterRequest.Operation.Exactly -> log.raw.substring(range)
+                                    .equals(operation.data, ignoreCase = true)
                             }
                         }
                     }
