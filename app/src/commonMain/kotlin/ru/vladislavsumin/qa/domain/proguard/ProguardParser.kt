@@ -31,7 +31,7 @@ class ProguardParser {
         val newLine by literalToken("\n", ignore = true)
 
         val arrow by literalToken("->")
-        val word by regexToken("[\\w.$<>\\-_]+")
+        val word by regexToken("[\\w.$<>\\-_сС]+") // cC это временный костыль.
         val colon by literalToken(":")
 
         val lpar by literalToken("(")
@@ -79,6 +79,6 @@ class ProguardParser {
 }
 
 fun main() {
-    val a = ProguardParser().parse(Path("../patched-mapping.txt")).getOrThrow()
+    val a = ProguardParser().parse(Path("../mapping.txt.zip")).getOrThrow()
     println(a.joinToString(separator = "\n"))
 }
