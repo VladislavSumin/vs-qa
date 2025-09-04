@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.transformLatest
 import ru.vladislavsumin.qa.LogLogger
+import ru.vladislavsumin.qa.domain.proguard.ProguardInteractor
 import ru.vladislavsumin.qa.utils.measureTimeMillisWithResult
 import java.nio.file.Path
 
@@ -21,11 +22,12 @@ interface LogsInteractor {
 // TODO тут нужно оптимизировать количество копирований списка, а так же equals проверки.
 class LogsInteractorImpl(
     private val logPath: Path,
+    private val proguardInteractor: ProguardInteractor?,
 ) : LogsInteractor {
     val logs = loadLogs()
 
     fun loadLogs(): List<RawLogRecord> {
-        return AnimeLogParser().parseLog(logPath)
+        return AnimeLogParser(proguardInteractor).parseLog(logPath)
     }
 
     override fun observeLogIndex(

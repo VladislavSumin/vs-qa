@@ -24,13 +24,14 @@ fun main(args: Array<String>) {
     MainLogger.i("Initialization...")
 
     val logPath = Path(args[0])
+    val mappingPath = if (args.size > 1) Path(args[1]) else null
 
     // Создаем рутовый Decompose lifecycle.
     val lifecycle = LifecycleRegistry()
 
     val component = runOnUiThread {
         val context = DefaultComponentContext(lifecycle)
-        LogViewerComponent(logPath, context)
+        LogViewerComponent(logPath, mappingPath, context)
     }
 
     application {

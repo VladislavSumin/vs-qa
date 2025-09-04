@@ -11,9 +11,10 @@ import java.nio.file.Path
 
 internal class LogViewerComponent(
     logPath: Path,
+    mappingPath: Path?,
     context: ComponentContext,
 ) : Component(context), ComposeComponent {
-    private val viewModel = viewModel { LogViewerViewModel(logPath) }
+    private val viewModel = viewModel { LogViewerViewModel(logPath, mappingPath) }
     private val memoryIndicator: ComposeComponent = MemoryIndicatorComponent(context.childContext("memory-indicator"))
 
     @Composable

@@ -1,6 +1,7 @@
 package ru.vladislavsumin.qa.domain.logs
 
 import ru.vladislavsumin.qa.LogParserLogger
+import ru.vladislavsumin.qa.domain.proguard.ProguardInteractor
 import java.nio.file.Path
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -17,7 +18,9 @@ interface LogParser {
     fun parseLog(filePath: Path): List<RawLogRecord>
 }
 
-class AnimeLogParser : LogParser {
+class AnimeLogParser(
+    private val proguardInteractor: ProguardInteractor?,
+) : LogParser {
     override fun parseLog(filePath: Path): List<RawLogRecord> {
         // Производительность тут примеррно 1,2кк строк в секунду, поэтому дополнительные оптимизации пока не нужны.
         LogParserLogger.i { "Start parsing file $filePath with ${this.javaClass.simpleName}" }
@@ -53,6 +56,7 @@ class AnimeLogParser : LogParser {
         parseLines(lines, result)
     }
 
+    @Suppress("MagicNumber")
     private fun parseLines(lines: Sequence<String>, result: MutableList<RawLogRecord>) {
         var cache: RawLogRecord? = null
         var order = result.size
@@ -60,19 +64,40 @@ class AnimeLogParser : LogParser {
             val matches = LOG_REGEX.matchEntire(line)
             if (matches != null) {
                 cache?.let(result::add)
-                cache = RawLogRecord(
-                    order = ++order,
-                    raw = line,
-                    time = matches.groups[1]!!.range,
-                    timeInstant = OffsetDateTime.parse(
-                        matches.groups[1]!!.value,
-                        DATE_FORMATTER,
-                    ).toInstant(),
-                    thread = matches.groups[2]!!.range,
-                    level = matches.groups[3]!!.range,
-                    tag = matches.groups[4]!!.range,
-                    message = matches.groups[5]!!.range,
-                )
+
+                // TODO ну два раза гонять регулярку это прикол, да и не должен парсер теги трогать вот так
+                val deobfuscatedTag = proguardInteractor?.deobfuscateClass(matches.groups[4]!!.value)
+                if (deobfuscatedTag != null) {
+                    val newLine = line.replaceRange(matches.groups[4]!!.range, deobfuscatedTag)
+                    val matches = LOG_REGEX.matchEntire(newLine)!!
+                    cache = RawLogRecord(
+                        order = ++order,
+                        raw = newLine,
+                        time = matches.groups[1]!!.range,
+                        timeInstant = OffsetDateTime.parse(
+                            matches.groups[1]!!.value,
+                            DATE_FORMATTER,
+                        ).toInstant(),
+                        thread = matches.groups[2]!!.range,
+                        level = matches.groups[3]!!.range,
+                        tag = matches.groups[4]!!.range,
+                        message = matches.groups[5]!!.range,
+                    )
+                } else {
+                    cache = RawLogRecord(
+                        order = ++order,
+                        raw = line,
+                        time = matches.groups[1]!!.range,
+                        timeInstant = OffsetDateTime.parse(
+                            matches.groups[1]!!.value,
+                            DATE_FORMATTER,
+                        ).toInstant(),
+                        thread = matches.groups[2]!!.range,
+                        level = matches.groups[3]!!.range,
+                        tag = matches.groups[4]!!.range,
+                        message = matches.groups[5]!!.range,
+                    )
+                }
             } else {
                 val oldCache = cache!!
                 cache = oldCache.copy(

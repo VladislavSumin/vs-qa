@@ -15,7 +15,6 @@ import com.github.h0tk3y.betterParse.parser.Parser
 import com.github.h0tk3y.betterParse.parser.parseToEnd
 import java.nio.file.Path
 import java.util.zip.ZipInputStream
-import kotlin.io.path.Path
 import kotlin.io.path.extension
 import kotlin.io.path.inputStream
 import kotlin.io.path.readText
@@ -42,7 +41,7 @@ class ProguardParser {
 
         val ws by literalToken(" ", ignore = true)
 
-        val tab = 4 times ws
+        val tab = SPACES_IN_TAB times ws
         val optLeftLineNumber = 0..2 times (word and colon) // 3:4:
         val optRightLineNumber = 0..2 times (colon and word) // :3:4
         val optArray = zeroOrMore(lsqb and rsqb)
@@ -76,9 +75,8 @@ class ProguardParser {
         val tokens = grammar.tokenizer.tokenize(data)
         grammar.parseToEnd(tokens)
     }
-}
 
-fun main() {
-    val a = ProguardParser().parse(Path("../mapping.txt.zip")).getOrThrow()
-    println(a.joinToString(separator = "\n"))
+    private companion object {
+        private const val SPACES_IN_TAB = 4
+    }
 }
