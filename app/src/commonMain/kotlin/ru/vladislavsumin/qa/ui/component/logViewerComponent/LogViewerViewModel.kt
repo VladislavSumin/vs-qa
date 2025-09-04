@@ -14,6 +14,7 @@ import ru.vladislavsumin.qa.domain.logs.FilterRequest
 import ru.vladislavsumin.qa.domain.logs.LogIndex
 import ru.vladislavsumin.qa.domain.logs.LogsInteractorImpl
 import ru.vladislavsumin.qa.domain.logs.SearchRequest
+import ru.vladislavsumin.qa.domain.proguard.ProguardInteractorImpl
 import ru.vladislavsumin.qa.ui.component.logViewerComponent.filterBar.FilterRequestParser
 import ru.vladislavsumin.qa.ui.component.logViewerComponent.searchBar.LogSearchBarViewState
 import java.nio.file.Path
@@ -21,6 +22,7 @@ import java.nio.file.Path
 @Stable
 internal class LogViewerViewModel(
     logPath: Path,
+    mappingPath: Path?,
 ) : ViewModel() {
     private val filterRequestParser = FilterRequestParser()
 
@@ -29,7 +31,10 @@ internal class LogViewerViewModel(
     private val selectedSearchIndex = MutableStateFlow(0)
     private val visibleIndexes = MutableStateFlow(Pair(0, 0))
 
-    private val logsInteractor = LogsInteractorImpl(logPath)
+    private val logsInteractor = LogsInteractorImpl(
+        logPath = logPath,
+        proguardInteractor = mappingPath?.let { ProguardInteractorImpl(it) },
+    )
 
     private val filterState = filter.map { filter ->
         filterRequestParser.tokenize(filter)
