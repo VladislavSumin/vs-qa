@@ -3,6 +3,7 @@ package ru.vladislavsumin.qa.domain.proguard
 import ru.vladislavsumin.qa.ProguardLogger
 import ru.vladislavsumin.qa.core.proguard.ProguardClass
 import ru.vladislavsumin.qa.core.proguard.ProguardParser
+import ru.vlasidlavsumin.core.stacktraceParser.StackTrace
 import java.nio.file.Path
 import java.util.zip.ZipInputStream
 import kotlin.io.path.extension
@@ -12,6 +13,7 @@ import kotlin.system.measureTimeMillis
 
 interface ProguardInteractor {
     fun deobfuscateClass(obfuscatedClassName: String): String?
+    fun deobfuscateStack(stacktrace: StackTrace): StackTrace
 }
 
 class ProguardInteractorImpl(val path: Path) : ProguardInteractor {
@@ -40,4 +42,14 @@ class ProguardInteractorImpl(val path: Path) : ProguardInteractor {
     }
 
     override fun deobfuscateClass(obfuscatedClassName: String): String? = proguardClassMapping[obfuscatedClassName]
+    override fun deobfuscateStack(stacktrace: StackTrace): StackTrace {
+        return stacktrace.copy(
+            clazz = deobfuscateClass(stacktrace.clazz) ?: stacktrace.clazz,
+            elements = stacktrace.elements.map { element ->
+                element.copy(
+                    clazz = deobfuscateClass(element.clazz) ?: element.clazz,
+                )
+            },
+        )
+    }
 }
