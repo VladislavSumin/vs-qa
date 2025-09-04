@@ -5,6 +5,7 @@ import com.github.h0tk3y.betterParse.combinators.asJust
 import com.github.h0tk3y.betterParse.combinators.map
 import com.github.h0tk3y.betterParse.combinators.optional
 import com.github.h0tk3y.betterParse.combinators.or
+import com.github.h0tk3y.betterParse.combinators.skip
 import com.github.h0tk3y.betterParse.combinators.times
 import com.github.h0tk3y.betterParse.combinators.zeroOrMore
 import com.github.h0tk3y.betterParse.grammar.Grammar
@@ -19,17 +20,13 @@ import kotlin.io.path.extension
 import kotlin.io.path.inputStream
 import kotlin.io.path.readText
 
-
-class ProguardParser() {
-    sealed interface ProguardRecord
+class ProguardParser {
     data class ProguardClass(
         val originalName: String,
         val obfuscatedName: String,
-    ) : ProguardRecord
+    )
 
-    data object Unsupported : ProguardRecord
-
-    private val grammar = object : Grammar<Any>() {
+    private val grammar = object : Grammar<List<ProguardClass>>() {
         val comment by regexToken("\\s*#.*", ignore = true)
         val newLine by literalToken("\n", ignore = true)
 
@@ -45,20 +42,26 @@ class ProguardParser() {
 
         val ws by literalToken(" ", ignore = true)
 
-        val clazz = (word and arrow and word and colon) map { (or, _, ob, _) -> ProguardClass(or.text, ob.text) }
-        val field =
-            ((4 times ws) and word and zeroOrMore(lsqb and rsqb) and word and arrow and word) asJust Unsupported
-        val method =
-            ((4 times ws) and optional(word and colon and word and colon) and word and zeroOrMore(lsqb and rsqb) and word and lpar and zeroOrMore(
-                word and zeroOrMore(lsqb and rsqb) and optional(comma)
-            ) and rpar and optional(colon and word) and optional(colon and word) and arrow and word) asJust Unsupported
+        val tab = 4 times ws
+        val optLeftLineNumber = 0..2 times (word and colon) // 3:4:
+        val optRightLineNumber = 0..2 times (colon and word) // :3:4
+        val optArray = zeroOrMore(lsqb and rsqb)
+        val returnType = word and optArray
+        val parameter = word and optArray and optional(comma)
+        val parameters = zeroOrMore(parameter)
+        val function = returnType and word and lpar and parameters and rpar
+        val clazz = word and skip(arrow) and word and skip(colon)
 
-        override val rootParser: Parser<Any> =
-            zeroOrMore((clazz and zeroOrMore(field or method)) map { (clazz, members) -> clazz })
+        val mappedClazz = clazz map { (or, ob) -> ProguardClass(or.text, ob.text) }
+        val field = (tab and word and optArray and word and arrow and word) asJust Unit
+        val method = (tab and optLeftLineNumber and function and optRightLineNumber and arrow and word) asJust Unit
+
+        override val rootParser: Parser<List<ProguardClass>> =
+            zeroOrMore((mappedClazz and zeroOrMore(field or method)) map { (clazz, members) -> clazz })
     }
 
-    fun parse(path: Path) {
-        if (path.extension == "zip") {
+    fun parse(path: Path): Result<List<ProguardClass>> {
+        return if (path.extension == "zip") {
             ZipInputStream(path.inputStream()).use { zip ->
                 zip.nextEntry
                 val text = zip.bufferedReader().readText()
@@ -69,24 +72,13 @@ class ProguardParser() {
         }
     }
 
-
-    fun parse(data: String) {
+    private fun parse(data: String): Result<List<ProguardClass>> = runCatching {
         val tokens = grammar.tokenizer.tokenize(data)
-        //println(tokens.joinToString(separator = "\n"))
-//        println()
-//        println()
-        val data = grammar.parseToEnd(tokens)
-        println(data)
+        grammar.parseToEnd(tokens)
     }
 }
 
 fun main() {
-    //    5853:5917:int DebugStringsKt.getBitrate(java.lang.String,int,int,float):0 -> s
-    //    0:3:long ru.ok.tamtam.chats.ChatExtKt.getChatReadMark(ru.ok.tamtam.chats.Chat):5:5 -> t
-//    ProguardParser().parse("""
-//        #
-//            boolean isExpanded -> z0
-//            0:10:void <clinit>():49:49 -> <clinit>
-//    """.trimIndent())
-    ProguardParser().parse(Path("../patched-mapping.txt"))
+    val a = ProguardParser().parse(Path("../patched-mapping.txt")).getOrThrow()
+    println(a.joinToString(separator = "\n"))
 }
