@@ -8,3 +8,5 @@ pluginManagement {
 rootProject.name = "vs-qa"
 
 include(":app")
+
+include(":core:proguard")
