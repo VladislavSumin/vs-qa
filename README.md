@@ -5,7 +5,7 @@
 ## Запуск
 
 * Скачать vs-qa.jar из последней сборки в github actions. (На данный момент поддерживается только macos)
-* Запустить командой `java -jar vs-qa.jar <path_to_log_file>`
+* Запустить командой `java -jar vs-qa.jar <path_to_log_file> [path_to_mapping_file]`
 
 ## Локальная сборка
 
