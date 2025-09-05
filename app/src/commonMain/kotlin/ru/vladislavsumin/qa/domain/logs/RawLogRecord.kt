@@ -12,6 +12,8 @@ import java.time.Instant
  *
  * Все прочие параметры являются слайсами [raw] строки. Так сделано для экономии памяти что бы не держать в памяти
  * несколько похожих компий одной строки.
+ *
+ * @param lines общее количество строк в записи.
  */
 data class RawLogRecord(
     // val line: Int,
@@ -23,4 +25,6 @@ data class RawLogRecord(
     val thread: IntRange,
     val tag: IntRange,
     val message: IntRange,
+
+    val lines: Int,
 )

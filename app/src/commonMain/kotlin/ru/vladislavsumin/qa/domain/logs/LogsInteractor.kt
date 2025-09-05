@@ -27,7 +27,24 @@ class LogsInteractorImpl(
     val logs = loadLogs()
 
     fun loadLogs(): List<RawLogRecord> {
-        return AnimeLogParser(proguardInteractor).parseLog(logPath)
+        val logs = AnimeLogParser(proguardInteractor).parseLog(logPath)
+        // TODO ну парсим тут чего уж там, все равно говнокод
+        return if (proguardInteractor != null) {
+            logs
+                .map { log ->
+                    if (log.lines > 2 && log.raw.lines()[log.lines - 2].startsWith("\tat ")) {
+                        val newMessage = proguardInteractor.deobfuscateStack(log.raw.substring(log.message))
+                        log.copy(
+                            raw = log.raw.replaceRange(log.message, newMessage),
+                            message = IntRange(log.message.first, log.message.first + newMessage.length - 1),
+                        )
+                    } else {
+                        log
+                    }
+                }
+        } else {
+            logs
+        }
     }
 
     override fun observeLogIndex(

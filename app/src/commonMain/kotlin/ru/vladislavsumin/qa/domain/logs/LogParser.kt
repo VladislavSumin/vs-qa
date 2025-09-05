@@ -82,6 +82,7 @@ class AnimeLogParser(
                         level = matches.groups[3]!!.range,
                         tag = matches.groups[4]!!.range,
                         message = matches.groups[5]!!.range,
+                        lines = 1,
                     )
                 } else {
                     cache = RawLogRecord(
@@ -96,6 +97,7 @@ class AnimeLogParser(
                         level = matches.groups[3]!!.range,
                         tag = matches.groups[4]!!.range,
                         message = matches.groups[5]!!.range,
+                        lines = 1,
                     )
                 }
             } else {
@@ -106,6 +108,7 @@ class AnimeLogParser(
                         start = oldCache.message.start,
                         endInclusive = oldCache.message.last + line.length + 1,
                     ),
+                    lines = oldCache.lines + 1,
                 )
             }
         }
