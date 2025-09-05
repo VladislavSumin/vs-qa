@@ -9,5 +9,5 @@ rootProject.name = "vs-qa"
 
 include(":app")
 
-include(":core:proguard")
+include(":core:proguard-parser")
 include(":core:stacktrace-parser")

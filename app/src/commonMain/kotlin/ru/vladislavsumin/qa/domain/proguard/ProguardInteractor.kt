@@ -1,8 +1,8 @@
 package ru.vladislavsumin.qa.domain.proguard
 
 import ru.vladislavsumin.qa.ProguardLogger
-import ru.vladislavsumin.qa.core.proguard.ProguardClass
-import ru.vladislavsumin.qa.core.proguard.ProguardParser
+import ru.vladislavsumin.qa.core.proguardParser.ProguardClass
+import ru.vladislavsumin.qa.core.proguardParser.ProguardParser
 import ru.vlasidlavsumin.core.stacktraceParser.StackTrace
 import java.nio.file.Path
 import java.util.zip.ZipInputStream

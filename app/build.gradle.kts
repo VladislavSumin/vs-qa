@@ -20,7 +20,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.core.stacktraceParser)
-            implementation(projects.core.proguard)
+            implementation(projects.core.proguardParser)
 
             implementation(vsCoreLibs.vs.core.logger.api)
             implementation(vsCoreLibs.vs.core.logger.platform)

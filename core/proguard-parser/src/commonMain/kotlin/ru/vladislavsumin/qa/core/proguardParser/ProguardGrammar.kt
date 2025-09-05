@@ -1,4 +1,4 @@
-package ru.vladislavsumin.qa.core.proguard
+package ru.vladislavsumin.qa.core.proguardParser
 
 import com.github.h0tk3y.betterParse.combinators.map
 import com.github.h0tk3y.betterParse.combinators.optional

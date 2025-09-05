@@ -1,4 +1,4 @@
-package ru.vladislavsumin.qa.core.proguard
+package ru.vladislavsumin.qa.core.proguardParser
 
 data class ProguardClass(
     val originalName: String,
