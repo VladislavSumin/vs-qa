@@ -13,18 +13,22 @@ import kotlin.system.measureTimeMillis
 
 interface ProguardInteractor {
     fun deobfuscateClass(obfuscatedClassName: String): String?
+    fun deobfuscateMethod(className: String, obfuscatedMethodName: String): String?
     fun deobfuscateStack(stacktrace: StackTrace): StackTrace
 }
 
 class ProguardInteractorImpl(val path: Path) : ProguardInteractor {
     private val proguardClassMapping: Map<String, String>
+    private val proguardClasses: Map<String, ProguardClass>
 
     init {
         ProguardLogger.i { "Start parsing proguard $path" }
         val time = measureTimeMillis {
-            proguardClassMapping = parse(path).getOrThrow()
+            val classes = parse(path).getOrThrow()
                 .filter { !it.obfuscatedName.startsWith($$$"R8$$REMOVED$$CLASS$$") }
-                .associate { it.obfuscatedName to it.originalName }
+
+            proguardClassMapping = classes.associate { it.obfuscatedName to it.originalName }
+            proguardClasses = classes.associateBy { it.originalName }
         }
         ProguardLogger.i { "Proguard parsed at $time ms" }
     }
@@ -42,12 +46,18 @@ class ProguardInteractorImpl(val path: Path) : ProguardInteractor {
     }
 
     override fun deobfuscateClass(obfuscatedClassName: String): String? = proguardClassMapping[obfuscatedClassName]
+    override fun deobfuscateMethod(className: String, obfuscatedMethodName: String): String? =
+        proguardClasses[className]?.methods?.firstOrNull { it.obfuscatedName == obfuscatedMethodName }?.originalName
+
     override fun deobfuscateStack(stacktrace: StackTrace): StackTrace {
         return stacktrace.copy(
             clazz = deobfuscateClass(stacktrace.clazz) ?: stacktrace.clazz,
             elements = stacktrace.elements.map { element ->
+                val clazz = deobfuscateClass(element.clazz)
+                val method = clazz?.let { deobfuscateMethod(it, element.method) }
                 element.copy(
-                    clazz = deobfuscateClass(element.clazz) ?: element.clazz,
+                    clazz = clazz ?: element.clazz,
+                    method = method ?: element.method,
                 )
             },
         )
