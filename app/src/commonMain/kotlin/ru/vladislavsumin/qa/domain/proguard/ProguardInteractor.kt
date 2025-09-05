@@ -1,9 +1,8 @@
 package ru.vladislavsumin.qa.domain.proguard
 
 import ru.vladislavsumin.qa.ProguardLogger
-import ru.vladislavsumin.qa.core.proguardParser.ProguardClass
 import ru.vladislavsumin.qa.core.proguardParser.ProguardParser
-import ru.vlasidlavsumin.core.stacktraceParser.StackTrace
+import ru.vladislavsumin.qa.core.proguardParser.retrace.ProguardRetracer
 import java.nio.file.Path
 import java.util.zip.ZipInputStream
 import kotlin.io.path.extension
@@ -13,53 +12,41 @@ import kotlin.system.measureTimeMillis
 
 interface ProguardInteractor {
     fun deobfuscateClass(obfuscatedClassName: String): String?
-    fun deobfuscateMethod(className: String, obfuscatedMethodName: String): String?
-    fun deobfuscateStack(stacktrace: StackTrace): StackTrace
+    fun deobfuscateStack(data: String): String
 }
 
 class ProguardInteractorImpl(val path: Path) : ProguardInteractor {
     private val proguardClassMapping: Map<String, String>
-    private val proguardClasses: Map<String, ProguardClass>
+    private val proguardRetracer: ProguardRetracer
 
     init {
         ProguardLogger.i { "Start parsing proguard $path" }
-        val time = measureTimeMillis {
-            val classes = parse(path).getOrThrow()
-                .filter { !it.obfuscatedName.startsWith($$$"R8$$REMOVED$$CLASS$$") }
 
-            proguardClassMapping = classes.associate { it.obfuscatedName to it.originalName }
-            proguardClasses = classes.associateBy { it.originalName }
+        val proguardData = read(path)
+
+        val time = measureTimeMillis {
+            proguardClassMapping = ProguardParser.parse(proguardData).getOrThrow()
+                .filter { !it.obfuscatedName.startsWith($$$"R8$$REMOVED$$CLASS$$") }
+                .associate { it.obfuscatedName to it.originalName }
         }
         ProguardLogger.i { "Proguard parsed at $time ms" }
+
+        proguardRetracer = ProguardRetracer(proguardData)
     }
 
-    private fun parse(path: Path): Result<List<ProguardClass>> {
+    private fun read(path: Path): String {
         return if (path.extension == "zip") {
             ZipInputStream(path.inputStream()).use { zip ->
                 zip.nextEntry
-                val text = zip.bufferedReader().readText()
-                ProguardParser.parse(text)
+                zip.bufferedReader().readText()
             }
         } else {
-            ProguardParser.parse(path.readText())
+            path.readText()
         }
     }
 
     override fun deobfuscateClass(obfuscatedClassName: String): String? = proguardClassMapping[obfuscatedClassName]
-    override fun deobfuscateMethod(className: String, obfuscatedMethodName: String): String? =
-        proguardClasses[className]?.methods?.firstOrNull { it.obfuscatedName == obfuscatedMethodName }?.originalName
-
-    override fun deobfuscateStack(stacktrace: StackTrace): StackTrace {
-        return stacktrace.copy(
-            clazz = deobfuscateClass(stacktrace.clazz) ?: stacktrace.clazz,
-            elements = stacktrace.elements.map { element ->
-                val clazz = deobfuscateClass(element.clazz)
-                val method = clazz?.let { deobfuscateMethod(it, element.method) }
-                element.copy(
-                    clazz = clazz ?: element.clazz,
-                    method = method ?: element.method,
-                )
-            },
-        )
+    override fun deobfuscateStack(data: String): String {
+        return proguardRetracer.retrace(data)
     }
 }

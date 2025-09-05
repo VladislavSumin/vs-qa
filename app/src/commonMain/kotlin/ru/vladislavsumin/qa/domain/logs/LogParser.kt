@@ -2,7 +2,6 @@ package ru.vladislavsumin.qa.domain.logs
 
 import ru.vladislavsumin.qa.LogParserLogger
 import ru.vladislavsumin.qa.domain.proguard.ProguardInteractor
-import ru.vlasidlavsumin.core.stacktraceParser.StacktraceParser
 import java.nio.file.Path
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -35,22 +34,7 @@ class AnimeLogParser(
             }
         }
         LogParserLogger.d { "Parsed file $filePath at ${totalParseTime}ms. logs = ${result.size}}" }
-        return if (proguardInteractor != null) {
-            result.map {
-                val newMsg = tryDeobfuscateStackTrace(it.raw.substring(it.message))
-
-                if (newMsg != null) {
-                    it.copy(
-                        raw = it.raw.replaceRange(it.message, newMsg),
-                        message = IntRange(it.message.start, it.message.start + newMsg.length - 1),
-                    )
-                } else {
-                    it
-                }
-            }
-        } else {
-            result
-        }
+        return result
     }
 
     private fun parseZip(filePath: Path, result: MutableList<RawLogRecord>) {
@@ -126,37 +110,6 @@ class AnimeLogParser(
             }
         }
         result.add(cache!!)
-    }
-
-    // TODO чисто костыль чисто по бырику.
-    private fun tryDeobfuscateStackTrace(message: String): String? {
-        if (!message.contains("\n")) return null
-
-        val lines = message.lines()
-        var emptyCount = 0 // ??? пофиг, потом разберусь
-        val stackCount = lines.dropLastWhile {
-            if (it.isEmpty()) {
-                emptyCount++
-                true
-            } else {
-                false
-            }
-        }.takeLastWhile { it.startsWith("\tat ") }.count()
-        if (stackCount == 0) return null
-
-        for (l in lines.size - stackCount downTo 0) {
-            val stackString = lines.subList(l, lines.size).joinToString(separator = "\n")
-            StacktraceParser.parse(stackString)
-                .onSuccess { stack ->
-                    return message.replaceRange(
-                        message.length - stackString.length,
-                        message.length,
-                        proguardInteractor!!.deobfuscateStack(stack).toString(),
-                    )
-                }
-        }
-
-        return null
     }
 
     companion object {
