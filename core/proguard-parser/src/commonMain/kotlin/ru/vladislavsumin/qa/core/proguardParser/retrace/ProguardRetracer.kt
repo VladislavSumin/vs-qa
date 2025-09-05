@@ -8,21 +8,29 @@ import com.android.tools.r8.retrace.RetraceCommand
 import ru.vladislavsumin.core.logger.api.logger
 import kotlin.system.measureTimeMillis
 
+/**
+ * Утилита для восстановления стеков вызовов после обфускации.
+ *
+ * @param mapping строка содержащая в себе полный mapping.txt
+ */
 class ProguardRetracer(mapping: String) {
     private val diagnosticsHandler = object : DiagnosticsHandler {}
 
-    private val proguardMappingSupplier = ProguardMappingSupplier.builder()
-        .setProguardMapProducer(ProguardMapProducer.fromString(mapping))
-        .setAllowExperimental(false)
-        .setLoadAllDefinitions(true)
-        .build()
+    private val proguardMappingSupplier by lazy {
+        val supplier = ProguardMappingSupplier.builder()
+            .setProguardMapProducer(ProguardMapProducer.fromString(mapping))
+            .setAllowExperimental(false)
+            .setLoadAllDefinitions(true)
+            .build()
 
-    fun warmup() {
+        // Прогреваем. Так как первое чтение не является потокобезопасным.
         logger.i { "Warmup mapping" }
         val time = measureTimeMillis {
-            proguardMappingSupplier.getMapVersions(diagnosticsHandler)
+            supplier.createRetracer(diagnosticsHandler)
         }
         logger.i { "Warmup finished at ${time}ms" }
+
+        supplier
     }
 
     fun retrace(data: String): String {

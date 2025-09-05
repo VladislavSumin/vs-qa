@@ -32,7 +32,6 @@ class ProguardInteractorImpl(val path: Path) : ProguardInteractor {
         ProguardLogger.i { "Proguard parsed at $time ms" }
 
         proguardRetracer = ProguardRetracer(proguardData)
-        proguardRetracer.warmup()
     }
 
     private fun read(path: Path): String {
