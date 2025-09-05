@@ -30,7 +30,7 @@ class LogsInteractorImpl(
         val logs = AnimeLogParser(proguardInteractor).parseLog(logPath)
         // TODO ну парсим тут чего уж там, все равно говнокод
         return if (proguardInteractor != null) {
-            logs
+            logs.parallelStream()
                 .map { log ->
                     if (log.lines > 2 && log.raw.lines()[log.lines - 2].startsWith("\tat ")) {
                         val newMessage = proguardInteractor.deobfuscateStack(log.raw.substring(log.message))
@@ -42,6 +42,7 @@ class LogsInteractorImpl(
                         log
                     }
                 }
+                .toList()
         } else {
             logs
         }

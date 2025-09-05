@@ -14,8 +14,16 @@ class ProguardRetracer(mapping: String) {
     private val proguardMappingSupplier = ProguardMappingSupplier.builder()
         .setProguardMapProducer(ProguardMapProducer.fromString(mapping))
         .setAllowExperimental(false)
-        .setLoadAllDefinitions(false)
+        .setLoadAllDefinitions(true)
         .build()
+
+    fun warmup() {
+        logger.i { "Warmup mapping" }
+        val time = measureTimeMillis {
+            proguardMappingSupplier.getMapVersions(diagnosticsHandler)
+        }
+        logger.i { "Warmup finished at ${time}ms" }
+    }
 
     fun retrace(data: String): String {
         var result: String? = null
