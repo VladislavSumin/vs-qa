@@ -21,6 +21,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.proguardParser)
             implementation(projects.core.ui.designSystem)
+            implementation(projects.core.ui.hotkeyController)
 
             implementation(vsCoreLibs.vs.core.logger.api)
             implementation(vsCoreLibs.vs.core.logger.platform)

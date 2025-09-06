@@ -39,13 +39,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.isMetaPressed
-import androidx.compose.ui.input.key.isShiftPressed
-import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -59,6 +54,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
+import ru.vladislavsumin.core.ui.hotkeyController.rememberHotkeyController
 import ru.vladislavsumin.qa.ui.component.logViewerComponent.searchBar.LogsSearchBarContent
 import ru.vladislavsumin.qa.ui.utils.colorize
 
@@ -74,24 +71,15 @@ internal fun LogViewerContent(
     }
     val searchFocusRequester = remember { FocusRequester() }
     val filterFocusRequester = remember { FocusRequester() }
+    val hotkeyController = rememberHotkeyController(
+        KeyModifier.Shift + KeyModifier.Command + Key.F to { filterFocusRequester.requestFocus() },
+        KeyModifier.Command + Key.F to { searchFocusRequester.requestFocus() },
+    )
     Surface(
         modifier = modifier
             .focusRequester(rootFocusRequester)
             .focusable(interactionSource = remember { MutableInteractionSource() })
-            .onPreviewKeyEvent { event ->
-                if (event.type == KeyEventType.KeyDown) {
-                    when {
-                        event.isShiftPressed && event.isMetaPressed && event.key == Key.F -> {
-                            filterFocusRequester.requestFocus()
-                        }
-
-                        event.isMetaPressed && event.key == Key.F -> searchFocusRequester.requestFocus()
-                        else -> false
-                    }
-                } else {
-                    false
-                }
-            },
+            .onPreviewKeyEvent(hotkeyController::invoke),
     ) {
         val state = viewModel.state.collectAsState()
         val searchState = derivedStateOf { state.value.searchState }
@@ -138,26 +126,16 @@ private fun LogsFilter(
             .padding(vertical = 4.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        val hotkeyController = rememberHotkeyController(
+            KeyModifier.None + Key.Escape to { rootFocusRequester.requestFocus() },
+        )
         QaTextField(
             value = state.value.filter,
             onValueChange = viewModel::onFilterChange,
             modifier = Modifier
                 .focusRequester(focusRequester)
                 .weight(1f)
-                .onKeyEvent { event ->
-                    if (event.type == KeyEventType.KeyDown) {
-                        when {
-                            event.key == Key.Escape -> {
-                                rootFocusRequester.requestFocus()
-                                true
-                            }
-
-                            else -> false
-                        }
-                    } else {
-                        false
-                    }
-                },
+                .onKeyEvent(hotkeyController::invoke),
             isError = !state.value.isFilterValid,
             placeholder = { Text("Filter...") },
             leadingContent = {

@@ -11,3 +11,4 @@ include(":app")
 
 include(":core:proguard-parser")
 include(":core:ui:design-system")
+include(":core:ui:hotkey-controller")

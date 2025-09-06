@@ -18,16 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.isShiftPressed
-import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
+import ru.vladislavsumin.core.ui.hotkeyController.rememberHotkeyController
 import ru.vladislavsumin.qa.ui.component.logViewerComponent.LogViewerViewModel
 
 @Composable
@@ -39,6 +37,17 @@ internal fun LogsSearchBarContent(
     modifier: Modifier = Modifier,
 ) {
     val state by state
+    val hotkeyController = rememberHotkeyController(
+        KeyModifier.Shift + Key.Enter to {
+            viewModel.onClickPrevIndex()
+            true
+        },
+        KeyModifier.None + Key.Enter to {
+            viewModel.onClickNextIndex()
+            true
+        },
+        KeyModifier.None + Key.Escape to { rootFocusRequester.requestFocus() },
+    )
     Row(
         modifier
             .background(QaTheme.colorScheme.surfaceVariant)
@@ -51,7 +60,7 @@ internal fun LogsSearchBarContent(
             modifier = Modifier
                 .focusRequester(focusRequester)
                 .weight(1f)
-                .handleHotKeys(viewModel, rootFocusRequester),
+                .onPreviewKeyEvent(hotkeyController::invoke),
             maxLines = 1,
             placeholder = { Text("Search...") },
             leadingContent = {
@@ -91,35 +100,5 @@ internal fun LogsSearchBarContent(
                 }
             },
         )
-    }
-}
-
-private fun Modifier.handleHotKeys(
-    viewModel: LogViewerViewModel,
-    rootFocusRequester: FocusRequester,
-): Modifier {
-    return onPreviewKeyEvent { event ->
-        if (event.type == KeyEventType.KeyDown) {
-            when {
-                event.isShiftPressed && event.key == Key.Enter -> {
-                    viewModel.onClickPrevIndex()
-                    true
-                }
-
-                event.key == Key.Enter -> {
-                    viewModel.onClickNextIndex()
-                    true
-                }
-
-                event.key == Key.Escape -> {
-                    rootFocusRequester.requestFocus()
-                    true
-                }
-
-                else -> false
-            }
-        } else {
-            false
-        }
     }
 }
