@@ -57,8 +57,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
+import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.qa.ui.component.logViewerComponent.searchBar.LogsSearchBarContent
-import ru.vladislavsumin.qa.ui.theme.QaTheme
 import ru.vladislavsumin.qa.ui.utils.colorize
 
 @Composable

@@ -25,10 +25,10 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
+import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.qa.ui.component.logViewerComponent.LogViewerViewModel
 import ru.vladislavsumin.qa.ui.design.QaIconButton
 import ru.vladislavsumin.qa.ui.design.QaToggleIconButton
-import ru.vladislavsumin.qa.ui.theme.QaTheme
 
 @Composable
 internal fun LogsSearchBarContent(

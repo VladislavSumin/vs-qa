@@ -3,7 +3,7 @@ package ru.vladislavsumin.qa.ui.utils
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import ru.vladislavsumin.core.logger.api.logger
-import ru.vladislavsumin.qa.ui.theme.QaTheme
+import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 
 object LevelColors {
     @Composable

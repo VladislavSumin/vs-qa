@@ -11,8 +11,8 @@ import com.arkivanov.decompose.extensions.compose.lifecycle.LifecycleController
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import ru.vladislavsumin.core.logger.manager.LoggerManager
 import ru.vladislavsumin.core.logger.platform.initDefault
+import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.qa.ui.component.logViewerComponent.LogViewerComponent
-import ru.vladislavsumin.qa.ui.theme.QaTheme
 import javax.swing.SwingUtilities
 import kotlin.io.path.Path
 import kotlin.system.exitProcess

@@ -6,8 +6,8 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.qa.domain.logs.LogRecord
-import ru.vladislavsumin.qa.ui.theme.QaTheme
 
 @Composable
 fun LogRecord.colorize(): AnnotatedString {
