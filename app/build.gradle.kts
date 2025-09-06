@@ -19,7 +19,6 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.core.stacktraceParser)
             implementation(projects.core.proguardParser)
 
             implementation(vsCoreLibs.vs.core.logger.api)
