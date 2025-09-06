@@ -7,7 +7,8 @@ package ru.vladislavsumin.qa.domain.logs
  * Правила с разными [Field] применяются через операцию И.
  */
 data class FilterRequest(
-    val filters: Map<Field, List<Operation>>,
+    val minLevel: LogLevel? = null,
+    val filters: Map<Field, List<Operation>> = emptyMap(),
 ) {
 
     /**
@@ -16,7 +17,6 @@ data class FilterRequest(
     enum class Field {
         All,
 
-        Level,
         Tag,
         Thread,
         Message,

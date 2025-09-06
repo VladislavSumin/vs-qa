@@ -1,12 +1,13 @@
 package ru.vladislavsumin.qa.domain.logs
 
-enum class LogLevel(val aliases: Set<String>) {
-    FATAL(setOf("F", "FATAL")),
-    ERROR(setOf("E", "ERROR")),
-    WARN(setOf("W", "WARN")),
-    INFO(setOf("I", "INFO")),
-    DEBUG(setOf("D", "DEBUG")),
-    VERBOSE(setOf("V", "VERBOSE", "T", "TRACE")),
+@Suppress("MagicNumber")
+enum class LogLevel(val rawLevel: Int, val aliases: Set<String>) {
+    FATAL(6, setOf("F", "FATAL")),
+    ERROR(5, setOf("E", "ERROR")),
+    WARN(4, setOf("W", "WARN")),
+    INFO(3, setOf("I", "INFO")),
+    DEBUG(2, setOf("D", "DEBUG")),
+    VERBOSE(1, setOf("V", "VERBOSE", "T", "TRACE")),
     ;
 
     companion object {
@@ -16,6 +17,6 @@ enum class LogLevel(val aliases: Set<String>) {
             map
         }
 
-        fun fromAlias(alias: String): LogLevel? = aliasMap[alias]
+        fun fromAlias(alias: String): LogLevel? = aliasMap[alias.uppercase()]
     }
 }

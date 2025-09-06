@@ -97,6 +97,15 @@ class LogsInteractorImpl(
     private fun filterLogs(filter: FilterRequest): List<RawLogRecord> {
         val (time, result) = measureTimeMillisWithResult {
             logs.parallelStream()
+                .let {
+                    if (filter.minLevel != null) {
+                        it.filter { log ->
+                            log.logLevel.rawLevel >= filter.minLevel.rawLevel
+                        }
+                    } else {
+                        it
+                    }
+                }
                 .filter { log ->
                     filter.filters.all { (field, filter) ->
                         val range: IntRange = when (field) {
@@ -104,7 +113,6 @@ class LogsInteractorImpl(
                             FilterRequest.Field.Tag -> log.tag
                             FilterRequest.Field.Thread -> log.thread
                             FilterRequest.Field.Message -> log.message
-                            FilterRequest.Field.Level -> log.level
                         }
 
                         filter.any { operation ->
