@@ -19,11 +19,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -57,6 +57,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
+import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.qa.ui.component.logViewerComponent.searchBar.LogsSearchBarContent
 import ru.vladislavsumin.qa.ui.utils.colorize
@@ -98,6 +99,11 @@ internal fun LogViewerContent(
             LogsSearchBarContent(viewModel, searchState, searchFocusRequester, rootFocusRequester)
             LogsContent(viewModel, state, Modifier.weight(1f))
             LogsFilter(viewModel, state, filterFocusRequester, rootFocusRequester)
+            Divider(
+                modifier = Modifier.fillMaxWidth(),
+                color = QaTheme.colorScheme.surface,
+                thickness = 1.5.dp,
+            )
             Row(
                 Modifier.background(QaTheme.colorScheme.surfaceVariant),
                 verticalAlignment = Alignment.CenterVertically,
@@ -132,7 +138,7 @@ private fun LogsFilter(
             .padding(vertical = 4.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        OutlinedTextField(
+        QaTextField(
             value = state.value.filter,
             onValueChange = viewModel::onFilterChange,
             modifier = Modifier
@@ -152,11 +158,11 @@ private fun LogsFilter(
                         false
                     }
                 },
+            isError = !state.value.isFilterValid,
             placeholder = { Text("Filter...") },
-            leadingIcon = {
+            leadingContent = {
                 Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null)
             },
-            isError = !state.value.isFilterValid,
         )
     }
 }
