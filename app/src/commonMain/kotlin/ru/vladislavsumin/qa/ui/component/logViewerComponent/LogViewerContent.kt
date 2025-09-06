@@ -175,8 +175,9 @@ private fun LogsContent(
     modifier: Modifier,
 ) {
     val logs = state.value.logs
+    val maxLogNumberDigits = state.value.maxLogNumberDigits
     val textSizeDp = measureTextWidth(
-        " ".repeat(state.value.maxLogNumberDigits),
+        " ".repeat(maxLogNumberDigits),
         MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
     )
     val lazyListState = rememberLazyListState()
@@ -207,7 +208,7 @@ private fun LogsContent(
                         Box {
                             DisableSelection {
                                 Text(
-                                    text = it.order.toString(),
+                                    text = "${" ".repeat(maxLogNumberDigits - it.order.toString().length)}${it.order}",
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontFamily = FontFamily.Monospace,
@@ -220,14 +221,14 @@ private fun LogsContent(
                                 fontFamily = FontFamily.Monospace,
                                 modifier = Modifier
                                     .fillMaxWidth() // Что бы выделение работало после конца текста
-                                    .padding(start = textSizeDp + 6.dp),
+                                    .padding(start = textSizeDp + 9.dp),
                             )
                             TextSelectionSeparator()
                         }
                     }
                 }
             }
-            VerticalDivider(Modifier.padding(start = textSizeDp + 2.dp))
+            VerticalDivider(Modifier.padding(start = textSizeDp + 4.dp))
         }
         VerticalScrollbar(
             adapter = rememberScrollbarAdapter(lazyListState),
