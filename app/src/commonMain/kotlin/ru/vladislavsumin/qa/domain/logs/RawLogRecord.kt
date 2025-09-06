@@ -26,5 +26,6 @@ data class RawLogRecord(
     val tag: IntRange,
     val message: IntRange,
 
+    val logLevel: LogLevel,
     val lines: Int,
 )

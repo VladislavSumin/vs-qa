@@ -82,6 +82,8 @@ class AnimeLogParser(
                         level = matches.groups[3]!!.range,
                         tag = matches.groups[4]!!.range,
                         message = matches.groups[5]!!.range,
+                        logLevel = LogLevel.fromAlias(matches.groups[3]!!.value)
+                            ?: error("UNKNOWN LEVEL ${matches.groups[3]!!.value}"),
                         lines = 1,
                     )
                 } else {
@@ -97,6 +99,8 @@ class AnimeLogParser(
                         level = matches.groups[3]!!.range,
                         tag = matches.groups[4]!!.range,
                         message = matches.groups[5]!!.range,
+                        logLevel = LogLevel.fromAlias(matches.groups[3]!!.value)
+                            ?: error("UNKNOWN LEVEL ${matches.groups[3]!!.value}"),
                         lines = 1,
                     )
                 }
