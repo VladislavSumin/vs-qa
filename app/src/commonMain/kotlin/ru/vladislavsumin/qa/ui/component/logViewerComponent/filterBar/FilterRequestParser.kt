@@ -29,6 +29,14 @@ class FilterRequestParser {
             val level: LogLevel,
         ) : Filter
 
+        data class ByTimeBefore(
+            val time: String,
+        ) : Filter
+
+        data class ByTimeAfter(
+            val time: String,
+        ) : Filter
+
         data class ByField(
             val field: Field,
             val operation: Operation,
@@ -41,6 +49,9 @@ class FilterRequestParser {
         val thread by literalToken("thread")
         val message by literalToken("message")
         val level by literalToken("level")
+
+        val timeAfter by literalToken("timeAfter")
+        val timeBefore by literalToken("timeBefore")
 
         val exactly by literalToken(":=")
         val contains by literalToken("=")
@@ -87,10 +98,13 @@ class FilterRequestParser {
             val level = LogLevel.fromAlias(level) ?: error("Unknown level $level")
             Filter.ByLevel(level)
         }
+        val timeBeforeFilter = (-timeBefore and -contains and filters) map { Filter.ByTimeBefore(it) }
+        val timeAfterFilter = (-timeAfter and -contains and filters) map { Filter.ByTimeAfter(it) }
         val filter = (fields and operations and filters) map { (a, b, c) -> Filter.ByField(a, b, c) }
         val allFilter = filters map { Filter.ByField(Field.All, Operation.Contains, it) }
 
-        override val rootParser: Parser<List<Filter>> = zeroOrMore(levelFilter or filter or allFilter)
+        override val rootParser: Parser<List<Filter>> =
+            zeroOrMore(levelFilter or filter or allFilter or timeAfterFilter or timeBeforeFilter)
     }
 
     fun tokenize(data: String): Result<FilterRequest> = runCatching {
@@ -100,6 +114,17 @@ class FilterRequestParser {
             .filterIsInstance<Filter.ByLevel>()
             .also { check(it.size < 2) { "More then one level filter defined" } }
             .singleOrNull()
+
+        val timeBefore = result
+            .filterIsInstance<Filter.ByTimeBefore>()
+            .also { check(it.size < 2) { "More then one timeBefore filter defined" } }
+            .singleOrNull()
+
+        val timeAfter = result
+            .filterIsInstance<Filter.ByTimeAfter>()
+            .also { check(it.size < 2) { "More then one timeAfter filter defined" } }
+            .singleOrNull()
+
         val filters = result
             .filterIsInstance<Filter.ByField>()
             .groupBy { it.field }
@@ -114,6 +139,8 @@ class FilterRequestParser {
         FilterRequest(
             minLevel = level?.level,
             filters = filters,
+            timeBefore = timeBefore?.time,
+            timeAfter = timeAfter?.time,
         )
     }
 

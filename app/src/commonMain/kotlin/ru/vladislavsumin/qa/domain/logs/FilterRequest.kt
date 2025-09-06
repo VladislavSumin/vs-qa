@@ -9,6 +9,10 @@ package ru.vladislavsumin.qa.domain.logs
 data class FilterRequest(
     val minLevel: LogLevel? = null,
     val filters: Map<Field, List<Operation>> = emptyMap(),
+
+    // TODO это конечно прям совсем в тупую да
+    val timeAfter: String? = null,
+    val timeBefore: String? = null,
 ) {
 
     /**

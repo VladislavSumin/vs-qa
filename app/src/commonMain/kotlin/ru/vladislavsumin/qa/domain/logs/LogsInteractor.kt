@@ -98,6 +98,26 @@ class LogsInteractorImpl(
         val (time, result) = measureTimeMillisWithResult {
             logs.parallelStream()
                 .let {
+                    if (filter.timeAfter != null) {
+                        it.filter { log ->
+                            val time = log.raw.substring(log.time)
+                            time >= filter.timeAfter
+                        }
+                    } else {
+                        it
+                    }
+                }
+                .let {
+                    if (filter.timeBefore != null) {
+                        it.filter { log ->
+                            val time = log.raw.substring(log.time)
+                            time <= filter.timeBefore
+                        }
+                    } else {
+                        it
+                    }
+                }
+                .let {
                     if (filter.minLevel != null) {
                         it.filter { log ->
                             log.logLevel.rawLevel >= filter.minLevel.rawLevel
