@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -25,6 +24,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
+import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
@@ -45,20 +45,20 @@ internal fun LogsSearchBarContent(
             .padding(vertical = 4.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        OutlinedTextField(
+        QaTextField(
             value = state.searchRequest,
             onValueChange = viewModel::onSearchChange,
             modifier = Modifier
                 .focusRequester(focusRequester)
                 .weight(1f)
                 .handleHotKeys(viewModel, rootFocusRequester),
-            singleLine = true,
+            maxLines = 1,
             placeholder = { Text("Search...") },
-            leadingIcon = {
+            leadingContent = {
                 Icon(imageVector = Icons.Default.Search, contentDescription = null)
             },
             isError = state.isBadRegex,
-            trailingIcon = {
+            trailingContent = {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier.padding(horizontal = 4.dp),

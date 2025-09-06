@@ -24,8 +24,10 @@ fun QaTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     isError: Boolean = false,
+    maxLines: Int = Int.MAX_VALUE,
     placeholder: @Composable (() -> Unit)? = null,
     leadingContent: (@Composable RowScope.() -> Unit)? = null,
+    trailingContent: (@Composable RowScope.() -> Unit)? = null,
 ) {
     val textColor = QaTheme.colorScheme.onSurface
     val borderColor = if (isError) QaTheme.colorScheme.logError else QaTheme.colorScheme.onSurfaceVariant
@@ -35,6 +37,7 @@ fun QaTextField(
         modifier = modifier,
         textStyle = LocalTextStyle.current.copy(color = textColor),
         cursorBrush = SolidColor(textColor),
+        maxLines = maxLines,
         decorationBox = { text ->
             Row(
                 modifier
@@ -46,7 +49,7 @@ fun QaTextField(
                     leadingContent()
                     Spacer(Modifier.width(4.dp))
                 }
-                Box {
+                Box(Modifier.weight(1f)) { // TODO с весом как то грустно
                     text()
                     if (placeholder != null && value.isEmpty()) {
                         val placeholderTextStyle =
@@ -55,6 +58,10 @@ fun QaTextField(
                             placeholder()
                         }
                     }
+                }
+                if (trailingContent != null) {
+                    Spacer(Modifier.width(4.dp))
+                    trailingContent()
                 }
             }
         },
