@@ -16,6 +16,7 @@ data class FilterRequest(
     enum class Field {
         All,
 
+        Level,
         Tag,
         Thread,
         Message,

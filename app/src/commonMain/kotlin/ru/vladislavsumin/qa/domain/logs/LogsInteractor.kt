@@ -104,6 +104,7 @@ class LogsInteractorImpl(
                             FilterRequest.Field.Tag -> log.tag
                             FilterRequest.Field.Thread -> log.thread
                             FilterRequest.Field.Message -> log.message
+                            FilterRequest.Field.Level -> log.level
                         }
 
                         filter.any { operation ->

@@ -32,6 +32,7 @@ class FilterRequestParser {
         val tag by literalToken("tag")
         val thread by literalToken("thread")
         val message by literalToken("message")
+        val level by literalToken("level")
 
         val exactly by literalToken(":=")
         val contains by literalToken("=")
@@ -51,6 +52,7 @@ class FilterRequestParser {
                 tag asJust Field.Tag,
                 thread asJust Field.Thread,
                 message asJust Field.Message,
+                level asJust Field.Level,
             ),
         )
 
