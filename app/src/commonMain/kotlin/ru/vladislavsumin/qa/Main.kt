@@ -15,6 +15,7 @@ import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.qa.ui.component.logViewerComponent.LogViewerComponent
 import javax.swing.SwingUtilities
 import kotlin.io.path.Path
+import kotlin.io.path.name
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
@@ -43,7 +44,7 @@ fun main(args: Array<String>) {
         LifecycleController(lifecycle, windowState)
 
         Window(
-            title = "vs-qa",
+            title = "vs-qa: ${logPath.name}",
             onCloseRequest = ::exitApplication,
             state = windowState,
         ) {
