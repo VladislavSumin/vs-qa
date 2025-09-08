@@ -29,6 +29,7 @@ import ru.vladislavsumin.core.ui.hotkeyController.rememberHotkeyController
 import ru.vladislavsumin.qa.ui.component.logViewerComponent.LogViewerViewModel
 
 @Composable
+@Suppress("LongMethod") // TODO
 internal fun LogsSearchBarContent(
     viewModel: LogViewerViewModel,
     state: State<LogSearchBarViewState>,

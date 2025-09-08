@@ -98,15 +98,22 @@ internal class LogViewerViewModel(
 
     fun onClickPrevIndex() {
         if (state.value.searchIndex.isNotEmpty()) {
-            selectedSearchIndex.value = (selectedSearchIndex.value - 1).coerceAtLeast(0)
+            if (selectedSearchIndex.value == 0) {
+                selectedSearchIndex.value = state.value.searchIndex.size - 1
+            } else {
+                selectedSearchIndex.value -= 1
+            }
             scrollToIndex(state.value.searchIndex[selectedSearchIndex.value])
         }
     }
 
     fun onClickNextIndex() {
         if (state.value.searchIndex.isNotEmpty()) {
-            selectedSearchIndex.value =
-                (selectedSearchIndex.value + 1).coerceAtMost(state.value.searchIndex.size - 1)
+            if (selectedSearchIndex.value == state.value.searchIndex.size - 1) {
+                selectedSearchIndex.value = 0
+            } else {
+                selectedSearchIndex.value += 1
+            }
             scrollToIndex(state.value.searchIndex[selectedSearchIndex.value])
         }
     }
