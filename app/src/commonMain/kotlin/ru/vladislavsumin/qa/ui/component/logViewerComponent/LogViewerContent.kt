@@ -7,12 +7,15 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -21,6 +24,7 @@ import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -41,7 +45,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -53,6 +59,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.ui.QaTextField
+import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.core.ui.hotkeyController.rememberHotkeyController
@@ -85,7 +92,10 @@ internal fun LogViewerContent(
         val searchState = derivedStateOf { state.value.searchState }
         Column {
             LogsSearchBarContent(viewModel, searchState, searchFocusRequester, rootFocusRequester)
-            LogsContent(viewModel, state, Modifier.weight(1f))
+            Row(Modifier.weight(1f)) {
+                LogsContent(viewModel, state, Modifier.weight(1f))
+                SidePanelContent(state)
+            }
             LogsFilter(viewModel, state, filterFocusRequester, rootFocusRequester)
             Divider(
                 modifier = Modifier.fillMaxWidth(),
@@ -142,6 +152,30 @@ private fun LogsFilter(
                 Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null)
             },
         )
+    }
+}
+
+@Composable
+private fun SidePanelContent(
+    state: State<LogViewerViewState>,
+) {
+    val clipboard = LocalClipboardManager.current
+    Column(
+        Modifier.fillMaxHeight().width(IntrinsicSize.Min).background(QaTheme.colorScheme.surfaceVariant),
+    ) {
+        Divider(color = QaTheme.colorScheme.surface, thickness = 1.5.dp)
+        QaIconButton(
+            onClick = {
+                // TODO провести через вью модель.
+                val data: String = state.value.logs.joinToString(separator = "\n") { it.raw }
+                clipboard.setText(AnnotatedString(data))
+            },
+            Modifier.padding(4.dp),
+        ) {
+            Icon(Icons.Default.CopyAll, null)
+        }
+        Spacer(Modifier.weight(1f))
+        Divider(color = QaTheme.colorScheme.surface, thickness = 1.5.dp)
     }
 }
 

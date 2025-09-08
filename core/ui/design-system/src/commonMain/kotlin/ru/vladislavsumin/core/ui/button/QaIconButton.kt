@@ -2,6 +2,7 @@ package ru.vladislavsumin.core.ui.button
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButtonDefaults
@@ -34,9 +35,13 @@ fun QaIconButton(
     ) {
         Box(
             modifier = Modifier.size(24.dp),
-            contentAlignment = Alignment.Center,
         ) {
-            content()
+            Box(
+                Modifier.matchParentSize().padding(2.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                content()
+            }
         }
     }
 }
