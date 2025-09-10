@@ -1,0 +1,5 @@
+[versions]
+betterParse = "0.4.4"
+
+[libraries]
+betterParse = { module = "com.github.h0tk3y.betterParse:better-parse", version.ref = "betterParse" }

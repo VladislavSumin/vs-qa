@@ -1,8 +1,8 @@
-apply { from("../vs-core/build-scripts/common-settings.gradle.kts") }
+apply { from("build-logic/common-settings.gradle.kts") }
 
 includeBuild("../vs-core")
 pluginManagement {
-    includeBuild("../vs-core/build-scripts")
+    includeBuild("build-logic")
 }
 
 rootProject.name = "vs-qa"
