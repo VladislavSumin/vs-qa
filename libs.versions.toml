@@ -1,5 +1,7 @@
 [versions]
 betterParse = "0.4.4"
+r8="8.11.18"
 
 [libraries]
 betterParse = { module = "com.github.h0tk3y.betterParse:better-parse", version.ref = "betterParse" }
+r8 = { module = "com.android.tools:r8", version.ref = "r8" }

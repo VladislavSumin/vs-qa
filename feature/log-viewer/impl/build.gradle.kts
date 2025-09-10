@@ -22,7 +22,7 @@ kotlin {
             implementation(vsCoreLibs.vs.core.decompose.compose)
             implementation(compose.materialIconsExtended)
             implementation(compose.material3)
-            implementation("com.github.h0tk3y.betterParse:better-parse:0.4.4")
+            implementation(libs.betterParse)
         }
     }
 }
