@@ -23,6 +23,7 @@ kotlin {
             implementation(projects.core.ui.designSystem)
             implementation(projects.core.ui.hotkeyController)
 
+            implementation(projects.feature.logViewer.impl)
             implementation(projects.feature.memoryIndicator.impl)
 
             implementation(vsCoreLibs.vs.core.logger.api)

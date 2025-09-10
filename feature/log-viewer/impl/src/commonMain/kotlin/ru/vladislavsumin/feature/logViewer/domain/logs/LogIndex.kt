@@ -1,0 +1,36 @@
+package ru.vladislavsumin.feature.logViewer.domain.logs
+
+data class LogIndex(
+    val logs: List<LogRecord>,
+    val searchIndex: SearchIndex,
+) {
+    sealed interface SearchIndex {
+        /**
+         * Индекс поиска. Тут ключ это номер поискового результата,
+         * а значение номер соответствующей записи в [LogIndex.logs].
+         */
+        val index: List<Int> get() = emptyList()
+
+        /**
+         * Пустой поисковый запрос.
+         */
+        data object NoSearch : SearchIndex
+
+        /**
+         * Поиск с нулевым количеством совпадений.
+         */
+        data object EmptySearch : SearchIndex
+
+        /**
+         * Поиск с как минимум одним результатом.
+         */
+        data class Search(
+            override val index: List<Int>,
+        ) : SearchIndex
+
+        /**
+         * Ошибка поиска, некорректный Regex.
+         */
+        data object BadRegex : SearchIndex
+    }
+}

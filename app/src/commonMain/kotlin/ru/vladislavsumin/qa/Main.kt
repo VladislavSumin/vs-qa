@@ -13,7 +13,7 @@ import org.kodein.di.instance
 import ru.vladislavsumin.core.logger.manager.LoggerManager
 import ru.vladislavsumin.core.logger.platform.initDefault
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
-import ru.vladislavsumin.qa.ui.component.logViewerComponent.LogViewerComponent
+import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.LogViewerComponentFactory
 import javax.swing.SwingUtilities
 import kotlin.io.path.Path
 import kotlin.io.path.name
@@ -29,13 +29,14 @@ fun main(args: Array<String>) {
     val mappingPath = if (args.size > 1) Path(args[1]) else null
 
     val di = createDi()
+    val rootFactory = di.instance<LogViewerComponentFactory>()
 
     // Создаем рутовый Decompose lifecycle.
     val lifecycle = LifecycleRegistry()
 
     val component = runOnUiThread {
         val context = DefaultComponentContext(lifecycle)
-        LogViewerComponent(logPath, mappingPath, di.instance(), context)
+        rootFactory.create(logPath, mappingPath, context)
     }
 
     application {
