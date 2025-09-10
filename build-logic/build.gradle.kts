@@ -8,4 +8,6 @@ dependencies {
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 
     implementation("ru.vladislavsumin:build-scripts")
+
+    implementation(vsCoreLibs.gradlePlugins.kotlin.core)
 }

@@ -1,13 +1,11 @@
 plugins {
-    id("ru.vladislavsumin.convention.kmp.jvm")
+    id("ru.vladislavsumin.convention.preset.feature-impl")
     id("ru.vladislavsumin.convention.compose")
 }
 
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(projects.feature.logViewer.api)
-
             // TODO временное решение
             implementation(projects.feature.memoryIndicator.api)
 
@@ -16,8 +14,6 @@ kotlin {
             implementation(projects.core.ui.hotkeyController)
             implementation(projects.core.ui.designSystem)
 
-            implementation(vsCoreLibs.vs.core.logger.api)
-            implementation(vsCoreLibs.vs.core.di)
             implementation(vsCoreLibs.vs.core.decompose.components)
             implementation(vsCoreLibs.vs.core.decompose.compose)
             implementation(compose.materialIconsExtended)
