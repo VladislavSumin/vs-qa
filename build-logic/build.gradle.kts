@@ -10,4 +10,5 @@ dependencies {
     implementation("ru.vladislavsumin:build-scripts")
 
     implementation(vsCoreLibs.gradlePlugins.kotlin.core)
+    implementation(vsCoreLibs.gradlePlugins.jb.compose)
 }
