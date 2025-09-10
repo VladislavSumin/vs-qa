@@ -23,10 +23,13 @@ kotlin {
             implementation(projects.core.ui.designSystem)
             implementation(projects.core.ui.hotkeyController)
 
+            implementation(projects.feature.memoryIndicator.impl)
+
             implementation(vsCoreLibs.vs.core.logger.api)
             implementation(vsCoreLibs.vs.core.logger.platform)
             implementation(vsCoreLibs.vs.core.decompose.components)
             implementation(vsCoreLibs.vs.core.decompose.compose)
+            implementation(vsCoreLibs.vs.core.di)
 
             implementation(vsCoreLibs.decompose.extensions.compose)
             implementation(vsCoreLibs.decompose.extensions.composeExperimental)

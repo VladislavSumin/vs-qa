@@ -1,4 +1,4 @@
-package ru.vladislavsumin.qa.ui.component.memoryIndicatorComponent
+package ru.vladislavsumin.qa.feature.memoryIndicator.ui.component.memoryIndicator
 
 import androidx.compose.runtime.Stable
 import kotlinx.coroutines.delay
@@ -18,8 +18,8 @@ internal class MemoryIndicatorViewModel : ViewModel() {
         }
     }.stateIn(initialValue = 1L to 1L)
 
-    @Suppress("ExplicitGarbageCollectionCall")
     fun onClick() {
+        @Suppress("ExplicitGarbageCollectionCall")
         Runtime.getRuntime().gc()
     }
 

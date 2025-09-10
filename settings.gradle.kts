@@ -12,3 +12,10 @@ include(":app")
 include(":core:proguard-parser")
 include(":core:ui:design-system")
 include(":core:ui:hotkey-controller")
+
+feature("memory-indicator")
+
+fun feature(name: String) {
+    include(":feature:$name:api")
+    include(":feature:$name:impl")
+}

@@ -1,4 +1,4 @@
-package ru.vladislavsumin.qa.ui.component.memoryIndicatorComponent
+package ru.vladislavsumin.qa.feature.memoryIndicator.ui.component.memoryIndicator
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,7 +21,7 @@ import com.arkivanov.decompose.ComponentContext
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 
-class MemoryIndicatorComponent(context: ComponentContext) : Component(context), ComposeComponent {
+internal class MemoryIndicatorComponent(context: ComponentContext) : Component(context), ComposeComponent {
     private val viewModel = viewModel { MemoryIndicatorViewModel() }
 
     @Composable

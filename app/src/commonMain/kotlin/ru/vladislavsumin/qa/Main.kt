@@ -9,6 +9,7 @@ import androidx.compose.ui.window.rememberWindowState
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.extensions.compose.lifecycle.LifecycleController
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
+import org.kodein.di.instance
 import ru.vladislavsumin.core.logger.manager.LoggerManager
 import ru.vladislavsumin.core.logger.platform.initDefault
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
@@ -27,12 +28,14 @@ fun main(args: Array<String>) {
     val logPath = Path(args[0])
     val mappingPath = if (args.size > 1) Path(args[1]) else null
 
+    val di = createDi()
+
     // Создаем рутовый Decompose lifecycle.
     val lifecycle = LifecycleRegistry()
 
     val component = runOnUiThread {
         val context = DefaultComponentContext(lifecycle)
-        LogViewerComponent(logPath, mappingPath, context)
+        LogViewerComponent(logPath, mappingPath, di.instance(), context)
     }
 
     application {
