@@ -17,6 +17,7 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.SearchRequest
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
 import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.filterBar.FilterRequestParser
 import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogSearchBarViewState
+import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import java.nio.file.Path
 import kotlin.map
 
@@ -24,6 +25,7 @@ import kotlin.map
 internal class LogViewerViewModel(
     logPath: Path,
     mappingPath: Path?,
+    private val bottomBarUiInteractor: BottomBarUiInteractor,
 ) : ViewModel() {
     private val filterRequestParser = FilterRequestParser()
 
@@ -77,6 +79,9 @@ internal class LogViewerViewModel(
             ),
         )
     }
+        .onEach { state ->
+            bottomBarUiInteractor.setBottomBarText("Total records: ${state.logs.size}")
+        }
         .stateIn(
             LogViewerViewState(
                 filter = "",

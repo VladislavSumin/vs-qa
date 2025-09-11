@@ -5,9 +5,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            // TODO временное решение
-            implementation(projects.feature.memoryIndicator.api)
-
+            implementation(projects.feature.bottomBar.api)
             implementation(projects.core.proguardParser)
             implementation(libs.betterParse)
         }

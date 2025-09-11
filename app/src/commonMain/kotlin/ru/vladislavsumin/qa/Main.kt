@@ -1,12 +1,14 @@
 package ru.vladislavsumin.qa
 
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.arkivanov.decompose.DefaultComponentContext
+import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.extensions.compose.lifecycle.LifecycleController
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import org.kodein.di.instance
@@ -14,6 +16,7 @@ import ru.vladislavsumin.core.logger.manager.LoggerManager
 import ru.vladislavsumin.core.logger.platform.initDefault
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.LogViewerComponentFactory
+import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarComponentFactory
 import javax.swing.SwingUtilities
 import kotlin.io.path.Path
 import kotlin.io.path.name
@@ -29,14 +32,27 @@ fun main(args: Array<String>) {
     val mappingPath = if (args.size > 1) Path(args[1]) else null
 
     val di = createDi()
-    val rootFactory = di.instance<LogViewerComponentFactory>()
+    val logViewerComponentFactory = di.instance<LogViewerComponentFactory>()
+    val bottomBarComponentFactory = di.instance<BottomBarComponentFactory>()
 
     // Создаем рутовый Decompose lifecycle.
     val lifecycle = LifecycleRegistry()
 
-    val component = runOnUiThread {
-        val context = DefaultComponentContext(lifecycle)
-        rootFactory.create(logPath, mappingPath, context)
+    val context = runOnUiThread {
+        DefaultComponentContext(lifecycle)
+    }
+
+    val bottomBarComponent = runOnUiThread {
+        bottomBarComponentFactory.create(context.childContext("bottom-bar"))
+    }
+
+    val logViewerComponent = runOnUiThread {
+        logViewerComponentFactory.create(
+            logPath,
+            mappingPath,
+            bottomBarComponent.bottomBarUiInteractor,
+            context.childContext("log-viewer"),
+        )
     }
 
     application {
@@ -53,7 +69,12 @@ fun main(args: Array<String>) {
             state = windowState,
         ) {
             QaTheme {
-                component.Render(Modifier.fillMaxSize())
+                Surface {
+                    Column {
+                        logViewerComponent.Render(Modifier.weight(1f))
+                        bottomBarComponent.Render(Modifier)
+                    }
+                }
             }
         }
     }

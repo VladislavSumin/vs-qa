@@ -58,7 +58,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
-import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
@@ -70,7 +69,6 @@ import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
 @Composable
 internal fun LogViewerContent(
     viewModel: LogViewerViewModel,
-    memoryIndicator: ComposeComponent,
     modifier: Modifier,
 ) {
     val rootFocusRequester = remember { FocusRequester() }
@@ -103,22 +101,6 @@ internal fun LogViewerContent(
                 color = QaTheme.colorScheme.surface,
                 thickness = 1.5.dp,
             )
-            Row(
-                Modifier.background(QaTheme.colorScheme.surfaceVariant),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Box(Modifier.weight(1f))
-                Text(
-                    text = "Total records: ${state.value.logs.size}",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontFamily = FontFamily.Monospace,
-                    modifier = Modifier.padding(
-                        vertical = 2.dp,
-                        horizontal = 8.dp,
-                    ),
-                )
-                memoryIndicator.Render(Modifier)
-            }
         }
     }
 }
