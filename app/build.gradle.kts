@@ -19,10 +19,6 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.core.proguardParser)
-            implementation(projects.core.ui.designSystem)
-            implementation(projects.core.ui.hotkeyController)
-
             implementation(projects.feature.bottomBar.impl)
             implementation(projects.feature.logViewer.impl)
             implementation(projects.feature.memoryIndicator.impl)
@@ -36,9 +32,6 @@ kotlin {
 
             implementation(vsCoreLibs.decompose.extensions.compose)
             implementation(vsCoreLibs.decompose.extensions.composeExperimental)
-
-            implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
         }
 
         jvmMain.dependencies {
