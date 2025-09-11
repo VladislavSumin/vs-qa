@@ -17,6 +17,7 @@ include(":core:utils")
 feature("bottom-bar")
 feature("log-viewer")
 feature("memory-indicator")
+feature("root-screen")
 
 fun feature(name: String) {
     include(":feature:$name:api")

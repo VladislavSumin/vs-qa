@@ -26,6 +26,7 @@ kotlin {
             implementation(projects.feature.bottomBar.impl)
             implementation(projects.feature.logViewer.impl)
             implementation(projects.feature.memoryIndicator.impl)
+            implementation(projects.feature.rootScreen.impl)
 
             implementation(vsCoreLibs.vs.core.logger.api)
             implementation(vsCoreLibs.vs.core.logger.platform)
