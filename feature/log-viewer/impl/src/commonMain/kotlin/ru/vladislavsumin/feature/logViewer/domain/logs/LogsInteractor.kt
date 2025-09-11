@@ -1,52 +1,76 @@
 package ru.vladislavsumin.feature.logViewer.domain.logs
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.transformLatest
+import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
 import ru.vladislavsumin.feature.logViewer.LogLogger
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractor
 import java.nio.file.Path
 
 interface LogsInteractor {
+    fun observeLoadingStatus(): StateFlow<LoadingStatus>
     fun observeLogIndex(
         filter: Flow<FilterRequest>,
         search: Flow<SearchRequest>,
     ): Flow<LogIndexProgress>
+
+    sealed interface LoadingStatus {
+        data object LoadingLogs : LoadingStatus
+        data object Loaded : LoadingStatus
+    }
 }
 
 // TODO тут нужно оптимизировать количество копирований списка, а так же equals проверки.
 class LogsInteractorImpl(
+    private val scope: CoroutineScope,
     private val logPath: Path,
     private val proguardInteractor: ProguardInteractor?,
 ) : LogsInteractor {
-    val logs = loadLogs()
+    // TODO ну сделать приватным же
+    val logs = MutableStateFlow<List<RawLogRecord>>(emptyList())
+    private val loadingStatus = MutableStateFlow<LogsInteractor.LoadingStatus>(LogsInteractor.LoadingStatus.LoadingLogs)
 
-    fun loadLogs(): List<RawLogRecord> {
-        val logs = AnimeLogParser(proguardInteractor).parseLog(logPath)
-        // TODO ну парсим тут чего уж там, все равно говнокод
-        return if (proguardInteractor != null) {
-            logs.parallelStream()
-                .map { log ->
-                    if (log.lines > 2 && log.raw.lines()[log.lines - 2].startsWith("\tat ")) {
-                        val newMessage = proguardInteractor.deobfuscateStack(log.raw.substring(log.message))
-                        log.copy(
-                            raw = log.raw.replaceRange(log.message, newMessage),
-                            message = IntRange(log.message.first, log.message.first + newMessage.length - 1),
-                        )
-                    } else {
-                        log
+    init {
+        loadLogs()
+    }
+
+    private fun loadLogs() {
+        scope.launch(Dispatchers.IO) {
+            val initialLogs = AnimeLogParser(proguardInteractor).parseLog(logPath)
+            // TODO ну парсим тут чего уж там, все равно говнокод
+            val finalLogs = if (proguardInteractor != null) {
+                initialLogs.parallelStream()
+                    .map { log ->
+                        if (log.lines > 2 && log.raw.lines()[log.lines - 2].startsWith("\tat ")) {
+                            val newMessage = proguardInteractor.deobfuscateStack(log.raw.substring(log.message))
+                            log.copy(
+                                raw = log.raw.replaceRange(log.message, newMessage),
+                                message = IntRange(log.message.first, log.message.first + newMessage.length - 1),
+                            )
+                        } else {
+                            log
+                        }
                     }
-                }
-                .toList()
-        } else {
-            logs
+                    .toList()
+            } else {
+                initialLogs
+            }
+            logs.value = finalLogs
+            loadingStatus.value = LogsInteractor.LoadingStatus.Loaded
         }
     }
+
+    override fun observeLoadingStatus(): StateFlow<LogsInteractor.LoadingStatus> = loadingStatus
 
     override fun observeLogIndex(
         filter: Flow<FilterRequest>,
@@ -84,17 +108,20 @@ class LogsInteractorImpl(
 
     private fun createFilterProgressFlow(filter: Flow<FilterRequest>): Flow<FilterLogProgress> = flow {
         var filteredCache = emptyList<RawLogRecord>()
-        filter
+        combine(
+            logs,
+            filter,
+        ) { logs, filter -> logs to filter }
             .distinctUntilChanged()
-            .transformLatest { filter ->
+            .transformLatest { (logs, filter) ->
                 emit(FilterLogProgress(isFilteringNow = true, filteredCache))
-                filteredCache = filterLogs(filter)
+                filteredCache = filterLogs(logs, filter)
                 emit(FilterLogProgress(isFilteringNow = false, filteredCache))
             }
             .collect(this)
     }
 
-    private fun filterLogs(filter: FilterRequest): List<RawLogRecord> {
+    private fun filterLogs(logs: List<RawLogRecord>, filter: FilterRequest): List<RawLogRecord> {
         val (time, result) = measureTimeMillisWithResult {
             logs.parallelStream()
                 .let {

@@ -4,14 +4,17 @@ import androidx.compose.runtime.Stable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.feature.logViewer.domain.logs.FilterRequest
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
+import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
 import ru.vladislavsumin.feature.logViewer.domain.logs.SearchRequest
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
@@ -35,6 +38,7 @@ internal class LogViewerViewModel(
     private val visibleIndexes = MutableStateFlow(Pair(0, 0))
 
     private val logsInteractor = LogsInteractorImpl(
+        scope = viewModelScope,
         logPath = logPath,
         proguardInteractor = mappingPath?.let { ProguardInteractorImpl(it) },
     )
@@ -67,7 +71,8 @@ internal class LogViewerViewModel(
             isFilterValid = isFilterValid,
             searchIndex = logIndexProgress.lastSuccessIndex.searchIndex.index,
             logs = logIndexProgress.lastSuccessIndex.logs,
-            maxLogNumberDigits = logsInteractor.logs.last().order.toString().length,
+            // TODO ну это смешно)
+            maxLogNumberDigits = logsInteractor.logs.value.lastOrNull()?.order.toString().length,
             searchState = LogSearchBarViewState(
                 searchRequest = search.search,
                 isMatchCase = search.matchCase,
@@ -94,6 +99,19 @@ internal class LogViewerViewModel(
         )
 
     val events = Channel<LogViewerEvents>()
+
+    init {
+        viewModelScope.launch {
+            logsInteractor.observeLoadingStatus().collectLatest {
+                when (it) {
+                    LogsInteractor.LoadingStatus.Loaded -> Unit
+                    LogsInteractor.LoadingStatus.LoadingLogs -> {
+                        bottomBarUiInteractor.showProgressBar("Loading logs")
+                    }
+                }
+            }
+        }
+    }
 
     private fun scrollToIndex(index: Int) {
         // TODO котсылина временная
