@@ -2,7 +2,7 @@ package ru.vladislavsumin.feature.logViewer.domain.logs
 
 @Suppress("MagicNumber")
 enum class LogLevel(val rawLevel: Int, val aliases: Set<String>) {
-    FATAL(6, setOf("F", "FATAL")),
+    FATAL(6, setOf("F", "FATAL", "A", "ASSERT")),
     ERROR(5, setOf("E", "ERROR")),
     WARN(4, setOf("W", "WARN")),
     INFO(3, setOf("I", "INFO")),
