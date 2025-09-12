@@ -9,6 +9,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            implementation(vsCoreLibs.vs.core.coroutines.utils)
             implementation(vsCoreLibs.vs.core.logger.api)
         }
     }

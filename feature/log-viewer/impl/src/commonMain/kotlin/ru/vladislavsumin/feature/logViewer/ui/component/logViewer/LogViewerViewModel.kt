@@ -3,10 +3,8 @@ package ru.vladislavsumin.feature.logViewer.ui.component.logViewer
 import androidx.compose.runtime.Stable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -50,7 +48,7 @@ internal class LogViewerViewModel(
             .getOrElse { FilterState.Invalid }
     }
 
-    val state = combine(
+    val state = ru.vladislavsumin.core.coroutines.utils.combine(
         logsInteractor.observeLogIndex(
             filter = filterState.filterIsInstance<FilterState.Valid>().map { it.request },
             search = search,
@@ -163,25 +161,4 @@ internal class LogViewerViewModel(
         data object Invalid : FilterState
         data class Valid(val request: FilterRequest) : FilterState
     }
-}
-
-// TODO сделать под это дело отдельный модуль
-@Suppress("MagicNumber")
-private fun <T1, T2, T3, T4, T5, T6, R> combine(
-    flow: Flow<T1>,
-    flow2: Flow<T2>,
-    flow3: Flow<T3>,
-    flow4: Flow<T4>,
-    flow5: Flow<T5>,
-    flow6: Flow<T6>,
-    transform: suspend (T1, T2, T3, T4, T5, T6) -> R,
-): Flow<R> = combine(flow, flow2, flow3, flow4, flow5, flow6) { args: Array<*> ->
-    transform(
-        args[0] as T1,
-        args[1] as T2,
-        args[2] as T3,
-        args[3] as T4,
-        args[4] as T5,
-        args[5] as T6,
-    )
 }
