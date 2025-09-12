@@ -28,4 +28,36 @@ data class RawLogRecord(
 
     val logLevel: LogLevel,
     val lines: Int,
-)
+) {
+    /**
+     * Копирует модель с заменой поля [tag] в [raw] записи с корректным сохранением всех [IntRange]
+     */
+    fun copyTag(newTag: String): RawLogRecord {
+        val newRaw = raw.replaceRange(tag, newTag)
+        val newTagRange = IntRange(tag.first, tag.first + newTag.length - 1)
+        val lenDelta = newTag.length - tag.count()
+
+        return copy(
+            raw = newRaw,
+            tag = newTagRange,
+            time = time.moveIfAfterPosition(newTagRange.first, lenDelta),
+            level = level.moveIfAfterPosition(newTagRange.first, lenDelta),
+            thread = thread.moveIfAfterPosition(newTagRange.first, lenDelta),
+            message = message.moveIfAfterPosition(newTagRange.first, lenDelta),
+        )
+    }
+
+    companion object {
+        /**
+         * Если [this] расположен после [position] то он сдвигается на [offset]. А если расположен до [position],
+         * то возвращается оригинальный [this] без модификации.
+         */
+        private fun IntRange.moveIfAfterPosition(position: Int, offset: Int): IntRange {
+            return if (first >= position) {
+                IntRange(first + offset, last + offset)
+            } else {
+                this
+            }
+        }
+    }
+}

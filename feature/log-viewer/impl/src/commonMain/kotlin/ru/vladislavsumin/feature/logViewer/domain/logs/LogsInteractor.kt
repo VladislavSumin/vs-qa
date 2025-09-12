@@ -26,6 +26,7 @@ interface LogsInteractor {
 
     sealed interface LoadingStatus {
         data object LoadingLogs : LoadingStatus
+        data object DeobfuscateLogs : LoadingStatus
         data object Loaded : LoadingStatus
     }
 }
@@ -46,10 +47,21 @@ class LogsInteractorImpl(
 
     private fun loadLogs() {
         scope.launch(Dispatchers.IO) {
-            val initialLogs = AnimeLogParser(proguardInteractor).parseLog(logPath)
+            val obfuscatedLogs = AnimeLogParser().parseLog(logPath)
+            logs.value = obfuscatedLogs
+
             // TODO ну парсим тут чего уж там, все равно говнокод
-            val finalLogs = if (proguardInteractor != null) {
-                initialLogs.parallelStream()
+            if (proguardInteractor != null) {
+                loadingStatus.value = LogsInteractor.LoadingStatus.DeobfuscateLogs
+                val deobfuscated = obfuscatedLogs.parallelStream()
+                    .map { log ->
+                        val deobfuscatedTag = proguardInteractor.deobfuscateClass(log.raw.substring(log.tag))
+                        if (deobfuscatedTag != null) {
+                            log.copyTag(deobfuscatedTag)
+                        } else {
+                            log
+                        }
+                    }
                     .map { log ->
                         if (log.lines > 2 && log.raw.lines()[log.lines - 2].startsWith("\tat ")) {
                             val newMessage = proguardInteractor.deobfuscateStack(log.raw.substring(log.message))
@@ -62,10 +74,8 @@ class LogsInteractorImpl(
                         }
                     }
                     .toList()
-            } else {
-                initialLogs
+                logs.value = deobfuscated
             }
-            logs.value = finalLogs
             loadingStatus.value = LogsInteractor.LoadingStatus.Loaded
         }
     }

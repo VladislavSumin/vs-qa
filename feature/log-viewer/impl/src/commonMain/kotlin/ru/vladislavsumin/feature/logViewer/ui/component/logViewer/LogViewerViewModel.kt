@@ -108,6 +108,9 @@ internal class LogViewerViewModel(
                     LogsInteractor.LoadingStatus.LoadingLogs -> {
                         bottomBarUiInteractor.showProgressBar("Loading logs")
                     }
+                    LogsInteractor.LoadingStatus.DeobfuscateLogs -> {
+                        bottomBarUiInteractor.showProgressBar("Deobfuscate logs")
+                    }
                 }
             }
         }
