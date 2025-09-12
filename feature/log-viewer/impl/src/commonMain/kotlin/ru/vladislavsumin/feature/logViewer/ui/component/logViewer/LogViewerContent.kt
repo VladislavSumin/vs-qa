@@ -207,7 +207,7 @@ private fun LogsContent(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     style = MaterialTheme.typography.bodyMedium,
                                     fontFamily = FontFamily.Monospace,
-                                    modifier = Modifier,
+                                    modifier = Modifier.padding(start = 4.dp),
                                 )
                             }
                             Text(
@@ -216,14 +216,14 @@ private fun LogsContent(
                                 fontFamily = FontFamily.Monospace,
                                 modifier = Modifier
                                     .fillMaxWidth() // Что бы выделение работало после конца текста
-                                    .padding(start = textSizeDp + 9.dp),
+                                    .padding(start = textSizeDp + 13.dp),
                             )
                             TextSelectionSeparator()
                         }
                     }
                 }
             }
-            VerticalDivider(Modifier.padding(start = textSizeDp + 4.dp))
+            VerticalDivider(Modifier.padding(start = textSizeDp + 8.dp))
         }
         VerticalScrollbar(
             adapter = rememberScrollbarAdapter(lazyListState),

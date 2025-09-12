@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
@@ -17,13 +18,32 @@ import ru.vladislavsumin.feature.logViewer.LogLogger
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractor
 import java.nio.file.Path
 
+/**
+ * **Внимание, данный interactor является stateful.**
+ */
 interface LogsInteractor {
+    /**
+     * Возвращает текущий статус загрузки логов.
+     */
     fun observeLoadingStatus(): StateFlow<LoadingStatus>
+
+    /**
+     * Строит "Индекс" (результат фильтрации и последующего поиска) на основе [filter] и [search].
+     */
     fun observeLogIndex(
         filter: Flow<FilterRequest>,
         search: Flow<SearchRequest>,
     ): Flow<LogIndexProgress>
 
+    fun observeTotalRecords(): Flow<Int>
+
+    /**
+     * Статус загрузки логов.
+     *
+     * - [LoadingLogs] логи загружаются
+     * - [DeobfuscateLogs] obfuscated логи загружены и с ними уже можно работать, происходит преобразование логов.
+     * - [Loaded] логи полностью загружены и обработаны.
+     */
     sealed interface LoadingStatus {
         data object LoadingLogs : LoadingStatus
         data object DeobfuscateLogs : LoadingStatus
@@ -37,8 +57,7 @@ class LogsInteractorImpl(
     private val logPath: Path,
     private val proguardInteractor: ProguardInteractor?,
 ) : LogsInteractor {
-    // TODO ну сделать приватным же
-    val logs = MutableStateFlow<List<RawLogRecord>>(emptyList())
+    private val logs = MutableStateFlow<List<RawLogRecord>>(emptyList())
     private val loadingStatus = MutableStateFlow<LogsInteractor.LoadingStatus>(LogsInteractor.LoadingStatus.LoadingLogs)
 
     init {
@@ -81,6 +100,7 @@ class LogsInteractorImpl(
     }
 
     override fun observeLoadingStatus(): StateFlow<LogsInteractor.LoadingStatus> = loadingStatus
+    override fun observeTotalRecords(): Flow<Int> = logs.map { it.size }
 
     override fun observeLogIndex(
         filter: Flow<FilterRequest>,
