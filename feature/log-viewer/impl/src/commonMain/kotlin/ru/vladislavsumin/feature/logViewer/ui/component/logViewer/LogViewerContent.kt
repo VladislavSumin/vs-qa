@@ -49,7 +49,9 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
@@ -63,7 +65,9 @@ import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.core.ui.hotkeyController.rememberHotkeyController
+import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.filterBar.FilterRequestParser
 import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogsSearchBarContent
+import ru.vladislavsumin.feature.logViewer.ui.utils.addStyle
 import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
 
 @Composable
@@ -123,7 +127,9 @@ private fun LogsFilter(
             KeyModifier.None + Key.Escape to { rootFocusRequester.requestFocus() },
         )
         QaTextField(
-            value = state.value.filter,
+            value = state.value.filterField.copy(
+                annotatedString = state.value.filter.colorize(),
+            ),
             onValueChange = viewModel::onFilterChange,
             modifier = Modifier
                 .focusRequester(focusRequester)
@@ -135,6 +141,19 @@ private fun LogsFilter(
                 Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null)
             },
         )
+    }
+}
+
+@Composable
+private fun FilterRequestParser.RequestHighlight.colorize(): AnnotatedString {
+    return when (this) {
+        is FilterRequestParser.RequestHighlight.InvalidSyntax -> buildAnnotatedString { append(raw) }
+        is FilterRequestParser.RequestHighlight.Success -> buildAnnotatedString {
+            append(raw)
+            keywords.forEach { range ->
+                addStyle(SpanStyle(color = QaTheme.colorScheme.onSurfaceVariant), range)
+            }
+        }
     }
 }
 

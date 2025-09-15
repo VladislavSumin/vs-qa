@@ -18,6 +18,25 @@ import kotlin.collections.listOf
 
 class FilterRequestParser {
 
+    data class ParserResult(
+        val requestHighlight: RequestHighlight,
+        val searchRequest: Result<FilterRequest>,
+    )
+
+    sealed interface RequestHighlight {
+        val raw: String
+
+        data class Success(
+            override val raw: String,
+            val keywords: List<IntRange>,
+            val data: List<IntRange>,
+        ) : RequestHighlight
+
+        data class InvalidSyntax(
+            override val raw: String,
+        ) : RequestHighlight
+    }
+
     private enum class Operation {
         Exactly,
         Contains,
@@ -44,25 +63,29 @@ class FilterRequestParser {
     }
 
     private val grammar = object : Grammar<List<Filter>>() {
-        val tag by literalToken("tag")
-        val thread by literalToken("thread")
-        val message by literalToken("message")
-        val level by literalToken("level")
+        private val tag by literalToken("tag")
+        private val thread by literalToken("thread")
+        private val message by literalToken("message")
+        private val level by literalToken("level")
 
-        val timeAfter by literalToken("timeAfter")
-        val timeBefore by literalToken("timeBefore")
+        private val timeAfter by literalToken("timeAfter")
+        private val timeBefore by literalToken("timeBefore")
 
-        val exactly by literalToken(":=")
-        val contains by literalToken("=")
+        private val exactly by literalToken(":=")
+        private val contains by literalToken("=")
 
         // Строка в кавычках, может содержать экранированные кавычки внутри
-        val stingLiteral by regexToken("\"(\\\\\"|[^\"])+\"")
+        private val stingLiteral by regexToken("\"(\\\\\"|[^\"])+\"")
 
         // Любая строка без пробелов
-        val any by regexToken("[^ ]+")
+        private val any by regexToken("[^ ]+")
 
         // Пробел, определяется последним чтобы он не перебивал собой другие токены, например stringLiteral
-        val ws by regexToken("\\s+", ignore = true)
+        @Suppress("UnusedPrivateProperty")
+        private val ws by regexToken("\\s+", ignore = true)
+
+        val keywords = setOf(tag, thread, message, level, timeAfter, timeBefore, exactly, contains)
+        val data = setOf(stingLiteral, any)
 
         // Поля по которым можно вести поиск.
         val fields = OrCombinator(
@@ -93,68 +116,79 @@ class FilterRequestParser {
             ),
         )
 
-        val levelFilter = (-level and -contains and filters) map { level ->
+        private val levelFilter = (-level and -contains and filters) map { level ->
             val level = LogLevel.fromAlias(level) ?: error("Unknown level $level")
             Filter.ByLevel(level)
         }
-        val timeBeforeFilter = (-timeBefore and -contains and filters) map { Filter.ByTimeBefore(it) }
-        val timeAfterFilter = (-timeAfter and -contains and filters) map { Filter.ByTimeAfter(it) }
-        val filter = (fields and operations and filters) map { (a, b, c) -> Filter.ByField(a, b, c) }
-        val allFilter = filters map { Filter.ByField(FilterRequest.Field.All, Operation.Contains, it) }
+        private val timeBeforeFilter = (-timeBefore and -contains and filters) map { Filter.ByTimeBefore(it) }
+        private val timeAfterFilter = (-timeAfter and -contains and filters) map { Filter.ByTimeAfter(it) }
+        private val filter = (fields and operations and filters) map { (a, b, c) -> Filter.ByField(a, b, c) }
+        private val allFilter = filters map { Filter.ByField(FilterRequest.Field.All, Operation.Contains, it) }
 
         override val rootParser: Parser<List<Filter>> =
             zeroOrMore(levelFilter or filter or allFilter or timeAfterFilter or timeBeforeFilter)
     }
 
-    fun tokenize(data: String): Result<FilterRequest> = runCatching {
-        val tokens = grammar.tokenizer.tokenize(data)
-        val result = grammar.parseToEnd(tokens)
-        val level = result
-            .filterIsInstance<Filter.ByLevel>()
-            .also { check(it.size < 2) { "More then one level filter defined" } }
-            .singleOrNull()
+    fun tokenize(request: String): ParserResult {
+        val tokens = runCatching { grammar.tokenizer.tokenize(request) }
 
-        val timeBefore = result
-            .filterIsInstance<Filter.ByTimeBefore>()
-            .also { check(it.size < 2) { "More then one timeBefore filter defined" } }
-            .singleOrNull()
+        val filterRequest = tokens.mapCatching { tokens ->
+            val result = grammar.parseToEnd(tokens)
+            val level = result
+                .filterIsInstance<Filter.ByLevel>()
+                .also { check(it.size < 2) { "More then one level filter defined" } }
+                .singleOrNull()
 
-        val timeAfter = result
-            .filterIsInstance<Filter.ByTimeAfter>()
-            .also { check(it.size < 2) { "More then one timeAfter filter defined" } }
-            .singleOrNull()
+            val timeBefore = result
+                .filterIsInstance<Filter.ByTimeBefore>()
+                .also { check(it.size < 2) { "More then one timeBefore filter defined" } }
+                .singleOrNull()
 
-        val filters = result
-            .filterIsInstance<Filter.ByField>()
-            .groupBy { it.field }
-            .mapValues { (_, v) ->
-                v.map {
-                    when (it.operation) {
-                        Operation.Exactly -> FilterRequest.Operation.Exactly(it.text)
-                        Operation.Contains -> FilterRequest.Operation.Contains(it.text)
+            val timeAfter = result
+                .filterIsInstance<Filter.ByTimeAfter>()
+                .also { check(it.size < 2) { "More then one timeAfter filter defined" } }
+                .singleOrNull()
+
+            val filters = result
+                .filterIsInstance<Filter.ByField>()
+                .groupBy { it.field }
+                .mapValues { (_, v) ->
+                    v.map {
+                        when (it.operation) {
+                            Operation.Exactly -> FilterRequest.Operation.Exactly(it.text)
+                            Operation.Contains -> FilterRequest.Operation.Contains(it.text)
+                        }
                     }
                 }
+            FilterRequest(
+                minLevel = level?.level,
+                filters = filters,
+                timeBefore = timeBefore?.time,
+                timeAfter = timeAfter?.time,
+            )
+        }
+
+        val highlight: RequestHighlight = tokens
+            .map { tokens ->
+                val keywords = tokens
+                    .filter { it.type in grammar.keywords }
+                    .map { IntRange(it.offset, it.offset + it.length - 1) }
+                    .toList()
+                val data = tokens
+                    .filter { it.type in grammar.data }
+                    .map { IntRange(it.offset, it.offset + it.length - 1) }
+                    .toList()
+                RequestHighlight.Success(
+                    raw = request,
+                    keywords = keywords,
+                    data = data,
+                )
             }
-        FilterRequest(
-            minLevel = level?.level,
-            filters = filters,
-            timeBefore = timeBefore?.time,
-            timeAfter = timeAfter?.time,
+            .getOrElse { RequestHighlight.InvalidSyntax(request) }
+
+        return ParserResult(
+            requestHighlight = highlight,
+            searchRequest = filterRequest,
         )
     }
-
-//    fun test() {
-//        tokenize("")
-//        tokenize("tag:=d")
-//        tokenize("thread=d")
-//        tokenize("thread=\"demo\"")
-//        tokenize("thread=\"\\\"\"")
-//        tokenize("thread=\"dem\\\"o\"")
-//        tokenize("thread:=om tag=test")
-//        tokenize("sdfsdfds")
-//        tokenize("\"sdfsdfds\"")
-//        tokenize("\"sdfs dd dfds\"")
-//        tokenize("sdfsdfds sdvsvdf sdf")
-//        tokenize("sdfsdfds tag:=testTag sdvsvdf sdf")
-//    }
 }

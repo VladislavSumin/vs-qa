@@ -1,7 +1,9 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.logViewer
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.text.input.TextFieldValue
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
+import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.filterBar.FilterRequestParser
 import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogSearchBarViewState
 
 /**
@@ -11,7 +13,8 @@ import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogS
  */
 @Immutable
 internal data class LogViewerViewState(
-    val filter: String,
+    val filterField: TextFieldValue,
+    val filter: FilterRequestParser.RequestHighlight,
     val isFilterValid: Boolean,
     val searchIndex: List<Int>,
     val logs: List<LogRecord>,

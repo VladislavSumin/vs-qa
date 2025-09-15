@@ -1,17 +1,20 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.logViewer
 
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.vladislavsumin.core.coroutines.utils.combine
 import ru.vladislavsumin.core.decompose.components.ViewModel
-import ru.vladislavsumin.feature.logViewer.domain.logs.FilterRequest
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
@@ -31,7 +34,7 @@ internal class LogViewerViewModel(
 ) : ViewModel() {
     private val filterRequestParser = FilterRequestParser()
 
-    private val filter = MutableStateFlow("")
+    private val filter = MutableStateFlow(TextFieldValue())
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
     private val visibleIndexes = MutableStateFlow(Pair(0, 0))
@@ -43,14 +46,12 @@ internal class LogViewerViewModel(
     )
 
     private val filterState = filter.map { filter ->
-        filterRequestParser.tokenize(filter)
-            .map { FilterState.Valid(it) }
-            .getOrElse { FilterState.Invalid }
-    }
+        filterRequestParser.tokenize(filter.text)
+    }.shareIn(viewModelScope, SharingStarted.Eagerly, 1)
 
-    val state = ru.vladislavsumin.core.coroutines.utils.combine(
+    val state = combine(
         logsInteractor.observeLogIndex(
-            filter = filterState.filterIsInstance<FilterState.Valid>().map { it.request },
+            filter = filterState.mapNotNull { it.searchRequest.getOrNull() },
             search = search,
         )
             .onEach {
@@ -61,14 +62,15 @@ internal class LogViewerViewModel(
                 }
             },
         filter,
-        filterState.map { it is FilterState.Valid },
+        filterState.map { it.requestHighlight },
         search,
         selectedSearchIndex,
         logsInteractor.observeTotalRecords(),
-    ) { logIndexProgress, filter, isFilterValid, search, selectedSearchIndex, totalRecords ->
+    ) { logIndexProgress, filter, highlight, search, selectedSearchIndex, totalRecords ->
         LogViewerViewState(
-            filter = filter,
-            isFilterValid = isFilterValid,
+            filterField = filter,
+            filter = highlight,
+            isFilterValid = highlight is FilterRequestParser.RequestHighlight.Success,
             searchIndex = logIndexProgress.lastSuccessIndex.searchIndex.index,
             logs = logIndexProgress.lastSuccessIndex.logs,
             maxLogNumberDigits = totalRecords.toString().length,
@@ -88,7 +90,8 @@ internal class LogViewerViewModel(
         }
         .stateIn(
             LogViewerViewState(
-                filter = "",
+                filterField = TextFieldValue(),
+                filter = FilterRequestParser.RequestHighlight.InvalidSyntax(""),
                 isFilterValid = true,
                 searchIndex = emptyList(),
                 logs = emptyList(),
@@ -149,16 +152,11 @@ internal class LogViewerViewModel(
         visibleIndexes.value = firstIndex to lastIndex
     }
 
-    fun onFilterChange(newValue: String) {
+    fun onFilterChange(newValue: TextFieldValue) {
         filter.value = newValue
     }
 
     fun onSearchChange(newValue: String) = search.update { it.copy(search = newValue) }
     fun onClickSearchMatchCase(newValue: Boolean) = search.update { it.copy(matchCase = newValue) }
     fun onClickSearchUseRegex(newValue: Boolean) = search.update { it.copy(useRegex = newValue) }
-
-    sealed interface FilterState {
-        data object Invalid : FilterState
-        data class Valid(val request: FilterRequest) : FilterState
-    }
 }

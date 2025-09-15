@@ -25,6 +25,6 @@ fun LogRecord.colorize(): AnnotatedString {
     }
 }
 
-private fun AnnotatedString.Builder.addStyle(style: SpanStyle, range: IntRange) {
+fun AnnotatedString.Builder.addStyle(style: SpanStyle, range: IntRange) {
     addStyle(style, range.first, range.last + 1)
 }
