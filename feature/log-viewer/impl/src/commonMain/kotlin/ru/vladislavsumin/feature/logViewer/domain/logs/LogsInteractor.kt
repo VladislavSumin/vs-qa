@@ -5,8 +5,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -17,6 +18,7 @@ import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
 import ru.vladislavsumin.feature.logViewer.LogLogger
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractor
 import java.nio.file.Path
+import kotlin.math.log
 
 /**
  * **Внимание, данный interactor является stateful.**
@@ -105,36 +107,43 @@ class LogsInteractorImpl(
     override fun observeLogIndex(
         filter: Flow<FilterRequest>,
         search: Flow<SearchRequest>,
-    ): Flow<LogIndexProgress> {
-        return combineTransform(
-            createFilterProgressFlow(filter),
-            search.distinctUntilChanged(),
-        ) { filterProgress, search ->
-            val logs = filterProgress.logs.toLogRecords()
-            emit(
-                value = LogIndexProgress(
-                    isFilteringNow = filterProgress.isFilteringNow,
-                    isSearchingNow = search.search.isNotEmpty(),
-                    lastSuccessIndex = LogIndex(
-                        logs = logs,
-                        searchIndex = LogIndex.SearchIndex.NoSearch,
-                    ),
-                ),
-            )
+    ): Flow<LogIndexProgress> = channelFlow {
+        // Если этот кеш не null, то в нем содержаться актуальные или прошлые результаты поиска
+        var searchCache: LogIndex?
 
-            if (!filterProgress.isFilteringNow && search.search.isNotEmpty()) {
-                val logIndex = logs.searchLogs(search)
-                emit(
-                    value = LogIndexProgress(
-                        isFilteringNow = false,
-                        isSearchingNow = false,
-                        lastSuccessIndex = logIndex,
+        createFilterProgressFlow(filter).collectLatest { filterProgress ->
+            // При изменении данных поиска всегда обнуляем кеш.
+            searchCache = null
+
+            val logs = filterProgress.logs.toLogRecords()
+            search.collectLatest { search ->
+                // Сразу отправляем результаты поиска + старый кеш далее
+                send(
+                    element = LogIndexProgress(
+                        isFilteringNow = filterProgress.isFilteringNow,
+                        isSearchingNow = search.search.isNotEmpty(),
+                        lastSuccessIndex = searchCache ?: LogIndex(
+                            logs = logs,
+                            searchIndex = LogIndex.SearchIndex.NoSearch,
+                        ),
                     ),
                 )
+
+                // Проводим новый поиск
+                if (!filterProgress.isFilteringNow && search.search.isNotEmpty()) {
+                    val logIndex = logs.searchLogs(search)
+                    searchCache = logIndex
+                    send(
+                        element = LogIndexProgress(
+                            isFilteringNow = false,
+                            isSearchingNow = false,
+                            lastSuccessIndex = logIndex,
+                        ),
+                    )
+                }
             }
         }
-            .flowOn(Dispatchers.Default)
-    }
+    }.flowOn(Dispatchers.Default)
 
     private fun createFilterProgressFlow(filter: Flow<FilterRequest>): Flow<FilterLogProgress> = flow {
         var filteredCache = emptyList<RawLogRecord>()
