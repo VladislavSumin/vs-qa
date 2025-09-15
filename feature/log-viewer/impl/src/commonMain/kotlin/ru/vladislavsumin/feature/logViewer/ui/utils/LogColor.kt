@@ -11,14 +11,14 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 
 @Composable
 fun LogRecord.colorize(): AnnotatedString {
-    val (levelColor, onLevelColor) = LevelColors.getLevelColor(raw.substring(level))
+    val logColor = LevelColors.getLevelColor(logLevel)
     return buildAnnotatedString {
         append(raw)
         addStyle(SpanStyle(color = QaTheme.colorScheme.onSurfaceVariant), time)
-        addStyle(SpanStyle(background = levelColor, color = onLevelColor), level)
+        addStyle(SpanStyle(background = logColor.background, color = logColor.onBackground), level)
         addStyle(SpanStyle(fontStyle = FontStyle.Italic), thread)
-        addStyle(SpanStyle(color = levelColor, fontWeight = FontWeight.Bold), tag)
-        addStyle(SpanStyle(color = levelColor), message)
+        addStyle(SpanStyle(color = logColor.primary, fontWeight = FontWeight.Bold), tag)
+        addStyle(SpanStyle(color = logColor.primary), message)
         searchHighlight?.let { index ->
             addStyle(SpanStyle(background = QaTheme.colorScheme.onSurfaceVariant), index)
         }

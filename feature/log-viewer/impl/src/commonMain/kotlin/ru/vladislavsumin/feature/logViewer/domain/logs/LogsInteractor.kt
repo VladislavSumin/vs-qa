@@ -275,6 +275,7 @@ private fun RawLogRecord.toLogRecord() = LogRecord(
     tag = tag,
     message = message,
     searchHighlight = null,
+    logLevel = logLevel,
 )
 
 private fun List<RawLogRecord>.toLogRecords(): List<LogRecord> = map { it.toLogRecord() }

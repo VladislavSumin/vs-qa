@@ -30,7 +30,7 @@ fun QaTextField(
     trailingContent: (@Composable RowScope.() -> Unit)? = null,
 ) {
     val textColor = QaTheme.colorScheme.onSurface
-    val borderColor = if (isError) QaTheme.colorScheme.logError else QaTheme.colorScheme.onSurfaceVariant
+    val borderColor = if (isError) QaTheme.colorScheme.logError.primary else QaTheme.colorScheme.onSurfaceVariant
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
