@@ -13,22 +13,28 @@ data class QaColorScheme(
 
     // Logs
     val logFatal: LogColor = LogColor(
-        primary = Color(0xFFCF5B56),
+        primary = Color(0xFFFF6B68),
+        background = Color(0xFF8B3C3C),
     ),
     val logError: LogColor = LogColor(
-        primary = Color(0xFFCF5B56),
+        primary = Color(0xFFFF6B68),
+        background = Color(0xFFCF5B56),
     ),
     val logWarn: LogColor = LogColor(
-        primary = Color(0xFFBBB528),
+        primary = Color(0xFFBBB529),
+        background = Color(0xFFBBB529),
     ),
     val logInfo: LogColor = LogColor(
-        primary = Color(0xFF6A8759),
+        primary = Color(0xFFABC023),
+        background = Color(0xFF6A8759),
     ),
     val logDebug: LogColor = LogColor(
-        primary = Color(0xFF305D78),
+        primary = Color(0xFF299999),
+        background = Color(0xFF305D78),
     ),
     val logTrace: LogColor = LogColor(
-        primary = Color(0xFFA1A2AA),
+        primary = Color(0xFFBBBBBB),
+        background = Color(0xFFD6D6D6),
     ),
 )
 
