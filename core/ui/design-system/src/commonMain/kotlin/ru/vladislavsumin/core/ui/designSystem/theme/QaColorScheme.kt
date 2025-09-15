@@ -52,6 +52,9 @@ data class LogColor(
     val onBackground: Color = contrastColorFor(background),
 )
 
+/**
+ * Выбирает между [Color.Black] и [Color.White] как наиболее контрастным для [color].
+ */
 @Suppress("MagicNumber")
 private fun contrastColorFor(color: Color): Color {
     val avg = (color.red + color.green + color.blue) / 3
