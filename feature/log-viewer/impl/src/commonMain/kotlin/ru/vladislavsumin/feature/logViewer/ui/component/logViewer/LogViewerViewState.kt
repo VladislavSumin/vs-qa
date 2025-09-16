@@ -1,8 +1,8 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.logViewer
 
 import androidx.compose.runtime.Immutable
-import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogSearchBarViewState
+import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
 
 /**
  * @param filter строка для фильтрации логов
@@ -12,7 +12,6 @@ import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogS
 @Immutable
 internal data class LogViewerViewState(
     val searchIndex: List<Int>,
-    val logs: List<LogRecord>,
-    val maxLogNumberDigits: Int,
+    val logsViewState: LogsViewState,
     val searchState: LogSearchBarViewState,
 )

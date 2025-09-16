@@ -18,6 +18,8 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.SearchRequest
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarUiInteractor
 import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogSearchBarViewState
+import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsEvents
+import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import java.nio.file.Path
 
@@ -30,7 +32,6 @@ internal class LogViewerViewModel(
 ) : ViewModel() {
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
-    private val visibleIndexes = MutableStateFlow(Pair(0, 0))
 
     private val logsInteractor = LogsInteractorImpl(
         scope = viewModelScope,
@@ -56,8 +57,10 @@ internal class LogViewerViewModel(
     ) { logIndexProgress, search, selectedSearchIndex, totalRecords ->
         LogViewerViewState(
             searchIndex = logIndexProgress.lastSuccessIndex.searchIndex.index,
-            logs = logIndexProgress.lastSuccessIndex.logs,
-            maxLogNumberDigits = totalRecords.toString().length,
+            logsViewState = LogsViewState(
+                logs = logIndexProgress.lastSuccessIndex.logs,
+                maxLogNumberDigits = totalRecords.toString().length,
+            ),
             searchState = LogSearchBarViewState(
                 searchRequest = search.search,
                 isMatchCase = search.matchCase,
@@ -70,18 +73,20 @@ internal class LogViewerViewModel(
         )
     }
         .onEach { state ->
-            bottomBarUiInteractor.setBottomBarText("Total records: ${state.logs.size}")
+            bottomBarUiInteractor.setBottomBarText("Total records: ${state.logsViewState.logs.size}")
         }
         .stateIn(
             LogViewerViewState(
                 searchIndex = emptyList(),
-                logs = emptyList(),
-                maxLogNumberDigits = 0,
+                logsViewState = LogsViewState(
+                    logs = emptyList(),
+                    maxLogNumberDigits = 0,
+                ),
                 searchState = LogSearchBarViewState.STUB,
             ),
         )
 
-    val events = Channel<LogViewerEvents>()
+    val events = Channel<LogsEvents>()
 
     init {
         viewModelScope.launch {
@@ -103,7 +108,7 @@ internal class LogViewerViewModel(
     private fun scrollToIndex(index: Int) {
         // TODO котсылина временная
         launch(Dispatchers.Main) {
-            events.send(LogViewerEvents.ScrollToIndex(index))
+            events.send(LogsEvents.ScrollToIndex(index))
         }
     }
 
@@ -127,10 +132,6 @@ internal class LogViewerViewModel(
             }
             scrollToIndex(state.value.searchIndex[selectedSearchIndex.value])
         }
-    }
-
-    fun onVisibleItemsChanged(firstIndex: Int, lastIndex: Int) {
-        visibleIndexes.value = firstIndex to lastIndex
     }
 
     fun onSearchChange(newValue: String) = search.update { it.copy(search = newValue) }
