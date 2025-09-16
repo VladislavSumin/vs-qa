@@ -1,40 +1,34 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.logViewer
 
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.vladislavsumin.core.coroutines.utils.combine
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
 import ru.vladislavsumin.feature.logViewer.domain.logs.SearchRequest
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
-import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.filterBar.FilterRequestParser
+import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterRequestParser
 import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogSearchBarViewState
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import java.nio.file.Path
-import kotlin.map
 
 @Stable
 internal class LogViewerViewModel(
     logPath: Path,
     mappingPath: Path?,
     private val bottomBarUiInteractor: BottomBarUiInteractor,
+    private val filterState: Flow<FilterRequestParser.ParserResult>,
 ) : ViewModel() {
-    private val filterRequestParser = FilterRequestParser()
-
-    private val filter = MutableStateFlow(TextFieldValue())
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
     private val visibleIndexes = MutableStateFlow(Pair(0, 0))
@@ -44,10 +38,6 @@ internal class LogViewerViewModel(
         logPath = logPath,
         proguardInteractor = mappingPath?.let { ProguardInteractorImpl(it) },
     )
-
-    private val filterState = filter.map { filter ->
-        filterRequestParser.tokenize(filter.text)
-    }.shareIn(viewModelScope, SharingStarted.Eagerly, 1)
 
     val state = combine(
         logsInteractor.observeLogIndex(
@@ -61,16 +51,11 @@ internal class LogViewerViewModel(
                     scrollToIndex(it.lastSuccessIndex.searchIndex.index[selectedSearchIndex.value])
                 }
             },
-        filter,
-        filterState.map { it.requestHighlight },
         search,
         selectedSearchIndex,
         logsInteractor.observeTotalRecords(),
-    ) { logIndexProgress, filter, highlight, search, selectedSearchIndex, totalRecords ->
+    ) { logIndexProgress, search, selectedSearchIndex, totalRecords ->
         LogViewerViewState(
-            filterField = filter,
-            filter = highlight,
-            isFilterValid = highlight is FilterRequestParser.RequestHighlight.Success,
             searchIndex = logIndexProgress.lastSuccessIndex.searchIndex.index,
             logs = logIndexProgress.lastSuccessIndex.logs,
             maxLogNumberDigits = totalRecords.toString().length,
@@ -90,9 +75,6 @@ internal class LogViewerViewModel(
         }
         .stateIn(
             LogViewerViewState(
-                filterField = TextFieldValue(),
-                filter = FilterRequestParser.RequestHighlight.InvalidSyntax(""),
-                isFilterValid = true,
                 searchIndex = emptyList(),
                 logs = emptyList(),
                 maxLogNumberDigits = 0,
@@ -150,10 +132,6 @@ internal class LogViewerViewModel(
 
     fun onVisibleItemsChanged(firstIndex: Int, lastIndex: Int) {
         visibleIndexes.value = firstIndex to lastIndex
-    }
-
-    fun onFilterChange(newValue: TextFieldValue) {
-        filter.value = newValue
     }
 
     fun onSearchChange(newValue: String) = search.update { it.copy(search = newValue) }

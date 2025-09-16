@@ -1,4 +1,4 @@
-package ru.vladislavsumin.feature.logViewer.ui.component.logViewer.filterBar
+package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
 import com.github.h0tk3y.betterParse.combinators.OrCombinator
 import com.github.h0tk3y.betterParse.combinators.and
@@ -14,7 +14,6 @@ import com.github.h0tk3y.betterParse.parser.Parser
 import com.github.h0tk3y.betterParse.parser.parseToEnd
 import ru.vladislavsumin.feature.logViewer.domain.logs.FilterRequest
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogLevel
-import kotlin.collections.listOf
 
 class FilterRequestParser {
 
@@ -117,7 +116,7 @@ class FilterRequestParser {
         )
 
         private val levelFilter = (-level and -contains and filters) map { level ->
-            val level = LogLevel.fromAlias(level) ?: error("Unknown level $level")
+            val level = LogLevel.Companion.fromAlias(level) ?: error("Unknown level $level")
             Filter.ByLevel(level)
         }
         private val timeBeforeFilter = (-timeBefore and -contains and filters) map { Filter.ByTimeBefore(it) }

@@ -1,0 +1,40 @@
+package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
+
+import androidx.compose.ui.text.input.TextFieldValue
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.shareIn
+import ru.vladislavsumin.core.decompose.components.ViewModel
+
+internal class FilterBarViewModel : ViewModel() {
+    private val filterRequestParser = FilterRequestParser()
+    private val filter = MutableStateFlow(TextFieldValue())
+
+    val filterState = filter.map { filter ->
+        filterRequestParser.tokenize(filter.text)
+    }.shareIn(viewModelScope, SharingStarted.Eagerly, 1)
+
+    val state = combine(
+        filter,
+        filterState,
+    ) { filter, filterState ->
+        FilterBarViewState(
+            field = filter,
+            highlight = filterState.requestHighlight,
+            isError = !filterState.searchRequest.isSuccess,
+        )
+    }
+        .stateIn(
+            initialValue = FilterBarViewState(
+                field = filter.value,
+                highlight = FilterRequestParser.RequestHighlight.InvalidSyntax(""),
+                isError = false,
+            ),
+        )
+
+    fun onFilterChange(newValue: TextFieldValue) {
+        filter.value = newValue
+    }
+}

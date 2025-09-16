@@ -24,7 +24,6 @@ import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CopyAll
-import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -39,12 +38,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
@@ -60,12 +57,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
-import ru.vladislavsumin.core.ui.QaTextField
+import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.core.ui.hotkeyController.rememberHotkeyController
-import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.filterBar.FilterRequestParser
+import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterRequestParser
 import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogsSearchBarContent
 import ru.vladislavsumin.feature.logViewer.ui.utils.addStyle
 import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
@@ -73,14 +70,15 @@ import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
 @Composable
 internal fun LogViewerContent(
     viewModel: LogViewerViewModel,
+    rootFocusRequester: FocusRequester,
+    filterFocusRequester: FocusRequester,
+    filterBarComponent: ComposeComponent,
     modifier: Modifier,
 ) {
-    val rootFocusRequester = remember { FocusRequester() }
     LaunchedEffect(rootFocusRequester) {
         rootFocusRequester.requestFocus()
     }
     val searchFocusRequester = remember { FocusRequester() }
-    val filterFocusRequester = remember { FocusRequester() }
     val hotkeyController = rememberHotkeyController(
         KeyModifier.Shift + KeyModifier.Command + Key.F to { filterFocusRequester.requestFocus() },
         KeyModifier.Command + Key.F to { searchFocusRequester.requestFocus() },
@@ -99,48 +97,14 @@ internal fun LogViewerContent(
                 LogsContent(viewModel, state, Modifier.weight(1f))
                 SidePanelContent(state)
             }
-            LogsFilter(viewModel, state, filterFocusRequester, rootFocusRequester)
+            filterBarComponent.Render(Modifier)
+//            LogsFilter(viewModel, state, filterFocusRequester, rootFocusRequester)
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
                 color = QaTheme.colorScheme.surface,
                 thickness = 1.5.dp,
             )
         }
-    }
-}
-
-@Composable
-private fun LogsFilter(
-    viewModel: LogViewerViewModel,
-    state: State<LogViewerViewState>,
-    focusRequester: FocusRequester,
-    rootFocusRequester: FocusRequester,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier
-            .background(QaTheme.colorScheme.surfaceVariant)
-            .padding(vertical = 4.dp, horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        val hotkeyController = rememberHotkeyController(
-            KeyModifier.None + Key.Escape to { rootFocusRequester.requestFocus() },
-        )
-        QaTextField(
-            value = state.value.filterField.copy(
-                annotatedString = state.value.filter.colorize(),
-            ),
-            onValueChange = viewModel::onFilterChange,
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .weight(1f)
-                .onKeyEvent(hotkeyController::invoke),
-            isError = !state.value.isFilterValid,
-            placeholder = { Text("Filter...") },
-            leadingContent = {
-                Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null)
-            },
-        )
     }
 }
 
