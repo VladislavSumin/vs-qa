@@ -118,10 +118,14 @@ class LogsInteractorImpl(
             val logs = filterProgress.logs.toLogRecords()
             search.collectLatest { search ->
                 // Сразу отправляем результаты поиска + старый кеш далее
+                val isSearch = search.search.isNotEmpty()
+                if (!isSearch) {
+                    searchCache = null
+                }
                 send(
                     element = LogIndexProgress(
                         isFilteringNow = filterProgress.isFilteringNow,
-                        isSearchingNow = search.search.isNotEmpty(),
+                        isSearchingNow = isSearch,
                         lastSuccessIndex = searchCache ?: LogIndex(
                             logs = logs,
                             searchIndex = LogIndex.SearchIndex.NoSearch,
