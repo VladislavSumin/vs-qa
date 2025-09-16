@@ -31,7 +31,7 @@ internal class LogViewerComponent(
             logPath = logPath,
             mappingPath = mappingPath,
             bottomBarUiInteractor = bottomBarUiInteractor,
-            filterState = filterBarComponent.filterState,
+            filterBarUiInteractor = filterBarComponent.filterBarUiInteractor,
         )
     }
 

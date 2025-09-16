@@ -20,7 +20,7 @@ internal class FilterBarComponent(
 ) : Component(context), ComposeComponent {
     private val viewModel = viewModel { FilterBarViewModel() }
 
-    val filterState get() = viewModel.filterState
+    val filterBarUiInteractor = viewModel
 
     @Composable
     override fun Render(modifier: Modifier) = FilterBarContent(

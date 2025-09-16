@@ -3,7 +3,6 @@ package ru.vladislavsumin.feature.logViewer.ui.component.logViewer
 import androidx.compose.runtime.Stable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -17,7 +16,7 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
 import ru.vladislavsumin.feature.logViewer.domain.logs.SearchRequest
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
-import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterRequestParser
+import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarUiInteractor
 import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogSearchBarViewState
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import java.nio.file.Path
@@ -27,7 +26,7 @@ internal class LogViewerViewModel(
     logPath: Path,
     mappingPath: Path?,
     private val bottomBarUiInteractor: BottomBarUiInteractor,
-    private val filterState: Flow<FilterRequestParser.ParserResult>,
+    private val filterBarUiInteractor: FilterBarUiInteractor,
 ) : ViewModel() {
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
@@ -41,7 +40,7 @@ internal class LogViewerViewModel(
 
     val state = combine(
         logsInteractor.observeLogIndex(
-            filter = filterState.mapNotNull { it.searchRequest.getOrNull() },
+            filter = filterBarUiInteractor.filterState.mapNotNull { it.searchRequest.getOrNull() },
             search = search,
         )
             .onEach {

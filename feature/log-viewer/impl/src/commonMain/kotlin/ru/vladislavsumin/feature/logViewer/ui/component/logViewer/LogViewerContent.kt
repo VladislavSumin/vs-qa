@@ -98,7 +98,6 @@ internal fun LogViewerContent(
                 SidePanelContent(state)
             }
             filterBarComponent.Render(Modifier)
-//            LogsFilter(viewModel, state, filterFocusRequester, rootFocusRequester)
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
                 color = QaTheme.colorScheme.surface,
