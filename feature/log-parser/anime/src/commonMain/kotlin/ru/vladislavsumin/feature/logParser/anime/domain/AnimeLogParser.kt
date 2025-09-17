@@ -18,7 +18,7 @@ import kotlin.system.measureTimeMillis
 
 class AnimeLogParser : LogParser {
     override suspend fun parseLog(filePath: Path): List<RawLogRecord> {
-        // Производительность тут примеррно 1,2кк строк в секунду, поэтому дополнительные оптимизации пока не нужны.
+        // Производительность тут примерно 1,2кк строк в секунду, поэтому дополнительные оптимизации пока не нужны.
         LogParserLogger.i { "Start parsing file $filePath with ${this.javaClass.simpleName}" }
 
         val result = mutableListOf<RawLogRecord>()
@@ -81,7 +81,7 @@ class AnimeLogParser : LogParser {
                 cache = oldCache.copy(
                     raw = oldCache.raw + "\n" + line,
                     message = IntRange(
-                        start = oldCache.message.start,
+                        start = oldCache.message.first,
                         endInclusive = oldCache.message.last + line.length + 1,
                     ),
                     lines = oldCache.lines + 1,
@@ -100,7 +100,7 @@ class AnimeLogParser : LogParser {
         private val DATE_FORMATTER = DateTimeFormatterBuilder()
             .append(DateTimeFormatter.ISO_LOCAL_DATE)
             .appendLiteral('T')
-            .appendOffset("+HH:MM", "+00:00") // парсим смещение
+            .appendOffset("+HH:MM", "+00:00")
             .appendLiteral(' ')
             .appendValue(ChronoField.HOUR_OF_DAY, 2)
             .appendLiteral(':')
