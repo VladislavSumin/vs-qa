@@ -69,7 +69,7 @@ internal fun HelpMenuContent() {
                 appendRecord("timeBefore", "filter by time STRING with string comparator")
                 appendRecord("<empty>", "filter by whole original log record")
                 appendLine()
-                appendLine("Available compotator functions:")
+                appendLine("Available comparator functions:")
                 appendRecord("=", "filter by contains")
                 appendRecord(":=", "filter by exactly (not applying to time*, level)")
                 appendLine()
