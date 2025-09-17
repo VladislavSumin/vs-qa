@@ -20,7 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -28,19 +28,21 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
-import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.LogViewerViewModel
 import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.TextSelectionSeparator
 import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
 
 @Composable
 internal fun LogsContent(
-    viewModel: LogViewerViewModel,
-    state: State<LogsViewState>,
+    events: ReceiveChannel<LogsEvents>,
+    state: StateFlow<LogsViewState>,
     modifier: Modifier,
 ) {
+    val state = state.collectAsState()
     val logs = state.value.logs
     val maxLogNumberDigits = state.value.maxLogNumberDigits
     val textSizeDp = measureTextWidth(
@@ -50,7 +52,7 @@ internal fun LogsContent(
     val lazyListState = rememberLazyListState()
 
     LaunchedEffect(lazyListState) {
-        viewModel.events.receiveAsFlow().collect { event ->
+        events.receiveAsFlow().collect { event ->
             when (event) {
                 is LogsEvents.ScrollToIndex -> lazyListState.scrollToItem(event.index)
             }

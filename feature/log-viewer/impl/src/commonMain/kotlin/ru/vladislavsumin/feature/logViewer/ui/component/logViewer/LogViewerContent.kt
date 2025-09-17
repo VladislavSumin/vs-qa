@@ -40,7 +40,7 @@ import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.core.ui.hotkeyController.rememberHotkeyController
 import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogsSearchBarContent
-import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsContent
+import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
 
 @Composable
 internal fun LogViewerContent(
@@ -48,6 +48,7 @@ internal fun LogViewerContent(
     rootFocusRequester: FocusRequester,
     filterFocusRequester: FocusRequester,
     filterBarComponent: ComposeComponent,
+    logsComponent: LogsComponent,
     modifier: Modifier,
 ) {
     LaunchedEffect(rootFocusRequester) {
@@ -69,10 +70,7 @@ internal fun LogViewerContent(
         Column {
             LogsSearchBarContent(viewModel, searchState, searchFocusRequester, rootFocusRequester)
             Row(Modifier.weight(1f)) {
-                val logsState = remember {
-                    derivedStateOf { state.value.logsViewState }
-                }
-                LogsContent(viewModel, logsState, Modifier.weight(1f))
+                logsComponent.Render(Modifier.weight(1f))
                 SidePanelContent(state)
             }
             filterBarComponent.Render(Modifier)
