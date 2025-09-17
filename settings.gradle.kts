@@ -14,6 +14,8 @@ include(":core:ui:design-system")
 include(":core:ui:hotkey-controller")
 include(":core:utils")
 
+include(":feature:log-parser:api")
+include(":feature:log-parser:anime")
 feature("bottom-bar")
 feature("log-viewer")
 feature("memory-indicator")

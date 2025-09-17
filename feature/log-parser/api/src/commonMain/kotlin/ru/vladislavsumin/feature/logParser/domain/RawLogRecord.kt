@@ -1,4 +1,4 @@
-package ru.vladislavsumin.feature.logViewer.domain.logs
+package ru.vladislavsumin.feature.logParser.domain
 
 import java.time.Instant
 
@@ -16,17 +16,19 @@ import java.time.Instant
  * @param lines общее количество строк в записи.
  */
 data class RawLogRecord(
-    // val line: Int,
     val order: Int,
     val raw: String,
+
     val time: IntRange,
     val timeInstant: Instant,
+
     val level: IntRange,
+    val logLevel: LogLevel,
+
     val thread: IntRange,
     val tag: IntRange,
     val message: IntRange,
 
-    val logLevel: LogLevel,
     val lines: Int,
 ) {
     /**

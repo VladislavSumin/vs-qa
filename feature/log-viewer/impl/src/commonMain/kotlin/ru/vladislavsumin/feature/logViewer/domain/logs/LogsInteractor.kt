@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
+import ru.vladislavsumin.feature.logParser.anime.domain.AnimeLogParser
+import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
 import ru.vladislavsumin.feature.logViewer.LogLogger
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractor
 import java.nio.file.Path

@@ -1,4 +1,4 @@
-package ru.vladislavsumin.feature.logViewer.domain.logs
+package ru.vladislavsumin.feature.logParser.domain
 
 @Suppress("MagicNumber")
 enum class LogLevel(val rawLevel: Int, val aliases: Set<String>) {

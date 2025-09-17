@@ -3,7 +3,7 @@ package ru.vladislavsumin.feature.logViewer.ui.utils
 import androidx.compose.runtime.Composable
 import ru.vladislavsumin.core.ui.designSystem.theme.LogColor
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
-import ru.vladislavsumin.feature.logViewer.domain.logs.LogLevel
+import ru.vladislavsumin.feature.logParser.domain.LogLevel
 
 object LevelColors {
     @Composable

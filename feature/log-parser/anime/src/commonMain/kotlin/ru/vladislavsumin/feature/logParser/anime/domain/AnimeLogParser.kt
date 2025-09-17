@@ -1,6 +1,9 @@
-package ru.vladislavsumin.feature.logViewer.domain.logs
+package ru.vladislavsumin.feature.logParser.anime.domain
 
-import ru.vladislavsumin.feature.logViewer.LogParserLogger
+import ru.vladislavsumin.core.logger.api.logger
+import ru.vladislavsumin.feature.logParser.domain.LogLevel
+import ru.vladislavsumin.feature.logParser.domain.LogParser
+import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
 import java.nio.file.Path
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -13,12 +16,8 @@ import kotlin.io.path.bufferedReader
 import kotlin.io.path.extension
 import kotlin.system.measureTimeMillis
 
-interface LogParser {
-    fun parseLog(filePath: Path): List<RawLogRecord>
-}
-
 class AnimeLogParser : LogParser {
-    override fun parseLog(filePath: Path): List<RawLogRecord> {
+    override suspend fun parseLog(filePath: Path): List<RawLogRecord> {
         // Производительность тут примеррно 1,2кк строк в секунду, поэтому дополнительные оптимизации пока не нужны.
         LogParserLogger.i { "Start parsing file $filePath with ${this.javaClass.simpleName}" }
 
@@ -112,3 +111,5 @@ class AnimeLogParser : LogParser {
             .toFormatter()
     }
 }
+
+private val LogParserLogger = logger("anime-log-parser")
