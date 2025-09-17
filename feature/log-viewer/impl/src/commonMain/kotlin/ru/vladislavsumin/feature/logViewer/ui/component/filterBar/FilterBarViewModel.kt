@@ -7,11 +7,13 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.update
 import ru.vladislavsumin.core.decompose.components.ViewModel
 
 internal class FilterBarViewModel : ViewModel(), FilterBarUiInteractor {
     private val filterRequestParser = FilterRequestParser()
     private val filter = MutableStateFlow(TextFieldValue())
+    private val showHelpMenu = MutableStateFlow(false)
 
     override val filterState: SharedFlow<FilterRequestParser.ParserResult> = filter.map { filter ->
         filterRequestParser.tokenize(filter.text)
@@ -20,11 +22,13 @@ internal class FilterBarViewModel : ViewModel(), FilterBarUiInteractor {
     val state = combine(
         filter,
         filterState,
-    ) { filter, filterState ->
+        showHelpMenu,
+    ) { filter, filterState, showHelpMenu ->
         FilterBarViewState(
             field = filter,
             highlight = filterState.requestHighlight,
             isError = !filterState.searchRequest.isSuccess,
+            showHelpMenu = showHelpMenu,
         )
     }
         .stateIn(
@@ -32,10 +36,19 @@ internal class FilterBarViewModel : ViewModel(), FilterBarUiInteractor {
                 field = filter.value,
                 highlight = FilterRequestParser.RequestHighlight.InvalidSyntax(""),
                 isError = false,
+                showHelpMenu = false,
             ),
         )
 
     fun onFilterChange(newValue: TextFieldValue) {
         filter.value = newValue
+    }
+
+    fun onClickHelpButton() {
+        showHelpMenu.update { !it }
+    }
+
+    fun onDismissHelpMenu() {
+        showHelpMenu.value = false
     }
 }

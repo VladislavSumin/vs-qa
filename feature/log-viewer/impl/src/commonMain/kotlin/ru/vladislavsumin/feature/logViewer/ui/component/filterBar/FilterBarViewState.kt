@@ -8,4 +8,5 @@ data class FilterBarViewState(
     val field: TextFieldValue,
     val highlight: FilterRequestParser.RequestHighlight,
     val isError: Boolean,
+    val showHelpMenu: Boolean,
 )
