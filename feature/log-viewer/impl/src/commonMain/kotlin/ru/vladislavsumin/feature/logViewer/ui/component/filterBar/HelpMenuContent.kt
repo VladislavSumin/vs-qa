@@ -73,7 +73,11 @@ internal fun HelpMenuContent() {
                 appendRecord("=", "filter by contains")
                 appendRecord(":=", "filter by exactly (not applying to time*, level)")
                 appendLine()
-                append("All different filters merges with && condiction, all same filter merges by || condition.")
+                append("All different filters merges with ")
+                appendHighlight("&&")
+                append(" condiction, all same filter merges by ")
+                appendHighlight("||")
+                append(" condition.")
             },
             style = MaterialTheme.typography.bodyMedium,
         )
