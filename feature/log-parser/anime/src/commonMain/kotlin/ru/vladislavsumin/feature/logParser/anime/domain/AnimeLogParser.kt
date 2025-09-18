@@ -16,7 +16,7 @@ import kotlin.io.path.bufferedReader
 import kotlin.io.path.extension
 import kotlin.system.measureTimeMillis
 
-class AnimeLogParser : LogParser {
+internal class AnimeLogParser : LogParser {
     override suspend fun parseLog(filePath: Path): List<RawLogRecord> {
         // Производительность тут примерно 1,2кк строк в секунду, поэтому дополнительные оптимизации пока не нужны.
         LogParserLogger.i { "Start parsing file $filePath with ${this.javaClass.simpleName}" }

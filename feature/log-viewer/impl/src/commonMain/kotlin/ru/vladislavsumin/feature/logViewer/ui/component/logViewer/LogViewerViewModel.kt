@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.coroutines.utils.combine
 import ru.vladislavsumin.core.decompose.components.ViewModel
+import ru.vladislavsumin.feature.logParser.anime.domain.AnimeLogParserProvider
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
@@ -39,6 +40,8 @@ internal class LogViewerViewModel(
     private val logsInteractor = LogsInteractorImpl(
         scope = viewModelScope,
         logPath = logPath,
+        // TODO через DI
+        logParserProvider = AnimeLogParserProvider(),
         proguardInteractor = mappingPath?.let { ProguardInteractorImpl(it) },
     )
 
@@ -59,8 +62,9 @@ internal class LogViewerViewModel(
         logsInteractor.observeMappingStatus(),
         showSelectMappingDialog,
         showDragAndDropContainers,
-    ) { logIndexProgress, search, selectedSearchIndex, mappingStatus,
-        showSelectMappingDialog, showDragAndDropContainers,
+    ) {
+            logIndexProgress, search, selectedSearchIndex, mappingStatus,
+            showSelectMappingDialog, showDragAndDropContainers,
         ->
         LogViewerViewState(
             searchIndex = logIndexProgress.lastSuccessIndex.searchIndex.index,

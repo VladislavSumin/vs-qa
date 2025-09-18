@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
-import ru.vladislavsumin.feature.logParser.anime.domain.AnimeLogParser
+import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
 import ru.vladislavsumin.feature.logViewer.LogLogger
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractor
@@ -69,6 +69,7 @@ interface LogsInteractor {
 class LogsInteractorImpl(
     private val scope: CoroutineScope,
     private val logPath: Path,
+    private val logParserProvider: LogParserProvider,
     proguardInteractor: ProguardInteractor?,
 ) : LogsInteractor {
     private val logs = MutableStateFlow<List<RawLogRecord>>(emptyList())
@@ -85,7 +86,7 @@ class LogsInteractorImpl(
                 loadingStatus.value = LogsInteractor.LoadingStatus.LoadingLogs
                 logs.value = emptyList()
 
-                val obfuscatedLogs = AnimeLogParser().parseLog(logPath)
+                val obfuscatedLogs = logParserProvider.getLogParser().parseLog(logPath)
                 logs.value = obfuscatedLogs
 
                 // TODO ну парсим тут чего уж там, все равно говнокод
