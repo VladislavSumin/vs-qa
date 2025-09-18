@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CopyAll
+import androidx.compose.material.icons.filled.FilePresent
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -26,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -34,13 +36,17 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.AwtWindow
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.ui.button.QaIconButton
+import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.core.ui.hotkeyController.rememberHotkeyController
 import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogsSearchBarContent
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
+import java.awt.FileDialog
+import java.awt.Frame
 
 @Composable
 internal fun LogViewerContent(
@@ -71,7 +77,7 @@ internal fun LogViewerContent(
             LogsSearchBarContent(viewModel, searchState, searchFocusRequester, rootFocusRequester)
             Row(Modifier.weight(1f)) {
                 logsComponent.Render(Modifier.weight(1f))
-                SidePanelContent(state)
+                SidePanelContent(viewModel, state)
             }
             filterBarComponent.Render(Modifier)
             HorizontalDivider(
@@ -85,6 +91,7 @@ internal fun LogViewerContent(
 
 @Composable
 private fun SidePanelContent(
+    viewModel: LogViewerViewModel,
     state: State<LogViewerViewState>,
 ) {
     val clipboard = LocalClipboardManager.current
@@ -101,6 +108,16 @@ private fun SidePanelContent(
             Modifier.padding(4.dp),
         ) {
             Icon(Icons.Default.CopyAll, null)
+        }
+        if (state.value.showSelectMappingDialog) {
+            FileDialog(onCloseRequest = viewModel::onSelectMappingDialogResult)
+        }
+        QaToggleIconButton(
+            checked = state.value.isMappingApplied,
+            onCheckedChange = { viewModel.onClickMappingButton() },
+            Modifier.padding(4.dp),
+        ) {
+            Icon(Icons.Default.FilePresent, null)
         }
         Spacer(Modifier.weight(1f))
         Divider(color = QaTheme.colorScheme.surface, thickness = 1.5.dp)
@@ -119,3 +136,22 @@ fun TextSelectionSeparator(text: String = "\n") {
         text = text,
     )
 }
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun FileDialog(
+    parent: Frame? = null,
+    onCloseRequest: (result: String?) -> Unit,
+) = AwtWindow(
+    create = {
+        object : FileDialog(parent, "Choose a file", LOAD) {
+            override fun setVisible(value: Boolean) {
+                super.setVisible(value)
+                if (value) {
+                    onCloseRequest(directory + file)
+                }
+            }
+        }
+    },
+    dispose = FileDialog::dispose,
+)

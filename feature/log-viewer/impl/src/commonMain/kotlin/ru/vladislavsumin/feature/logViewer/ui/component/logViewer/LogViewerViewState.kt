@@ -14,4 +14,6 @@ internal data class LogViewerViewState(
     val searchIndex: List<Int>,
     val logsViewState: LogsViewState,
     val searchState: LogSearchBarViewState,
+    val isMappingApplied: Boolean,
+    val showSelectMappingDialog: Boolean,
 )

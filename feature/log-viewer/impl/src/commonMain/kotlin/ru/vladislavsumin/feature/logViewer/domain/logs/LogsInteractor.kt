@@ -14,11 +14,13 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
+import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
 import ru.vladislavsumin.feature.logParser.anime.domain.AnimeLogParser
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
 import ru.vladislavsumin.feature.logViewer.LogLogger
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractor
+import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
 import java.nio.file.Path
 import kotlin.math.log
 
@@ -31,6 +33,11 @@ interface LogsInteractor {
      */
     fun observeLoadingStatus(): StateFlow<LoadingStatus>
 
+    fun observeMappingStatus(): StateFlow<MappingStatus>
+
+    suspend fun detachMapping()
+    suspend fun attachMapping(path: Path)
+
     /**
      * Строит "Индекс" (результат фильтрации и последующего поиска) на основе [filter] и [search].
      */
@@ -38,8 +45,6 @@ interface LogsInteractor {
         filter: Flow<FilterRequest>,
         search: Flow<SearchRequest>,
     ): Flow<LogIndexProgress>
-
-    fun observeTotalRecords(): Flow<Int>
 
     /**
      * Статус загрузки логов.
@@ -53,16 +58,22 @@ interface LogsInteractor {
         data object DeobfuscateLogs : LoadingStatus
         data object Loaded : LoadingStatus
     }
+
+    sealed interface MappingStatus {
+        data object NotAttached : MappingStatus
+        data object Attached : MappingStatus
+    }
 }
 
 // TODO тут нужно оптимизировать количество копирований списка, а так же equals проверки.
 class LogsInteractorImpl(
     private val scope: CoroutineScope,
     private val logPath: Path,
-    private val proguardInteractor: ProguardInteractor?,
+    proguardInteractor: ProguardInteractor?,
 ) : LogsInteractor {
     private val logs = MutableStateFlow<List<RawLogRecord>>(emptyList())
     private val loadingStatus = MutableStateFlow<LogsInteractor.LoadingStatus>(LogsInteractor.LoadingStatus.LoadingLogs)
+    private val proguard = MutableStateFlow(proguardInteractor)
 
     init {
         loadLogs()
@@ -70,41 +81,61 @@ class LogsInteractorImpl(
 
     private fun loadLogs() {
         scope.launch(Dispatchers.IO) {
-            val obfuscatedLogs = AnimeLogParser().parseLog(logPath)
-            logs.value = obfuscatedLogs
+            proguard.collectLatest { proguard ->
+                loadingStatus.value = LogsInteractor.LoadingStatus.LoadingLogs
+                logs.value = emptyList()
 
-            // TODO ну парсим тут чего уж там, все равно говнокод
-            if (proguardInteractor != null) {
-                loadingStatus.value = LogsInteractor.LoadingStatus.DeobfuscateLogs
-                val deobfuscated = obfuscatedLogs.parallelStream()
-                    .map { log ->
-                        val deobfuscatedTag = proguardInteractor.deobfuscateClass(log.raw.substring(log.tag))
-                        if (deobfuscatedTag != null) {
-                            log.copyTag(deobfuscatedTag)
-                        } else {
-                            log
+                val obfuscatedLogs = AnimeLogParser().parseLog(logPath)
+                logs.value = obfuscatedLogs
+
+                // TODO ну парсим тут чего уж там, все равно говнокод
+                if (proguard != null) {
+                    loadingStatus.value = LogsInteractor.LoadingStatus.DeobfuscateLogs
+                    val deobfuscated = obfuscatedLogs.parallelStream()
+                        .map { log ->
+                            val deobfuscatedTag = proguard.deobfuscateClass(log.raw.substring(log.tag))
+                            if (deobfuscatedTag != null) {
+                                log.copyTag(deobfuscatedTag)
+                            } else {
+                                log
+                            }
                         }
-                    }
-                    .map { log ->
-                        if (log.lines > 2 && log.raw.lines()[log.lines - 2].startsWith("\tat ")) {
-                            val newMessage = proguardInteractor.deobfuscateStack(log.raw.substring(log.message))
-                            log.copy(
-                                raw = log.raw.replaceRange(log.message, newMessage),
-                                message = IntRange(log.message.first, log.message.first + newMessage.length - 1),
-                            )
-                        } else {
-                            log
+                        .map { log ->
+                            if (log.lines > 2 && log.raw.lines()[log.lines - 2].startsWith("\tat ")) {
+                                val newMessage = proguard.deobfuscateStack(log.raw.substring(log.message))
+                                log.copy(
+                                    raw = log.raw.replaceRange(log.message, newMessage),
+                                    message = IntRange(log.message.first, log.message.first + newMessage.length - 1),
+                                )
+                            } else {
+                                log
+                            }
                         }
-                    }
-                    .toList()
-                logs.value = deobfuscated
+                        .toList()
+                    logs.value = deobfuscated
+                }
+                loadingStatus.value = LogsInteractor.LoadingStatus.Loaded
             }
-            loadingStatus.value = LogsInteractor.LoadingStatus.Loaded
         }
     }
 
+    override fun observeMappingStatus(): StateFlow<LogsInteractor.MappingStatus> = proguard.mapState {
+        if (it == null) {
+            LogsInteractor.MappingStatus.NotAttached
+        } else {
+            LogsInteractor.MappingStatus.Attached
+        }
+    }
+
+    override suspend fun detachMapping() {
+        proguard.value = null
+    }
+
+    override suspend fun attachMapping(path: Path) {
+        proguard.value = ProguardInteractorImpl(path)
+    }
+
     override fun observeLoadingStatus(): StateFlow<LogsInteractor.LoadingStatus> = loadingStatus
-    override fun observeTotalRecords(): Flow<Int> = logs.map { it.size }
 
     override fun observeLogIndex(
         filter: Flow<FilterRequest>,
@@ -131,13 +162,14 @@ class LogsInteractorImpl(
                         lastSuccessIndex = searchCache ?: LogIndex(
                             logs = logs,
                             searchIndex = LogIndex.SearchIndex.NoSearch,
+                            totalLogRecords = filterProgress.totalLogRecords,
                         ),
                     ),
                 )
 
                 // Проводим новый поиск
                 if (!filterProgress.isFilteringNow && search.search.isNotEmpty()) {
-                    val logIndex = logs.searchLogs(search)
+                    val logIndex = logs.searchLogs(search, filterProgress.totalLogRecords)
                     searchCache = logIndex
                     send(
                         element = LogIndexProgress(
@@ -159,9 +191,9 @@ class LogsInteractorImpl(
         ) { logs, filter -> logs to filter }
             .distinctUntilChanged()
             .transformLatest { (logs, filter) ->
-                emit(FilterLogProgress(isFilteringNow = true, filteredCache))
+                emit(FilterLogProgress(isFilteringNow = true, filteredCache, logs.size))
                 filteredCache = filterLogs(logs, filter)
-                emit(FilterLogProgress(isFilteringNow = false, filteredCache))
+                emit(FilterLogProgress(isFilteringNow = false, filteredCache, logs.size))
             }
             .collect(this)
     }
@@ -224,7 +256,7 @@ class LogsInteractorImpl(
         return result
     }
 
-    private fun List<LogRecord>.searchLogs(search: SearchRequest): LogIndex {
+    private fun List<LogRecord>.searchLogs(search: SearchRequest, totalLogRecords: Int): LogIndex {
         val (time, result) = measureTimeMillisWithResult {
             val regex = runCatching {
                 Regex(
@@ -242,6 +274,7 @@ class LogsInteractorImpl(
                 return@measureTimeMillisWithResult LogIndex(
                     logs = this,
                     searchIndex = LogIndex.SearchIndex.BadRegex,
+                    totalLogRecords = totalLogRecords,
                 )
             }
 
@@ -264,6 +297,7 @@ class LogsInteractorImpl(
                 } else {
                     LogIndex.SearchIndex.EmptySearch
                 },
+                totalLogRecords = totalLogRecords,
             )
         }
 
@@ -277,6 +311,7 @@ class LogsInteractorImpl(
     private data class FilterLogProgress(
         val isFilteringNow: Boolean,
         val logs: List<RawLogRecord>,
+        val totalLogRecords: Int,
     )
 }
 

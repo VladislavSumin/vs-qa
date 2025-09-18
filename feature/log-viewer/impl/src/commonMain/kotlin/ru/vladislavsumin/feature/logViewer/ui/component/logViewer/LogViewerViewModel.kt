@@ -21,6 +21,7 @@ import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsEvents
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import java.nio.file.Path
+import kotlin.io.path.Path
 
 @Stable
 internal class LogViewerViewModel(
@@ -31,6 +32,7 @@ internal class LogViewerViewModel(
 ) : ViewModel() {
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
+    private val showSelectMappingDialog = MutableStateFlow(false)
 
     private val logsInteractor = LogsInteractorImpl(
         scope = viewModelScope,
@@ -52,13 +54,14 @@ internal class LogViewerViewModel(
             },
         search,
         selectedSearchIndex,
-        logsInteractor.observeTotalRecords(),
-    ) { logIndexProgress, search, selectedSearchIndex, totalRecords ->
+        logsInteractor.observeMappingStatus(),
+        showSelectMappingDialog,
+    ) { logIndexProgress, search, selectedSearchIndex, mappingStatus, showSelectMappingDialog ->
         LogViewerViewState(
             searchIndex = logIndexProgress.lastSuccessIndex.searchIndex.index,
             logsViewState = LogsViewState(
                 logs = logIndexProgress.lastSuccessIndex.logs,
-                maxLogNumberDigits = totalRecords.toString().length,
+                maxLogNumberDigits = logIndexProgress.lastSuccessIndex.totalLogRecords.toString().length,
             ),
             searchState = LogSearchBarViewState(
                 searchRequest = search.search,
@@ -69,6 +72,11 @@ internal class LogViewerViewModel(
                 currentSearchResultIndex = selectedSearchIndex,
                 totalSearchResults = logIndexProgress.lastSuccessIndex.searchIndex.index.size,
             ),
+            isMappingApplied = when (mappingStatus) {
+                LogsInteractor.MappingStatus.Attached -> true
+                LogsInteractor.MappingStatus.NotAttached -> false
+            },
+            showSelectMappingDialog = showSelectMappingDialog,
         )
     }
         .onEach { state ->
@@ -82,6 +90,8 @@ internal class LogViewerViewModel(
                     maxLogNumberDigits = 0,
                 ),
                 searchState = LogSearchBarViewState.STUB,
+                isMappingApplied = false,
+                showSelectMappingDialog = false,
             ),
         )
 
@@ -106,6 +116,21 @@ internal class LogViewerViewModel(
 
     private fun scrollToIndex(index: Int) = launch {
         events.send(LogsEvents.ScrollToIndex(index))
+    }
+
+    fun onClickMappingButton() = launch {
+        if (state.value.isMappingApplied) {
+            logsInteractor.detachMapping()
+        } else {
+            showSelectMappingDialog.value = true
+        }
+    }
+
+    fun onSelectMappingDialogResult(result: String?) = launch {
+        showSelectMappingDialog.value = false
+        if (result != null) {
+            logsInteractor.attachMapping(Path(result))
+        }
     }
 
     fun onClickPrevIndex() {

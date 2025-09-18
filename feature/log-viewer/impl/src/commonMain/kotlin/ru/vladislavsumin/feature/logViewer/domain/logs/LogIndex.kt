@@ -3,6 +3,7 @@ package ru.vladislavsumin.feature.logViewer.domain.logs
 data class LogIndex(
     val logs: List<LogRecord>,
     val searchIndex: SearchIndex,
+    val totalLogRecords: Int,
 ) {
     sealed interface SearchIndex {
         /**
