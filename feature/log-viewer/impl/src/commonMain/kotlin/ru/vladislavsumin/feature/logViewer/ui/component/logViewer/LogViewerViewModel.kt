@@ -4,11 +4,11 @@ import androidx.compose.runtime.Stable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.vladislavsumin.core.coroutines.utils.combine
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
@@ -20,6 +20,7 @@ import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogS
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsEvents
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
+import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.Path
 
@@ -33,6 +34,7 @@ internal class LogViewerViewModel(
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
     private val showSelectMappingDialog = MutableStateFlow(false)
+    private val showDragAndDropContainers = MutableStateFlow(false)
 
     private val logsInteractor = LogsInteractorImpl(
         scope = viewModelScope,
@@ -56,7 +58,10 @@ internal class LogViewerViewModel(
         selectedSearchIndex,
         logsInteractor.observeMappingStatus(),
         showSelectMappingDialog,
-    ) { logIndexProgress, search, selectedSearchIndex, mappingStatus, showSelectMappingDialog ->
+        showDragAndDropContainers,
+    ) { logIndexProgress, search, selectedSearchIndex, mappingStatus,
+        showSelectMappingDialog, showDragAndDropContainers,
+        ->
         LogViewerViewState(
             searchIndex = logIndexProgress.lastSuccessIndex.searchIndex.index,
             logsViewState = LogsViewState(
@@ -77,23 +82,13 @@ internal class LogViewerViewModel(
                 LogsInteractor.MappingStatus.NotAttached -> false
             },
             showSelectMappingDialog = showSelectMappingDialog,
+            showDragAndDropContainers = showDragAndDropContainers,
         )
     }
         .onEach { state ->
             bottomBarUiInteractor.setBottomBarText("Total records: ${state.logsViewState.logs.size}")
         }
-        .stateIn(
-            LogViewerViewState(
-                searchIndex = emptyList(),
-                logsViewState = LogsViewState(
-                    logs = emptyList(),
-                    maxLogNumberDigits = 0,
-                ),
-                searchState = LogSearchBarViewState.STUB,
-                isMappingApplied = false,
-                showSelectMappingDialog = false,
-            ),
-        )
+        .stateIn(LogViewerViewState.STUB)
 
     val events = Channel<LogsEvents>()
 
@@ -133,6 +128,10 @@ internal class LogViewerViewModel(
         }
     }
 
+    fun onDragAndDropMappingFile(file: File) = launch {
+        logsInteractor.attachMapping(file.toPath())
+    }
+
     fun onClickPrevIndex() {
         if (state.value.searchIndex.isNotEmpty()) {
             if (selectedSearchIndex.value == 0) {
@@ -153,6 +152,14 @@ internal class LogViewerViewModel(
             }
             scrollToIndex(state.value.searchIndex[selectedSearchIndex.value])
         }
+    }
+
+    fun onStartDragAndDrop() {
+        showDragAndDropContainers.value = true
+    }
+
+    fun onStopDragAndDrop() {
+        showDragAndDropContainers.value = false
     }
 
     fun onSearchChange(newValue: String) = search.update { it.copy(search = newValue) }

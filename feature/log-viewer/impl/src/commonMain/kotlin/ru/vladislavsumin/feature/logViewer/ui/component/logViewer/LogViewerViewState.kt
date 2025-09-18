@@ -16,4 +16,19 @@ internal data class LogViewerViewState(
     val searchState: LogSearchBarViewState,
     val isMappingApplied: Boolean,
     val showSelectMappingDialog: Boolean,
-)
+    val showDragAndDropContainers: Boolean,
+) {
+    companion object {
+        val STUB = LogViewerViewState(
+            searchIndex = emptyList(),
+            logsViewState = LogsViewState(
+                logs = emptyList(),
+                maxLogNumberDigits = 0,
+            ),
+            searchState = LogSearchBarViewState.STUB,
+            isMappingApplied = false,
+            showSelectMappingDialog = false,
+            showDragAndDropContainers = false,
+        )
+    }
+}
