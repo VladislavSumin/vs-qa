@@ -35,7 +35,12 @@ internal class AnimeLogParser : LogParser {
 
     private fun parseZip(filePath: Path, result: MutableList<RawLogRecord>) {
         val zip = ZipFile(filePath.absolutePathString())
-        val names = zip.entries().toList().map { it.name }.sorted()
+        val names = zip.entries().toList()
+            // Фильтр нужен для корректной работы с перепакованными на macos архивами.
+            // Отрезаем мета информацию из архива.
+            .filter { !it.isDirectory && !it.name.startsWith("__MACOSX") }
+            .map { it.name }
+            .sorted()
         names.forEach {
             zip.getInputStream(zip.getEntry(it)).use { internalZipStream ->
                 ZipInputStream(internalZipStream).use { zipStream ->
@@ -55,14 +60,35 @@ internal class AnimeLogParser : LogParser {
     @Suppress("MagicNumber")
     private fun parseLines(lines: Sequence<String>, result: MutableList<RawLogRecord>) {
         var cache: RawLogRecord? = null
+        val rawBuilder: StringBuilder = StringBuilder()
+
+        fun dumpCache() {
+            cache?.let { cache ->
+                // Remove last new line
+                rawBuilder.deleteCharAt(rawBuilder.length - 1)
+
+                val raw = rawBuilder.toString()
+                val record = cache.copy(
+                    raw = raw,
+                    message = IntRange(
+                        start = cache.tag.last + 2, // После тега пробел, его исключаем.
+                        endInclusive = raw.length - 1,
+                    ),
+                )
+                result.add(record)
+                rawBuilder.clear()
+            }
+            cache = null
+        }
+
         var order = result.size
         for (line in lines) {
             val matches = LOG_REGEX.matchEntire(line)
             if (matches != null) {
-                cache?.let(result::add)
+                dumpCache()
                 cache = RawLogRecord(
                     order = ++order,
-                    raw = line,
+                    raw = "",
                     time = matches.groups[1]!!.range,
                     timeInstant = OffsetDateTime.parse(
                         matches.groups[1]!!.value,
@@ -76,19 +102,11 @@ internal class AnimeLogParser : LogParser {
                         ?: error("UNKNOWN LEVEL ${matches.groups[3]!!.value}"),
                     lines = 1,
                 )
-            } else {
-                val oldCache = cache!!
-                cache = oldCache.copy(
-                    raw = oldCache.raw + "\n" + line,
-                    message = IntRange(
-                        start = oldCache.message.first,
-                        endInclusive = oldCache.message.last + line.length + 1,
-                    ),
-                    lines = oldCache.lines + 1,
-                )
             }
+            rawBuilder.appendLine(line)
         }
-        result.add(cache!!)
+
+        dumpCache()
     }
 
     companion object {
