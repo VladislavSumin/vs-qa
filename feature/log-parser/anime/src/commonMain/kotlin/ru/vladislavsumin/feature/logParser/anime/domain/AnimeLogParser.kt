@@ -61,6 +61,7 @@ internal class AnimeLogParser : LogParser {
     private fun parseLines(lines: Sequence<String>, result: MutableList<RawLogRecord>) {
         var cache: RawLogRecord? = null
         val rawBuilder: StringBuilder = StringBuilder()
+        var linesCount = 0
 
         fun dumpCache() {
             cache?.let { cache ->
@@ -74,10 +75,11 @@ internal class AnimeLogParser : LogParser {
                         start = cache.tag.last + 2, // После тега пробел, его исключаем.
                         endInclusive = raw.length - 1,
                     ),
-                    lines = raw.lines().size,
+                    lines = linesCount,
                 )
                 result.add(record)
                 rawBuilder.clear()
+                linesCount = 0
             }
             cache = null
         }
@@ -105,6 +107,7 @@ internal class AnimeLogParser : LogParser {
                 )
             }
             rawBuilder.appendLine(line)
+            linesCount++
         }
 
         dumpCache()
