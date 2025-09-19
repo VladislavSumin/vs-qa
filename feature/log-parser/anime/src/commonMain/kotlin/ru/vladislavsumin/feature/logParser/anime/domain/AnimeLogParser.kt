@@ -39,9 +39,11 @@ internal class AnimeLogParser : LogParser {
         names.forEach {
             zip.getInputStream(zip.getEntry(it)).use { internalZipStream ->
                 ZipInputStream(internalZipStream).use { zipStream ->
-                    zipStream.nextEntry!!
-                    val lines = zipStream.bufferedReader().lineSequence()
-                    parseLines(lines, result)
+                    val next = zipStream.nextEntry
+                    if (next != null) {
+                        val lines = zipStream.bufferedReader().lineSequence()
+                        parseLines(lines, result)
+                    }
                 }
             }
         }
