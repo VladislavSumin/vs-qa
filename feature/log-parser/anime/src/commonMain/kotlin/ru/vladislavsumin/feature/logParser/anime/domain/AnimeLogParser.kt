@@ -74,6 +74,7 @@ internal class AnimeLogParser : LogParser {
                         start = cache.tag.last + 2, // После тега пробел, его исключаем.
                         endInclusive = raw.length - 1,
                     ),
+                    lines = raw.lines().size,
                 )
                 result.add(record)
                 rawBuilder.clear()
