@@ -51,8 +51,8 @@ import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
-import ru.vladislavsumin.core.ui.hotkeyController.rememberHotkeyController
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarContent
 import java.awt.FileDialog
@@ -75,10 +75,12 @@ internal fun LogViewerContent(
         rootFocusRequester.requestFocus()
     }
     val searchFocusRequester = remember { FocusRequester() }
-    val hotkeyController = rememberHotkeyController(
-        KeyModifier.Shift + KeyModifier.Command + Key.F to { filterFocusRequester.requestFocus() },
-        KeyModifier.Command + Key.F to { searchFocusRequester.requestFocus() },
-    )
+    val hotkeyController = remember(filterFocusRequester, searchFocusRequester) {
+        HotkeyController(
+            KeyModifier.Shift + KeyModifier.Command + Key.F to { filterFocusRequester.requestFocus() },
+            KeyModifier.Command + Key.F to { searchFocusRequester.requestFocus() },
+        )
+    }
     val dragAndDropTarget = rememberGlobalDragAndDropTarget(viewModel)
     Surface(
         modifier = modifier

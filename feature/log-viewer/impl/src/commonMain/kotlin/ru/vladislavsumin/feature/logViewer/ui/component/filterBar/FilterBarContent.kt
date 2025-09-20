@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -27,8 +28,8 @@ import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
-import ru.vladislavsumin.core.ui.hotkeyController.rememberHotkeyController
 import ru.vladislavsumin.feature.logViewer.ui.utils.addStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,9 +46,11 @@ internal fun FilterBarContent(
             .padding(vertical = 4.dp, horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val hotkeyController = rememberHotkeyController(
-            KeyModifier.None + Key.Escape to onFocusLost,
-        )
+        val hotkeyController = remember(onFocusLost) {
+            HotkeyController(
+                KeyModifier.None + Key.Escape to onFocusLost,
+            )
+        }
         val state by viewModel.state.collectAsState()
         QaTextField(
             value = state.field.copy(

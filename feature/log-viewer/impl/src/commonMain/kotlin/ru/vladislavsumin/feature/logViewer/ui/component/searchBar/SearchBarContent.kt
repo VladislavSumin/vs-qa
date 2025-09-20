@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -24,8 +25,8 @@ import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
-import ru.vladislavsumin.core.ui.hotkeyController.rememberHotkeyController
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerViewModel
 
 @Composable
@@ -38,17 +39,19 @@ internal fun SearchBarContent(
     modifier: Modifier = Modifier,
 ) {
     val state by state
-    val hotkeyController = rememberHotkeyController(
-        KeyModifier.Shift + Key.Enter to {
-            viewModel.onClickPrevIndex()
-            true
-        },
-        KeyModifier.None + Key.Enter to {
-            viewModel.onClickNextIndex()
-            true
-        },
-        KeyModifier.None + Key.Escape to { rootFocusRequester.requestFocus() },
-    )
+    val hotkeyController = remember(viewModel, rootFocusRequester) {
+        HotkeyController(
+            KeyModifier.Shift + Key.Enter to {
+                viewModel.onClickPrevIndex()
+                true
+            },
+            KeyModifier.None + Key.Enter to {
+                viewModel.onClickNextIndex()
+                true
+            },
+            KeyModifier.None + Key.Escape to { rootFocusRequester.requestFocus() },
+        )
+    }
     Row(
         modifier
             .background(QaTheme.colorScheme.surfaceVariant)
