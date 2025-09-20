@@ -8,7 +8,6 @@ import com.arkivanov.decompose.childContext
 import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponent
-import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.LogViewerViewModelFactory
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 
