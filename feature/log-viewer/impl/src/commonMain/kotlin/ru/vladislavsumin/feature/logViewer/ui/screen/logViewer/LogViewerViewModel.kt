@@ -1,4 +1,4 @@
-package ru.vladislavsumin.feature.logViewer.ui.component.logViewer
+package ru.vladislavsumin.feature.logViewer.ui.screen.logViewer
 
 import androidx.compose.runtime.Stable
 import kotlinx.coroutines.channels.Channel
@@ -19,9 +19,9 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
 import ru.vladislavsumin.feature.logViewer.domain.logs.SearchRequest
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarUiInteractor
-import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogSearchBarViewState
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsEvents
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
+import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarViewState
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import java.io.File
 import java.nio.file.Path
@@ -75,7 +75,7 @@ internal class LogViewerViewModel(
                 logs = logIndexProgress.lastSuccessIndex.logs,
                 maxLogNumberDigits = logIndexProgress.lastSuccessIndex.totalLogRecords.toString().length,
             ),
-            searchState = LogSearchBarViewState(
+            searchState = SearchBarViewState(
                 searchRequest = search.search,
                 isMatchCase = search.matchCase,
                 isRegex = search.useRegex,

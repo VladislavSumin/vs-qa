@@ -1,4 +1,4 @@
-package ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar
+package ru.vladislavsumin.feature.logViewer.ui.component.searchBar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,13 +26,13 @@ import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.core.ui.hotkeyController.rememberHotkeyController
-import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.LogViewerViewModel
+import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerViewModel
 
 @Composable
 @Suppress("LongMethod") // TODO
-internal fun LogsSearchBarContent(
+internal fun SearchBarContent(
     viewModel: LogViewerViewModel,
-    state: State<LogSearchBarViewState>,
+    state: State<SearchBarViewState>,
     focusRequester: FocusRequester,
     rootFocusRequester: FocusRequester,
     modifier: Modifier = Modifier,

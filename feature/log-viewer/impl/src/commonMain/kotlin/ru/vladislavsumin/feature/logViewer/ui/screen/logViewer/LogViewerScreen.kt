@@ -2,33 +2,59 @@ package ru.vladislavsumin.feature.logViewer.ui.screen.logViewer
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.navigation.screen.Screen
-import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.LogViewerComponentFactory
+import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponent
+import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.LogViewerViewModelFactory
+import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 
 internal class LogViewerScreen(
-    componentFactory: LogViewerComponentFactory,
+    viewModelFactory: LogViewerViewModelFactory,
     bottomBarUiInteractor: BottomBarUiInteractor,
     params: LogViewerScreenParams,
     context: ComponentContext,
 ) : Screen(context) {
-    private val component = componentFactory.create(
-        logPath = params.logPath,
-        mappingPath = params.mappingPath,
-        bottomBarUiInteractor = bottomBarUiInteractor,
-        context = context.childContext("log-viewer"),
+    private val rootFocusRequester = FocusRequester()
+    private val filterFocusRequester = FocusRequester()
+
+    private val filterBarComponent = FilterBarComponent(
+        onFocusLost = { rootFocusRequester.requestFocus() },
+        focusRequester = filterFocusRequester,
+        context = context.childContext("filter-bar"),
+    )
+
+    private val viewModel = viewModel {
+        viewModelFactory.create(
+            logPath = params.logPath,
+            mappingPath = params.mappingPath,
+            bottomBarUiInteractor = bottomBarUiInteractor,
+            filterBarUiInteractor = filterBarComponent.filterBarUiInteractor,
+        )
+    }
+
+    private val logsComponent = LogsComponent(
+        logsEvents = viewModel.events,
+        state = viewModel.state.mapState { it.logsViewState },
+        context = context.childContext("logs"),
     )
 
     @Composable
-    override fun Render(modifier: Modifier) {
-        component.Render(modifier)
-    }
+    override fun Render(modifier: Modifier) = LogViewerContent(
+        viewModel = viewModel,
+        rootFocusRequester = rootFocusRequester,
+        filterFocusRequester = filterFocusRequester,
+        filterBarComponent = filterBarComponent,
+        logsComponent = logsComponent,
+        modifier = modifier,
+    )
 }
 
-class LogViewerScreenFactoryImpl(
-    private val componentFactory: LogViewerComponentFactory,
+internal class LogViewerScreenFactoryImpl(
+    private val viewModelFactory: LogViewerViewModelFactory,
 ) : LogViewerScreenFactory {
     override fun create(
         bottomBarUiInteractor: BottomBarUiInteractor,
@@ -36,7 +62,7 @@ class LogViewerScreenFactoryImpl(
         context: ComponentContext,
     ): Screen {
         return LogViewerScreen(
-            componentFactory = componentFactory,
+            viewModelFactory = viewModelFactory,
             bottomBarUiInteractor = bottomBarUiInteractor,
             params = params,
             context = context,

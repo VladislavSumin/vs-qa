@@ -1,4 +1,4 @@
-package ru.vladislavsumin.feature.logViewer.ui.component.logViewer
+package ru.vladislavsumin.feature.logViewer.ui.screen.logViewer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.draganddrop.dragAndDropTarget
@@ -53,8 +53,8 @@ import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.core.ui.hotkeyController.rememberHotkeyController
-import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogsSearchBarContent
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
+import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarContent
 import java.awt.FileDialog
 import java.awt.Frame
 import java.awt.datatransfer.DataFlavor
@@ -93,7 +93,7 @@ internal fun LogViewerContent(
         val state = viewModel.state.collectAsState()
         val searchState = derivedStateOf { state.value.searchState }
         Column {
-            LogsSearchBarContent(viewModel, searchState, searchFocusRequester, rootFocusRequester)
+            SearchBarContent(viewModel, searchState, searchFocusRequester, rootFocusRequester)
             Row(Modifier.weight(1f)) {
                 logsComponent.Render(Modifier.weight(1f))
                 SidePanelContent(viewModel, state)

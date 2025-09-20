@@ -1,8 +1,8 @@
-package ru.vladislavsumin.feature.logViewer.ui.component.logViewer
+package ru.vladislavsumin.feature.logViewer.ui.screen.logViewer
 
 import androidx.compose.runtime.Immutable
-import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar.LogSearchBarViewState
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
+import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarViewState
 
 /**
  * @param filter строка для фильтрации логов
@@ -13,7 +13,7 @@ import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
 internal data class LogViewerViewState(
     val searchIndex: List<Int>,
     val logsViewState: LogsViewState,
-    val searchState: LogSearchBarViewState,
+    val searchState: SearchBarViewState,
     val isMappingApplied: Boolean,
     val showSelectMappingDialog: Boolean,
     val showDragAndDropContainers: Boolean,
@@ -25,7 +25,7 @@ internal data class LogViewerViewState(
                 logs = emptyList(),
                 maxLogNumberDigits = 0,
             ),
-            searchState = LogSearchBarViewState.STUB,
+            searchState = SearchBarViewState.STUB,
             isMappingApplied = false,
             showSelectMappingDialog = false,
             showDragAndDropContainers = false,

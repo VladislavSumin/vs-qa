@@ -1,6 +1,6 @@
-package ru.vladislavsumin.feature.logViewer.ui.component.logViewer.searchBar
+package ru.vladislavsumin.feature.logViewer.ui.component.searchBar
 
-internal data class LogSearchBarViewState(
+internal data class SearchBarViewState(
     val searchRequest: String,
 
     val isMatchCase: Boolean,
@@ -10,8 +10,8 @@ internal data class LogSearchBarViewState(
     val currentSearchResultIndex: Int,
     val totalSearchResults: Int,
 ) {
-    companion object {
-        val STUB = LogSearchBarViewState(
+    companion object Companion {
+        val STUB = SearchBarViewState(
             searchRequest = "",
             isMatchCase = false,
             isRegex = false,

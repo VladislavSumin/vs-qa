@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
-import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.TextSelectionSeparator
+import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.TextSelectionSeparator
 import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
 
 @Composable
