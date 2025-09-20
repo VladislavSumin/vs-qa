@@ -2,6 +2,8 @@ package ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
@@ -37,7 +39,13 @@ internal class RootScreen(
     override fun Render(modifier: Modifier) {
         Column(modifier) {
             val child = tabs.subscribeAsState().value.child
-            child?.instance?.Render(Modifier.weight(1f))
+            // TODO разобраться почему это работает?
+            val hackyContent = remember(child) {
+                movableContentOf {
+                    child?.instance?.Render(Modifier.weight(1f))
+                }
+            }
+            hackyContent()
             bottomBarComponent.Render(Modifier)
         }
     }
