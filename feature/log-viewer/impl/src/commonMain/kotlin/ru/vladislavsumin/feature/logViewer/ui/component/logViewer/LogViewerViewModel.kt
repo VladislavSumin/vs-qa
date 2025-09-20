@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.coroutines.utils.combine
 import ru.vladislavsumin.core.decompose.components.ViewModel
-import ru.vladislavsumin.feature.logParser.anime.domain.AnimeLogParserProvider
+import ru.vladislavsumin.core.factoryGenerator.ByCreate
+import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
+import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
@@ -26,11 +28,13 @@ import java.nio.file.Path
 import kotlin.io.path.Path
 
 @Stable
+@GenerateFactory
 internal class LogViewerViewModel(
-    logPath: Path,
-    mappingPath: Path?,
-    private val bottomBarUiInteractor: BottomBarUiInteractor,
-    private val filterBarUiInteractor: FilterBarUiInteractor,
+    logParserProvider: LogParserProvider,
+    @ByCreate logPath: Path,
+    @ByCreate mappingPath: Path?,
+    @ByCreate private val bottomBarUiInteractor: BottomBarUiInteractor,
+    @ByCreate private val filterBarUiInteractor: FilterBarUiInteractor,
 ) : ViewModel() {
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
@@ -40,8 +44,7 @@ internal class LogViewerViewModel(
     private val logsInteractor = LogsInteractorImpl(
         scope = viewModelScope,
         logPath = logPath,
-        // TODO через DI
-        logParserProvider = AnimeLogParserProvider(),
+        logParserProvider = logParserProvider,
         proguardInteractor = mappingPath?.let { ProguardInteractorImpl(it) },
     )
 

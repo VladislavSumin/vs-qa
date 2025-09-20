@@ -5,7 +5,7 @@ import ru.vladislavsumin.utils.vsCoreLibs
 plugins {
     id("ru.vladislavsumin.convention.preset.feature-api")
     id("ru.vladislavsumin.convention.impl-to-api-dependency")
-    id("ru.vladislavsumin.convention.kmp.ksp-hack")
+    id("ru.vladislavsumin.convention.ksp-jvm-hack")
 }
 
 kotlin {
@@ -19,5 +19,5 @@ kotlin {
 }
 
 dependencies {
-    add("kspCommonMainMetadata", vsCoreLibs.vs.core.factoryGenerator.ksp)
+    add("kspJvm", vsCoreLibs.vs.core.factoryGenerator.ksp)
 }

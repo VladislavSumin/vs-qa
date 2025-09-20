@@ -5,13 +5,15 @@ import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import java.nio.file.Path
 
-internal class LogViewerComponentFactoryImpl : LogViewerComponentFactory {
+internal class LogViewerComponentFactoryImpl(
+    private val viewModelFactory: LogViewerViewModelFactory,
+) : LogViewerComponentFactory {
     override fun create(
         logPath: Path,
         mappingPath: Path?,
         bottomBarUiInteractor: BottomBarUiInteractor,
         context: ComponentContext,
     ): ComposeComponent {
-        return LogViewerComponent(logPath, mappingPath, bottomBarUiInteractor, context)
+        return LogViewerComponent(viewModelFactory, logPath, mappingPath, bottomBarUiInteractor, context)
     }
 }

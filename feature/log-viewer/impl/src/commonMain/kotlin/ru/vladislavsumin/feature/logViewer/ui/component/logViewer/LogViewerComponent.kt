@@ -14,6 +14,7 @@ import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUi
 import java.nio.file.Path
 
 internal class LogViewerComponent(
+    viewModelFactory: LogViewerViewModelFactory,
     logPath: Path,
     mappingPath: Path?,
     bottomBarUiInteractor: BottomBarUiInteractor,
@@ -29,7 +30,7 @@ internal class LogViewerComponent(
     )
 
     private val viewModel = viewModel {
-        LogViewerViewModel(
+        viewModelFactory.create(
             logPath = logPath,
             mappingPath = mappingPath,
             bottomBarUiInteractor = bottomBarUiInteractor,
