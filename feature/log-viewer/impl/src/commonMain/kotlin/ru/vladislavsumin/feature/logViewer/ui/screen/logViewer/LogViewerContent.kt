@@ -118,7 +118,7 @@ internal fun LogViewerContent(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
-            val mappingDragAndDrop = remember {
+            val mappingDragAndDrop = remember(viewModel) {
                 object : DragAndDropTarget {
                     override fun onDrop(event: DragAndDropEvent): Boolean {
                         val files = event.awtTransferable.getTransferData(DataFlavor.javaFileListFlavor) as List<File>
@@ -128,7 +128,23 @@ internal fun LogViewerContent(
                 }
             }
 
-            Card {
+            val logsDragAndDrop = remember(viewModel) {
+                object : DragAndDropTarget {
+                    override fun onDrop(event: DragAndDropEvent): Boolean {
+                        val files = event.awtTransferable.getTransferData(DataFlavor.javaFileListFlavor) as List<File>
+                        viewModel.onDragAndDropLogsFile(files.single())
+                        return true
+                    }
+                }
+            }
+
+            Card(
+                modifier = Modifier
+                    .dragAndDropTarget(
+                        shouldStartDragAndDrop = { true },
+                        target = logsDragAndDrop,
+                    ),
+            ) {
                 Box(
                     Modifier.defaultMinSize(
                         minWidth = 300.dp,
@@ -136,7 +152,7 @@ internal fun LogViewerContent(
                     ),
                 ) {
                     Text(
-                        "Drop logs here\n(NOT IMPLEMENTED)",
+                        "Drop logs here",
                         modifier = Modifier.align(Alignment.Center),
                     )
                 }
@@ -212,7 +228,7 @@ fun TextSelectionSeparator(text: String = "\n") {
 
 @Composable
 private fun rememberGlobalDragAndDropTarget(viewModel: LogViewerViewModel): DragAndDropTarget {
-    return remember {
+    return remember(viewModel) {
         object : DragAndDropTarget {
             override fun onStarted(event: DragAndDropEvent) {
                 viewModel.onStartDragAndDrop()

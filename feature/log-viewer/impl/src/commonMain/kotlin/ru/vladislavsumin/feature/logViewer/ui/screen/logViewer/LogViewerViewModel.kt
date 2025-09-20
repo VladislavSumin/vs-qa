@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.coroutines.utils.combine
-import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
+import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
@@ -35,7 +35,7 @@ internal class LogViewerViewModel(
     @ByCreate mappingPath: Path?,
     @ByCreate private val bottomBarUiInteractor: BottomBarUiInteractor,
     @ByCreate private val filterBarUiInteractor: FilterBarUiInteractor,
-) : ViewModel() {
+) : NavigationViewModel() {
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
     private val showSelectMappingDialog = MutableStateFlow(false)
@@ -133,6 +133,10 @@ internal class LogViewerViewModel(
         if (result != null) {
             logsInteractor.attachMapping(Path(result))
         }
+    }
+
+    fun onDragAndDropLogsFile(file: File) {
+        open(LogViewerScreenParams(logPath = file.toPath(), mappingPath = null))
     }
 
     fun onDragAndDropMappingFile(file: File) = launch {
