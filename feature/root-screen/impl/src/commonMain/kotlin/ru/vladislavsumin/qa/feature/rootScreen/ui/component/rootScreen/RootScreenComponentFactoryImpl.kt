@@ -2,13 +2,11 @@ package ru.vladislavsumin.qa.feature.rootScreen.ui.component.rootScreen
 
 import com.arkivanov.decompose.ComponentContext
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
-import ru.vladislavsumin.feature.logViewer.ui.component.logViewer.LogViewerComponentFactory
-import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarComponentFactory
+import ru.vladislavsumin.core.navigation.Navigation
 import java.nio.file.Path
 
 internal class RootScreenComponentFactoryImpl(
-    private val logViewerComponentFactory: LogViewerComponentFactory,
-    private val bottomBarComponentFactory: BottomBarComponentFactory,
+    private val navigation: Navigation,
 ) : RootScreenComponentFactory {
     override fun create(
         logPath: Path,
@@ -16,8 +14,7 @@ internal class RootScreenComponentFactoryImpl(
         context: ComponentContext,
     ): ComposeComponent {
         return RootScreenComponent(
-            logViewerComponentFactory,
-            bottomBarComponentFactory,
+            navigation,
             logPath,
             mappingPath,
             context,

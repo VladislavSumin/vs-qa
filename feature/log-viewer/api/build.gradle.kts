@@ -6,6 +6,9 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.feature.bottomBar.api)
+
+            // TODO подумать над навигацией
+            implementation(vsCoreLibs.vs.core.navigation.impl)
         }
     }
 }

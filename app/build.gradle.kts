@@ -30,6 +30,7 @@ kotlin {
             implementation(vsCoreLibs.vs.core.decompose.components)
             implementation(vsCoreLibs.vs.core.decompose.compose)
             implementation(vsCoreLibs.vs.core.di)
+            implementation(vsCoreLibs.vs.core.navigation.di)
 
             implementation(vsCoreLibs.decompose.extensions.compose)
             implementation(vsCoreLibs.decompose.extensions.composeExperimental)

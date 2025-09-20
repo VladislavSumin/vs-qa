@@ -11,6 +11,7 @@ kotlin {
         commonMain.dependencies {
             implementation(vsCoreLibs.vs.core.decompose.components)
             implementation(vsCoreLibs.vs.core.decompose.compose)
+            implementation(vsCoreLibs.vs.core.navigation.api)
         }
     }
 }

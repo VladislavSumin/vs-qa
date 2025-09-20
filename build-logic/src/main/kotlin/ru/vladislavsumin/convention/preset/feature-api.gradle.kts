@@ -4,6 +4,7 @@ import ru.vladislavsumin.utils.vsCoreLibs
 
 plugins {
     id("ru.vladislavsumin.convention.kmp.jvm")
+    kotlin("plugin.serialization")
 }
 
 kotlin {
