@@ -1,0 +1,69 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - name: Clone vs-qa repository
+        uses: actions/checkout@v4
+        with:
+          path: vs-qa
+          fetch-depth: 0  # Нужно для получения полной истории коммитов
+
+      - name: Clone vs-core repository
+        uses: actions/checkout@v4
+        with:
+          repository: VladislavSumin/vs-core
+          path: vs-core
+
+      - name: Run gradle
+        uses: ./vs-qa/.github/actions/run_gradle_default
+        with:
+          key: "release-build"
+          gradle_command: :app:buildFatJarMain
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Получаем последний тег (исключая текущий)
+          LAST_TAG=$(git describe --tags --abbrev=0 HEAD~1 2>/dev/null || echo "")
+          
+          if [ -z "$LAST_TAG" ]; then
+            # Если это первый релиз, показываем все коммиты
+            CHANGELOG=$(git log --pretty=format:"- %s (%h)" --no-merges)
+          else
+            # Показываем коммиты с последнего тега
+            CHANGELOG=$(git log ${LAST_TAG}..HEAD --pretty=format:"- %s (%h)" --no-merges)
+          fi
+          
+          # Сохраняем changelog в переменную
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## Changes in this release
+            
+            ${{ steps.changelog.outputs.changelog }}
+            
+            ## Download
+            
+            Download the JAR file from the assets below.
+          files: ./vs-qa/app/build/libs/vs-qa.jar
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
