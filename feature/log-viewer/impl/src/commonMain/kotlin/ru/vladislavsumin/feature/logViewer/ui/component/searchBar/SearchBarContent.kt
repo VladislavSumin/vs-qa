@@ -3,12 +3,14 @@ package ru.vladislavsumin.feature.logViewer.ui.component.searchBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -20,6 +22,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
@@ -84,12 +88,26 @@ internal fun SearchBarContent(
                         onClick = viewModel::onClickPrevIndex,
                     ) { Icon(Icons.Default.ArrowUpward, null) }
 
+                    // TODO написать нормально
+                    val textMeasurer = rememberTextMeasurer()
+                    val density = LocalDensity.current
+                    val style = LocalTextStyle.current
+                    val size = remember(textMeasurer, density, state.totalSearchResults) {
+                        val count = "9".repeat(state.totalSearchResults.toString().length)
+                        val testString = "$count of $count results"
+                        val widthPx = textMeasurer.measure(testString, style).size.width
+                        with(density) { widthPx.toDp() }
+                    }
+
                     Text(
                         text = if (state.isBadRegex) {
                             "bad pattern"
                         } else {
                             "${state.currentSearchResultIndex + 1} of ${state.totalSearchResults} results"
                         },
+                        Modifier
+                            .padding(horizontal = 4.dp)
+                            .defaultMinSize(minWidth = size),
                     )
 
                     QaToggleIconButton(
