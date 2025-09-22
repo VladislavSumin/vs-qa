@@ -1,6 +1,7 @@
 package ru.vladislavsumin.feature.logViewer.ui.screen.logViewer
 
 import androidx.compose.runtime.Stable
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -92,15 +93,12 @@ internal class LogViewerViewModel(
             showDragAndDropContainers = showDragAndDropContainers,
         )
     }
-        .onEach { state ->
-            bottomBarUiInteractor.setBottomBarText("Total records: ${state.logsViewState.logs.size}")
-        }
         .stateIn(LogViewerViewState.STUB)
 
     val events = Channel<LogsEvents>()
 
     init {
-        viewModelScope.launch {
+        launch {
             logsInteractor.observeLoadingStatus().collectLatest {
                 when (it) {
                     LogsInteractor.LoadingStatus.Loaded -> Unit
@@ -113,6 +111,13 @@ internal class LogViewerViewModel(
                     }
                 }
             }
+        }
+        launch {
+            state
+                .resubscribeOnUiLifecycle(Lifecycle.State.RESUMED)
+                .collect { state ->
+                    bottomBarUiInteractor.setBottomBarText("Total records: ${state.logsViewState.logs.size}")
+                }
         }
     }
 
