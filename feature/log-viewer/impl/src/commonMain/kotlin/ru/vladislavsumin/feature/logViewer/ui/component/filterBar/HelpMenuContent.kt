@@ -75,7 +75,7 @@ internal fun HelpMenuContent() {
                 appendLine()
                 append("All different filters merges with ")
                 appendHighlight("&&")
-                append(" condiction, all same filter merges by ")
+                append(" condition, all same filter merges by ")
                 appendHighlight("||")
                 append(" condition.")
             },
