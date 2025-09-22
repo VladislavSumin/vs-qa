@@ -23,15 +23,18 @@ import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarUiInt
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsEvents
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
 import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarViewState
+import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.Path
+import kotlin.io.path.name
 
 @Stable
 @GenerateFactory
 internal class LogViewerViewModel(
     logParserProvider: LogParserProvider,
+    private val windowTitleInteractor: WindowTitleInteractor,
     @ByCreate logPath: Path,
     @ByCreate mappingPath: Path?,
     @ByCreate private val bottomBarUiInteractor: BottomBarUiInteractor,
@@ -118,6 +121,9 @@ internal class LogViewerViewModel(
                 .collect { state ->
                     bottomBarUiInteractor.setBottomBarText("Total records: ${state.logsViewState.logs.size}")
                 }
+        }
+        relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
+            windowTitleInteractor.setWindowTitleExtension(logPath.name)
         }
     }
 

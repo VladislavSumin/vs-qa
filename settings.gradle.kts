@@ -20,6 +20,7 @@ feature("bottom-bar")
 feature("log-viewer")
 feature("memory-indicator")
 feature("root-screen")
+feature("window-title")
 
 fun feature(name: String) {
     include(":feature:$name:api")

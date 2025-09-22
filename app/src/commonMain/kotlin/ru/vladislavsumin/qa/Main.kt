@@ -1,5 +1,7 @@
 package ru.vladislavsumin.qa
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
@@ -11,10 +13,10 @@ import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import org.kodein.di.instance
 import ru.vladislavsumin.core.logger.manager.LoggerManager
 import ru.vladislavsumin.core.logger.platform.initDefault
+import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 import ru.vladislavsumin.qa.feature.rootScreen.ui.component.rootScreen.RootScreenComponentFactory
 import javax.swing.SwingUtilities
 import kotlin.io.path.Path
-import kotlin.io.path.name
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
@@ -36,16 +38,26 @@ fun main(args: Array<String>) {
         di.instance<RootScreenComponentFactory>().create(logPath, mappingPath, context)
     }
 
+    val windowTitleInteractor = di.instance<WindowTitleInteractor>()
+
     application {
         val windowState = rememberWindowState(
             placement = WindowPlacement.Maximized,
         )
 
+        val windowTitleExtension by windowTitleInteractor.windowTitleExtension.collectAsState()
+
+        val windowTitle = if (windowTitleExtension == null) {
+            "vs-qa"
+        } else {
+            "vs-qa: $windowTitleExtension"
+        }
+
         // Связываем рутовый Decompose lifecycle с жизненным циклом окна.
         LifecycleController(lifecycle, windowState)
 
         Window(
-            title = "vs-qa: ${logPath.name}",
+            title = windowTitle,
             onCloseRequest = ::exitApplication,
             state = windowState,
         ) {
