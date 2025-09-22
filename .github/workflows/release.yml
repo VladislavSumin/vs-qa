@@ -27,7 +27,7 @@ jobs:
         uses: ./vs-qa/.github/actions/run_gradle_default
         with:
           key: "release-build"
-          gradle_command: :app:buildFatJarMain
+          gradle_command: :app:buildFatJarMain :app:buildFatJarMainMin
 
       - name: Generate changelog
         id: changelog
@@ -63,7 +63,9 @@ jobs:
             ## Download
             
             Download the JAR file from the assets below.
-          files: ./vs-qa/app/build/libs/vs-qa.jar
+          files: |
+            ./vs-qa/app/build/libs/vs-qa.jar
+            ./vs-qa/app/build/libs/vs-qa-min.jar
           draft: false
           prerelease: false
         env:

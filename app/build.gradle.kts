@@ -1,8 +1,16 @@
+import proguard.gradle.ProGuardTask
 import ru.vladislavsumin.utils.fatJar
+import java.io.File
 
 plugins {
     id("ru.vladislavsumin.convention.kmp.jvm")
     id("ru.vladislavsumin.convention.compose")
+}
+
+buildscript {
+    dependencies {
+        classpath("com.guardsquare:proguard-gradle:7.7.0")
+    }
 }
 
 kotlin {
@@ -52,5 +60,23 @@ kotlin {
             // Реализует Dispatchers.Main для Swing.
             implementation(vsCoreLibs.kotlin.coroutines.swing)
         }
+    }
+}
+
+tasks.register<ProGuardTask>("buildFatJarMainMin") {
+    dependsOn("buildFatJarMain")
+    injars("build/libs/vs-qa.jar")
+    outjars("build/libs/vs-qa-min.jar")
+
+    configuration("proguard-rules.pro")
+
+    File("${System.getProperty("java.home")}/jmods/").listFiles().forEach { file ->
+        libraryjars(
+            mapOf(
+                "jarfilter" to "!**.jar",
+                "filter" to "!module-info.class",
+            ),
+            file.absolutePath,
+        )
     }
 }
