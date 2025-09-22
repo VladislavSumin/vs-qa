@@ -12,7 +12,11 @@ kotlin {
             mainClass = mainClassName,
             jarName = "vs-qa",
             duplicatesStrategy = DuplicatesStrategy.WARN,
-        )
+        ).configure {
+            // TODO ждем пока jb починят
+            // https://youtrack.jetbrains.com/issue/CMP-3859
+            exclude("libskiko-macos-x64.*")
+        }
         mainRun {
             mainClass.set(mainClassName)
         }
