@@ -59,6 +59,8 @@ import java.awt.FileDialog
 import java.awt.Frame
 import java.awt.datatransfer.DataFlavor
 import java.io.File
+import java.nio.file.Path
+import kotlin.io.path.Path
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -251,14 +253,18 @@ private fun rememberGlobalDragAndDropTarget(viewModel: LogViewerViewModel): Drag
 @Composable
 private fun FileDialog(
     parent: Frame? = null,
-    onCloseRequest: (result: String?) -> Unit,
+    onCloseRequest: (result: Path?) -> Unit,
 ) = AwtWindow(
     create = {
         object : FileDialog(parent, "Choose a file", LOAD) {
             override fun setVisible(value: Boolean) {
                 super.setVisible(value)
                 if (value) {
-                    onCloseRequest(directory + file)
+                    if (directory != null && file != null) {
+                        onCloseRequest(Path(directory + file))
+                    } else {
+                        onCloseRequest(null)
+                    }
                 }
             }
         }

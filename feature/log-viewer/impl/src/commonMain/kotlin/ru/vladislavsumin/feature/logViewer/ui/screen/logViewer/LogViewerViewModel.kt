@@ -139,10 +139,10 @@ internal class LogViewerViewModel(
         }
     }
 
-    fun onSelectMappingDialogResult(result: String?) = launch {
+    fun onSelectMappingDialogResult(result: Path?) = launch {
         showSelectMappingDialog.value = false
         if (result != null) {
-            logsInteractor.attachMapping(Path(result))
+            logsInteractor.attachMapping(result)
         }
     }
 
