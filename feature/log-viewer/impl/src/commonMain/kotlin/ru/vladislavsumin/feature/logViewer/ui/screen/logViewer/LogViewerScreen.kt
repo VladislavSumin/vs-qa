@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponent
@@ -15,6 +16,7 @@ internal class LogViewerScreen(
     viewModelFactory: LogViewerViewModelFactory,
     bottomBarUiInteractor: BottomBarUiInteractor,
     params: LogViewerScreenParams,
+    intents: ReceiveChannel<LogViewerScreenIntent>,
     context: ComponentContext,
 ) : Screen(context) {
     private val rootFocusRequester = FocusRequester()
@@ -29,7 +31,7 @@ internal class LogViewerScreen(
     private val viewModel = viewModel {
         viewModelFactory.create(
             logPath = params.logPath,
-            mappingPath = params.mappingPath,
+            mappingPath = (intents.tryReceive().getOrNull() as? LogViewerScreenIntent.OpenMapping)?.mappingPath,
             bottomBarUiInteractor = bottomBarUiInteractor,
             filterBarUiInteractor = filterBarComponent.filterBarUiInteractor,
         )
@@ -58,12 +60,14 @@ internal class LogViewerScreenFactoryImpl(
     override fun create(
         bottomBarUiInteractor: BottomBarUiInteractor,
         params: LogViewerScreenParams,
+        intents: ReceiveChannel<LogViewerScreenIntent>,
         context: ComponentContext,
     ): Screen {
         return LogViewerScreen(
             viewModelFactory = viewModelFactory,
             bottomBarUiInteractor = bottomBarUiInteractor,
             params = params,
+            intents = intents,
             context = context,
         )
     }

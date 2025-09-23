@@ -147,7 +147,7 @@ internal class LogViewerViewModel(
     }
 
     fun onDragAndDropLogsFile(file: File) {
-        open(LogViewerScreenParams(logPath = file.toPath(), mappingPath = null))
+        open(LogViewerScreenParams(logPath = file.toPath()))
     }
 
     fun onDragAndDropMappingFile(file: File) = launch {

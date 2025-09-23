@@ -43,10 +43,11 @@ internal class RootScreen(
     private val bottomBarComponent = bottomBarComponentFactory.create(context.childContext("bottom-bar"))
 
     init {
-        registerCustomFactory { context, params, _ ->
+        registerCustomFactory { context, params, intents ->
             logViewerScreenFactory.create(
                 bottomBarUiInteractor = bottomBarComponent.bottomBarUiInteractor,
                 params = params,
+                intents = intents,
                 context = context,
             )
         }

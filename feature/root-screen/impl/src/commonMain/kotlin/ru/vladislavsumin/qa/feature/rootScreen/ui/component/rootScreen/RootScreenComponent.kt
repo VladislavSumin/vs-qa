@@ -9,6 +9,7 @@ import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.navigation.Navigation
 import ru.vladislavsumin.core.navigation.host.childNavigationRoot
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenIntent
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
 import java.nio.file.Path
 
@@ -20,7 +21,10 @@ internal class RootScreenComponent(
 ) : Component(context), ComposeComponent {
 
     init {
-        navigation.open(LogViewerScreenParams(logPath, mappingPath))
+        navigation.open(
+            screenParams = LogViewerScreenParams(logPath),
+            intent = mappingPath?.let { LogViewerScreenIntent.OpenMapping(it) },
+        )
     }
 
     private val navigationRoot = context.childNavigationRoot(navigation)
