@@ -69,6 +69,7 @@ tasks.register<ProGuardTask>("buildFatJarMainMin") {
     outjars("build/libs/vs-qa-min.jar")
 
     configuration("proguard-rules.pro")
+    printconfiguration("build/reports/proguard/proguard.pro")
 
     File("${System.getProperty("java.home")}/jmods/").listFiles().forEach { file ->
         libraryjars(
