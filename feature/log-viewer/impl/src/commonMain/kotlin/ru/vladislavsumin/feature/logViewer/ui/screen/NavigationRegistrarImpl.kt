@@ -3,16 +3,11 @@ package ru.vladislavsumin.feature.logViewer.ui.screen
 import com.arkivanov.decompose.ComponentContext
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistrar
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistry
-import ru.vladislavsumin.core.navigation.screen.Screen
-import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenIntent
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
 
 internal class NavigationRegistrarImpl : NavigationRegistrar {
     override fun NavigationRegistry<ComponentContext>.register() {
-        // TODO подумать над api навигации, кажется тут лишний generic
-        registerScreen<LogViewerScreenParams, LogViewerScreenIntent, Screen>(
-            factory = null,
-            defaultParams = null as LogViewerScreenParams?,
+        registerScreen<LogViewerScreenParams>(
             description = "Log viewer screen",
         )
     }
