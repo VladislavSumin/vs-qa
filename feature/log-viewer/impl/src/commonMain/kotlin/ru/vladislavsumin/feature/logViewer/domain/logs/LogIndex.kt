@@ -1,7 +1,11 @@
 package ru.vladislavsumin.feature.logViewer.domain.logs
 
+/**
+ * @param totalLogRecords общее количество записей в оригинальном списке (до фильтра).
+ */
 data class LogIndex(
     val logs: List<LogRecord>,
+    val runIdOrders: List<RunIdInfo>?,
     val searchIndex: SearchIndex,
     val totalLogRecords: Int,
 ) {

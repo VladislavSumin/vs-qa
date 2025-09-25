@@ -84,13 +84,11 @@ internal class AnimeLogParser : LogParser {
             cache = null
         }
 
-        var order = result.size
         for (line in lines) {
             val matches = LOG_REGEX.matchEntire(line)
             if (matches != null) {
                 dumpCache()
                 cache = RawLogRecord(
-                    order = ++order,
                     raw = "",
                     time = matches.groups[1]!!.range,
                     timeInstant = OffsetDateTime.parse(

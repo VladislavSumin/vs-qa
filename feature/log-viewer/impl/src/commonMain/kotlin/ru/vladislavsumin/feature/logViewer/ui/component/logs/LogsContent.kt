@@ -2,6 +2,7 @@ package ru.vladislavsumin.feature.logViewer.ui.component.logs
 
 import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.VerticalScrollbar
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -66,14 +67,31 @@ internal fun LogsContent(
                     state = lazyListState,
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    items(logs, { it.order }) {
-                        Record(it, maxLogNumberDigits, textSizeDp)
+                    logs.forEachIndexed { runNumber, logs ->
+                        stickyHeader(key = -runNumber - 1) { Header(runNumber + 1, textSizeDp) }
+                        items(logs, { it.order }) {
+                            Record(it, maxLogNumberDigits, textSizeDp)
+                        }
                     }
                 }
             }
             VerticalDivider(Modifier.padding(start = textSizeDp + 8.dp))
         }
         LogsVerticalScrollBar(lazyListState)
+    }
+}
+
+@Composable
+private fun Header(
+    runNumber: Int,
+    textSizeDp: Dp,
+) {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .background(QaTheme.colorScheme.surfaceVariant),
+    ) {
+        Text("Run $runNumber", modifier = Modifier.padding(start = textSizeDp + 13.dp + 8.dp))
     }
 }
 
@@ -86,7 +104,7 @@ private fun Record(
     Box {
         DisableSelection {
             Text(
-                text = "${" ".repeat(maxLogNumberDigits - log.order.toString().length)}${log.order}",
+                text = "${" ".repeat(maxLogNumberDigits - log.order.toString().length)}${log.order + 1}",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
                 fontFamily = FontFamily.Monospace,

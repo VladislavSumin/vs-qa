@@ -195,7 +195,7 @@ private fun SidePanelContent(
         QaIconButton(
             onClick = {
                 // TODO провести через вью модель.
-                val data: String = state.value.logsViewState.logs.joinToString(separator = "\n") { it.raw }
+                val data: String = state.value.logsViewState.rawLogs.joinToString(separator = "\n") { it.raw }
                 clipboard.setText(AnnotatedString(data))
             },
             Modifier.padding(4.dp),

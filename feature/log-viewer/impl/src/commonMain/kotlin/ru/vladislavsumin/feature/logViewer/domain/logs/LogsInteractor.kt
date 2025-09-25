@@ -11,18 +11,17 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
+import ru.vladislavsumin.feature.logParser.domain.runId.RawRunIdInfo
 import ru.vladislavsumin.feature.logViewer.LogLogger
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractor
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
 import java.nio.file.Path
-import kotlin.math.log
 
 /**
  * **Внимание, данный interactor является stateful.**
@@ -72,7 +71,7 @@ class LogsInteractorImpl(
     private val logParserProvider: LogParserProvider,
     proguardInteractor: ProguardInteractor?,
 ) : LogsInteractor {
-    private val logs = MutableStateFlow<List<RawLogRecord>>(emptyList())
+    private val logs = MutableStateFlow<ClearLogState>(ClearLogState(emptyList(), null))
     private val loadingStatus = MutableStateFlow<LogsInteractor.LoadingStatus>(LogsInteractor.LoadingStatus.LoadingLogs)
     private val proguard = MutableStateFlow(proguardInteractor)
 
@@ -84,10 +83,16 @@ class LogsInteractorImpl(
         scope.launch(Dispatchers.IO) {
             proguard.collectLatest { proguard ->
                 loadingStatus.value = LogsInteractor.LoadingStatus.LoadingLogs
-                logs.value = emptyList()
+                logs.value = ClearLogState(emptyList(), null)
 
                 val obfuscatedLogs = logParserProvider.getLogParser().parseLog(logPath)
-                logs.value = obfuscatedLogs
+                val runIdIndexes = logParserProvider.getRunIdParser()?.provideRunIdMeta(obfuscatedLogs)
+                    ?.toRunIdInfo()
+
+                logs.value = ClearLogState(
+                    logs = obfuscatedLogs.toLogRecords(),
+                    runIdIndexes,
+                )
 
                 // TODO ну парсим тут чего уж там, все равно говнокод
                 if (proguard != null) {
@@ -113,7 +118,10 @@ class LogsInteractorImpl(
                             }
                         }
                         .toList()
-                    logs.value = deobfuscated
+                    logs.value = ClearLogState(
+                        deobfuscated.toLogRecords(),
+                        runIdIndexes,
+                    )
                 }
                 loadingStatus.value = LogsInteractor.LoadingStatus.Loaded
             }
@@ -149,7 +157,7 @@ class LogsInteractorImpl(
             // При изменении данных поиска всегда обнуляем кеш.
             searchCache = null
 
-            val logs = filterProgress.logs.toLogRecords()
+            val logs = filterProgress.logs
             search.collectLatest { search ->
                 // Сразу отправляем результаты поиска + старый кеш далее
                 val isSearch = search.search.isNotEmpty()
@@ -164,13 +172,14 @@ class LogsInteractorImpl(
                             logs = logs,
                             searchIndex = LogIndex.SearchIndex.NoSearch,
                             totalLogRecords = filterProgress.totalLogRecords,
+                            runIdOrders = filterProgress.runIdOrders,
                         ),
                     ),
                 )
 
                 // Проводим новый поиск
                 if (!filterProgress.isFilteringNow && search.search.isNotEmpty()) {
-                    val logIndex = logs.searchLogs(search, filterProgress.totalLogRecords)
+                    val logIndex = logs.searchLogs(search, filterProgress.totalLogRecords, filterProgress.runIdOrders)
                     searchCache = logIndex
                     send(
                         element = LogIndexProgress(
@@ -185,21 +194,21 @@ class LogsInteractorImpl(
     }.flowOn(Dispatchers.Default)
 
     private fun createFilterProgressFlow(filter: Flow<FilterRequest>): Flow<FilterLogProgress> = flow {
-        var filteredCache = emptyList<RawLogRecord>()
+        var filteredCache = emptyList<LogRecord>()
         combine(
             logs,
             filter,
         ) { logs, filter -> logs to filter }
             .distinctUntilChanged()
             .transformLatest { (logs, filter) ->
-                emit(FilterLogProgress(isFilteringNow = true, filteredCache, logs.size))
-                filteredCache = filterLogs(logs, filter)
-                emit(FilterLogProgress(isFilteringNow = false, filteredCache, logs.size))
+                emit(FilterLogProgress(isFilteringNow = true, filteredCache, logs.logs.size, logs.runIdIndexes))
+                filteredCache = filterLogs(logs.logs, filter)
+                emit(FilterLogProgress(isFilteringNow = false, filteredCache, logs.logs.size, logs.runIdIndexes))
             }
             .collect(this)
     }
 
-    private fun filterLogs(logs: List<RawLogRecord>, filter: FilterRequest): List<RawLogRecord> {
+    private fun filterLogs(logs: List<LogRecord>, filter: FilterRequest): List<LogRecord> {
         val (time, result) = measureTimeMillisWithResult {
             logs.parallelStream()
                 .let {
@@ -257,7 +266,11 @@ class LogsInteractorImpl(
         return result
     }
 
-    private fun List<LogRecord>.searchLogs(search: SearchRequest, totalLogRecords: Int): LogIndex {
+    private fun List<LogRecord>.searchLogs(
+        search: SearchRequest,
+        totalLogRecords: Int,
+        runIdOrders: List<RunIdInfo>?,
+    ): LogIndex {
         val (time, result) = measureTimeMillisWithResult {
             val regex = runCatching {
                 Regex(
@@ -276,6 +289,7 @@ class LogsInteractorImpl(
                     logs = this,
                     searchIndex = LogIndex.SearchIndex.BadRegex,
                     totalLogRecords = totalLogRecords,
+                    runIdOrders = runIdOrders,
                 )
             }
 
@@ -299,6 +313,7 @@ class LogsInteractorImpl(
                     LogIndex.SearchIndex.EmptySearch
                 },
                 totalLogRecords = totalLogRecords,
+                runIdOrders = runIdOrders,
             )
         }
 
@@ -311,12 +326,18 @@ class LogsInteractorImpl(
 
     private data class FilterLogProgress(
         val isFilteringNow: Boolean,
-        val logs: List<RawLogRecord>,
+        val logs: List<LogRecord>,
         val totalLogRecords: Int,
+        val runIdOrders: List<RunIdInfo>?,
     )
 }
 
-private fun RawLogRecord.toLogRecord() = LogRecord(
+data class ClearLogState(
+    val logs: List<LogRecord>,
+    val runIdIndexes: List<RunIdInfo>?,
+)
+
+private fun RawLogRecord.toLogRecord(order: Int) = LogRecord(
     order = order,
     raw = raw,
     time = time,
@@ -329,4 +350,17 @@ private fun RawLogRecord.toLogRecord() = LogRecord(
     logLevel = logLevel,
 )
 
-private fun List<RawLogRecord>.toLogRecords(): List<LogRecord> = map { it.toLogRecord() }
+private fun List<RawLogRecord>.toLogRecords(): List<LogRecord> =
+    mapIndexed { index, record -> record.toLogRecord(index) }
+
+private fun List<RawRunIdInfo>.toRunIdInfo(): List<RunIdInfo> = mapIndexed { index, info ->
+    val endIndex = if (index + 1 < size) {
+        this[index + 1].startIndex - 1
+    } else {
+        Int.MAX_VALUE
+    }
+    RunIdInfo(
+        orderRange = IntRange(info.startIndex, endIndex),
+        meta = info.meta,
+    )
+}

@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.coroutines.utils.combine
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
+import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
 import ru.vladislavsumin.feature.logViewer.domain.logs.SearchRequest
@@ -27,7 +27,6 @@ import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import java.io.File
 import java.nio.file.Path
-import kotlin.io.path.Path
 import kotlin.io.path.name
 
 @Stable
@@ -73,11 +72,33 @@ internal class LogViewerViewModel(
             logIndexProgress, search, selectedSearchIndex, mappingStatus,
             showSelectMappingDialog, showDragAndDropContainers,
         ->
+
+        val runIdOrders = logIndexProgress.lastSuccessIndex.runIdOrders
+        val logsWithRunNumber = if (runIdOrders == null) {
+            listOf(logIndexProgress.lastSuccessIndex.logs)
+        } else {
+            val logIterator = logIndexProgress.lastSuccessIndex.logs.listIterator()
+            runIdOrders.map { info ->
+                val items = mutableListOf<LogRecord>()
+                while (logIterator.hasNext()) {
+                    val item = logIterator.next()
+                    if (item.order <= info.orderRange.last) {
+                        items.add(item)
+                    } else {
+                        logIterator.previous()
+                        break
+                    }
+                }
+                items
+            }
+        }
+
         LogViewerViewState(
             searchIndex = logIndexProgress.lastSuccessIndex.searchIndex.index,
             logsViewState = LogsViewState(
-                logs = logIndexProgress.lastSuccessIndex.logs,
-                maxLogNumberDigits = logIndexProgress.lastSuccessIndex.totalLogRecords.toString().length,
+                logs = logsWithRunNumber,
+                rawLogs = logIndexProgress.lastSuccessIndex.logs,
+                maxLogNumberDigits = (logIndexProgress.lastSuccessIndex.totalLogRecords + 1).toString().length,
             ),
             searchState = SearchBarViewState(
                 searchRequest = search.search,
@@ -94,6 +115,7 @@ internal class LogViewerViewModel(
             },
             showSelectMappingDialog = showSelectMappingDialog,
             showDragAndDropContainers = showDragAndDropContainers,
+            logRecordsAfterApplyFilter = logIndexProgress.lastSuccessIndex.logs.size,
         )
     }
         .stateIn(LogViewerViewState.STUB)
@@ -119,7 +141,7 @@ internal class LogViewerViewModel(
             state
                 .resubscribeOnUiLifecycle(Lifecycle.State.RESUMED)
                 .collect { state ->
-                    bottomBarUiInteractor.setBottomBarText("Total records: ${state.logsViewState.logs.size}")
+                    bottomBarUiInteractor.setBottomBarText("Total records: ${state.logRecordsAfterApplyFilter}")
                 }
         }
         relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
