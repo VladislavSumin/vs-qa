@@ -20,7 +20,7 @@ fun LogRecord.colorize(): AnnotatedString {
         addStyle(SpanStyle(color = logColor.primary, fontWeight = FontWeight.Bold), tag)
         addStyle(SpanStyle(color = logColor.primary), message)
         searchHighlight?.let { index ->
-            addStyle(SpanStyle(background = QaTheme.colorScheme.onSurfaceVariant), index)
+            addStyle(SpanStyle(background = QaTheme.colorScheme.logHighlight), index)
         }
     }
 }
