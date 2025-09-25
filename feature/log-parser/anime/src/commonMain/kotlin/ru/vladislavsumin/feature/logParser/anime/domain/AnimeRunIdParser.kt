@@ -15,6 +15,6 @@ internal class AnimeRunIdParser : RunIdParser {
                 indexes.add(RawRunIdInfo(index))
             }
         }
-        return indexes
+        return if (indexes.isEmpty()) null else indexes
     }
 }

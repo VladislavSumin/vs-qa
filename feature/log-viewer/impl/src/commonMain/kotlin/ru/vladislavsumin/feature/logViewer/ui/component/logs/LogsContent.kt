@@ -22,6 +22,7 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
@@ -43,9 +44,9 @@ internal fun LogsContent(
     state: StateFlow<LogsViewState>,
     modifier: Modifier,
 ) {
-    val state = state.collectAsState()
-    val logs = state.value.logs
-    val maxLogNumberDigits = state.value.maxLogNumberDigits
+    val state by state.collectAsState()
+    val logs = state.logs
+    val maxLogNumberDigits = state.maxLogNumberDigits
     val textSizeDp = measureTextWidth(
         " ".repeat(maxLogNumberDigits),
         MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
@@ -68,7 +69,9 @@ internal fun LogsContent(
                     modifier = Modifier.fillMaxSize(),
                 ) {
                     logs.forEachIndexed { runNumber, logs ->
-                        stickyHeader(key = -runNumber - 1) { Header(runNumber + 1, textSizeDp) }
+                        if (state.showRunNumbers) {
+                            stickyHeader(key = -runNumber - 1) { Header(runNumber + 1, textSizeDp) }
+                        }
                         items(logs, { it.order }) {
                             Record(it, maxLogNumberDigits, textSizeDp)
                         }

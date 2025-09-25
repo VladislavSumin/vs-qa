@@ -98,6 +98,7 @@ internal class LogViewerViewModel(
             logsViewState = LogsViewState(
                 logs = logsWithRunNumber,
                 rawLogs = logIndexProgress.lastSuccessIndex.logs,
+                showRunNumbers = runIdOrders != null,
                 maxLogNumberDigits = (logIndexProgress.lastSuccessIndex.totalLogRecords + 1).toString().length,
             ),
             searchState = SearchBarViewState(

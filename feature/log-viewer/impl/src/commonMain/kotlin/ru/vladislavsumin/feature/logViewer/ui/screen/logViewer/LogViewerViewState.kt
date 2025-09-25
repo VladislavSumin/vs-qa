@@ -22,11 +22,7 @@ internal data class LogViewerViewState(
     companion object {
         val STUB = LogViewerViewState(
             searchIndex = emptyList(),
-            logsViewState = LogsViewState(
-                logs = emptyList(),
-                rawLogs = emptyList(),
-                maxLogNumberDigits = 0,
-            ),
+            logsViewState = LogsViewState.STUB,
             searchState = SearchBarViewState.STUB,
             isMappingApplied = false,
             showSelectMappingDialog = false,
