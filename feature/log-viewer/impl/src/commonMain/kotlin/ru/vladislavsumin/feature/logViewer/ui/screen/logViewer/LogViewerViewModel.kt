@@ -75,7 +75,12 @@ internal class LogViewerViewModel(
 
         val runIdOrders = logIndexProgress.lastSuccessIndex.runIdOrders
         val logsWithRunNumber = if (runIdOrders == null) {
-            listOf(logIndexProgress.lastSuccessIndex.logs)
+            listOf(
+                LogsViewState.SectionInfo(
+                    logs = logIndexProgress.lastSuccessIndex.logs,
+                    meta = null,
+                ),
+            )
         } else {
             val logIterator = logIndexProgress.lastSuccessIndex.logs.listIterator()
             runIdOrders.map { info ->
@@ -89,7 +94,10 @@ internal class LogViewerViewModel(
                         break
                     }
                 }
-                items
+                LogsViewState.SectionInfo(
+                    logs = items,
+                    meta = info.meta,
+                )
             }
         }
 

@@ -26,10 +26,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -70,11 +74,11 @@ internal fun LogsContent(
                     state = lazyListState,
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    logs.forEachIndexed { runNumber, logs ->
+                    logs.forEachIndexed { runNumber, sectionInfo ->
                         if (state.showRunNumbers) {
-                            stickyHeader(key = -runNumber - 1) { Header(runNumber + 1, textSizeDp) }
+                            stickyHeader(key = -runNumber - 1) { Header(runNumber + 1, sectionInfo.meta, textSizeDp) }
                         }
-                        items(logs, { it.order }) {
+                        items(sectionInfo.logs, { it.order }) {
                             Record(it, textSizeDp)
                         }
                     }
@@ -89,14 +93,29 @@ internal fun LogsContent(
 @Composable
 private fun Header(
     runNumber: Int,
+    meta: Map<String, String>?,
     textSizeDp: Dp,
 ) {
-    Box(
+    Row(
         Modifier
             .fillMaxWidth()
             .background(QaTheme.colorScheme.surfaceVariant),
     ) {
-        Text("Run $runNumber", modifier = Modifier.padding(start = textSizeDp + 13.dp + 8.dp))
+        Text(
+            text = "Run $runNumber",
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = textSizeDp + 13.dp + 8.dp, end = 4.dp),
+        )
+        meta?.forEach { (k, v) ->
+            val text = buildAnnotatedString {
+                withStyle(SpanStyle(color = QaTheme.colorScheme.logTrace.primary)) {
+                    append(k)
+                    append("=")
+                }
+                append(v)
+            }
+            Text(text, Modifier.padding(horizontal = 4.dp))
+        }
     }
 }
 

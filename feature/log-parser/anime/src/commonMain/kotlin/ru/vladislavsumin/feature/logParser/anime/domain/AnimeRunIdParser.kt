@@ -12,7 +12,15 @@ internal class AnimeRunIdParser : RunIdParser {
                 record.raw.substring(record.tag) == "OneMeFileLogger" &&
                 record.raw.substring(record.message).startsWith("AppInfo:")
             ) {
-                indexes.add(RawRunIdInfo(index))
+                val data = record.raw.substring(record.message).lines()
+                    .drop(1) // Drop AppInfo header
+                    .filter { it.isNotBlank() }
+                    .associate {
+                        val (k, v) = it.split(":", limit = 2)
+                        k.trim() to v.trim()
+                    }
+                val version = data["AppVersion"]!!
+                indexes.add(RawRunIdInfo(index, "version" to version))
             }
         }
         return if (indexes.isEmpty()) null else indexes
