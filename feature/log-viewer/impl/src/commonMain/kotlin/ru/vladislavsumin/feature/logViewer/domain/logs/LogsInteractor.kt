@@ -22,6 +22,8 @@ import ru.vladislavsumin.feature.logViewer.LogLogger
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractor
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
 import java.nio.file.Path
+import java.time.temporal.ChronoUnit
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * **Внимание, данный interactor является stateful.**
@@ -87,7 +89,7 @@ class LogsInteractorImpl(
 
                 val obfuscatedLogs = logParserProvider.getLogParser().parseLog(logPath)
                 val runIdIndexes = logParserProvider.getRunIdParser()?.provideRunIdMeta(obfuscatedLogs)
-                    ?.toRunIdInfo()
+                    ?.toRunIdInfo(obfuscatedLogs)
 
                 logs.value = ClearLogState(
                     logs = obfuscatedLogs.toLogRecords(),
@@ -353,14 +355,21 @@ private fun RawLogRecord.toLogRecord(order: Int) = LogRecord(
 private fun List<RawLogRecord>.toLogRecords(): List<LogRecord> =
     mapIndexed { index, record -> record.toLogRecord(index) }
 
-private fun List<RawRunIdInfo>.toRunIdInfo(): List<RunIdInfo> = mapIndexed { index, info ->
+private fun List<RawRunIdInfo>.toRunIdInfo(
+    obfuscatedLogs: List<RawLogRecord>,
+): List<RunIdInfo> = mapIndexed { index, info ->
     val endIndex = if (index + 1 < size) {
         this[index + 1].startIndex - 1
     } else {
         Int.MAX_VALUE
     }
+
+    val startTime = obfuscatedLogs[info.startIndex].timeInstant
+    val endTime = obfuscatedLogs[if (endIndex == Int.MAX_VALUE) obfuscatedLogs.size - 1 else endIndex].timeInstant
+    val duration = ChronoUnit.SECONDS.between(startTime, endTime).seconds
+
     RunIdInfo(
         orderRange = IntRange(info.startIndex, endIndex),
-        meta = info.meta,
+        meta = info.meta + ("duration" to duration.toString()),
     )
 }
