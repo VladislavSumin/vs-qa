@@ -5,6 +5,7 @@ import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +29,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -73,7 +75,7 @@ internal fun LogsContent(
                             stickyHeader(key = -runNumber - 1) { Header(runNumber + 1, textSizeDp) }
                         }
                         items(logs, { it.order }) {
-                            Record(it, maxLogNumberDigits, textSizeDp)
+                            Record(it, textSizeDp)
                         }
                     }
                 }
@@ -101,17 +103,20 @@ private fun Header(
 @Composable
 private fun Record(
     log: LogRecord,
-    maxLogNumberDigits: Int,
     textSizeDp: Dp,
 ) {
     Box {
         DisableSelection {
             Text(
-                text = "${" ".repeat(maxLogNumberDigits - log.order.toString().length)}${log.order + 1}",
+                // order нумеруется с 0, но визуально записи более правильно нумеровать с единицы.
+                text = "${log.order + 1}",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
                 fontFamily = FontFamily.Monospace,
-                modifier = Modifier.padding(start = 4.dp),
+                textAlign = TextAlign.End,
+                modifier = Modifier
+                    .padding(start = 4.dp)
+                    .defaultMinSize(minWidth = textSizeDp),
             )
         }
         Text(
