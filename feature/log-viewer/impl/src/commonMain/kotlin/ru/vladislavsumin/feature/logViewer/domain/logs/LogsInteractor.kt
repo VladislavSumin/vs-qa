@@ -204,13 +204,18 @@ class LogsInteractorImpl(
             .distinctUntilChanged()
             .transformLatest { (logs, filter) ->
                 emit(FilterLogProgress(isFilteringNow = true, filteredCache, logs.logs.size, logs.runIdIndexes))
-                filteredCache = filterLogs(logs.logs, filter)
+                filteredCache = filterLogs(logs.logs, filter, logs.runIdIndexes)
                 emit(FilterLogProgress(isFilteringNow = false, filteredCache, logs.logs.size, logs.runIdIndexes))
             }
             .collect(this)
     }
 
-    private fun filterLogs(logs: List<LogRecord>, filter: FilterRequest): List<LogRecord> {
+    @Suppress("LongMethod", "CyclomaticComplexMethod") // TODO переписать фильтр
+    private fun filterLogs(
+        logs: List<LogRecord>,
+        filter: FilterRequest,
+        runIdOrders: List<RunIdInfo>?,
+    ): List<LogRecord> {
         val (time, result) = measureTimeMillisWithResult {
             logs.parallelStream()
                 .let {
@@ -237,6 +242,18 @@ class LogsInteractorImpl(
                     if (filter.minLevel != null) {
                         it.filter { log ->
                             log.logLevel.rawLevel >= filter.minLevel.rawLevel
+                        }
+                    } else {
+                        it
+                    }
+                }
+                .let {
+                    if (filter.runOrders.isNotEmpty()) {
+                        val orders = filter.runOrders.mapNotNull { index ->
+                            runIdOrders?.getOrNull(index)?.orderRange
+                        }
+                        it.filter { log ->
+                            orders.any { index -> log.order in index }
                         }
                     } else {
                         it

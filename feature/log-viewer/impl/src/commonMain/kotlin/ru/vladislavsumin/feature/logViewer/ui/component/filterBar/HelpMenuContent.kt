@@ -65,6 +65,7 @@ internal fun HelpMenuContent() {
                 appendRecord("level", "filter by log level or above")
                 appendRecord("thread", "filter by thread name")
                 appendRecord("message", "filter by log message")
+                appendRecord("runNumber", "filter by run number")
                 appendRecord("timeAfter", "filter by time STRING with string comparator")
                 appendRecord("timeBefore", "filter by time STRING with string comparator")
                 appendRecord("<empty>", "filter by whole original log record")

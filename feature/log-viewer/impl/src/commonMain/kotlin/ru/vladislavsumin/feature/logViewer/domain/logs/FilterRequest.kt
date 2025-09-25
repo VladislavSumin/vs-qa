@@ -11,6 +11,7 @@ import ru.vladislavsumin.feature.logParser.domain.LogLevel
 data class FilterRequest(
     val minLevel: LogLevel? = null,
     val filters: Map<Field, List<Operation>> = emptyMap(),
+    val runOrders: List<Int> = emptyList(),
 
     // TODO это конечно прям совсем в тупую да
     val timeAfter: String? = null,

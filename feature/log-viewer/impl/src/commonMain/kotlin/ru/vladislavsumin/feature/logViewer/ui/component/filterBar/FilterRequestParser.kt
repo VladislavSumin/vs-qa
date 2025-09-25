@@ -46,6 +46,10 @@ class FilterRequestParser {
             val level: LogLevel,
         ) : Filter
 
+        data class ByRunNumber(
+            val runNumber: Int,
+        ) : Filter
+
         data class ByTimeBefore(
             val time: String,
         ) : Filter
@@ -67,6 +71,7 @@ class FilterRequestParser {
         private val message by literalToken("message")
         private val level by literalToken("level")
 
+        private val runNumber by literalToken("runNumber")
         private val timeAfter by literalToken("timeAfter")
         private val timeBefore by literalToken("timeBefore")
 
@@ -83,7 +88,7 @@ class FilterRequestParser {
         @Suppress("UnusedPrivateProperty")
         private val ws by regexToken("\\s+", ignore = true)
 
-        val keywords = setOf(tag, thread, message, level, timeAfter, timeBefore, exactly, contains)
+        val keywords = setOf(tag, thread, message, level, runNumber, timeAfter, timeBefore, exactly, contains)
         val data = setOf(stingLiteral, any)
 
         // Поля по которым можно вести поиск.
@@ -116,18 +121,20 @@ class FilterRequestParser {
         )
 
         private val levelFilter = (-level and -contains and filters) map { level ->
-            val level = LogLevel.Companion.fromAlias(level) ?: error("Unknown level $level")
+            val level = LogLevel.fromAlias(level) ?: error("Unknown level $level")
             Filter.ByLevel(level)
         }
+        private val runNumberFilter = (-runNumber and -contains and filters) map { Filter.ByRunNumber(it.toInt() - 1) }
         private val timeBeforeFilter = (-timeBefore and -contains and filters) map { Filter.ByTimeBefore(it) }
         private val timeAfterFilter = (-timeAfter and -contains and filters) map { Filter.ByTimeAfter(it) }
         private val filter = (fields and operations and filters) map { (a, b, c) -> Filter.ByField(a, b, c) }
         private val allFilter = filters map { Filter.ByField(FilterRequest.Field.All, Operation.Contains, it) }
 
         override val rootParser: Parser<List<Filter>> =
-            zeroOrMore(levelFilter or filter or allFilter or timeAfterFilter or timeBeforeFilter)
+            zeroOrMore(levelFilter or filter or allFilter or runNumberFilter or timeAfterFilter or timeBeforeFilter)
     }
 
+    @Suppress("LongMethod")
     fun tokenize(request: String): ParserResult {
         val tokens = runCatching { grammar.tokenizer.tokenize(request) }
 
@@ -137,6 +144,10 @@ class FilterRequestParser {
                 .filterIsInstance<Filter.ByLevel>()
                 .also { check(it.size < 2) { "More then one level filter defined" } }
                 .singleOrNull()
+
+            val runNumbers = result
+                .filterIsInstance<Filter.ByRunNumber>()
+                .map { it.runNumber }
 
             val timeBefore = result
                 .filterIsInstance<Filter.ByTimeBefore>()
@@ -162,6 +173,7 @@ class FilterRequestParser {
             FilterRequest(
                 minLevel = level?.level,
                 filters = filters,
+                runOrders = runNumbers,
                 timeBefore = timeBefore?.time,
                 timeAfter = timeAfter?.time,
             )
