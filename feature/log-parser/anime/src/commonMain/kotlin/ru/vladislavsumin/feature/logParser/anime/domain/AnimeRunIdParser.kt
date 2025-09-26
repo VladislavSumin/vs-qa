@@ -6,6 +6,15 @@ import ru.vladislavsumin.feature.logParser.domain.runId.RunIdParser
 
 internal class AnimeRunIdParser : RunIdParser {
     override suspend fun provideRunIdMeta(logs: List<RawLogRecord>): List<RawRunIdInfo>? {
+        if (logs.isEmpty()) return null
+
+        if (logs.first().processId != null) {
+            // For logcat logs
+            // К сожалению в данный момент в таких логах недостаточно информации для построения информации о запусках.
+            return null
+        }
+
+        // For embedded logs
         val indexes = mutableListOf<RawRunIdInfo>()
         logs.forEachIndexed { index, record ->
             if (
