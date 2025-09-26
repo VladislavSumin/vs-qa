@@ -6,7 +6,6 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(projects.feature.logParser.api)
-            implementation(projects.feature.logParser.generic)
         }
     }
 }

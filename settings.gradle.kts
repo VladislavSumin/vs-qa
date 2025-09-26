@@ -16,6 +16,7 @@ include(":core:utils")
 
 include(":feature:log-parser:api")
 include(":feature:log-parser:anime")
+include(":feature:log-parser:generic")
 feature("bottom-bar")
 feature("log-viewer")
 feature("memory-indicator")
