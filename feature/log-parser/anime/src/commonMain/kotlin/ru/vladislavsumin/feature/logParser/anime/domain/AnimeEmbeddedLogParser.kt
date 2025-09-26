@@ -7,7 +7,6 @@ import java.time.temporal.ChronoField
 
 @Suppress("MagicNumber")
 internal object AnimeEmbeddedLogParser : GenericLogParser() {
-    @Suppress("MaxLineLength")
     private val LOG_REGEX = Regex(
         pattern = "^(\\d{4}-\\d{2}-\\d{2}T\\+\\d{2}:\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}) ([^ ]+) ([A-Z]) ([^ ]+) (.*)",
     )

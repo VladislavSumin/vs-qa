@@ -112,7 +112,6 @@ object AnimeLogcatLogParser {
         dumpCache()
     }
 
-    @Suppress("MaxLineLength")
     private val LOG_REGEX = Regex(
         pattern = "^\\[ (\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}) \\s*(\\d+):\\s*(\\d+) ([A-Z])/([^ ]+)\\s*]",
     )
@@ -128,6 +127,10 @@ object AnimeLogcatLogParser {
         .appendLiteral(':')
         .appendValue(ChronoField.SECOND_OF_MINUTE, 2)
         .appendFraction(ChronoField.MILLI_OF_SECOND, 3, 3, true)
+        // Logcat не пишет год, поэтому для вычислений считаем что год текущий. Тут есть нюанс (пасхалка). Новогодние
+        // логи с переходом через год могут распознаваться некорректно. Это не должно приводить к крашу, так как нет
+        // соглашения, что время последующей записи не может быть меньше времени прошлой записи. Более того такое
+        // поведения является нормальным для асинхронных логов.
         .parseDefaulting(ChronoField.YEAR, Year.now().value.toLong())
         .parseDefaulting(ChronoField.OFFSET_SECONDS, 0) // UTC по умолчанию
         .toFormatter()
