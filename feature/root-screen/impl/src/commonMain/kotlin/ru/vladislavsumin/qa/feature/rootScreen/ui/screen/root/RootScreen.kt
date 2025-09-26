@@ -63,6 +63,20 @@ internal class RootScreen(
         initialPages = { Pages() },
     )
 
+    init {
+        launch {
+            for (event in viewModel.events) {
+                when (event) {
+                    is RootEvent.FocusTab -> {
+                        println("QWQW")
+                        tabs.value.items.getOrNull(event.number)
+                            ?.let { navigator.open(it.configuration.screenParams) }
+                    }
+                }
+            }
+        }
+    }
+
     @Composable
     override fun Render(modifier: Modifier) {
         val state by viewModel.state.collectAsState()
