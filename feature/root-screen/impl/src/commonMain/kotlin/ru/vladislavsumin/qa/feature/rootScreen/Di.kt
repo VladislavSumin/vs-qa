@@ -9,9 +9,13 @@ import ru.vladislavsumin.qa.feature.rootScreen.ui.component.rootScreen.RootScree
 import ru.vladislavsumin.qa.feature.rootScreen.ui.component.rootScreen.RootScreenComponentFactoryImpl
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.NavigationRegistrarImpl
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenFactory
+import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootViewModelFactory
 
 fun Modules.featureRootScreen() = DI.Module("feature-rootScreen") {
     bindGenericNavigation { NavigationRegistrarImpl(i()) }
-    bindSingleton { RootScreenFactory(i(), i()) }
+    bindSingleton {
+        val vmf = RootViewModelFactory(i())
+        RootScreenFactory(vmf, i(), i())
+    }
     bindSingleton<RootScreenComponentFactory> { RootScreenComponentFactoryImpl(i()) }
 }
