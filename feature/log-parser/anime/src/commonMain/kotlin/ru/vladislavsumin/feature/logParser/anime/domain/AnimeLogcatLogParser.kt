@@ -16,8 +16,34 @@ object AnimeLogcatLogParser {
 
         fun dumpCache() {
             cache?.let { cache ->
+                // Удаляем \n добавленную нашей логикой
                 rawBuilder.deleteCharAt(rawBuilder.length - 1)
-                while (rawBuilder[rawBuilder.length - 1] == '\n') {
+                // linesCount-- линия добавляемая нашей логикой тут не учитывается.
+
+                // Удаляем служебную мету logcat
+                while (true) {
+                    val index = rawBuilder.lastIndexOf('\n')
+                    if (index == -1) error("Unexpected format!")
+
+                    if (
+                        index + LOGCAT_META_HEADER.length < rawBuilder.length &&
+                        rawBuilder.substring(index + 1, index + LOGCAT_META_HEADER.length + 1) == LOGCAT_META_HEADER
+                    ) {
+                        linesCount--
+                        rawBuilder.deleteRange(index, rawBuilder.length)
+                    } else {
+                        break
+                    }
+                }
+
+                // Дополнительная проверка на косяки лога. Так как запись могли прибить прямо на середине строки.
+                // Тогда мы можем получить запись такого вида:
+                // at x.x.x
+                // at x--------- beginning of crash
+                // [ XX-XX XX:XX:XX.XXX XXXXX:XXXXX E/AndroidRuntime ]
+                // Вот тут нам и поможет эта проверка, запись будет кривой конечно, но тут уже ничего не сделать.
+                if (rawBuilder[rawBuilder.length - 1] == '\n') {
+                    // Удаляем \n добавленную форматом long logcat
                     rawBuilder.deleteCharAt(rawBuilder.length - 1)
                     linesCount--
                 }
@@ -32,7 +58,7 @@ object AnimeLogcatLogParser {
                     lines = linesCount,
                 )
                 check(record.lines == record.raw.lines().size) {
-                    "left = ${record.lines}, r=${record.raw.lines().size}\n$raw"
+                    "Debug compare real && calculated string count failed, please report to author"
                 }
                 result.add(record)
                 rawBuilder.clear()
@@ -75,7 +101,8 @@ object AnimeLogcatLogParser {
                     lines = 1,
                 )
             } else {
-                if (cache != null && !line.startsWith("--------- ")) {
+                // before handleClick, view hierarchy ...
+                if (cache != null) {
                     rawBuilder.appendLine(line)
                     linesCount++
                 }
@@ -104,4 +131,6 @@ object AnimeLogcatLogParser {
         .parseDefaulting(ChronoField.YEAR, Year.now().value.toLong())
         .parseDefaulting(ChronoField.OFFSET_SECONDS, 0) // UTC по умолчанию
         .toFormatter()
+
+    private const val LOGCAT_META_HEADER = "--------- "
 }
