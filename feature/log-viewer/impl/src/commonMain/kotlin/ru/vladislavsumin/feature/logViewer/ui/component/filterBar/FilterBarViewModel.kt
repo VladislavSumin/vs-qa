@@ -27,18 +27,11 @@ internal class FilterBarViewModel : ViewModel(), FilterBarUiInteractor {
         FilterBarViewState(
             field = filter,
             highlight = filterState.requestHighlight,
-            isError = !filterState.searchRequest.isSuccess,
+            error = filterState.searchRequest.exceptionOrNull()?.let { it.message ?: "No error message provided" },
             showHelpMenu = showHelpMenu,
         )
     }
-        .stateIn(
-            initialValue = FilterBarViewState(
-                field = filter.value,
-                highlight = FilterRequestParser.RequestHighlight.InvalidSyntax(""),
-                isError = false,
-                showHelpMenu = false,
-            ),
-        )
+        .stateIn(initialValue = FilterBarViewState.STUB)
 
     fun onFilterChange(newValue: TextFieldValue) {
         filter.value = newValue

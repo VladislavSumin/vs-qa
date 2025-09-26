@@ -1,7 +1,7 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -40,11 +39,11 @@ internal fun FilterBarContent(
     focusRequester: FocusRequester,
     modifier: Modifier,
 ) {
-    Row(
+    Column(
         modifier
             .background(QaTheme.colorScheme.surfaceVariant)
             .padding(vertical = 4.dp, horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+//        verticalAlignment = Alignment.CenterVertically,
     ) {
         val hotkeyController = remember(onFocusLost) {
             HotkeyController(
@@ -52,6 +51,9 @@ internal fun FilterBarContent(
             )
         }
         val state by viewModel.state.collectAsState()
+        if (state.error != null) {
+            Text(state.error.toString(), color = QaTheme.colorScheme.logError.primary)
+        }
         QaTextField(
             value = state.field.copy(
                 annotatedString = state.highlight.colorize(),
@@ -59,9 +61,8 @@ internal fun FilterBarContent(
             onValueChange = viewModel::onFilterChange,
             modifier = Modifier
                 .focusRequester(focusRequester)
-                .weight(1f)
                 .onKeyEvent(hotkeyController::invoke),
-            isError = state.isError,
+            isError = state.error != null,
             placeholder = { Text("Filter...") },
             leadingContent = {
                 Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null)

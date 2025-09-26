@@ -4,9 +4,19 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.text.input.TextFieldValue
 
 @Stable
-data class FilterBarViewState(
+internal data class FilterBarViewState(
     val field: TextFieldValue,
     val highlight: FilterRequestParser.RequestHighlight,
-    val isError: Boolean,
+    val error: String?,
     val showHelpMenu: Boolean,
-)
+) {
+
+    companion object {
+        val STUB = FilterBarViewState(
+            field = TextFieldValue(),
+            highlight = FilterRequestParser.RequestHighlight.InvalidSyntax(""),
+            error = null,
+            showHelpMenu = false,
+        )
+    }
+}
