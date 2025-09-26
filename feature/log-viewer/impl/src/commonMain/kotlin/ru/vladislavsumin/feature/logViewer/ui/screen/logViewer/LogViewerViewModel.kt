@@ -1,6 +1,7 @@
 package ru.vladislavsumin.feature.logViewer.ui.screen.logViewer
 
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.input.key.Key
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +13,8 @@ import ru.vladislavsumin.core.coroutines.utils.combine
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
+import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
+import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
@@ -34,6 +37,7 @@ import kotlin.io.path.name
 internal class LogViewerViewModel(
     logParserProvider: LogParserProvider,
     private val windowTitleInteractor: WindowTitleInteractor,
+    private val globalHotkeyManager: GlobalHotkeyManager,
     @ByCreate logPath: Path,
     @ByCreate mappingPath: Path?,
     @ByCreate private val bottomBarUiInteractor: BottomBarUiInteractor,
@@ -155,6 +159,14 @@ internal class LogViewerViewModel(
         }
         relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
             windowTitleInteractor.setWindowTitleExtension(logPath.name)
+        }
+        relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
+            globalHotkeyManager.subscribe(
+                KeyModifier.Command + Key.W to {
+                    close()
+                    true
+                },
+            )
         }
     }
 
