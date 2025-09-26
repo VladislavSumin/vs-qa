@@ -49,11 +49,9 @@ object AnimeLogcatLogParser {
                 val date = matches.groups[1]!!.value
                 val dateRange = IntRange(0, date.length - 1)
                 val pid = matches.groups[2]!!.value
+                val pidRange = IntRange(dateRange.last + 2, dateRange.last + 1 + pid.length)
                 val tid = matches.groups[3]!!.value
-                val tidRange = IntRange(
-                    start = dateRange.last + 2 + pid.length + 1,
-                    endInclusive = dateRange.last + 2 + pid.length + tid.length,
-                )
+                val tidRange = IntRange(pidRange.last + 2, pidRange.last + 1 + tid.length)
                 val level = matches.groups[4]!!.value
                 val levelRange = IntRange(tidRange.last + 2, tidRange.last + 1 + level.length)
                 val tag = matches.groups[5]!!.value
@@ -67,6 +65,7 @@ object AnimeLogcatLogParser {
                     raw = "",
                     time = dateRange,
                     timeInstant = OffsetDateTime.parse(date, DATE_FORMATTER).toInstant(),
+                    processId = pidRange,
                     thread = tidRange,
                     level = levelRange,
                     tag = tagRange,

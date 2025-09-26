@@ -9,6 +9,7 @@ data class LogRecord(
     val time: IntRange,
     val timeInstant: Instant,
     val level: IntRange,
+    val processId: IntRange?,
     val thread: IntRange,
     val tag: IntRange,
     val message: IntRange,

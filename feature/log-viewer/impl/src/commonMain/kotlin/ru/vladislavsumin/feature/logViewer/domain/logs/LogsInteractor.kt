@@ -261,12 +261,15 @@ class LogsInteractorImpl(
                 }
                 .filter { log ->
                     filter.filters.all { (field, filter) ->
-                        val range: IntRange = when (field) {
+                        val range: IntRange? = when (field) {
                             FilterRequest.Field.All -> 0..<log.raw.length
                             FilterRequest.Field.Tag -> log.tag
+                            FilterRequest.Field.ProcessId -> log.processId
                             FilterRequest.Field.Thread -> log.thread
                             FilterRequest.Field.Message -> log.message
                         }
+
+                        if (range == null) return@all false
 
                         filter.any { operation ->
                             when (operation) {
@@ -362,6 +365,7 @@ private fun RawLogRecord.toLogRecord(order: Int) = LogRecord(
     time = time,
     timeInstant = timeInstant,
     level = level,
+    processId = processId,
     thread = thread,
     tag = tag,
     message = message,

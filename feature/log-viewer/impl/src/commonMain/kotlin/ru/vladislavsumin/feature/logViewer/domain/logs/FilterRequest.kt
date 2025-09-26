@@ -25,6 +25,7 @@ data class FilterRequest(
         All,
 
         Tag,
+        ProcessId,
         Thread,
         Message,
     }

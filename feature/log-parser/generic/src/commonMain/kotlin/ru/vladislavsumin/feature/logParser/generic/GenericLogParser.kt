@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter
 abstract class GenericLogParser {
     protected abstract val logRegex: Regex
     protected abstract val timeGroupId: Int
+    protected abstract val processIdGroupId: Int?
     protected abstract val threadGroupId: Int
     protected abstract val levelGroupId: Int
     protected abstract val tagGroupId: Int
@@ -52,6 +53,7 @@ abstract class GenericLogParser {
                         matches.groups[timeGroupId]!!.value,
                         dateTimeFormatter,
                     ).toInstant(),
+                    processId = processIdGroupId?.let { matches.groups[it]!!.range },
                     thread = matches.groups[threadGroupId]!!.range,
                     level = matches.groups[levelGroupId]!!.range,
                     tag = matches.groups[tagGroupId]!!.range,

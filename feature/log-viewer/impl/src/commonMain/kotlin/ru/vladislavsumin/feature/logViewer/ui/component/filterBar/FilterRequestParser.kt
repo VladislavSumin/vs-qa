@@ -67,6 +67,8 @@ class FilterRequestParser {
 
     private val grammar = object : Grammar<List<Filter>>() {
         private val tag by literalToken("tag")
+        private val pid by literalToken("pid")
+        private val tid by literalToken("tid")
         private val thread by literalToken("thread")
         private val message by literalToken("message")
         private val level by literalToken("level")
@@ -88,13 +90,15 @@ class FilterRequestParser {
         @Suppress("UnusedPrivateProperty")
         private val ws by regexToken("\\s+", ignore = true)
 
-        val keywords = setOf(tag, thread, message, level, runNumber, timeAfter, timeBefore, exactly, contains)
+        val keywords = setOf(tag, pid, tid, thread, message, level, runNumber, timeAfter, timeBefore, exactly, contains)
         val data = setOf(stingLiteral, any)
 
         // Поля по которым можно вести поиск.
         val fields = OrCombinator(
             listOf(
                 tag asJust FilterRequest.Field.Tag,
+                pid asJust FilterRequest.Field.ProcessId,
+                tid asJust FilterRequest.Field.Thread,
                 thread asJust FilterRequest.Field.Thread,
                 message asJust FilterRequest.Field.Message,
             ),

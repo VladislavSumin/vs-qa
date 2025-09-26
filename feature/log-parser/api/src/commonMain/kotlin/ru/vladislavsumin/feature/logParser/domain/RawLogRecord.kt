@@ -21,7 +21,8 @@ data class RawLogRecord(
     val level: IntRange,
     val logLevel: LogLevel,
 
-    val thread: IntRange,
+    val processId: IntRange?, // pid
+    val thread: IntRange, // tid
     val tag: IntRange,
     val message: IntRange,
 
