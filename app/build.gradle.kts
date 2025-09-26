@@ -31,6 +31,8 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.ui.hotkeyController)
+
             implementation(projects.feature.bottomBar.impl)
             implementation(projects.feature.logViewer.impl)
             implementation(projects.feature.logParser.anime)

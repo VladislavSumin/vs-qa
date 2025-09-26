@@ -3,9 +3,11 @@ package ru.vladislavsumin.qa
 import com.arkivanov.decompose.ComponentContext
 import org.kodein.di.DI
 import org.kodein.di.DirectDI
+import org.kodein.di.bindSingleton
 import org.kodein.di.direct
 import ru.vladislavsumin.core.di.Modules
 import ru.vladislavsumin.core.navigation.coreNavigation
+import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.feature.logParser.anime.domain.featureAnimeLogParser
 import ru.vladislavsumin.feature.logViewer.featureLogViewer
 import ru.vladislavsumin.feature.windowTitle.featureWidowTitle
@@ -13,7 +15,11 @@ import ru.vladislavsumin.qa.feature.bottomBar.featureBottomBar
 import ru.vladislavsumin.qa.feature.memoryIndicator.featureMemoryIndicator
 import ru.vladislavsumin.qa.feature.rootScreen.featureRootScreen
 
-fun createDi(): DirectDI = DI {
+fun createDi(
+    globalHotkeyManager: GlobalHotkeyManager,
+): DirectDI = DI {
+    bindSingleton { globalHotkeyManager }
+
     importOnce(Modules.coreNavigation<ComponentContext>())
 
     importOnce(Modules.featureBottomBar())

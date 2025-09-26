@@ -13,6 +13,7 @@ import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import org.kodein.di.instance
 import ru.vladislavsumin.core.logger.manager.LoggerManager
 import ru.vladislavsumin.core.logger.platform.initDefault
+import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyDispatcher
 import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 import ru.vladislavsumin.qa.feature.rootScreen.ui.component.rootScreen.RootScreenComponentFactory
 import javax.swing.SwingUtilities
@@ -28,7 +29,8 @@ fun main(args: Array<String>) {
     val logPath = Path(args[0])
     val mappingPath = if (args.size > 1) Path(args[1]) else null
 
-    val di = createDi()
+    val hotkeyDispatcher = GlobalHotkeyDispatcher()
+    val di = createDi(hotkeyDispatcher)
 
     // Создаем рутовый Decompose lifecycle.
     val lifecycle = LifecycleRegistry()
@@ -60,6 +62,7 @@ fun main(args: Array<String>) {
             title = windowTitle,
             onCloseRequest = ::exitApplication,
             state = windowState,
+            onKeyEvent = hotkeyDispatcher::onKeyEvent,
         ) {
             rootScreenComponent.Render(Modifier)
         }
