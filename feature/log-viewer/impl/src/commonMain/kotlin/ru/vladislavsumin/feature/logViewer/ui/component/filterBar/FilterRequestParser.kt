@@ -65,6 +65,7 @@ class FilterRequestParser {
         ) : Filter
     }
 
+    @Suppress("UnusedPrivateProperty")
     private val grammar = object : Grammar<List<Filter>>() {
         private val tag by literalToken("tag")
         private val pid by literalToken("pid")
@@ -84,11 +85,11 @@ class FilterRequestParser {
         private val stingLiteral by regexToken("\"(\\\\\"|[^\"])+\"")
 
         // Любая строка без пробелов
-        private val any by regexToken("[^ ]+")
+        private val any by regexToken("[^ \n]+")
 
-        // Пробел, определяется последним чтобы он не перебивал собой другие токены, например stringLiteral
-        @Suppress("UnusedPrivateProperty")
+        // Определяются последними чтобы не перебивать собой другие токены, например stringLiteral.
         private val ws by regexToken("\\s+", ignore = true)
+        private val newLine by literalToken("\n", ignore = true)
 
         val keywords = setOf(tag, pid, tid, thread, message, level, runNumber, timeAfter, timeBefore, exactly, contains)
         val data = setOf(stingLiteral, any)

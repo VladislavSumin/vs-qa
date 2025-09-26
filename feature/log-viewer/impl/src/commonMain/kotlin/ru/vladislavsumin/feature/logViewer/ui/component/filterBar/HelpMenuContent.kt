@@ -79,7 +79,9 @@ internal fun HelpMenuContent() {
                 appendHighlight("&&")
                 append(" condition, all same filter merges by ")
                 appendHighlight("||")
-                append(" condition.")
+                appendLine(" condition.")
+                appendLine()
+                append("Allowed to use new line for separate filters.")
             },
             style = MaterialTheme.typography.bodyMedium,
         )
