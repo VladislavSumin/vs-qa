@@ -11,6 +11,7 @@ include(":app")
 
 include(":core:proguard-parser")
 include(":core:ui:design-system")
+include(":core:ui:file-picker")
 include(":core:ui:hotkey-controller")
 include(":core:utils")
 

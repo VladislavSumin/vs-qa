@@ -46,21 +46,17 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.AwtWindow
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.filePicker.FilePickerDialog
 import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarContent
-import java.awt.FileDialog
-import java.awt.Frame
 import java.awt.datatransfer.DataFlavor
 import java.io.File
-import java.nio.file.Path
-import kotlin.io.path.Path
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -203,7 +199,7 @@ private fun SidePanelContent(
             Icon(Icons.Default.CopyAll, null)
         }
         if (state.value.showSelectMappingDialog) {
-            FileDialog(onCloseRequest = viewModel::onSelectMappingDialogResult)
+            FilePickerDialog(onCloseRequest = viewModel::onSelectMappingDialogResult)
         }
         QaToggleIconButton(
             checked = state.value.isMappingApplied,
@@ -248,26 +244,3 @@ private fun rememberGlobalDragAndDropTarget(viewModel: LogViewerViewModel): Drag
         }
     }
 }
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-private fun FileDialog(
-    parent: Frame? = null,
-    onCloseRequest: (result: Path?) -> Unit,
-) = AwtWindow(
-    create = {
-        object : FileDialog(parent, "Choose a file", LOAD) {
-            override fun setVisible(value: Boolean) {
-                super.setVisible(value)
-                if (value) {
-                    if (directory != null && file != null) {
-                        onCloseRequest(Path(directory + file))
-                    } else {
-                        onCloseRequest(null)
-                    }
-                }
-            }
-        }
-    },
-    dispose = FileDialog::dispose,
-)
