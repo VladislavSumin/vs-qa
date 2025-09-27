@@ -10,22 +10,26 @@ import ru.vladislavsumin.core.navigation.host.childNavigationPages
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenFactory
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarComponentFactory
+import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsComponentFactory
 
 @GenerateScreenFactory
 internal class RootScreen(
     viewModelFactory: RootViewModelFactory,
     bottomBarComponentFactory: BottomBarComponentFactory,
     logViewerScreenFactory: LogViewerScreenFactory,
+    notificationsComponentFactory: NotificationsComponentFactory,
     context: ComponentContext,
 ) : Screen(context) {
 
     private val viewModel = viewModel { viewModelFactory.create() }
     private val bottomBarComponent = bottomBarComponentFactory.create(context.childContext("bottom-bar"))
+    private val notificationsComponent = notificationsComponentFactory.create(context.childContext("notifications"))
 
     init {
         registerCustomFactory { context, params, intents ->
             logViewerScreenFactory.create(
                 bottomBarUiInteractor = bottomBarComponent.bottomBarUiInteractor,
+                notificationsUiInteractor = notificationsComponent.notificationsUiInteractor,
                 params = params,
                 intents = intents,
                 context = context,
@@ -43,7 +47,6 @@ internal class RootScreen(
             for (event in viewModel.events) {
                 when (event) {
                     is RootEvent.FocusTab -> {
-                        println("QWQW")
                         tabs.value.items.getOrNull(event.number)
                             ?.let { navigator.open(it.configuration.screenParams) }
                     }
@@ -53,5 +56,6 @@ internal class RootScreen(
     }
 
     @Composable
-    override fun Render(modifier: Modifier) = RootContent(viewModel, tabs, bottomBarComponent, navigator, modifier)
+    override fun Render(modifier: Modifier) =
+        RootContent(viewModel, tabs, bottomBarComponent, notificationsComponent, navigator, modifier)
 }

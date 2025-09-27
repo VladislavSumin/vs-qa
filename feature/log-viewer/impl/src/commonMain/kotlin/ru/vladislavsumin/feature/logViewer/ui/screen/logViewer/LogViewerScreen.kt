@@ -11,10 +11,12 @@ import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
+import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 
 internal class LogViewerScreen(
     viewModelFactory: LogViewerViewModelFactory,
     bottomBarUiInteractor: BottomBarUiInteractor,
+    notificationsUiInteractor: NotificationsUiInteractor,
     params: LogViewerScreenParams,
     intents: ReceiveChannel<LogViewerScreenIntent>,
     context: ComponentContext,
@@ -59,6 +61,7 @@ internal class LogViewerScreenFactoryImpl(
 ) : LogViewerScreenFactory {
     override fun create(
         bottomBarUiInteractor: BottomBarUiInteractor,
+        notificationsUiInteractor: NotificationsUiInteractor,
         params: LogViewerScreenParams,
         intents: ReceiveChannel<LogViewerScreenIntent>,
         context: ComponentContext,
@@ -66,6 +69,7 @@ internal class LogViewerScreenFactoryImpl(
         return LogViewerScreen(
             viewModelFactory = viewModelFactory,
             bottomBarUiInteractor = bottomBarUiInteractor,
+            notificationsUiInteractor = notificationsUiInteractor,
             params = params,
             intents = intents,
             context = context,

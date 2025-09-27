@@ -13,6 +13,7 @@ import ru.vladislavsumin.feature.logViewer.featureLogViewer
 import ru.vladislavsumin.feature.windowTitle.featureWidowTitle
 import ru.vladislavsumin.qa.feature.bottomBar.featureBottomBar
 import ru.vladislavsumin.qa.feature.memoryIndicator.featureMemoryIndicator
+import ru.vladislavsumin.qa.feature.notifications.featureNotifications
 import ru.vladislavsumin.qa.feature.rootScreen.featureRootScreen
 
 fun createDi(
@@ -25,6 +26,7 @@ fun createDi(
     importOnce(Modules.featureBottomBar())
     importOnce(Modules.featureLogViewer())
     importOnce(Modules.featureMemoryIndicator())
+    importOnce(Modules.featureNotifications())
     importOnce(Modules.featureRootScreen())
     importOnce(Modules.featureWidowTitle())
 

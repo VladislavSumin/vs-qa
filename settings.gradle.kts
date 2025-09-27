@@ -21,6 +21,7 @@ include(":feature:log-parser:generic")
 feature("bottom-bar")
 feature("log-viewer")
 feature("memory-indicator")
+feature("notifications")
 feature("root-screen")
 feature("window-title")
 

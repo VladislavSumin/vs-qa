@@ -37,6 +37,7 @@ kotlin {
             implementation(projects.feature.logViewer.impl)
             implementation(projects.feature.logParser.anime)
             implementation(projects.feature.memoryIndicator.impl)
+            implementation(projects.feature.notifications.impl)
             implementation(projects.feature.rootScreen.impl)
             implementation(projects.feature.windowTitle.impl)
 

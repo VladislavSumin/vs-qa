@@ -7,6 +7,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.feature.bottomBar.api)
             implementation(projects.feature.logViewer.api)
+            implementation(projects.feature.notifications.api)
         }
     }
 }

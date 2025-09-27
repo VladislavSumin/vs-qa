@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -41,6 +42,7 @@ internal fun RootContent(
     viewModel: RootViewModel,
     tabs: Value<ChildPages<ConfigurationHolder, Screen>>,
     bottomBarComponent: ComposeComponent,
+    notificationsComponent: ComposeComponent,
     navigator: ScreenNavigator<*>, // TODO убрать навигатор отсюда.
     modifier: Modifier,
 ) {
@@ -53,51 +55,69 @@ internal fun RootContent(
         if (pages.items.isEmpty()) EmptyTabsPlaceholder()
 
         Column(modifier) {
-            if (pages.items.size > 1) {
-                LazyRow {
-                    itemsIndexed(pages.items, key = { _, item -> item.configuration.screenParams }) { index, item ->
-                        Row(
-                            modifier = Modifier
-                                .background(
-                                    if (index == pages.selectedIndex) {
-                                        QaTheme.colorScheme.surfaceVariant
-                                    } else {
-                                        QaTheme.colorScheme.surface
-                                    },
-                                )
-                                .clickable(onClick = { navigator.open(item.configuration.screenParams) }),
-                            verticalAlignment = Alignment.CenterVertically,
-
-                        ) {
-                            Text(
-                                text = (item.configuration.screenParams as LogViewerScreenParams).logPath.name,
-                                modifier = Modifier.padding(start = 8.dp, end = 4.dp),
-                            )
-                            QaIconButton(
-                                onClick = { navigator.close(item.configuration.screenParams) },
-                                modifier = Modifier.padding(end = 4.dp),
-                            ) {
-                                Icon(imageVector = Icons.Default.Close, contentDescription = "close")
-                            }
-                        }
-                    }
+            Box(Modifier.weight(1f)) {
+                Column {
+                    Tabs(pages, navigator)
+                    TabsContent(tabs)
                 }
-            }
-            ChildPages(
-                tabs,
-                onPageSelected = { _ -> },
-                Modifier.weight(1f),
-            ) { _, page ->
-                // TODO разобраться почему это работает?
-                val hackyContent = remember(page) {
-                    movableContentOf {
-                        page.Render(Modifier)
-                    }
-                }
-                hackyContent()
+                notificationsComponent.Render(
+                    Modifier
+                        .padding(bottom = 48.dp, end = 48.dp)
+                        .align(Alignment.BottomEnd),
+                )
             }
             bottomBarComponent.Render(Modifier)
         }
+    }
+}
+
+@Composable
+private fun Tabs(pages: ChildPages<ConfigurationHolder, Screen>, navigator: ScreenNavigator<*>) {
+    if (pages.items.size > 1) {
+        LazyRow {
+            itemsIndexed(pages.items, key = { _, item -> item.configuration.screenParams }) { index, item ->
+                Row(
+                    modifier = Modifier
+                        .background(
+                            if (index == pages.selectedIndex) {
+                                QaTheme.colorScheme.surfaceVariant
+                            } else {
+                                QaTheme.colorScheme.surface
+                            },
+                        )
+                        .clickable(onClick = { navigator.open(item.configuration.screenParams) }),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = (item.configuration.screenParams as LogViewerScreenParams).logPath.name,
+                        modifier = Modifier.padding(start = 8.dp, end = 4.dp),
+                    )
+                    QaIconButton(
+                        onClick = { navigator.close(item.configuration.screenParams) },
+                        modifier = Modifier.padding(end = 4.dp),
+                    ) {
+                        Icon(imageVector = Icons.Default.Close, contentDescription = "close")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ColumnScope.TabsContent(tabs: Value<ChildPages<ConfigurationHolder, Screen>>) {
+    ChildPages(
+        tabs,
+        onPageSelected = { _ -> },
+        Modifier.weight(1f),
+    ) { _, page ->
+        // TODO разобраться почему это работает?
+        val hackyContent = remember(page) {
+            movableContentOf {
+                page.Render(Modifier)
+            }
+        }
+        hackyContent()
     }
 }
 
