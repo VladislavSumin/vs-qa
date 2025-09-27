@@ -11,12 +11,12 @@ import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.extensions.compose.lifecycle.LifecycleController
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import org.kodein.di.instance
+import ru.vladislavsumin.core.decompose.compose.runOnUiThread
 import ru.vladislavsumin.core.logger.manager.LoggerManager
 import ru.vladislavsumin.core.logger.platform.initDefault
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyDispatcher
 import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 import ru.vladislavsumin.qa.feature.rootScreen.ui.component.rootScreen.RootScreenComponentFactory
-import javax.swing.SwingUtilities
 import kotlin.io.path.Path
 import kotlin.system.exitProcess
 
@@ -67,33 +67,6 @@ fun main(args: Array<String>) {
             rootScreenComponent.Render(Modifier)
         }
     }
-}
-
-/**
- * See https://arkivanov.github.io/Decompose/getting-started/quick-start/
- * See https://github.com/arkivanov/Decompose/blob/master/sample/app-desktop/src/jvmMain/kotlin/com/arkivanov/sample/app/Utils.kt
- */
-@Suppress("TooGenericExceptionCaught")
-internal fun <T> runOnUiThread(block: () -> T): T {
-    if (SwingUtilities.isEventDispatchThread()) {
-        return block()
-    }
-
-    var error: Throwable? = null
-    var result: T? = null
-
-    SwingUtilities.invokeAndWait {
-        try {
-            result = block()
-        } catch (e: Throwable) {
-            error = e
-        }
-    }
-
-    error?.also { throw it }
-
-    @Suppress("UNCHECKED_CAST")
-    return result as T
 }
 
 fun setExitOnUncaughtException() {
