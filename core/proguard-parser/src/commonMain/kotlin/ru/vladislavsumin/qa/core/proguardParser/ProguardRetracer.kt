@@ -14,12 +14,12 @@ import kotlin.system.measureTimeMillis
  *
  * @param mapping строка содержащая в себе полный mapping.txt
  */
-class ProguardRetracer(mapping: String) {
+class ProguardRetracer(mapping: () -> String) {
     private val diagnosticsHandler = object : DiagnosticsHandler {}
 
     private val proguardMappingSupplier by lazy {
         val supplier = ProguardMappingSupplier.builder()
-            .setProguardMapProducer(ProguardMapProducer.fromString(mapping))
+            .setProguardMapProducer(ProguardMapProducer.fromString(mapping()))
             .setAllowExperimental(false)
             .setLoadAllDefinitions(true)
             .build()
@@ -32,6 +32,11 @@ class ProguardRetracer(mapping: String) {
         logger.i { "Warmup finished at ${time}ms" }
 
         supplier
+    }
+
+    fun warmup() {
+        // Просто трогаем, это запускает прогрев.
+        proguardMappingSupplier
     }
 
     /**

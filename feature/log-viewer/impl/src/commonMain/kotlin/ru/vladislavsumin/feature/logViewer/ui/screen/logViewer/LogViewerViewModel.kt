@@ -28,6 +28,7 @@ import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
 import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarViewState
 import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
+import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.name
@@ -42,6 +43,7 @@ internal class LogViewerViewModel(
     @ByCreate mappingPath: Path?,
     @ByCreate private val bottomBarUiInteractor: BottomBarUiInteractor,
     @ByCreate private val filterBarUiInteractor: FilterBarUiInteractor,
+    @ByCreate private val notificationsUiInteractor: NotificationsUiInteractor,
 ) : NavigationViewModel() {
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
@@ -52,6 +54,7 @@ internal class LogViewerViewModel(
         scope = viewModelScope,
         logPath = logPath,
         logParserProvider = logParserProvider,
+        notificationsUiInteractor = notificationsUiInteractor,
         proguardInteractor = mappingPath?.let { ProguardInteractorImpl(it) },
     )
 
@@ -139,12 +142,12 @@ internal class LogViewerViewModel(
         launch {
             logsInteractor.observeLoadingStatus().collectLatest {
                 when (it) {
-                    LogsInteractor.LoadingStatus.Loaded -> Unit
-                    LogsInteractor.LoadingStatus.LoadingLogs -> {
+                    is LogsInteractor.LoadingStatus.Loaded -> Unit
+                    is LogsInteractor.LoadingStatus.LoadingLogs -> {
                         bottomBarUiInteractor.showProgressBar("Loading logs")
                     }
 
-                    LogsInteractor.LoadingStatus.DeobfuscateLogs -> {
+                    is LogsInteractor.LoadingStatus.DeobfuscateLogs -> {
                         bottomBarUiInteractor.showProgressBar("Deobfuscate logs")
                     }
                 }

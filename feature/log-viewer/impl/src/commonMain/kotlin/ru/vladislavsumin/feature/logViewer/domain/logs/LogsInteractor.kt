@@ -21,6 +21,8 @@ import ru.vladislavsumin.feature.logParser.domain.runId.RawRunIdInfo
 import ru.vladislavsumin.feature.logViewer.LogLogger
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractor
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
+import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Notification
+import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import java.nio.file.Path
 import java.time.temporal.ChronoUnit
 import kotlin.time.Duration.Companion.seconds
@@ -57,7 +59,7 @@ interface LogsInteractor {
     sealed interface LoadingStatus {
         data object LoadingLogs : LoadingStatus
         data object DeobfuscateLogs : LoadingStatus
-        data object Loaded : LoadingStatus
+        data class Loaded(val isDeobfuscated: Boolean) : LoadingStatus
     }
 
     sealed interface MappingStatus {
@@ -71,19 +73,27 @@ class LogsInteractorImpl(
     private val scope: CoroutineScope,
     private val logPath: Path,
     private val logParserProvider: LogParserProvider,
+    private val notificationsUiInteractor: NotificationsUiInteractor,
     proguardInteractor: ProguardInteractor?,
 ) : LogsInteractor {
-    private val logs = MutableStateFlow<ClearLogState>(ClearLogState(emptyList(), null))
+    private val logs = MutableStateFlow(ClearLogState(emptyList(), null))
     private val loadingStatus = MutableStateFlow<LogsInteractor.LoadingStatus>(LogsInteractor.LoadingStatus.LoadingLogs)
-    private val proguard = MutableStateFlow(proguardInteractor)
+    private val proguardState = MutableStateFlow(proguardInteractor)
 
     init {
         loadLogs()
     }
 
+    @Suppress("LongMethod") // TODO разгрести эту помойку на костылях
     private fun loadLogs() {
         scope.launch(Dispatchers.IO) {
-            proguard.collectLatest { proguard ->
+            proguardState.collectLatest { proguard ->
+                if (proguard == null &&
+                    (loadingStatus.value as? LogsInteractor.LoadingStatus.Loaded)?.isDeobfuscated == false
+                ) {
+                    return@collectLatest
+                }
+
                 loadingStatus.value = LogsInteractor.LoadingStatus.LoadingLogs
                 logs.value = ClearLogState(emptyList(), null)
 
@@ -99,38 +109,56 @@ class LogsInteractorImpl(
                 // TODO ну парсим тут чего уж там, все равно говнокод
                 if (proguard != null) {
                     loadingStatus.value = LogsInteractor.LoadingStatus.DeobfuscateLogs
-                    val deobfuscated = obfuscatedLogs.parallelStream()
-                        .map { log ->
-                            val deobfuscatedTag = proguard.deobfuscateClass(log.raw.substring(log.tag))
-                            if (deobfuscatedTag != null) {
-                                log.copyTag(deobfuscatedTag)
-                            } else {
-                                log
+                    val warmup = proguard.warmup()
+                    if (warmup.isSuccess) {
+                        val deobfuscated = obfuscatedLogs.parallelStream()
+                            .map { log ->
+                                val deobfuscatedTag = proguard.deobfuscateClass(log.raw.substring(log.tag))
+                                if (deobfuscatedTag != null) {
+                                    log.copyTag(deobfuscatedTag)
+                                } else {
+                                    log
+                                }
                             }
-                        }
-                        .map { log ->
-                            if (log.lines > 2 && log.raw.lines()[log.lines - 2].startsWith("\tat ")) {
-                                val newMessage = proguard.deobfuscateStack(log.raw.substring(log.message))
-                                log.copy(
-                                    raw = log.raw.replaceRange(log.message, newMessage),
-                                    message = IntRange(log.message.first, log.message.first + newMessage.length - 1),
-                                )
-                            } else {
-                                log
+                            .map { log ->
+                                if (log.lines > 2 && log.raw.lines()[log.lines - 2].startsWith("\tat ")) {
+                                    val newMessage = proguard.deobfuscateStack(log.raw.substring(log.message))
+                                    log.copy(
+                                        raw = log.raw.replaceRange(log.message, newMessage),
+                                        message = IntRange(
+                                            log.message.first,
+                                            log.message.first + newMessage.length - 1,
+                                        ),
+                                    )
+                                } else {
+                                    log
+                                }
                             }
-                        }
-                        .toList()
-                    logs.value = ClearLogState(
-                        deobfuscated.toLogRecords(),
-                        runIdIndexes,
-                    )
+                            .toList()
+                        logs.value = ClearLogState(
+                            deobfuscated.toLogRecords(),
+                            runIdIndexes,
+                        )
+                        loadingStatus.value = LogsInteractor.LoadingStatus.Loaded(true)
+                    } else {
+                        notificationsUiInteractor.showNotification(
+                            Notification(
+                                "Failed to loading mapping",
+                                Notification.Servility.Error,
+                            ),
+                        )
+                        LogLogger.e(warmup.exceptionOrNull()!!) { "Failed to loading mapping" }
+                        loadingStatus.value = LogsInteractor.LoadingStatus.Loaded(false)
+                        proguardState.value = null
+                    }
+                } else {
+                    loadingStatus.value = LogsInteractor.LoadingStatus.Loaded(false)
                 }
-                loadingStatus.value = LogsInteractor.LoadingStatus.Loaded
             }
         }
     }
 
-    override fun observeMappingStatus(): StateFlow<LogsInteractor.MappingStatus> = proguard.mapState {
+    override fun observeMappingStatus(): StateFlow<LogsInteractor.MappingStatus> = proguardState.mapState {
         if (it == null) {
             LogsInteractor.MappingStatus.NotAttached
         } else {
@@ -139,11 +167,11 @@ class LogsInteractorImpl(
     }
 
     override suspend fun detachMapping() {
-        proguard.value = null
+        proguardState.value = null
     }
 
     override suspend fun attachMapping(path: Path) {
-        proguard.value = ProguardInteractorImpl(path)
+        proguardState.value = ProguardInteractorImpl(path)
     }
 
     override fun observeLoadingStatus(): StateFlow<LogsInteractor.LoadingStatus> = loadingStatus

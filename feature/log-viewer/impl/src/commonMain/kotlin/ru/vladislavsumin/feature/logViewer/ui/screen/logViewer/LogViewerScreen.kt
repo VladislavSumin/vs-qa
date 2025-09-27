@@ -36,6 +36,7 @@ internal class LogViewerScreen(
             mappingPath = (intents.tryReceive().getOrNull() as? LogViewerScreenIntent.OpenMapping)?.mappingPath,
             bottomBarUiInteractor = bottomBarUiInteractor,
             filterBarUiInteractor = filterBarComponent.filterBarUiInteractor,
+            notificationsUiInteractor = notificationsUiInteractor,
         )
     }
 

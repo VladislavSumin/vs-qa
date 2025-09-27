@@ -8,12 +8,15 @@ import kotlin.io.path.inputStream
 import kotlin.io.path.readText
 
 interface ProguardInteractor {
+    fun warmup(): Result<Unit>
     fun deobfuscateClass(obfuscatedClassName: String): String?
     fun deobfuscateStack(data: String): String
 }
 
 class ProguardInteractorImpl(path: Path) : ProguardInteractor {
-    private val proguardRetracer = ProguardRetracer(read(path))
+    private val proguardRetracer = ProguardRetracer { read(path) }
+
+    override fun warmup(): Result<Unit> = runCatching { proguardRetracer.warmup() }
 
     private fun read(path: Path): String {
         return if (path.extension == "zip") {
