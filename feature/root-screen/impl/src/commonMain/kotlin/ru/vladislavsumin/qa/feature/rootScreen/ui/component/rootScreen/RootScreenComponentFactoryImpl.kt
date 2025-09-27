@@ -9,7 +9,7 @@ internal class RootScreenComponentFactoryImpl(
     private val navigation: Navigation,
 ) : RootScreenComponentFactory {
     override fun create(
-        logPath: Path,
+        logPath: Path?,
         mappingPath: Path?,
         context: ComponentContext,
     ): ComposeComponent {

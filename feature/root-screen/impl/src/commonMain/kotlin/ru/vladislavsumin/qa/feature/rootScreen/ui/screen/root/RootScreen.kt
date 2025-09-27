@@ -39,7 +39,8 @@ internal class RootScreen(
 
     private val tabs = childNavigationPages(
         navigationHost = TabNavigationHost,
-        initialPages = { Pages() },
+        // TODO https://github.com/arkivanov/Decompose/issues/866 исправлено в 3.4.0-alpha2 жду стабильную версию.
+        initialPages = { Pages(items = emptyList(), selectedIndex = 0) },
     )
 
     init {

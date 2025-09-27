@@ -26,7 +26,7 @@ fun main(args: Array<String>) {
     LoggerManager.initDefault()
     MainLogger.i("Initialization...")
 
-    val logPath = Path(args[0])
+    val logPath = if (args.isNotEmpty()) Path(args[0]) else null
     val mappingPath = if (args.size > 1) Path(args[1]) else null
 
     val hotkeyDispatcher = GlobalHotkeyDispatcher()

@@ -15,16 +15,18 @@ import java.nio.file.Path
 
 internal class RootScreenComponent(
     navigation: Navigation,
-    logPath: Path,
+    logPath: Path?,
     mappingPath: Path?,
     context: ComponentContext,
 ) : Component(context), ComposeComponent {
 
     init {
-        navigation.open(
-            screenParams = LogViewerScreenParams(logPath),
-            intent = mappingPath?.let { LogViewerScreenIntent.OpenMapping(it) },
-        )
+        if (logPath != null) {
+            navigation.open(
+                screenParams = LogViewerScreenParams(logPath),
+                intent = mappingPath?.let { LogViewerScreenIntent.OpenMapping(it) },
+            )
+        }
     }
 
     private val navigationRoot = context.childNavigationRoot(navigation)
