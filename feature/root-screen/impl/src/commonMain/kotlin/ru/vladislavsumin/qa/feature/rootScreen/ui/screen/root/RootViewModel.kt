@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
+import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
@@ -44,6 +45,9 @@ internal class RootViewModel(
         events.trySend(RootEvent.FocusTab(number))
         return true
     }
+
+    fun onTabClick(tabScreenParams: IntentScreenParams<*>) = open(tabScreenParams)
+    fun onCloseTabClick(tabScreenParams: IntentScreenParams<*>) = close(tabScreenParams)
 
     fun onOpenNewFileDialogResult(path: Path?) {
         showOpenNewFileDialog.value = false

@@ -43,17 +43,9 @@ fun main(args: Array<String>) {
     val windowTitleInteractor = di.instance<WindowTitleInteractor>()
 
     application {
-        val windowState = rememberWindowState(
-            placement = WindowPlacement.Maximized,
-        )
-
+        val windowState = rememberWindowState(placement = WindowPlacement.Maximized)
         val windowTitleExtension by windowTitleInteractor.windowTitleExtension.collectAsState()
-
-        val windowTitle = if (windowTitleExtension == null) {
-            "vs-qa"
-        } else {
-            "vs-qa: $windowTitleExtension"
-        }
+        val windowTitle = if (windowTitleExtension == null) "vs-qa" else "vs-qa: $windowTitleExtension"
 
         // Связываем рутовый Decompose lifecycle с жизненным циклом окна.
         LifecycleController(lifecycle, windowState)
@@ -63,9 +55,7 @@ fun main(args: Array<String>) {
             onCloseRequest = ::exitApplication,
             state = windowState,
             onKeyEvent = hotkeyDispatcher::onKeyEvent,
-        ) {
-            rootScreenComponent.Render(Modifier)
-        }
+        ) { rootScreenComponent.Render(Modifier) }
     }
 }
 

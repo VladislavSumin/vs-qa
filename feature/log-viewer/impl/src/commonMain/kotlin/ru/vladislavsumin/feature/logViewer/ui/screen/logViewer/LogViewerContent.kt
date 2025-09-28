@@ -22,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.FilePresent
 import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -108,13 +107,7 @@ internal fun LogViewerContent(
 
         Row(
             // Костыль, иначе не сможем получить событие drag && drop.
-            Modifier.let {
-                if (state.value.showDragAndDropContainers) {
-                    it.fillMaxSize()
-                } else {
-                    it.size(0.dp)
-                }
-            },
+            Modifier.let { if (state.value.showDragAndDropContainers) it.fillMaxSize() else it.size(0.dp) },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
@@ -150,12 +143,7 @@ internal fun LogViewerContent(
                         minWidth = 300.dp,
                         minHeight = 200.dp,
                     ),
-                ) {
-                    Text(
-                        "Drop logs here",
-                        modifier = Modifier.align(Alignment.Center),
-                    )
-                }
+                ) { Text(text = "Drop logs here", modifier = Modifier.align(Alignment.Center)) }
             }
 
             Card(
@@ -170,9 +158,7 @@ internal fun LogViewerContent(
                         minWidth = 300.dp,
                         minHeight = 200.dp,
                     ),
-                ) {
-                    Text("Drop mapping here", Modifier.align(Alignment.Center))
-                }
+                ) { Text(text = "Drop mapping here", Modifier.align(Alignment.Center)) }
             }
         }
     }
@@ -187,7 +173,7 @@ private fun SidePanelContent(
     Column(
         Modifier.fillMaxHeight().width(IntrinsicSize.Min).background(QaTheme.colorScheme.surfaceVariant),
     ) {
-        Divider(color = QaTheme.colorScheme.surface, thickness = 1.5.dp)
+        HorizontalDivider(color = QaTheme.colorScheme.surface, thickness = 1.5.dp)
         QaIconButton(
             onClick = {
                 // TODO провести через вью модель.
@@ -195,9 +181,7 @@ private fun SidePanelContent(
                 clipboard.setText(AnnotatedString(data))
             },
             Modifier.padding(4.dp),
-        ) {
-            Icon(Icons.Default.CopyAll, null)
-        }
+        ) { Icon(Icons.Default.CopyAll, null) }
         if (state.value.showSelectMappingDialog) {
             FilePickerDialog(onCloseRequest = viewModel::onSelectMappingDialogResult)
         }
@@ -209,7 +193,7 @@ private fun SidePanelContent(
             Icon(Icons.Default.FilePresent, null)
         }
         Spacer(Modifier.weight(1f))
-        Divider(color = QaTheme.colorScheme.surface, thickness = 1.5.dp)
+        HorizontalDivider(color = QaTheme.colorScheme.surface, thickness = 1.5.dp)
     }
 }
 

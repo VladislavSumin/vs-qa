@@ -42,41 +42,37 @@ internal fun FilterBarContent(
             .padding(vertical = 4.dp, horizontal = 8.dp),
     ) {
         val hotkeyController = remember(onFocusLost) {
-            HotkeyController(
-                KeyModifier.None + Key.Escape to onFocusLost,
-            )
+            HotkeyController(KeyModifier.None + Key.Escape to onFocusLost)
         }
         val state by viewModel.state.collectAsState()
         if (state.error != null) {
-            Text(state.error.toString(), color = QaTheme.colorScheme.logError.primary)
+            Text(text = state.error.toString(), color = QaTheme.colorScheme.logError.primary)
         }
         QaTextField(
-            value = state.field.copy(
-                annotatedString = state.highlight.colorize(),
-            ),
+            value = state.field.copy(annotatedString = state.highlight.colorize()),
             onValueChange = viewModel::onFilterChange,
             modifier = Modifier
                 .focusRequester(focusRequester)
                 .onKeyEvent(hotkeyController::invoke),
             isError = state.error != null,
             placeholder = { Text("Filter...") },
-            leadingContent = {
-                Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null)
-            },
-            trailingContent = {
-                QaIconButton(
-                    onClick = viewModel::onClickHelpButton,
-                ) {
-                    DropdownMenu(
-                        expanded = state.showHelpMenu,
-                        onDismissRequest = viewModel::onDismissHelpMenu,
-                    ) {
-                        HelpMenuContent()
-                    }
-                    Icon(imageVector = Icons.AutoMirrored.Filled.Help, contentDescription = "help")
-                }
-            },
+            leadingContent = { Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null) },
+            trailingContent = { HelpButton(viewModel, state) },
         )
+    }
+}
+
+@Composable
+private fun HelpButton(
+    viewModel: FilterBarViewModel,
+    state: FilterBarViewState,
+) {
+    QaIconButton(onClick = viewModel::onClickHelpButton) {
+        DropdownMenu(
+            expanded = state.showHelpMenu,
+            onDismissRequest = viewModel::onDismissHelpMenu,
+        ) { HelpMenuContent() }
+        Icon(imageVector = Icons.AutoMirrored.Filled.Help, contentDescription = "help")
     }
 }
 

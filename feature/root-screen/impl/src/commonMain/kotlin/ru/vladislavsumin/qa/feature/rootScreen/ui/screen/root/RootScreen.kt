@@ -58,5 +58,5 @@ internal class RootScreen(
 
     @Composable
     override fun Render(modifier: Modifier) =
-        RootContent(viewModel, tabs, bottomBarComponent, notificationsComponent, navigator, modifier)
+        RootContent(viewModel, tabs, bottomBarComponent, notificationsComponent, modifier)
 }
