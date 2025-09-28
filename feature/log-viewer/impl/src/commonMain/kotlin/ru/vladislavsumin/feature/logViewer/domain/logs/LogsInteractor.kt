@@ -7,11 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
@@ -19,6 +15,7 @@ import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
 import ru.vladislavsumin.feature.logParser.domain.runId.RawRunIdInfo
 import ru.vladislavsumin.feature.logViewer.LogLogger
+import ru.vladislavsumin.feature.logViewer.domain.logs.delegates.filter.LogFilterDelegate
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractor
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Notification
@@ -79,6 +76,8 @@ class LogsInteractorImpl(
     private val logs = MutableStateFlow(ClearLogState(emptyList(), null))
     private val loadingStatus = MutableStateFlow<LogsInteractor.LoadingStatus>(LogsInteractor.LoadingStatus.LoadingLogs)
     private val proguardState = MutableStateFlow(proguardInteractor)
+
+    private val filterDelegate = LogFilterDelegate(logs)
 
     init {
         loadLogs()
@@ -183,7 +182,7 @@ class LogsInteractorImpl(
         // Если этот кеш не null, то в нем содержаться актуальные или прошлые результаты поиска
         var searchCache: LogIndex?
 
-        createFilterProgressFlow(filter).collectLatest { filterProgress ->
+        filterDelegate.createFilterProgressFlow(filter).collectLatest { filterProgress ->
             // При изменении данных поиска всегда обнуляем кеш.
             searchCache = null
 
@@ -222,99 +221,6 @@ class LogsInteractorImpl(
             }
         }
     }.flowOn(Dispatchers.Default)
-
-    private fun createFilterProgressFlow(filter: Flow<FilterRequest>): Flow<FilterLogProgress> = flow {
-        var filteredCache = emptyList<LogRecord>()
-        combine(
-            logs,
-            filter,
-        ) { logs, filter -> logs to filter }
-            .distinctUntilChanged()
-            .transformLatest { (logs, filter) ->
-                emit(FilterLogProgress(isFilteringNow = true, filteredCache, logs.logs.size, logs.runIdIndexes))
-                filteredCache = filterLogs(logs.logs, filter, logs.runIdIndexes)
-                emit(FilterLogProgress(isFilteringNow = false, filteredCache, logs.logs.size, logs.runIdIndexes))
-            }
-            .collect(this)
-    }
-
-    @Suppress("LongMethod", "CyclomaticComplexMethod") // TODO переписать фильтр
-    private fun filterLogs(
-        logs: List<LogRecord>,
-        filter: FilterRequest,
-        runIdOrders: List<RunIdInfo>?,
-    ): List<LogRecord> {
-        val (time, result) = measureTimeMillisWithResult {
-            logs.parallelStream()
-                .let {
-                    if (filter.timeAfter != null) {
-                        it.filter { log ->
-                            val time = log.raw.substring(log.time)
-                            time >= filter.timeAfter
-                        }
-                    } else {
-                        it
-                    }
-                }
-                .let {
-                    if (filter.timeBefore != null) {
-                        it.filter { log ->
-                            val time = log.raw.substring(log.time)
-                            time <= filter.timeBefore
-                        }
-                    } else {
-                        it
-                    }
-                }
-                .let {
-                    if (filter.minLevel != null) {
-                        it.filter { log ->
-                            log.logLevel.rawLevel >= filter.minLevel.rawLevel
-                        }
-                    } else {
-                        it
-                    }
-                }
-                .let {
-                    if (filter.runOrders.isNotEmpty()) {
-                        val orders = filter.runOrders.mapNotNull { index ->
-                            runIdOrders?.getOrNull(index)?.orderRange
-                        }
-                        it.filter { log ->
-                            orders.any { index -> log.order in index }
-                        }
-                    } else {
-                        it
-                    }
-                }
-                .filter { log ->
-                    filter.filters.all { (field, filter) ->
-                        val range: IntRange? = when (field) {
-                            FilterRequest.Field.All -> 0..<log.raw.length
-                            FilterRequest.Field.Tag -> log.tag
-                            FilterRequest.Field.ProcessId -> log.processId
-                            FilterRequest.Field.Thread -> log.thread
-                            FilterRequest.Field.Message -> log.message
-                        }
-
-                        if (range == null) return@all false
-
-                        filter.any { operation ->
-                            when (operation) {
-                                is FilterRequest.Operation.Contains -> log.raw.substring(range)
-                                    .contains(operation.data, ignoreCase = true)
-
-                                is FilterRequest.Operation.Exactly -> log.raw.substring(range)
-                                    .equals(operation.data, ignoreCase = true)
-                            }
-                        }
-                    }
-                }
-                .toList()
-        }
-        LogLogger.d { "Log filtered at ${time}ms, size = ${result.size}" }
-        return result
-    }
 
     private fun List<LogRecord>.searchLogs(
         search: SearchRequest,
@@ -373,13 +279,6 @@ class LogsInteractorImpl(
 
         return result
     }
-
-    private data class FilterLogProgress(
-        val isFilteringNow: Boolean,
-        val logs: List<LogRecord>,
-        val totalLogRecords: Int,
-        val runIdOrders: List<RunIdInfo>?,
-    )
 }
 
 data class ClearLogState(
