@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.ComponentContext
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
+import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.Navigation
 import ru.vladislavsumin.core.navigation.host.childNavigationRoot
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
@@ -13,6 +14,7 @@ import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenIn
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
 import java.nio.file.Path
 
+@GenerateFactory(RootScreenComponentFactory::class)
 internal class RootScreenComponent(
     navigation: Navigation,
     logPath: Path?,

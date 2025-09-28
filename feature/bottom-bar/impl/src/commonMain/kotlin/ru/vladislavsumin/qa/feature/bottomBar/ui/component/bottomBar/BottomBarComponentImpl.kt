@@ -19,9 +19,11 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import ru.vladislavsumin.core.decompose.components.Component
+import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.qa.feature.memoryIndicator.ui.component.memoryIndicator.MemoryIndicatorComponentFactory
 
+@GenerateFactory(BottomBarComponentFactory::class)
 internal class BottomBarComponentImpl(
     memoryIndicatorComponentFactory: MemoryIndicatorComponentFactory,
     context: ComponentContext,

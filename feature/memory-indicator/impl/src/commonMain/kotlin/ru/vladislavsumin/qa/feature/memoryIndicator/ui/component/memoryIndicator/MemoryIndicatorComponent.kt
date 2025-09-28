@@ -20,7 +20,9 @@ import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ComponentContext
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
+import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 
+@GenerateFactory(MemoryIndicatorComponentFactory::class)
 internal class MemoryIndicatorComponent(context: ComponentContext) : Component(context), ComposeComponent {
     private val viewModel = viewModel { MemoryIndicatorViewModel() }
 

@@ -7,12 +7,14 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.coroutines.utils.mapState
+import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 
+@GenerateFactory(LogViewerScreenFactory::class)
 internal class LogViewerScreen(
     viewModelFactory: LogViewerViewModelFactory,
     bottomBarUiInteractor: BottomBarUiInteractor,
@@ -55,25 +57,4 @@ internal class LogViewerScreen(
         logsComponent = logsComponent,
         modifier = modifier,
     )
-}
-
-internal class LogViewerScreenFactoryImpl(
-    private val viewModelFactory: LogViewerViewModelFactory,
-) : LogViewerScreenFactory {
-    override fun create(
-        bottomBarUiInteractor: BottomBarUiInteractor,
-        notificationsUiInteractor: NotificationsUiInteractor,
-        params: LogViewerScreenParams,
-        intents: ReceiveChannel<LogViewerScreenIntent>,
-        context: ComponentContext,
-    ): Screen {
-        return LogViewerScreen(
-            viewModelFactory = viewModelFactory,
-            bottomBarUiInteractor = bottomBarUiInteractor,
-            notificationsUiInteractor = notificationsUiInteractor,
-            params = params,
-            intents = intents,
-            context = context,
-        )
-    }
 }

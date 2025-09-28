@@ -4,5 +4,5 @@ import com.arkivanov.decompose.ComponentContext
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 
 interface MemoryIndicatorComponentFactory {
-    fun create(componentContext: ComponentContext): ComposeComponent
+    fun create(context: ComponentContext): ComposeComponent
 }

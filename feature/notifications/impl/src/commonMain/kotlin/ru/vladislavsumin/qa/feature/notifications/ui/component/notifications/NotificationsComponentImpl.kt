@@ -20,9 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ComponentContext
 import ru.vladislavsumin.core.decompose.components.Component
+import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 
+@GenerateFactory(NotificationsComponentFactory::class)
 internal class NotificationsComponentImpl(
     viewModelFactory: NotificationsViewModelFactory,
     context: ComponentContext,
