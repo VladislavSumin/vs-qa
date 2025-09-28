@@ -10,12 +10,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.coroutines.utils.mapState
-import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
 import ru.vladislavsumin.feature.logParser.domain.runId.RawRunIdInfo
 import ru.vladislavsumin.feature.logViewer.LogLogger
 import ru.vladislavsumin.feature.logViewer.domain.logs.delegates.filter.LogFilterDelegate
+import ru.vladislavsumin.feature.logViewer.domain.logs.delegates.search.LogSearchDelegate
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractor
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Notification
@@ -78,6 +78,7 @@ class LogsInteractorImpl(
     private val proguardState = MutableStateFlow(proguardInteractor)
 
     private val filterDelegate = LogFilterDelegate(logs)
+    private val searchDelegate = LogSearchDelegate()
 
     init {
         loadLogs()
@@ -183,16 +184,17 @@ class LogsInteractorImpl(
         var searchCache: LogIndex?
 
         filterDelegate.createFilterProgressFlow(filter).collectLatest { filterProgress ->
-            // При изменении данных поиска всегда обнуляем кеш.
+            // При изменении данных фильтра всегда обнуляем кеш.
             searchCache = null
 
             val logs = filterProgress.logs
             search.collectLatest { search ->
-                // Сразу отправляем результаты поиска + старый кеш далее
                 val isSearch = search.search.isNotEmpty()
-                if (!isSearch) {
-                    searchCache = null
-                }
+
+                // Если новый поисковый запрос пуст, то старый кеш нам больше не нужен.
+                if (!isSearch) searchCache = null
+
+                // Сразу отправляем результаты поиска + старый кеш далее
                 send(
                     element = LogIndexProgress(
                         isFilteringNow = filterProgress.isFilteringNow,
@@ -207,8 +209,13 @@ class LogsInteractorImpl(
                 )
 
                 // Проводим новый поиск
-                if (!filterProgress.isFilteringNow && search.search.isNotEmpty()) {
-                    val logIndex = logs.searchLogs(search, filterProgress.totalLogRecords, filterProgress.runIdOrders)
+                if (!filterProgress.isFilteringNow && isSearch) {
+                    val logIndex = searchDelegate.searchLogs(
+                        logs,
+                        search,
+                        filterProgress.totalLogRecords,
+                        filterProgress.runIdOrders,
+                    )
                     searchCache = logIndex
                     send(
                         element = LogIndexProgress(
@@ -221,64 +228,6 @@ class LogsInteractorImpl(
             }
         }
     }.flowOn(Dispatchers.Default)
-
-    private fun List<LogRecord>.searchLogs(
-        search: SearchRequest,
-        totalLogRecords: Int,
-        runIdOrders: List<RunIdInfo>?,
-    ): LogIndex {
-        val (time, result) = measureTimeMillisWithResult {
-            val regex = runCatching {
-                Regex(
-                    pattern = search.search,
-                    options = buildSet {
-                        if (!search.useRegex) {
-                            add(RegexOption.LITERAL)
-                        }
-                        if (!search.matchCase) {
-                            add(RegexOption.IGNORE_CASE)
-                        }
-                    },
-                )
-            }.getOrElse {
-                return@measureTimeMillisWithResult LogIndex(
-                    logs = this,
-                    searchIndex = LogIndex.SearchIndex.BadRegex,
-                    totalLogRecords = totalLogRecords,
-                    runIdOrders = runIdOrders,
-                )
-            }
-
-            val searchedLogs = this.parallelStream().map { log ->
-                val math = regex.find(log.raw)
-                val range = math?.range
-                range?.let { log.copy(searchHighlight = it) } ?: log
-            }.toList()
-
-            val searchIndex = searchedLogs.mapIndexedNotNull { index, record ->
-                if (record.searchHighlight != null) index else null
-            }
-
-            LogIndex(
-                logs = searchedLogs,
-                searchIndex = if (searchIndex.isNotEmpty()) {
-                    LogIndex.SearchIndex.Search(
-                        searchIndex,
-                    )
-                } else {
-                    LogIndex.SearchIndex.EmptySearch
-                },
-                totalLogRecords = totalLogRecords,
-                runIdOrders = runIdOrders,
-            )
-        }
-
-        LogLogger.d {
-            "Log searched at ${time}ms, size = ${result.logs.size}, results = ${result.searchIndex.index.size}"
-        }
-
-        return result
-    }
 }
 
 data class ClearLogState(
