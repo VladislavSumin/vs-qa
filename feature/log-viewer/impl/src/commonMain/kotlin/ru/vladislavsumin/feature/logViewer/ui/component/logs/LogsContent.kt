@@ -86,7 +86,7 @@ internal fun LogsContent(
                             stickyHeader(key = -runNumber - 1) { Header(runNumber + 1, sectionInfo.meta, textSizeDp) }
                         }
                         items(sectionInfo.logs, { it.order }) {
-                            Record(it, textSizeDp)
+                            Record(it, it.order == state.currentSelectedItemOrder, textSizeDp)
                         }
                     }
                 }
@@ -129,6 +129,7 @@ private fun Header(
 @Composable
 private fun Record(
     log: LogRecord,
+    isSelected: Boolean,
     textSizeDp: Dp,
 ) {
     Box {
@@ -146,7 +147,7 @@ private fun Record(
             )
         }
         Text(
-            text = log.colorize(),
+            text = log.colorize(isSelected),
             style = MaterialTheme.typography.bodyMedium,
             fontFamily = FontFamily.Monospace,
             modifier = Modifier

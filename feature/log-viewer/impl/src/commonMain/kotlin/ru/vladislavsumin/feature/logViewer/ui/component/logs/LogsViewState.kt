@@ -5,6 +5,7 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 internal data class LogsViewState(
     val logs: List<SectionInfo>,
     val rawLogs: List<LogRecord>,
+    val currentSelectedItemOrder: Int,
     val showRunNumbers: Boolean,
     val maxLogNumberDigits: Int,
 ) {
@@ -18,6 +19,7 @@ internal data class LogsViewState(
         val STUB = LogsViewState(
             logs = emptyList(),
             rawLogs = emptyList(),
+            currentSelectedItemOrder = -1,
             showRunNumbers = false,
             maxLogNumberDigits = 0,
         )

@@ -10,7 +10,7 @@ import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 
 @Composable
-fun LogRecord.colorize(): AnnotatedString {
+fun LogRecord.colorize(isSelected: Boolean): AnnotatedString {
     val logColor = LevelColors.getLevelColor(logLevel)
     return buildAnnotatedString {
         append(raw)
@@ -20,7 +20,16 @@ fun LogRecord.colorize(): AnnotatedString {
         addStyle(SpanStyle(color = logColor.primary, fontWeight = FontWeight.Bold), tag)
         addStyle(SpanStyle(color = logColor.primary), message)
         searchHighlight?.let { index ->
-            addStyle(SpanStyle(background = QaTheme.colorScheme.logHighlight), index)
+            addStyle(
+                SpanStyle(
+                    background = if (isSelected) {
+                        QaTheme.colorScheme.logHighlightSelected
+                    } else {
+                        QaTheme.colorScheme.logHighlight
+                    },
+                ),
+                index,
+            )
         }
     }
 }

@@ -12,6 +12,7 @@ data class QaColorScheme(
     val onSurfaceVariant: Color = Color(0xFFA1A2AA),
 
     val logHighlight: Color = Color(0x80A0A0A0),
+    val logHighlightSelected: Color = Color(0xCC373AB1),
 
     // Logs
     val logFatal: LogColor = LogColor(

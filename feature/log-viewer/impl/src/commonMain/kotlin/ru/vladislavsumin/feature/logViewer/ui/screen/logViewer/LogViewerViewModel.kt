@@ -120,11 +120,16 @@ internal class LogViewerViewModel(
             }
         }
 
+        val currentSelectedItemOrder = logIndexProgress.lastSuccessIndex.logs.getOrNull(
+            logIndexProgress.lastSuccessIndex.searchIndex.index.getOrNull(selectedSearchIndex) ?: -1,
+        )?.order ?: -1
+
         LogViewerViewState(
             searchIndex = logIndexProgress.lastSuccessIndex.searchIndex.index,
             logsViewState = LogsViewState(
                 logs = logsWithRunNumber,
                 rawLogs = logIndexProgress.lastSuccessIndex.logs,
+                currentSelectedItemOrder = currentSelectedItemOrder,
                 showRunNumbers = runIdOrders != null,
                 maxLogNumberDigits = (logIndexProgress.lastSuccessIndex.totalLogRecords + 1).toString().length,
             ),
@@ -186,6 +191,7 @@ internal class LogViewerViewModel(
     }
 
     private fun scrollToIndex(index: Int) = launch {
+        println("Index = $index")
         events.send(LogsEvents.ScrollToIndex(index))
     }
 
