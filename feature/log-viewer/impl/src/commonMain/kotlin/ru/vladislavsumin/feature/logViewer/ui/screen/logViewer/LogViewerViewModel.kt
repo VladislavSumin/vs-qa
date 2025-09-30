@@ -6,10 +6,10 @@ import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
-import ru.vladislavsumin.core.coroutines.utils.combine
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
@@ -29,7 +29,6 @@ import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarViewS
 import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
-import java.io.File
 import java.nio.file.Path
 import kotlin.io.path.name
 
@@ -48,7 +47,6 @@ internal class LogViewerViewModel(
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
     private val showSelectMappingDialog = MutableStateFlow(false)
-    private val showDragAndDropContainers = MutableStateFlow(false)
     private val firstVisibleIndex = MutableStateFlow(0)
 
     private val logsInteractor = LogsInteractorImpl(
@@ -86,10 +84,9 @@ internal class LogViewerViewModel(
         selectedSearchIndex,
         logsInteractor.observeMappingStatus(),
         showSelectMappingDialog,
-        showDragAndDropContainers,
     ) {
             logIndexProgress, search, selectedSearchIndex, mappingStatus,
-            showSelectMappingDialog, showDragAndDropContainers,
+            showSelectMappingDialog,
         ->
 
         val runIdOrders = logIndexProgress.lastSuccessIndex.runIdOrders
@@ -147,7 +144,6 @@ internal class LogViewerViewModel(
                 LogsInteractor.MappingStatus.NotAttached -> false
             },
             showSelectMappingDialog = showSelectMappingDialog,
-            showDragAndDropContainers = showDragAndDropContainers,
             logRecordsAfterApplyFilter = logIndexProgress.lastSuccessIndex.logs.size,
         )
     }
@@ -210,12 +206,12 @@ internal class LogViewerViewModel(
         }
     }
 
-    fun onDragAndDropLogsFile(file: File) {
-        open(LogViewerScreenParams(logPath = file.toPath()))
+    fun onDragAndDropLogsFile(path: Path) {
+        open(LogViewerScreenParams(logPath = path))
     }
 
-    fun onDragAndDropMappingFile(file: File) = launch {
-        logsInteractor.attachMapping(file.toPath())
+    fun onDragAndDropMappingFile(path: Path) = launch {
+        logsInteractor.attachMapping(path)
     }
 
     fun onClickPrevIndex() {
@@ -238,14 +234,6 @@ internal class LogViewerViewModel(
             }
             scrollToIndex(state.value.searchIndex[selectedSearchIndex.value])
         }
-    }
-
-    fun onStartDragAndDrop() {
-        showDragAndDropContainers.value = true
-    }
-
-    fun onStopDragAndDrop() {
-        showDragAndDropContainers.value = false
     }
 
     fun onFirstVisibleIndexUpdate(index: Int) {

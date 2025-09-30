@@ -9,6 +9,7 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.feature.logViewer.ui.component.dragAndDropOverlay.DragAndDropOverlayComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
@@ -49,12 +50,19 @@ internal class LogViewerScreen(
         context = context.childContext("logs"),
     )
 
+    private val dragAndDropOverlayComponent = DragAndDropOverlayComponent(
+        onMappingPathSelected = viewModel::onDragAndDropMappingFile,
+        onLogPathSelected = viewModel::onDragAndDropLogsFile,
+        context = context.childContext("drag-and-drop"),
+    )
+
     @Composable
     override fun Render(modifier: Modifier) = LogViewerContent(
         viewModel = viewModel,
         rootFocusRequester = rootFocusRequester,
         filterFocusRequester = filterFocusRequester,
         filterBarComponent = filterBarComponent,
+        dragAndDropOverlayComponent = dragAndDropOverlayComponent,
         logsComponent = logsComponent,
         modifier = modifier,
     )

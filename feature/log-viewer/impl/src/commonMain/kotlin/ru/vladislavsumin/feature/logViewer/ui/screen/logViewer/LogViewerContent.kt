@@ -1,27 +1,20 @@
 package ru.vladislavsumin.feature.logViewer.ui.screen.logViewer
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.draganddrop.dragAndDropTarget
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.FilePresent
-import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -32,12 +25,8 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draganddrop.DragAndDropEvent
-import androidx.compose.ui.draganddrop.DragAndDropTarget
-import androidx.compose.ui.draganddrop.awtTransferable
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
@@ -54,17 +43,15 @@ import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarContent
-import java.awt.datatransfer.DataFlavor
-import java.io.File
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-@Suppress("LongMethod") // TODO попилить
 internal fun LogViewerContent(
     viewModel: LogViewerViewModel,
     rootFocusRequester: FocusRequester,
     filterFocusRequester: FocusRequester,
     filterBarComponent: ComposeComponent,
+    dragAndDropOverlayComponent: ComposeComponent,
     logsComponent: LogsComponent,
     modifier: Modifier,
 ) {
@@ -78,16 +65,11 @@ internal fun LogViewerContent(
             KeyModifier.Command + Key.F to { searchFocusRequester.requestFocus() },
         )
     }
-    val dragAndDropTarget = rememberGlobalDragAndDropTarget(viewModel)
     Surface(
         modifier = modifier
             .focusRequester(rootFocusRequester)
             .focusable(interactionSource = remember { MutableInteractionSource() })
-            .onPreviewKeyEvent(hotkeyController::invoke)
-            .dragAndDropTarget(
-                shouldStartDragAndDrop = { true },
-                target = dragAndDropTarget,
-            ),
+            .onPreviewKeyEvent(hotkeyController::invoke),
     ) {
         val state = viewModel.state.collectAsState()
         val searchState = derivedStateOf { state.value.searchState }
@@ -105,62 +87,7 @@ internal fun LogViewerContent(
             )
         }
 
-        Row(
-            // Костыль, иначе не сможем получить событие drag && drop.
-            Modifier.let { if (state.value.showDragAndDropContainers) it.fillMaxSize() else it.size(0.dp) },
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly,
-        ) {
-            val mappingDragAndDrop = remember(viewModel) {
-                object : DragAndDropTarget {
-                    override fun onDrop(event: DragAndDropEvent): Boolean {
-                        val files = event.awtTransferable.getTransferData(DataFlavor.javaFileListFlavor) as List<File>
-                        viewModel.onDragAndDropMappingFile(files.single())
-                        return true
-                    }
-                }
-            }
-
-            val logsDragAndDrop = remember(viewModel) {
-                object : DragAndDropTarget {
-                    override fun onDrop(event: DragAndDropEvent): Boolean {
-                        val files = event.awtTransferable.getTransferData(DataFlavor.javaFileListFlavor) as List<File>
-                        viewModel.onDragAndDropLogsFile(files.single())
-                        return true
-                    }
-                }
-            }
-
-            Card(
-                modifier = Modifier
-                    .dragAndDropTarget(
-                        shouldStartDragAndDrop = { true },
-                        target = logsDragAndDrop,
-                    ),
-            ) {
-                Box(
-                    Modifier.defaultMinSize(
-                        minWidth = 300.dp,
-                        minHeight = 200.dp,
-                    ),
-                ) { Text(text = "Drop logs here", modifier = Modifier.align(Alignment.Center)) }
-            }
-
-            Card(
-                modifier = Modifier
-                    .dragAndDropTarget(
-                        shouldStartDragAndDrop = { true },
-                        target = mappingDragAndDrop,
-                    ),
-            ) {
-                Box(
-                    Modifier.defaultMinSize(
-                        minWidth = 300.dp,
-                        minHeight = 200.dp,
-                    ),
-                ) { Text(text = "Drop mapping here", Modifier.align(Alignment.Center)) }
-            }
-        }
+        dragAndDropOverlayComponent.Render(Modifier)
     }
 }
 
@@ -208,23 +135,4 @@ fun TextSelectionSeparator(text: String = "\n") {
         modifier = Modifier.sizeIn(maxWidth = 0.dp, maxHeight = 0.dp),
         text = text,
     )
-}
-
-@Composable
-private fun rememberGlobalDragAndDropTarget(viewModel: LogViewerViewModel): DragAndDropTarget {
-    return remember(viewModel) {
-        object : DragAndDropTarget {
-            override fun onStarted(event: DragAndDropEvent) {
-                viewModel.onStartDragAndDrop()
-            }
-
-            override fun onEnded(event: DragAndDropEvent) {
-                viewModel.onStopDragAndDrop()
-            }
-
-            override fun onDrop(event: DragAndDropEvent): Boolean {
-                return false
-            }
-        }
-    }
 }
