@@ -49,6 +49,7 @@ internal class LogViewerViewModel(
     private val selectedSearchIndex = MutableStateFlow(0)
     private val showSelectMappingDialog = MutableStateFlow(false)
     private val showDragAndDropContainers = MutableStateFlow(false)
+    private val firstVisibleIndex = MutableStateFlow(0)
 
     private val logsInteractor = LogsInteractorImpl(
         scope = viewModelScope,
@@ -64,10 +65,21 @@ internal class LogViewerViewModel(
             search = search,
         )
             .onEach {
-                // TODO убрать эту жесть.
-                selectedSearchIndex.value = 0
+                // TODO убрать эту жесть, ну какой onEach?
                 if (it.lastSuccessIndex.searchIndex.index.isNotEmpty()) {
+                    var selectedIndex = 0
+
+                    // Ищем первый подходящий индекс в видимой части экрана или за ее пределами снизу.
+                    // Если такого нет, то берем первый индекс выше видимой части экрана.
+                    for ((index, recordIndex) in it.lastSuccessIndex.searchIndex.index.withIndex()) {
+                        selectedIndex = index
+                        if (recordIndex >= firstVisibleIndex.value) break
+                    }
+
+                    selectedSearchIndex.value = selectedIndex
                     scrollToIndex(it.lastSuccessIndex.searchIndex.index[selectedSearchIndex.value])
+                } else {
+                    selectedSearchIndex.value = 0
                 }
             },
         search,
@@ -228,6 +240,10 @@ internal class LogViewerViewModel(
 
     fun onStopDragAndDrop() {
         showDragAndDropContainers.value = false
+    }
+
+    fun onFirstVisibleIndexUpdate(index: Int) {
+        firstVisibleIndex.value = index
     }
 
     fun onSearchChange(newValue: String) = search.update { it.copy(search = newValue) }

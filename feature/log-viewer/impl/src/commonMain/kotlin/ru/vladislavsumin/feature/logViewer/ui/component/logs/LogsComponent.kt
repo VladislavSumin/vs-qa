@@ -11,8 +11,10 @@ import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 internal class LogsComponent(
     private val logsEvents: ReceiveChannel<LogsEvents>,
     private val state: StateFlow<LogsViewState>,
+    private val onFirstVisibleIndexChange: (Int) -> Unit,
     context: ComponentContext,
 ) : Component(context), ComposeComponent {
+
     @Composable
-    override fun Render(modifier: Modifier) = LogsContent(logsEvents, state, modifier)
+    override fun Render(modifier: Modifier) = LogsContent(onFirstVisibleIndexChange, logsEvents, state, modifier)
 }

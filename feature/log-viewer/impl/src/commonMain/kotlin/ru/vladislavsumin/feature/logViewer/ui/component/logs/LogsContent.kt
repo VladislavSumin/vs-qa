@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
@@ -46,6 +47,7 @@ import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
 
 @Composable
 internal fun LogsContent(
+    onFirstVisibleIndexChange: (Int) -> Unit,
     events: ReceiveChannel<LogsEvents>,
     state: StateFlow<LogsViewState>,
     modifier: Modifier,
@@ -58,6 +60,11 @@ internal fun LogsContent(
         MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
     )
     val lazyListState = rememberLazyListState()
+
+    LaunchedEffect(lazyListState) {
+        snapshotFlow { lazyListState.firstVisibleItemIndex }
+            .collect(onFirstVisibleIndexChange)
+    }
 
     LaunchedEffect(lazyListState) {
         events.receiveAsFlow().collect { event ->

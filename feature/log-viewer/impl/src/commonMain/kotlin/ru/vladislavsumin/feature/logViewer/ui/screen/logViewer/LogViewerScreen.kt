@@ -45,6 +45,7 @@ internal class LogViewerScreen(
     private val logsComponent = LogsComponent(
         logsEvents = viewModel.events,
         state = viewModel.state.mapState { it.logsViewState },
+        onFirstVisibleIndexChange = viewModel::onFirstVisibleIndexUpdate,
         context = context.childContext("logs"),
     )
 
