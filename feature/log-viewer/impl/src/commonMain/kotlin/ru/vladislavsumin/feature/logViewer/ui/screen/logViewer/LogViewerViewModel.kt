@@ -149,7 +149,8 @@ internal class LogViewerViewModel(
     }
         .stateIn(LogViewerViewState.STUB)
 
-    val events = Channel<LogsEvents>()
+    val logsEvents = Channel<LogsEvents>()
+    val events = Channel<LogViewerEvent>()
 
     init {
         launch {
@@ -182,13 +183,16 @@ internal class LogViewerViewModel(
                     close()
                     true
                 },
+                KeyModifier.Command + Key.F to {
+                    events.trySend(LogViewerEvent.FocusSearch)
+                    true
+                },
             )
         }
     }
 
     private fun scrollToIndex(index: Int) = launch {
-        println("Index = $index")
-        events.send(LogsEvents.ScrollToIndex(index))
+        logsEvents.send(LogsEvents.ScrollToIndex(index))
     }
 
     fun onClickMappingButton() = launch {

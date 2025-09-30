@@ -1,8 +1,6 @@
 package ru.vladislavsumin.feature.logViewer.ui.screen.logViewer
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.focusable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -20,17 +18,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
@@ -39,8 +32,6 @@ import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.filePicker.FilePickerDialog
-import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
-import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarContent
 
@@ -48,33 +39,17 @@ import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarConte
 @Composable
 internal fun LogViewerContent(
     viewModel: LogViewerViewModel,
-    rootFocusRequester: FocusRequester,
-    filterFocusRequester: FocusRequester,
+    searchFocusRequester: FocusRequester,
     filterBarComponent: ComposeComponent,
     dragAndDropOverlayComponent: ComposeComponent,
     logsComponent: LogsComponent,
     modifier: Modifier,
 ) {
-    LaunchedEffect(rootFocusRequester) {
-        rootFocusRequester.requestFocus()
-    }
-    val searchFocusRequester = remember { FocusRequester() }
-    val hotkeyController = remember(filterFocusRequester, searchFocusRequester) {
-        HotkeyController(
-            KeyModifier.Shift + KeyModifier.Command + Key.F to { filterFocusRequester.requestFocus() },
-            KeyModifier.Command + Key.F to { searchFocusRequester.requestFocus() },
-        )
-    }
-    Surface(
-        modifier = modifier
-            .focusRequester(rootFocusRequester)
-            .focusable(interactionSource = remember { MutableInteractionSource() })
-            .onPreviewKeyEvent(hotkeyController::invoke),
-    ) {
+    Surface(modifier = modifier) {
         val state = viewModel.state.collectAsState()
         val searchState = derivedStateOf { state.value.searchState }
         Column {
-            SearchBarContent(viewModel, searchState, searchFocusRequester, rootFocusRequester)
+            SearchBarContent(viewModel, searchState, searchFocusRequester)
             Row(Modifier.weight(1f)) {
                 logsComponent.Render(Modifier.weight(1f))
                 SidePanelContent(viewModel, state)

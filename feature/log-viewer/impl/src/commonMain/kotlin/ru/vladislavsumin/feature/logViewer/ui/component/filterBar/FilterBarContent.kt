@@ -12,12 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -25,14 +22,12 @@ import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
-import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
-import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
+import ru.vladislavsumin.core.ui.hotkeyController.resetFocusOnEsc
 import ru.vladislavsumin.feature.logViewer.ui.utils.addStyle
 
 @Composable
 internal fun FilterBarContent(
     viewModel: FilterBarViewModel,
-    onFocusLost: () -> Boolean,
     focusRequester: FocusRequester,
     modifier: Modifier,
 ) {
@@ -41,9 +36,6 @@ internal fun FilterBarContent(
             .background(QaTheme.colorScheme.surfaceVariant)
             .padding(vertical = 4.dp, horizontal = 8.dp),
     ) {
-        val hotkeyController = remember(onFocusLost) {
-            HotkeyController(KeyModifier.None + Key.Escape to onFocusLost)
-        }
         val state by viewModel.state.collectAsState()
         if (state.error != null) {
             Text(text = state.error.toString(), color = QaTheme.colorScheme.logError.primary)
@@ -53,7 +45,7 @@ internal fun FilterBarContent(
             onValueChange = viewModel::onFilterChange,
             modifier = Modifier
                 .focusRequester(focusRequester)
-                .onKeyEvent(hotkeyController::invoke),
+                .resetFocusOnEsc(),
             isError = state.error != null,
             placeholder = { Text("Filter...") },
             leadingContent = { Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null) },

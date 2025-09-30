@@ -6,11 +6,12 @@ import androidx.compose.ui.focus.FocusRequester
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.feature.logViewer.ui.component.dragAndDropOverlay.DragAndDropOverlayComponent
-import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponent
+import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponentFactory
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
@@ -18,18 +19,16 @@ import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Not
 @GenerateFactory(LogViewerScreenFactory::class)
 internal class LogViewerScreen(
     viewModelFactory: LogViewerViewModelFactory,
+    filterBarComponentFactory: FilterBarComponentFactory,
     bottomBarUiInteractor: BottomBarUiInteractor,
     notificationsUiInteractor: NotificationsUiInteractor,
     params: LogViewerScreenParams,
     intents: ReceiveChannel<LogViewerScreenIntent>,
     context: ComponentContext,
 ) : Screen(context) {
-    private val rootFocusRequester = FocusRequester()
-    private val filterFocusRequester = FocusRequester()
+    private val searchFocusRequester = FocusRequester()
 
-    private val filterBarComponent = FilterBarComponent(
-        onFocusLost = { rootFocusRequester.requestFocus() },
-        focusRequester = filterFocusRequester,
+    private val filterBarComponent = filterBarComponentFactory.create(
         context = context.childContext("filter-bar"),
     )
 
@@ -44,7 +43,7 @@ internal class LogViewerScreen(
     }
 
     private val logsComponent = LogsComponent(
-        logsEvents = viewModel.events,
+        logsEvents = viewModel.logsEvents,
         state = viewModel.state.mapState { it.logsViewState },
         onFirstVisibleIndexChange = viewModel::onFirstVisibleIndexUpdate,
         context = context.childContext("logs"),
@@ -56,11 +55,20 @@ internal class LogViewerScreen(
         context = context.childContext("drag-and-drop"),
     )
 
+    init {
+        launch {
+            viewModel.events.receiveAsFlow().collect { event ->
+                when (event) {
+                    LogViewerEvent.FocusSearch -> searchFocusRequester.requestFocus()
+                }
+            }
+        }
+    }
+
     @Composable
     override fun Render(modifier: Modifier) = LogViewerContent(
         viewModel = viewModel,
-        rootFocusRequester = rootFocusRequester,
-        filterFocusRequester = filterFocusRequester,
+        searchFocusRequester = searchFocusRequester,
         filterBarComponent = filterBarComponent,
         dragAndDropOverlayComponent = dragAndDropOverlayComponent,
         logsComponent = logsComponent,

@@ -31,6 +31,7 @@ import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
+import ru.vladislavsumin.core.ui.hotkeyController.resetFocusOnEsc
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerViewModel
 
 @Composable
@@ -39,11 +40,10 @@ internal fun SearchBarContent(
     viewModel: LogViewerViewModel,
     state: State<SearchBarViewState>,
     focusRequester: FocusRequester,
-    rootFocusRequester: FocusRequester,
     modifier: Modifier = Modifier,
 ) {
     val state by state
-    val hotkeyController = remember(viewModel, rootFocusRequester) {
+    val hotkeyController = remember(viewModel) {
         HotkeyController(
             KeyModifier.Shift + Key.Enter to {
                 viewModel.onClickPrevIndex()
@@ -53,7 +53,6 @@ internal fun SearchBarContent(
                 viewModel.onClickNextIndex()
                 true
             },
-            KeyModifier.None + Key.Escape to { rootFocusRequester.requestFocus() },
         )
     }
     Row(
@@ -67,6 +66,7 @@ internal fun SearchBarContent(
             onValueChange = viewModel::onSearchChange,
             modifier = Modifier
                 .focusRequester(focusRequester)
+                .resetFocusOnEsc()
                 .weight(1f)
                 .onPreviewKeyEvent(hotkeyController::invoke),
             maxLines = 1,
