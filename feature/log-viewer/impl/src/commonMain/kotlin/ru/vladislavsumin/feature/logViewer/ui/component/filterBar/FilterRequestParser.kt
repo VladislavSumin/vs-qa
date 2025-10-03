@@ -66,6 +66,8 @@ class FilterRequestParser {
         private val exactly by literalToken(":=")
         private val contains by literalToken("=")
 
+        private val not by literalToken("!")
+
         // Строка в кавычках, может содержать экранированные кавычки внутри
         private val stingLiteral by regexToken("\"(\\\\\"|[^\"])+\"")
 
@@ -76,7 +78,11 @@ class FilterRequestParser {
         private val ws by regexToken("\\s+", ignore = true)
         private val newLine by literalToken("\n", ignore = true)
 
-        val keywords = setOf(tag, pid, tid, thread, message, level, runNumber, timeAfter, timeBefore, exactly, contains)
+        val keywords = setOf(
+            tag, pid, tid, thread, message, level,
+            runNumber, timeAfter, timeBefore, exactly,
+            contains, not,
+        )
         val data = setOf(stingLiteral, any)
 
         // Поля по которым можно вести поиск.
@@ -140,9 +146,12 @@ class FilterRequestParser {
         private val allFilter = filters map {
             FilterRequest.FilterOperation.All(FilterRequest.Operation.Contains(it))
         }
+        private val anyFilter =
+            levelFilter or filter or allFilter or runNumberFilter or timeAfterFilter or timeBeforeFilter
+        private val anyNotFilter = -not and anyFilter map { FilterRequest.FilterOperation.Not(it) }
 
         override val rootParser: Parser<List<FilterRequest.FilterOperation>> =
-            zeroOrMore(levelFilter or filter or allFilter or runNumberFilter or timeAfterFilter or timeBeforeFilter)
+            zeroOrMore(anyFilter or anyNotFilter)
     }
 
     @Suppress("LongMethod")
