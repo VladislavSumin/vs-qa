@@ -41,32 +41,17 @@ class FilterRequestParser {
         Contains,
     }
 
-    private sealed interface Filter {
-        data class ByLevel(
-            val level: LogLevel,
-        ) : Filter
+    private enum class Field {
+        All,
 
-        data class ByRunNumber(
-            val runNumber: Int,
-        ) : Filter
-
-        data class ByTimeBefore(
-            val time: String,
-        ) : Filter
-
-        data class ByTimeAfter(
-            val time: String,
-        ) : Filter
-
-        data class ByField(
-            val field: FilterRequest.Field,
-            val operation: Operation,
-            val text: String,
-        ) : Filter
+        Tag,
+        ProcessId,
+        Thread,
+        Message,
     }
 
     @Suppress("UnusedPrivateProperty")
-    private val grammar = object : Grammar<List<Filter>>() {
+    private val grammar = object : Grammar<List<FilterRequest.FilterOperation>>() {
         private val tag by literalToken("tag")
         private val pid by literalToken("pid")
         private val tid by literalToken("tid")
@@ -97,11 +82,11 @@ class FilterRequestParser {
         // Поля по которым можно вести поиск.
         val fields = OrCombinator(
             listOf(
-                tag asJust FilterRequest.Field.Tag,
-                pid asJust FilterRequest.Field.ProcessId,
-                tid asJust FilterRequest.Field.Thread,
-                thread asJust FilterRequest.Field.Thread,
-                message asJust FilterRequest.Field.Message,
+                tag asJust Field.Tag,
+                pid asJust Field.ProcessId,
+                tid asJust Field.Thread,
+                thread asJust Field.Thread,
+                message asJust Field.Message,
             ),
         )
 
@@ -127,15 +112,36 @@ class FilterRequestParser {
 
         private val levelFilter = (-level and -contains and filters) map { level ->
             val level = LogLevel.fromAlias(level) ?: error("Unknown level $level")
-            Filter.ByLevel(level)
+            FilterRequest.FilterOperation.MinLogLevel(level)
         }
-        private val runNumberFilter = (-runNumber and -contains and filters) map { Filter.ByRunNumber(it.toInt() - 1) }
-        private val timeBeforeFilter = (-timeBefore and -contains and filters) map { Filter.ByTimeBefore(it) }
-        private val timeAfterFilter = (-timeAfter and -contains and filters) map { Filter.ByTimeAfter(it) }
-        private val filter = (fields and operations and filters) map { (a, b, c) -> Filter.ByField(a, b, c) }
-        private val allFilter = filters map { Filter.ByField(FilterRequest.Field.All, Operation.Contains, it) }
+        private val runNumberFilter = (-runNumber and -contains and filters) map {
+            FilterRequest.FilterOperation.RunNumber(it.toInt() - 1)
+        }
+        private val timeBeforeFilter = (-timeBefore and -contains and filters) map {
+            FilterRequest.FilterOperation.TimeBefore(it)
+        }
+        private val timeAfterFilter = (-timeAfter and -contains and filters) map {
+            FilterRequest.FilterOperation.TimeAfter(it)
+        }
+        private val filter: Parser<FilterRequest.FilterOperation> =
+            (fields and operations and filters) map { (a, b, c) ->
+                val operation = when (b) {
+                    Operation.Exactly -> FilterRequest.Operation.Exactly(c)
+                    Operation.Contains -> FilterRequest.Operation.Contains(c)
+                }
+                when (a) {
+                    Field.All -> FilterRequest.FilterOperation.All(operation)
+                    Field.Tag -> FilterRequest.FilterOperation.Tag(operation)
+                    Field.ProcessId -> FilterRequest.FilterOperation.ProcessId(operation)
+                    Field.Thread -> FilterRequest.FilterOperation.Thread(operation)
+                    Field.Message -> FilterRequest.FilterOperation.Message(operation)
+                }
+            }
+        private val allFilter = filters map {
+            FilterRequest.FilterOperation.All(FilterRequest.Operation.Contains(it))
+        }
 
-        override val rootParser: Parser<List<Filter>> =
+        override val rootParser: Parser<List<FilterRequest.FilterOperation>> =
             zeroOrMore(levelFilter or filter or allFilter or runNumberFilter or timeAfterFilter or timeBeforeFilter)
     }
 
@@ -145,43 +151,7 @@ class FilterRequestParser {
 
         val filterRequest = tokens.mapCatching { tokens ->
             val result = grammar.parseToEnd(tokens)
-            val level = result
-                .filterIsInstance<Filter.ByLevel>()
-                .also { check(it.size < 2) { "More then one level filter defined" } }
-                .singleOrNull()
-
-            val runNumbers = result
-                .filterIsInstance<Filter.ByRunNumber>()
-                .map { it.runNumber }
-
-            val timeBefore = result
-                .filterIsInstance<Filter.ByTimeBefore>()
-                .also { check(it.size < 2) { "More then one timeBefore filter defined" } }
-                .singleOrNull()
-
-            val timeAfter = result
-                .filterIsInstance<Filter.ByTimeAfter>()
-                .also { check(it.size < 2) { "More then one timeAfter filter defined" } }
-                .singleOrNull()
-
-            val filters = result
-                .filterIsInstance<Filter.ByField>()
-                .groupBy { it.field }
-                .mapValues { (_, v) ->
-                    v.map {
-                        when (it.operation) {
-                            Operation.Exactly -> FilterRequest.Operation.Exactly(it.text)
-                            Operation.Contains -> FilterRequest.Operation.Contains(it.text)
-                        }
-                    }
-                }
-            FilterRequest(
-                minLevel = level?.level,
-                filters = filters,
-                runOrders = runNumbers,
-                timeBefore = timeBefore?.time,
-                timeAfter = timeAfter?.time,
-            )
+            FilterRequest(FilterRequest.FilterOperation.Auto(result))
         }
 
         val highlight: RequestHighlight = tokens

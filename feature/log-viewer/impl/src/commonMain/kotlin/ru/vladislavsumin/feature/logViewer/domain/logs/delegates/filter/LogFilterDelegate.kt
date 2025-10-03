@@ -53,78 +53,15 @@ internal class LogFilterDelegate(
             .collect(this)
     }
 
-    @Suppress("LongMethod", "CyclomaticComplexMethod") // TODO переписать фильтр
     private fun filterLogs(
         logs: List<LogRecord>,
         filter: FilterRequest,
         runIdOrders: List<RunIdInfo>?,
     ): List<LogRecord> {
         val (time, result) = measureTimeMillisWithResult {
+            val prepared = filter.operation.prepare(runIdOrders) ?: return logs
             logs.parallelStream()
-                .let {
-                    if (filter.timeAfter != null) {
-                        it.filter { log ->
-                            val time = log.raw.substring(log.time)
-                            time >= filter.timeAfter
-                        }
-                    } else {
-                        it
-                    }
-                }
-                .let {
-                    if (filter.timeBefore != null) {
-                        it.filter { log ->
-                            val time = log.raw.substring(log.time)
-                            time <= filter.timeBefore
-                        }
-                    } else {
-                        it
-                    }
-                }
-                .let {
-                    if (filter.minLevel != null) {
-                        it.filter { log ->
-                            log.logLevel.rawLevel >= filter.minLevel.rawLevel
-                        }
-                    } else {
-                        it
-                    }
-                }
-                .let {
-                    if (filter.runOrders.isNotEmpty()) {
-                        val orders = filter.runOrders.mapNotNull { index ->
-                            runIdOrders?.getOrNull(index)?.orderRange
-                        }
-                        it.filter { log ->
-                            orders.any { index -> log.order in index }
-                        }
-                    } else {
-                        it
-                    }
-                }
-                .filter { log ->
-                    filter.filters.all { (field, filter) ->
-                        val range: IntRange? = when (field) {
-                            FilterRequest.Field.All -> 0..<log.raw.length
-                            FilterRequest.Field.Tag -> log.tag
-                            FilterRequest.Field.ProcessId -> log.processId
-                            FilterRequest.Field.Thread -> log.thread
-                            FilterRequest.Field.Message -> log.message
-                        }
-
-                        if (range == null) return@all false
-
-                        filter.any { operation ->
-                            when (operation) {
-                                is FilterRequest.Operation.Contains -> log.raw.substring(range)
-                                    .contains(operation.data, ignoreCase = true)
-
-                                is FilterRequest.Operation.Exactly -> log.raw.substring(range)
-                                    .equals(operation.data, ignoreCase = true)
-                            }
-                        }
-                    }
-                }
+                .filter { log -> prepared.check(log) }
                 .toList()
         }
         LogLogger.d { "Log filtered at ${time}ms, size = ${result.size}" }
