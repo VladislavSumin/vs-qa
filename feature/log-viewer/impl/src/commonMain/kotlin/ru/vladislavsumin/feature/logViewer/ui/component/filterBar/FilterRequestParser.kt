@@ -3,15 +3,19 @@ package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 import com.github.h0tk3y.betterParse.combinators.OrCombinator
 import com.github.h0tk3y.betterParse.combinators.and
 import com.github.h0tk3y.betterParse.combinators.asJust
+import com.github.h0tk3y.betterParse.combinators.leftAssociative
 import com.github.h0tk3y.betterParse.combinators.map
 import com.github.h0tk3y.betterParse.combinators.or
 import com.github.h0tk3y.betterParse.combinators.unaryMinus
 import com.github.h0tk3y.betterParse.combinators.zeroOrMore
 import com.github.h0tk3y.betterParse.grammar.Grammar
+import com.github.h0tk3y.betterParse.grammar.parser
 import com.github.h0tk3y.betterParse.lexer.literalToken
 import com.github.h0tk3y.betterParse.lexer.regexToken
 import com.github.h0tk3y.betterParse.parser.Parser
 import com.github.h0tk3y.betterParse.parser.parseToEnd
+import ru.vladislavsumin.core.logger.api.logger
+import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
 import ru.vladislavsumin.feature.logViewer.domain.logs.FilterRequest
 
@@ -51,7 +55,7 @@ class FilterRequestParser {
     }
 
     @Suppress("UnusedPrivateProperty")
-    private val grammar = object : Grammar<List<FilterRequest.FilterOperation>>() {
+    private val grammar = object : Grammar<FilterRequest.FilterOperation>() {
         private val tag by literalToken("tag")
         private val pid by literalToken("pid")
         private val tid by literalToken("tid")
@@ -69,11 +73,17 @@ class FilterRequestParser {
         private val not by literalToken("!")
         private val minus by literalToken("-")
 
+        private val and by literalToken("&")
+        private val or by literalToken("|")
+
+        private val lpar by literalToken("(")
+        private val rpar by literalToken(")")
+
         // Строка в кавычках, может содержать экранированные кавычки внутри
         private val stingLiteral by regexToken("\"(\\\\\"|[^\"])+\"")
 
         // Любая строка без пробелов
-        private val any by regexToken("[^ \n]+")
+        private val any by regexToken("[^ \n()]+")
 
         // Определяются последними чтобы не перебивать собой другие токены, например stringLiteral.
         private val ws by regexToken("\\s+", ignore = true)
@@ -83,6 +93,7 @@ class FilterRequestParser {
             tag, pid, tid, thread, message, level,
             runNumber, timeAfter, timeBefore, exactly,
             contains, not, minus,
+            and, or, lpar, rpar,
         )
         val data = setOf(stingLiteral, any)
 
@@ -153,16 +164,36 @@ class FilterRequestParser {
 
         private val anyFilter = anyPositiveFilter or anyNotFilter
 
-        override val rootParser: Parser<List<FilterRequest.FilterOperation>> =
-            zeroOrMore(anyFilter)
+        private val bracedExpression: Parser<FilterRequest.FilterOperation> =
+            -lpar and parser(this::autoChain) and -rpar
+
+        private val expression = anyFilter or bracedExpression
+
+        private val andChain = leftAssociative(expression, and) { l, _, r ->
+            FilterRequest.FilterOperation.And(listOf(l, r))
+        }
+
+        private val orChain = leftAssociative(andChain, or) { l, _, r ->
+            FilterRequest.FilterOperation.Or(listOf(l, r))
+        }
+
+        private val autoChain = zeroOrMore(orChain) map {
+            FilterRequest.FilterOperation.Auto(it)
+        }
+
+        override val rootParser: Parser<FilterRequest.FilterOperation> = autoChain
     }
 
     fun tokenize(request: String): ParserResult {
-        val tokens = runCatching { grammar.tokenizer.tokenize(request) }
+        val (tokenizeTime, tokens) = measureTimeMillisWithResult {
+            runCatching { grammar.tokenizer.tokenize(request) }
+        }
 
-        val filterRequest = tokens.mapCatching { tokens ->
-            val result = grammar.parseToEnd(tokens)
-            FilterRequest(FilterRequest.FilterOperation.Auto(result))
+        val (parseTime, filterRequest) = measureTimeMillisWithResult {
+            tokens.mapCatching { tokens ->
+                val result = grammar.parseToEnd(tokens)
+                FilterRequest(result)
+            }
         }
 
         val highlight: RequestHighlight = tokens
@@ -183,9 +214,15 @@ class FilterRequestParser {
             }
             .getOrElse { RequestHighlight.InvalidSyntax(request) }
 
+        FilterLogger.d {
+            "Parsed input, tokenize=${tokenizeTime}ms, parseTime=${parseTime}ms, input=$request"
+        }
+
         return ParserResult(
             requestHighlight = highlight,
             searchRequest = filterRequest,
         )
     }
 }
+
+private val FilterLogger = logger("Filter")
