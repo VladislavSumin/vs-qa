@@ -67,6 +67,7 @@ class FilterRequestParser {
         private val contains by literalToken("=")
 
         private val not by literalToken("!")
+        private val minus by literalToken("-")
 
         // Строка в кавычках, может содержать экранированные кавычки внутри
         private val stingLiteral by regexToken("\"(\\\\\"|[^\"])+\"")
@@ -81,7 +82,7 @@ class FilterRequestParser {
         val keywords = setOf(
             tag, pid, tid, thread, message, level,
             runNumber, timeAfter, timeBefore, exactly,
-            contains, not,
+            contains, not, minus,
         )
         val data = setOf(stingLiteral, any)
 
@@ -146,15 +147,16 @@ class FilterRequestParser {
         private val allFilter = filters map {
             FilterRequest.FilterOperation.All(FilterRequest.Operation.Contains(it))
         }
-        private val anyFilter =
+        private val anyPositiveFilter =
             levelFilter or filter or allFilter or runNumberFilter or timeAfterFilter or timeBeforeFilter
-        private val anyNotFilter = -not and anyFilter map { FilterRequest.FilterOperation.Not(it) }
+        private val anyNotFilter = (-(not or minus) and anyPositiveFilter) map { FilterRequest.FilterOperation.Not(it) }
+
+        private val anyFilter = anyPositiveFilter or anyNotFilter
 
         override val rootParser: Parser<List<FilterRequest.FilterOperation>> =
-            zeroOrMore(anyFilter or anyNotFilter)
+            zeroOrMore(anyFilter)
     }
 
-    @Suppress("LongMethod")
     fun tokenize(request: String): ParserResult {
         val tokens = runCatching { grammar.tokenizer.tokenize(request) }
 
