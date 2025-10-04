@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 
 @Composable
+@Suppress("LongMethod")
 internal fun HelpMenuContent() {
     Box(Modifier.padding(vertical = 8.dp, horizontal = 16.dp)) {
         val highlightStyle = SpanStyle(
@@ -49,6 +50,7 @@ internal fun HelpMenuContent() {
                 append(":=")
                 appendHighlight2("MyTag ")
 
+                append("!")
                 appendHighlight("thread")
                 append("=")
                 appendHighlight2("MyThread ")
@@ -74,12 +76,19 @@ internal fun HelpMenuContent() {
                 appendLine("Available comparator functions:")
                 appendRecord("=", "filter by contains")
                 appendRecord(":=", "filter by exactly (not applying to time*, level, runNumber)")
+                appendRecord("!|-", "invert condition")
                 appendLine()
                 append("All different filters merges with ")
-                appendHighlight("&&")
+                appendHighlight("&")
                 append(" condition, all same filter merges by ")
-                appendHighlight("||")
+                appendHighlight("|")
                 appendLine(" condition.")
+                append("Full support for ")
+                appendHighlight("&")
+                append(", ")
+                appendHighlight("|")
+                append(" conditions and brackets ")
+                appendHighlight("()")
                 appendLine()
                 append("Allowed to use new line for separate filters.")
             },
