@@ -20,24 +20,47 @@ import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 internal class FilterBarViewModel(
     private val globalHotkeyManager: GlobalHotkeyManager,
 ) : ViewModel(), FilterBarUiInteractor {
-    private val filterRequestParser = FilterRequestParser()
     private val filter = MutableStateFlow(TextFieldValue())
+
     private val showHelpMenu = MutableStateFlow(false)
+
+    private val showSavedFilters = MutableStateFlow(false)
+    private val saveNewFilterName = MutableStateFlow("")
+    private val saveNewFilterContent = MutableStateFlow("")
+    private val savedFilters = MutableStateFlow(emptyList<FilterBarViewState.SavedFiltersState.SavedFilter>())
+
+    private val filterRequestParser = FilterRequestParser(savedFilters)
 
     override val filterState: SharedFlow<FilterRequestParser.ParserResult> = filter.map { filter ->
         filterRequestParser.tokenize(filter.text)
     }.shareIn(viewModelScope, SharingStarted.Eagerly, 1)
 
+    private val savedFiltersState = combine(
+        showSavedFilters,
+        saveNewFilterName,
+        saveNewFilterContent,
+        savedFilters,
+    ) { showSavedFilters, saveNewFilterName, saveNewFilterContent, savedFilters ->
+        FilterBarViewState.SavedFiltersState(
+            showSavedFilters = showSavedFilters,
+            saveNewFilterName = saveNewFilterName,
+            saveNewFilterContent = saveNewFilterContent,
+            savedFilters = savedFilters,
+        )
+    }
+
     val state = combine(
         filter,
         filterState,
         showHelpMenu,
-    ) { filter, filterState, showHelpMenu ->
+        savedFiltersState,
+    ) { filter, filterState, showHelpMenu, savedFiltersState ->
         FilterBarViewState(
             field = filter,
             highlight = filterState.requestHighlight,
             error = filterState.searchRequest.exceptionOrNull()?.let { it.message ?: "No error message provided" },
             showHelpMenu = showHelpMenu,
+            savedFiltersState = savedFiltersState,
         )
     }
         .stateIn(initialValue = FilterBarViewState.STUB)
@@ -57,6 +80,29 @@ internal class FilterBarViewModel(
 
     fun onFilterChange(newValue: TextFieldValue) {
         filter.value = newValue
+    }
+
+    fun onClickSavedFilters() {
+        showSavedFilters.update { !it }
+    }
+
+    fun onSavedFilterNameChanged(name: String) {
+        saveNewFilterName.value = name
+    }
+
+    fun onSavedFilterContentChanged(content: String) {
+        saveNewFilterContent.value = content
+    }
+
+    fun onClickSaveNewFilter() {
+        savedFilters.update {
+            it + FilterBarViewState.SavedFiltersState.SavedFilter(
+                name = saveNewFilterName.value,
+                content = saveNewFilterContent.value,
+            )
+        }
+        saveNewFilterName.value = ""
+        saveNewFilterContent.value = ""
     }
 
     fun onClickHelpButton() {
