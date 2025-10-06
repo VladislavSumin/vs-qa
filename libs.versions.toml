@@ -1,7 +1,10 @@
 [versions]
 betterParse = "0.4.4"
-r8="8.11.18"
+r8 = "8.11.18"
+google-datastore = "1.1.7"
 
 [libraries]
 betterParse = { module = "com.github.h0tk3y.betterParse:better-parse", version.ref = "betterParse" }
 r8 = { module = "com.android.tools:r8", version.ref = "r8" }
+google-datastore-core = { module = "androidx.datastore:datastore", version.ref = "google-datastore" }
+google-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "google-datastore" }
