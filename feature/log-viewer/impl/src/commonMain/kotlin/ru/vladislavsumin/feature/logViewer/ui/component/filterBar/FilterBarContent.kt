@@ -28,6 +28,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
+import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hotkeyController.resetFocusOnEsc
 import ru.vladislavsumin.feature.logViewer.ui.utils.addStyle
@@ -101,7 +102,10 @@ private fun FilterField(viewModel: FilterBarViewModel, focusRequester: FocusRequ
         placeholder = { Text("Filter...") },
         leadingContent = { Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null) },
         trailingContent = {
-            QaIconButton(onClick = viewModel::onClickSavedFilters) {
+            QaToggleIconButton(
+                checked = state.savedFiltersState.showSavedFilters,
+                onCheckedChange = { viewModel.onClickSavedFilters() },
+            ) {
                 Icon(imageVector = Icons.Default.Bookmarks, contentDescription = "saved filters")
             }
             HelpButton(viewModel, state)
