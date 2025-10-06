@@ -15,7 +15,6 @@ import com.github.h0tk3y.betterParse.lexer.regexToken
 import com.github.h0tk3y.betterParse.parser.Parser
 import com.github.h0tk3y.betterParse.parser.parseToEnd
 import kotlinx.coroutines.flow.StateFlow
-import ru.vladislavsumin.core.logger.api.logger
 import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
 import ru.vladislavsumin.feature.logViewer.domain.logs.FilterRequest
@@ -240,5 +239,3 @@ internal class FilterRequestParser(
         )
     }
 }
-
-private val FilterLogger = logger("Filter")

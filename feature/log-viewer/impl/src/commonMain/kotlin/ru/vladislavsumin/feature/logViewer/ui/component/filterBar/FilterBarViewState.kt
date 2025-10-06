@@ -2,6 +2,7 @@ package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.text.input.TextFieldValue
+import kotlinx.serialization.Serializable
 
 @Stable
 internal data class FilterBarViewState(
@@ -18,6 +19,7 @@ internal data class FilterBarViewState(
         val saveNewFilterContent: String,
         val savedFilters: List<SavedFilter>,
     ) {
+        @Serializable
         data class SavedFilter(
             val name: String,
             val content: String,
