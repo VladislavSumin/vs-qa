@@ -10,6 +10,7 @@ import com.github.h0tk3y.betterParse.combinators.unaryMinus
 import com.github.h0tk3y.betterParse.combinators.zeroOrMore
 import com.github.h0tk3y.betterParse.grammar.Grammar
 import com.github.h0tk3y.betterParse.grammar.parser
+import com.github.h0tk3y.betterParse.lexer.TokenMatchesSequence
 import com.github.h0tk3y.betterParse.lexer.literalToken
 import com.github.h0tk3y.betterParse.lexer.regexToken
 import com.github.h0tk3y.betterParse.parser.Parser
@@ -18,6 +19,8 @@ import kotlinx.coroutines.flow.StateFlow
 import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
 import ru.vladislavsumin.feature.logViewer.domain.logs.FilterRequest
+import kotlin.map
+import kotlin.sequences.map
 
 internal class FilterRequestParser(
     private val savedFilters: StateFlow<List<FilterBarViewState.SavedFiltersState.SavedFilter>>,
@@ -199,6 +202,29 @@ internal class FilterRequestParser(
         override val rootParser: Parser<FilterRequest.FilterOperation> = autoChain
     }
 
+    private fun highlight(request: String, tokens: Result<TokenMatchesSequence>): RequestHighlight {
+        return tokens.map { tokens ->
+            val keywords = tokens
+                .filter { it.type in grammar.keywords }
+                .map { IntRange(it.offset, it.offset + it.length - 1) }
+                .toList()
+            val data = tokens
+                .filter { it.type in grammar.data }
+                .map { IntRange(it.offset, it.offset + it.length - 1) }
+                .toList()
+            RequestHighlight.Success(
+                raw = request,
+                keywords = keywords,
+                data = data,
+            )
+        }.getOrElse { RequestHighlight.InvalidSyntax(request) }
+    }
+
+    fun justHighlight(request: String): RequestHighlight {
+        val tokens = runCatching { grammar.tokenizer.tokenize(request) }
+        return highlight(request, tokens)
+    }
+
     fun tokenize(request: String): ParserResult {
         val (tokenizeTime, tokens) = measureTimeMillisWithResult {
             runCatching { grammar.tokenizer.tokenize(request) }
@@ -211,24 +237,7 @@ internal class FilterRequestParser(
             }
         }
 
-        val highlight: RequestHighlight = tokens
-            .map { tokens ->
-                val keywords = tokens
-                    .filter { it.type in grammar.keywords }
-                    .map { IntRange(it.offset, it.offset + it.length - 1) }
-                    .toList()
-                val data = tokens
-                    .filter { it.type in grammar.data }
-                    .map { IntRange(it.offset, it.offset + it.length - 1) }
-                    .toList()
-                RequestHighlight.Success(
-                    raw = request,
-                    keywords = keywords,
-                    data = data,
-                )
-            }
-            .getOrElse { RequestHighlight.InvalidSyntax(request) }
-
+        val highlight: RequestHighlight = highlight(request, tokens)
         FilterLogger.d {
             "Parsed input, tokenize=${tokenizeTime}ms, parseTime=${parseTime}ms, input=$request"
         }

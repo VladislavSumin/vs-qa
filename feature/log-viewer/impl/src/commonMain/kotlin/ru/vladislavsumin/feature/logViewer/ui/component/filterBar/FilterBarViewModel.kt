@@ -148,4 +148,10 @@ internal class FilterBarViewModel(
     fun onDismissHelpMenu() {
         showHelpMenu.value = false
     }
+
+    fun highlightSavedFilter(
+        filter: FilterBarViewState.SavedFiltersState.SavedFilter,
+    ): FilterRequestParser.RequestHighlight {
+        return filterRequestParser.justHighlight(filter.content)
+    }
 }

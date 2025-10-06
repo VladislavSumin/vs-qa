@@ -59,7 +59,7 @@ private fun ColumnScope.SavedFilters(viewModel: FilterBarViewModel) {
         items(state.savedFilters, key = { it.name }) {
             Row {
                 Text(it.name, Modifier.weight(1f))
-                Text(it.content, Modifier.weight(5f))
+                Text(viewModel.highlightSavedFilter(it).colorize(), Modifier.weight(5f))
                 QaIconButton(onClick = { viewModel.onDeleteSavedFilter(it) }) {
                     Icon(imageVector = Icons.Default.Delete, contentDescription = "delete")
                 }
