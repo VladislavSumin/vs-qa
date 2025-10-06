@@ -133,6 +133,14 @@ internal class FilterBarViewModel(
         saveNewFilterContent.value = ""
     }
 
+    fun onDeleteSavedFilter(filter: FilterBarViewState.SavedFiltersState.SavedFilter) = launch {
+        val newData = savedFilters.value.toMutableList()
+        newData.remove(filter)
+        prefs.edit { preferences ->
+            preferences[savedFiltersPreferenceKey] = Json.encodeToString(newData)
+        }
+    }
+
     fun onClickHelpButton() {
         showHelpMenu.update { !it }
     }

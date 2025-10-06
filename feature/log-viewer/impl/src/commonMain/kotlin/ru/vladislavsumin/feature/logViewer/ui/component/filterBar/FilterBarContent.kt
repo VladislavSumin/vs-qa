@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Bookmarks
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.DropdownMenu
@@ -58,6 +59,9 @@ private fun ColumnScope.SavedFilters(viewModel: FilterBarViewModel) {
             Row {
                 Text(it.name, Modifier.weight(1f))
                 Text(it.content, Modifier.weight(5f))
+                QaIconButton(onClick = { viewModel.onDeleteSavedFilter(it) }) {
+                    Icon(imageVector = Icons.Default.Delete, contentDescription = "delete")
+                }
             }
         }
     }
