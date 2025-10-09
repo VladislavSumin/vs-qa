@@ -66,10 +66,15 @@ internal fun LogsContent(
             .collect(onFirstVisibleIndexChange)
     }
 
+    val density = LocalDensity.current
     LaunchedEffect(lazyListState) {
         events.receiveAsFlow().collect { event ->
             when (event) {
-                is LogsEvents.ScrollToIndex -> lazyListState.scrollToItem(event.index)
+                is LogsEvents.ScrollToIndex -> lazyListState.scrollToItem(
+                    event.index,
+                    // -24 это высота заголовка. ну если его нет будет небольшой сдвиг в целом ок.
+                    scrollOffset = with(density) { -24.dp.roundToPx() },
+                )
             }
         }
     }

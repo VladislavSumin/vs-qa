@@ -202,7 +202,7 @@ internal class LogViewerViewModel(
         val finalIndex = if (additionalIndex == -1) {
             index
         } else {
-            index + additionalIndex
+            index + additionalIndex + 1
         }
         scrollToIndex(finalIndex)
     }
