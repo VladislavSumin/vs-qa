@@ -5,6 +5,7 @@ import androidx.compose.ui.input.key.Key
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapNotNull
@@ -57,7 +58,7 @@ internal class LogViewerViewModel(
         proguardInteractor = mappingPath?.let { ProguardInteractorImpl(it) },
     )
 
-    val state = combine(
+    val state: StateFlow<LogViewerViewState> = combine(
         logsInteractor.observeLogIndex(
             filter = filterBarUiInteractor.filterState.mapNotNull { it.searchRequest.getOrNull() },
             search = search,
@@ -75,7 +76,7 @@ internal class LogViewerViewModel(
                     }
 
                     selectedSearchIndex.value = selectedIndex
-                    scrollToIndex(it.lastSuccessIndex.searchIndex.index[selectedSearchIndex.value])
+                    scrollToRecordIndex(it.lastSuccessIndex.searchIndex.index[selectedSearchIndex.value])
                 } else {
                     selectedSearchIndex.value = 0
                 }
@@ -126,6 +127,7 @@ internal class LogViewerViewModel(
             logsViewState = LogsViewState(
                 logs = logsWithRunNumber,
                 rawLogs = logIndexProgress.lastSuccessIndex.logs,
+                runIdOrders = logIndexProgress.lastSuccessIndex.runIdOrders,
                 currentSelectedItemOrder = currentSelectedItemOrder,
                 showRunNumbers = runIdOrders != null,
                 maxLogNumberDigits = (logIndexProgress.lastSuccessIndex.totalLogRecords + 1).toString().length,
@@ -191,7 +193,25 @@ internal class LogViewerViewModel(
         }
     }
 
+    /**
+     * Скролит к записи логов по ее индексу автоматически добавляет офсет заголовка
+     */
+    private fun scrollToRecordIndex(index: Int) = launch {
+        val logs = state.value.logsViewState
+        val additionalIndex = logs.runIdOrders?.let { it.indexOfFirst { index in it.orderRange } } ?: -1
+        val finalIndex = if (additionalIndex == -1) {
+            index
+        } else {
+            index + additionalIndex
+        }
+        scrollToIndex(finalIndex)
+    }
+
+    /**
+     * Скролит к выбранному индексу, учитывайте что заголовки (RunNumber) тоже нужно учитывать.
+     */
     private fun scrollToIndex(index: Int) = launch {
+        LogViewerLogger.d { "Scroll to index $index" }
         logsEvents.send(LogsEvents.ScrollToIndex(index))
     }
 
@@ -225,7 +245,7 @@ internal class LogViewerViewModel(
             } else {
                 selectedSearchIndex.value -= 1
             }
-            scrollToIndex(state.value.searchIndex[selectedSearchIndex.value])
+            scrollToRecordIndex(state.value.searchIndex[selectedSearchIndex.value])
         }
     }
 
@@ -236,7 +256,7 @@ internal class LogViewerViewModel(
             } else {
                 selectedSearchIndex.value += 1
             }
-            scrollToIndex(state.value.searchIndex[selectedSearchIndex.value])
+            scrollToRecordIndex(state.value.searchIndex[selectedSearchIndex.value])
         }
     }
 
