@@ -113,6 +113,7 @@ class LogsInteractorImpl(
                     if (warmup.isSuccess) {
                         val deobfuscated = obfuscatedLogs.parallelStream()
                             .map { log ->
+                                // Обрабатываем теги
                                 val deobfuscatedTag = proguard.deobfuscateClass(log.raw.substring(log.tag))
                                 if (deobfuscatedTag != null) {
                                     log.copyTag(deobfuscatedTag)
@@ -121,7 +122,8 @@ class LogsInteractorImpl(
                                 }
                             }
                             .map { log ->
-                                if (log.lines > 2 && log.raw.lines()[log.lines - 2].startsWith("\tat ")) {
+                                // Обрабатываем stacktrace
+                                if (log.lines > 2 && log.raw.lines().any { it.startsWith("\tat ") }) {
                                     val newMessage = proguard.deobfuscateStack(log.raw.substring(log.message))
                                     log.copy(
                                         raw = log.raw.replaceRange(log.message, newMessage),
