@@ -2,9 +2,6 @@ package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,28 +11,18 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import okio.Path.Companion.toOkioPath
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
-import kotlin.io.path.Path
-import kotlin.io.path.absolute
+import ru.vladislavsumin.feature.logViewer.domain.SavedFiltersRepository
 
 @GenerateFactory
 internal class FilterBarViewModel(
     private val globalHotkeyManager: GlobalHotkeyManager,
+    private val savedFiltersRepository: SavedFiltersRepository,
 ) : ViewModel(), FilterBarUiInteractor {
     private val filter = MutableStateFlow(TextFieldValue())
-
-    private val savedFiltersPreferenceKey = stringPreferencesKey("saved_filters")
-
-    // TODO перенести на правильный слой архитектуры
-    private val prefs = PreferenceDataStoreFactory.createWithPath(
-        produceFile = { Path("~/.vs-qa/data/saved_filters.preferences_pb").absolute().toOkioPath() },
-    )
 
     private val showHelpMenu = MutableStateFlow(false)
 
@@ -43,11 +30,8 @@ internal class FilterBarViewModel(
     private val saveNewFilterName = MutableStateFlow("")
     private val saveNewFilterContent = MutableStateFlow("")
 
-    private val savedFilters = prefs.data.map { preferences ->
-        preferences[savedFiltersPreferenceKey]?.let {
-            Json.decodeFromString<List<FilterBarViewState.SavedFiltersState.SavedFilter>>(it)
-        } ?: emptyList()
-    }.stateIn(emptyList())
+    private val savedFilters = savedFiltersRepository.observeSavedFilters()
+        .stateIn(emptyList())
 
     private val filterRequestParser = FilterRequestParser(savedFilters)
 
@@ -115,30 +99,16 @@ internal class FilterBarViewModel(
     }
 
     fun onClickSaveNewFilter() = launch {
-        val newData = savedFilters.value + FilterBarViewState.SavedFiltersState.SavedFilter(
+        savedFiltersRepository.add(
             name = saveNewFilterName.value,
             content = saveNewFilterContent.value,
         )
-
-        if (newData.map { it.name }.toSet().size != newData.size) {
-            // TODO сделать нормальную проверку и обработку.
-            FilterLogger.w { "Failed to saved more than one filter with same name" }
-            return@launch
-        }
-
-        prefs.edit { preferences ->
-            preferences[savedFiltersPreferenceKey] = Json.encodeToString(newData)
-        }
         saveNewFilterName.value = ""
         saveNewFilterContent.value = ""
     }
 
-    fun onDeleteSavedFilter(filter: FilterBarViewState.SavedFiltersState.SavedFilter) = launch {
-        val newData = savedFilters.value.toMutableList()
-        newData.remove(filter)
-        prefs.edit { preferences ->
-            preferences[savedFiltersPreferenceKey] = Json.encodeToString(newData)
-        }
+    fun onDeleteSavedFilter(filter: SavedFiltersRepository.SavedFilter) = launch {
+        savedFiltersRepository.remove(filter)
     }
 
     fun onClickHelpButton() {
@@ -150,7 +120,7 @@ internal class FilterBarViewModel(
     }
 
     fun highlightSavedFilter(
-        filter: FilterBarViewState.SavedFiltersState.SavedFilter,
+        filter: SavedFiltersRepository.SavedFilter,
     ): FilterRequestParser.RequestHighlight {
         return filterRequestParser.justHighlight(filter.content)
     }

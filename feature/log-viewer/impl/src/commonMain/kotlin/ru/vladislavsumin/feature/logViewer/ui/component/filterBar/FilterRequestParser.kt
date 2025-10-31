@@ -18,12 +18,13 @@ import com.github.h0tk3y.betterParse.parser.parseToEnd
 import kotlinx.coroutines.flow.StateFlow
 import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
+import ru.vladislavsumin.feature.logViewer.domain.SavedFiltersRepository
 import ru.vladislavsumin.feature.logViewer.domain.logs.FilterRequest
 import kotlin.map
 import kotlin.sequences.map
 
 internal class FilterRequestParser(
-    private val savedFilters: StateFlow<List<FilterBarViewState.SavedFiltersState.SavedFilter>>,
+    private val savedFilters: StateFlow<List<SavedFiltersRepository.SavedFilter>>,
 ) {
 
     data class ParserResult(
