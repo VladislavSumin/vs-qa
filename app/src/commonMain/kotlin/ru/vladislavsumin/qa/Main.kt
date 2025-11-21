@@ -25,6 +25,7 @@ fun main(args: Array<String>) {
 
     LoggerManager.initDefault()
     MainLogger.i("Initialization...")
+    MainLogger.i("App version: ${BuildConfig.version}")
 
     val logPath = if (args.isNotEmpty()) Path(args[0]) else null
     val mappingPath = if (args.size > 1) Path(args[1]) else null
@@ -45,7 +46,8 @@ fun main(args: Array<String>) {
     application {
         val windowState = rememberWindowState(placement = WindowPlacement.Maximized)
         val windowTitleExtension by windowTitleInteractor.windowTitleExtension.collectAsState()
-        val windowTitle = if (windowTitleExtension == null) "vs-qa" else "vs-qa: $windowTitleExtension"
+        val title = "vs-qa v" + BuildConfig.version
+        val windowTitle = if (windowTitleExtension == null) title else "$title: $windowTitleExtension"
 
         // Связываем рутовый Decompose lifecycle с жизненным циклом окна.
         LifecycleController(lifecycle, windowState)

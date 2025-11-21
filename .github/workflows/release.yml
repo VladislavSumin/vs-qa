@@ -27,7 +27,10 @@ jobs:
         uses: ./vs-qa/.github/actions/run_gradle_default
         with:
           key: "release-build"
-          gradle_command: :app:buildFatJarMain :app:buildFatJarMainMin
+          gradle_command: |
+            :app:buildFatJarMain 
+            :app:buildFatJarMainMin
+            -Pru.vs.version=${{ github.ref_name && format('{0}', github.ref_name) }}
 
       - name: Generate changelog
         id: changelog

@@ -1,10 +1,13 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import proguard.gradle.ProGuardTask
+import ru.vladislavsumin.configuration.projectConfiguration
 import ru.vladislavsumin.utils.fatJar
 import java.io.File
 
 plugins {
     id("ru.vladislavsumin.convention.kmp.jvm")
     id("ru.vladislavsumin.convention.compose")
+    id("com.codingfeline.buildkonfig") version "0.17.1" // TODO вынести в toml
 }
 
 buildscript {
@@ -12,6 +15,8 @@ buildscript {
         classpath("com.guardsquare:proguard-gradle:7.7.0")
     }
 }
+
+version = project.projectConfiguration.version
 
 kotlin {
     val mainClassName = "ru.vladislavsumin.qa.MainKt"
@@ -63,6 +68,15 @@ kotlin {
             // Реализует Dispatchers.Main для Swing.
             implementation(vsCoreLibs.kotlin.coroutines.swing)
         }
+    }
+}
+
+buildkonfig {
+    packageName = "ru.vladislavsumin.qa"
+    objectName = "BuildConfig"
+
+    defaultConfigs {
+        buildConfigField(STRING, "version", project.version.toString())
     }
 }
 
