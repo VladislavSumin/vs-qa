@@ -11,7 +11,6 @@ import kotlinx.serialization.json.Json
 import okio.Path.Companion.toOkioPath
 import ru.vladislavsumin.feature.logViewer.LogLogger
 import kotlin.io.path.Path
-import kotlin.io.path.absolute
 
 internal interface SavedFiltersRepository {
     fun observeSavedFilters(): Flow<List<SavedFilter>>
@@ -31,7 +30,10 @@ internal class SavedFiltersRepositoryImpl : SavedFiltersRepository {
 
     // TODO вынести пути в отдельное место
     private val prefs = PreferenceDataStoreFactory.createWithPath(
-        produceFile = { Path("~/.vs-qa/data/saved_filters.preferences_pb").absolute().toOkioPath() },
+        produceFile = {
+            val home = System.getProperty("user.home")
+            Path(home).resolve(".vs-qa/data/saved_filters.preferences_pb").toOkioPath()
+        },
     )
 
     override fun observeSavedFilters(): Flow<List<SavedFiltersRepository.SavedFilter>> {
