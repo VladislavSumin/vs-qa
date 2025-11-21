@@ -16,8 +16,6 @@ buildscript {
     }
 }
 
-version = project.projectConfiguration.version
-
 kotlin {
     val mainClassName = "ru.vladislavsumin.qa.MainKt"
     jvm {
@@ -76,7 +74,7 @@ buildkonfig {
     objectName = "BuildConfig"
 
     defaultConfigs {
-        buildConfigField(STRING, "version", project.version.toString())
+        buildConfigField(STRING, "version", project.projectConfiguration.version)
     }
 }
 
