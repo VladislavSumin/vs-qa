@@ -12,6 +12,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":core:ui:hotkey-controller"))
+            implementation(project(":core:ui:drag-and-drop"))
             implementation(project(":core:ui:file-picker"))
             implementation(project(":core:ui:design-system"))
 
