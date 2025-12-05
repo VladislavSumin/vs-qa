@@ -46,6 +46,10 @@ internal class RootViewModel(
         return true
     }
 
+    fun onClickOpen() {
+        showOpenNewFileDialog.value = true
+    }
+
     fun onTabClick(tabScreenParams: IntentScreenParams<*>) = open(tabScreenParams)
     fun onCloseTabClick(tabScreenParams: IntentScreenParams<*>) = close(tabScreenParams)
 

@@ -11,9 +11,7 @@ import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.core.ui.hotkeyController.Hotkey
 
 // Поправить версионирование
-// Добавить кнопочку для вызова аттач пикера на главный экран.
 // Добавить драг&дроп на главный экран.
-// Поддержать aттач пикер для android.
 // Добавить поддержку диплинков
 // Добавить поддержку открытия zip архивов андроид
 // Посмотреть что там с глобальными хоткеями на андроид?

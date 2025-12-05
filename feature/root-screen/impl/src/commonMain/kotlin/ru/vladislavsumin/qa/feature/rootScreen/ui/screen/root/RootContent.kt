@@ -6,12 +6,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,12 +49,12 @@ internal fun RootContent(
     modifier: Modifier,
 ) {
     val state by viewModel.state.collectAsState()
-    if (state) FilePickerDialog(viewModel::onOpenNewFileDialogResult)
+    if (state) FilePickerDialog(mimeType = "application/zip", onCloseRequest = viewModel::onOpenNewFileDialogResult)
 
     Box(modifier) {
         val pages by tabs.subscribeAsState()
 
-        if (pages.items.isEmpty()) EmptyTabsPlaceholder()
+        if (pages.items.isEmpty()) EmptyTabsPlaceholder(viewModel)
 
         Column(modifier) {
             Box(Modifier.weight(1f)) {
@@ -126,12 +129,18 @@ private fun ColumnScope.TabsContent(tabs: Value<ChildPages<ConfigurationHolder, 
 }
 
 @Composable
-private fun EmptyTabsPlaceholder() {
+private fun EmptyTabsPlaceholder(viewModel: RootViewModel) {
     Box(Modifier.fillMaxSize()) {
-        Text(
-            text = "All tabs closed\nPress Command + O for open new one",
-            modifier = Modifier.align(Alignment.Center),
-            textAlign = TextAlign.Center,
-        )
+        Column(
+            Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = "All tabs closed\nPress Command + O for open new one",
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(16.dp))
+            Button(onClick = viewModel::onClickOpen) { Text("Open new file") }
+        }
     }
 }
