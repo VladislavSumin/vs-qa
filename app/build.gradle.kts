@@ -91,6 +91,8 @@ buildkonfig {
     }
 }
 
+// Что бы выводились логи нужно запускать с флаго --info
+// gradle app:buildFatJarMainMin --info
 tasks.register<ProGuardTask>("buildFatJarMainMin") {
     dependsOn("buildFatJarMain")
     injars("build/libs/vs-qa.jar")

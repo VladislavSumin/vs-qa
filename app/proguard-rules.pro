@@ -16,3 +16,4 @@
 -dontwarn com.android.tools.r8.**
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 -dontwarn android.annotation.SuppressLint
+-dontwarn com.jetbrains.JBR
