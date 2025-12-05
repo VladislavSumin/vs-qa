@@ -1,12 +1,9 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.logs
 
-import androidx.compose.foundation.LocalScrollbarStyle
-import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollbarAdapter
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +39,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.TextSelectionSeparator
+import ru.vladislavsumin.feature.logViewer.ui.utils.VsVerticalScrollbar
 import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
 
 @Composable
@@ -165,14 +162,7 @@ private fun Record(
 
 @Composable
 private fun LogsVerticalScrollBar(lazyListState: LazyListState) {
-    VerticalScrollbar(
-        adapter = rememberScrollbarAdapter(lazyListState),
-        style = LocalScrollbarStyle.current.copy(
-            hoverColor = QaTheme.colorScheme.onSurface,
-            unhoverColor = QaTheme.colorScheme.onSurfaceVariant,
-        ),
-        modifier = Modifier.fillMaxHeight(),
-    )
+    VsVerticalScrollbar(lazyListState)
 }
 
 @Composable

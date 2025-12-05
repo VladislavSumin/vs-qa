@@ -17,8 +17,13 @@ import ru.vladislavsumin.qa.feature.notifications.featureNotifications
 import ru.vladislavsumin.qa.feature.rootScreen.featureRootScreen
 
 fun createDi(
+    platformModule: DI.Module?,
     globalHotkeyManager: GlobalHotkeyManager,
 ): DirectDI = DI {
+    if (platformModule != null) {
+        importOnce(platformModule)
+    }
+
     bindSingleton { globalHotkeyManager }
 
     importOnce(Modules.coreNavigation<ComponentContext>())

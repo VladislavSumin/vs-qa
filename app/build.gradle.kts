@@ -17,6 +17,14 @@ buildscript {
     }
 }
 
+android {
+    namespace = "ru.vladislavsumin.qa"
+
+    defaultConfig {
+        applicationId = "ru.vladislavsumin.qa"
+    }
+}
+
 kotlin {
     val mainClassName = "ru.vladislavsumin.qa.MainKt"
     jvm {
@@ -66,6 +74,10 @@ kotlin {
 
             // Реализует Dispatchers.Main для Swing.
             implementation(vsCoreLibs.kotlin.coroutines.swing)
+        }
+
+        androidMain.dependencies {
+            implementation(libs.android.activity.compose)
         }
     }
 }
