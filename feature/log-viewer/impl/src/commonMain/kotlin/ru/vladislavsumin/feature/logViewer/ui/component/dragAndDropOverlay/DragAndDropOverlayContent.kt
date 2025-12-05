@@ -19,10 +19,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
-import androidx.compose.ui.draganddrop.awtTransferable
 import androidx.compose.ui.unit.dp
-import java.awt.datatransfer.DataFlavor
-import java.io.File
+import ru.vladislavsumin.core.ui.dragAndDrop.rememberDragAndDropFileTarget
 import java.nio.file.Path
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -75,22 +73,4 @@ internal fun DragAndDropOverlayContent(
             ) { Text(text = "Drop mapping here", Modifier.align(Alignment.Center)) }
         }
     }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-private fun Modifier.rememberDragAndDropFileTarget(onDropped: (Path) -> Unit): Modifier {
-    val target = remember(onDropped) {
-        object : DragAndDropTarget {
-            override fun onDrop(event: DragAndDropEvent): Boolean {
-                val files = event.awtTransferable.getTransferData(DataFlavor.javaFileListFlavor) as List<File>
-                onDropped(files.single().toPath())
-                return true
-            }
-        }
-    }
-    return dragAndDropTarget(
-        shouldStartDragAndDrop = { true },
-        target = target,
-    )
 }

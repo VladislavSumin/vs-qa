@@ -33,7 +33,7 @@ jobs:
   build:
     name: build app
     runs-on: macos-15
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - name: Clone vs-qa repository
         uses: actions/checkout@v4

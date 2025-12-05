@@ -3,7 +3,7 @@ package ru.vladislavsumin.convention.preset
 import ru.vladislavsumin.utils.vsCoreLibs
 
 plugins {
-    id("ru.vladislavsumin.convention.kmp.jvm")
+    id("ru.vladislavsumin.convention.preset.core")
     kotlin("plugin.serialization")
 }
 

@@ -6,6 +6,7 @@ import java.io.File
 
 plugins {
     id("ru.vladislavsumin.convention.kmp.jvm")
+    id("ru.vladislavsumin.convention.kmp.android-application")
     id("ru.vladislavsumin.convention.compose")
     id("com.codingfeline.buildkonfig") version "0.17.1" // TODO вынести в toml
 }
@@ -13,6 +14,14 @@ plugins {
 buildscript {
     dependencies {
         classpath("com.guardsquare:proguard-gradle:7.7.0")
+    }
+}
+
+android {
+    namespace = "ru.vladislavsumin.qa"
+
+    defaultConfig {
+        applicationId = "ru.vladislavsumin.qa"
     }
 }
 
@@ -66,6 +75,10 @@ kotlin {
             // Реализует Dispatchers.Main для Swing.
             implementation(vsCoreLibs.kotlin.coroutines.swing)
         }
+
+        androidMain.dependencies {
+            implementation(libs.android.activity.compose)
+        }
     }
 }
 
@@ -78,6 +91,8 @@ buildkonfig {
     }
 }
 
+// Что бы выводились логи нужно запускать с флаго --info
+// gradle app:buildFatJarMainMin --info
 tasks.register<ProGuardTask>("buildFatJarMainMin") {
     dependsOn("buildFatJarMain")
     injars("build/libs/vs-qa.jar")
