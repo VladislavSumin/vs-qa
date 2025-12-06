@@ -9,7 +9,7 @@ jobs:
   release:
     name: Create Release
     runs-on: macos-15
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - name: Clone vs-qa repository
         uses: actions/checkout@v4
@@ -37,6 +37,7 @@ jobs:
             -Pru.vs.version=${{ env.VERSION }}
             :app:buildFatJarMain 
             :app:buildFatJarMainMin
+            :app:assembleRelease
 
       - name: Generate changelog
         id: changelog
@@ -75,6 +76,7 @@ jobs:
           files: |
             ./vs-qa/app/build/libs/vs-qa.jar
             ./vs-qa/app/build/libs/vs-qa-min.jar
+            ./vs-qa/app/build/outputs/apk/release/app-release.apk
           draft: false
           prerelease: false
         env:

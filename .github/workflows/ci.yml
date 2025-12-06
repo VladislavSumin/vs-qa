@@ -33,7 +33,7 @@ jobs:
   build:
     name: build app
     runs-on: macos-15
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Clone vs-qa repository
         uses: actions/checkout@v4
@@ -50,7 +50,10 @@ jobs:
         uses: ./vs-qa/.github/actions/run_gradle_default
         with:
           key: "build"
-          gradle_command: :app:buildFatJarMain :app:buildFatJarMainMin
+          gradle_command: >-
+            :app:buildFatJarMain 
+            :app:buildFatJarMainMin
+            :app:assembleRelease
 
       - name: Upload jar
         uses: actions/upload-artifact@v4
@@ -63,3 +66,9 @@ jobs:
         with:
           name: vs-qa-min.jar
           path: ./vs-qa/app/build/libs/vs-qa-min.jar
+
+      - name: Upload app-release.apk
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release.apk
+          path: ./vs-qa/app/build/outputs/apk/release/app-release.apk
