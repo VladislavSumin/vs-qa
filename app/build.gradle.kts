@@ -33,11 +33,12 @@ android {
             // TODO нужна нормальная release подпись
             signingConfig = signingConfigs.getByName("debug")
 
-            isMinifyEnabled = false // TODO Включить
-            isShrinkResources = false
+            isMinifyEnabled = true
+            isShrinkResources = true
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
             )
         }
     }
@@ -117,6 +118,7 @@ tasks.register<ProGuardTask>("buildFatJarMainMin") {
     injars("build/libs/vs-qa.jar")
     outjars("build/libs/vs-qa-min.jar")
 
+    // TODO разделить java/android конфигурации.
     configuration("proguard-rules.pro")
     printconfiguration("build/reports/proguard/proguard.pro")
 
