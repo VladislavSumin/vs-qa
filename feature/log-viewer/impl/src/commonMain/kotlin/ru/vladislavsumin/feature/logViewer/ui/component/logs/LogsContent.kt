@@ -110,21 +110,20 @@ private fun Header(
             .fillMaxWidth()
             .background(QaTheme.colorScheme.surfaceVariant),
     ) {
-        Text(
-            text = "Run $runNumber",
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(start = textSizeDp + 13.dp + 8.dp, end = 4.dp),
-        )
-        meta?.forEach { (k, v) ->
-            val text = buildAnnotatedString {
+        val text = buildAnnotatedString {
+            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                append("Run $runNumber  ")
+            }
+            meta?.forEach { (k, v) ->
                 withStyle(SpanStyle(color = QaTheme.colorScheme.logTrace.primary)) {
                     append(k)
                     append("=")
                 }
                 append(v)
+                append(" ")
             }
-            Text(text, Modifier.padding(horizontal = 4.dp))
         }
+        Text(text, Modifier.padding(start = textSizeDp + 13.dp + 8.dp, end = 4.dp))
     }
 }
 
