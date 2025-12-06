@@ -13,6 +13,7 @@ dependencies {
     implementation(vsCoreLibs.gradlePlugins.jb.compose)
     implementation(libs.gradlePlugins.sentry)
     implementation(libs.gradlePlugins.buildkonfig)
+    implementation(libs.gradlePlugins.proguard)
 }
 
 gradlePlugin {

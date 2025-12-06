@@ -12,12 +12,6 @@ plugins {
     id("io.sentry.kotlin.multiplatform.gradle")
 }
 
-buildscript {
-    dependencies {
-        classpath("com.guardsquare:proguard-gradle:7.7.0")
-    }
-}
-
 android {
     namespace = "ru.vladislavsumin.qa"
 
