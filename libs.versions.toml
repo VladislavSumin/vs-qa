@@ -4,8 +4,13 @@ r8 = "8.11.18"
 google-datastore = "1.1.7"
 kotlin-serialization-kaml = "0.104.0"
 android-activity-compose = "1.10.1"
+sentry = "0.22.0"
+buildkonfig = "0.17.1"
 
 [libraries]
+gradlePlugins-sentry = { module = "io.sentry:sentry-kotlin-multiplatform-gradle-plugin", version.ref = "sentry" }
+gradlePlugins-buildkonfig = { module = "com.codingfeline.buildkonfig:com.codingfeline.buildkonfig.gradle.plugin", version.ref = "buildkonfig" }
+
 betterParse = { module = "com.github.h0tk3y.betterParse:better-parse", version.ref = "betterParse" }
 r8 = { module = "com.android.tools:r8", version.ref = "r8" }
 google-datastore-core = { module = "androidx.datastore:datastore", version.ref = "google-datastore" }

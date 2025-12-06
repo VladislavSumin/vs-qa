@@ -11,4 +11,15 @@ dependencies {
 
     implementation(vsCoreLibs.gradlePlugins.kotlin.core)
     implementation(vsCoreLibs.gradlePlugins.jb.compose)
+    implementation(libs.gradlePlugins.sentry)
+    implementation(libs.gradlePlugins.buildkonfig)
+}
+
+gradlePlugin {
+    plugins {
+        create("noOpPlugin") {
+            id = "ru.vladislavsumin.plugins.noOpPlugin"
+            implementationClass = "ru.vladislavsumin.plugins.NoOpPlugin"
+        }
+    }
 }
