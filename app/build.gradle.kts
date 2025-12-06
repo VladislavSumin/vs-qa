@@ -23,6 +23,29 @@ android {
     defaultConfig {
         applicationId = "ru.vladislavsumin.qa"
     }
+
+    signingConfigs {
+        named("debug") {
+            storeFile = rootProject.rootDir.resolve("debug.jks")
+            storePassword = "123456"
+            keyAlias = "debug"
+            keyPassword = "123456"
+        }
+    }
+
+    buildTypes {
+        release {
+            // TODO нужна нормальная release подпись
+            signingConfig = signingConfigs.getByName("debug")
+
+            isMinifyEnabled = false // TODO Включить
+            isShrinkResources = false
+
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+            )
+        }
+    }
 }
 
 kotlin {
