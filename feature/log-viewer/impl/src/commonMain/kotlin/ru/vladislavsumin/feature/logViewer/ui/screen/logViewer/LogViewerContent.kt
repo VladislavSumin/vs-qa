@@ -25,6 +25,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
@@ -52,7 +54,13 @@ internal fun LogViewerContent(
             SearchBarContent(viewModel, searchState, searchFocusRequester)
             Row(Modifier.weight(1f)) {
                 logsComponent.Render(Modifier.weight(1f))
-                SidePanelContent(viewModel, state)
+                // TODO сделать нормальные расширения для адаптивной верстки
+                val withDp = with(LocalDensity.current) {
+                    LocalWindowInfo.current.containerSize.width.toDp()
+                }
+                if (withDp > 600.dp) {
+                    SidePanelContent(viewModel, state)
+                }
             }
             filterBarComponent.Render(Modifier)
             HorizontalDivider(
