@@ -1,7 +1,5 @@
 package ru.vladislavsumin.convention
 
-import gradle.kotlin.dsl.accessors._8d3d43a214c80f47ff20853a33905ac8.android
-
 /**
  * Хак для подключения KSP к commonMain в kmp модулях с java only таргетом.
  * После подключения добавляем ksp вот так:
