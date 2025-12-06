@@ -9,6 +9,8 @@ plugins {
     id("ru.vladislavsumin.convention.kmp.android-application")
     id("ru.vladislavsumin.convention.compose")
     id("com.codingfeline.buildkonfig") version "0.17.1" // TODO вынести в toml
+    // TODO вынести в toml
+    id("io.sentry.kotlin.multiplatform.gradle") version "0.22.0"
 }
 
 buildscript {

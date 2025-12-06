@@ -10,6 +10,7 @@ import androidx.compose.ui.window.rememberWindowState
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.extensions.compose.lifecycle.LifecycleController
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
+import io.sentry.kotlin.multiplatform.Sentry
 import org.kodein.di.instance
 import ru.vladislavsumin.core.decompose.compose.runOnUiThread
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyDispatcher
@@ -20,6 +21,11 @@ import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
     setExitOnUncaughtException()
+
+    // TODO вынести в отдельный core модуль
+    Sentry.init { options ->
+        options.dsn = "https://ac13621e67953007e14fcfd5642531c4@o512687.ingest.us.sentry.io/4510488819793920"
+    }
 
     val hotkeyDispatcher = GlobalHotkeyDispatcher()
     val di = preInit(hotkeyDispatcher)
