@@ -1,5 +1,7 @@
 package ru.vladislavsumin.convention
 
+import gradle.kotlin.dsl.accessors._8d3d43a214c80f47ff20853a33905ac8.android
+
 /**
  * Хак для подключения KSP к commonMain в kmp модулях с java only таргетом.
  * После подключения добавляем ksp вот так:
@@ -14,6 +16,8 @@ package ru.vladislavsumin.convention
 
 plugins {
     id("ru.vladislavsumin.convention.kmp.jvm")
+    // TODO временное решение, убрать отсюда
+    id("ru.vladislavsumin.convention.kmp.android-library")
     id("com.google.devtools.ksp")
 }
 
@@ -27,6 +31,12 @@ val kspSourcesCopyTask = tasks.register<Copy>("copyKspSourcesFromJvmToCommonSour
     into("build/generated/ksp/metadata/commonMain/kotlin")
 }
 tasks.named("compileKotlinJvm") { dependsOn(kspSourcesCopyTask) }
+
+// TODO временное решение, убрать отсюда
+afterEvaluate {
+    tasks.named("compileReleaseKotlinAndroid") { dependsOn(kspSourcesCopyTask) }
+    tasks.named("compileDebugKotlinAndroid") { dependsOn(kspSourcesCopyTask) }
+}
 
 // Исключаем сгенерированные jvm ksp исходные коды из компиляции.
 // К сожалению студия не настолько умна, что бы понять этот хитрый ход, поэтому все еще будет подсвечивать эту папку как
