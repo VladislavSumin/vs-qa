@@ -23,12 +23,18 @@ jobs:
           repository: VladislavSumin/vs-core
           path: vs-core
 
+      - name: Parse version
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          echo Version: $VERSION
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: Run gradle
         uses: ./vs-qa/.github/actions/run_gradle_default
         with:
           key: "release-build"
           gradle_command: >-
-            -Pru.vs.version=${{ github.ref_name && format('{0}', github.ref_name) }}
+            -Pru.vs.version=${{ env.VERSION }}
             :app:buildFatJarMain 
             :app:buildFatJarMainMin
 
