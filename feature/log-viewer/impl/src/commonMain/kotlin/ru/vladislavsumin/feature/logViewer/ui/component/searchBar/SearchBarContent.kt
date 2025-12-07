@@ -94,7 +94,7 @@ internal fun SearchBarContent(
                     val style = LocalTextStyle.current
                     val size = remember(textMeasurer, density, state.totalSearchResults) {
                         val count = "9".repeat(state.totalSearchResults.toString().length)
-                        val testString = "$count of $count results"
+                        val testString = "$count / $count"
                         val widthPx = textMeasurer.measure(testString, style).size.width
                         with(density) { widthPx.toDp() }
                     }
@@ -103,7 +103,7 @@ internal fun SearchBarContent(
                         text = if (state.isBadRegex) {
                             "bad pattern"
                         } else {
-                            "${state.currentSearchResultIndex + 1} of ${state.totalSearchResults} results"
+                            "${state.currentSearchResultIndex + 1} / ${state.totalSearchResults}"
                         },
                         Modifier
                             .padding(horizontal = 4.dp)
