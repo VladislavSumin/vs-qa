@@ -8,8 +8,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(compose.material3)
-            // TODO вынести в core библиотеку
-            implementation(libs.kotlin.serialization.yaml)
+            implementation(vsCoreLibs.vs.core.serialization.yaml)
         }
     }
 }

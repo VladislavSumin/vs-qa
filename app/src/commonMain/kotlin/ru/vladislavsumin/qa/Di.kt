@@ -8,6 +8,7 @@ import org.kodein.di.direct
 import ru.vladislavsumin.core.di.Modules
 import ru.vladislavsumin.core.fs.coreFs
 import ru.vladislavsumin.core.navigation.coreNavigation
+import ru.vladislavsumin.core.serialization.yaml.coreSerializationYaml
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.feature.logParser.anime.domain.featureAnimeLogParser
 import ru.vladislavsumin.feature.logViewer.featureLogViewer
@@ -28,6 +29,7 @@ fun createDi(
     bindSingleton { globalHotkeyManager }
 
     importOnce(Modules.coreFs(appTechName = "vs-qa"))
+    importOnce(Modules.coreSerializationYaml())
     importOnce(Modules.coreNavigation<ComponentContext>())
 
     importOnce(Modules.featureBottomBar())

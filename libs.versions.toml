@@ -2,7 +2,6 @@
 betterParse = "0.4.4"
 r8 = "8.11.18"
 google-datastore = "1.1.7"
-kotlin-serialization-kaml = "0.104.0"
 android-activity-compose = "1.10.1"
 sentry = "0.22.0"
 buildkonfig = "0.17.1"
@@ -18,5 +17,3 @@ r8 = { module = "com.android.tools:r8", version.ref = "r8" }
 google-datastore-core = { module = "androidx.datastore:datastore", version.ref = "google-datastore" }
 google-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "google-datastore" }
 android-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "android-activity-compose" }
-
-kotlin-serialization-yaml = { module = "com.charleskorn.kaml:kaml", version.ref = "kotlin-serialization-kaml" }

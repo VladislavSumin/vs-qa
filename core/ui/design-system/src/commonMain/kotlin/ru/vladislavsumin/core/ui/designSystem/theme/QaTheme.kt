@@ -16,13 +16,13 @@ import kotlin.io.path.Path
 internal val LocalQaColorScheme = staticCompositionLocalOf { QaColorScheme() }
 
 @Composable
-fun QaTheme(content: @Composable () -> Unit) {
+fun QaTheme(yaml: Yaml, content: @Composable () -> Unit) {
     val colorScheme = remember {
         // TODO вынести в общий код.
         val home = System.getProperty("user.home")
         val scheme = Path(home).resolve(".vs-qa/theme.yaml").toFile()
         if (scheme.exists()) {
-            Yaml.default.decodeFromString<QaColorScheme>(scheme.readText())
+            yaml.decodeFromString<QaColorScheme>(scheme.readText())
         } else {
             QaColorScheme()
         }

@@ -17,5 +17,5 @@ fun Modules.featureRootScreen() = DI.Module("feature-rootScreen") {
         val vmf = RootViewModelFactory(i())
         RootScreenFactory(vmf, i(), i(), i())
     }
-    bindSingleton<RootScreenComponentFactory> { RootScreenComponentFactoryImpl(i()) }
+    bindSingleton<RootScreenComponentFactory> { RootScreenComponentFactoryImpl(i(), i()) }
 }

@@ -4,6 +4,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.ComponentContext
+import com.charleskorn.kaml.Yaml
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
@@ -17,6 +18,7 @@ import java.nio.file.Path
 @GenerateFactory(RootScreenComponentFactory::class)
 internal class RootScreenComponent(
     navigation: Navigation,
+    private val yaml: Yaml,
     logPath: Path?,
     mappingPath: Path?,
     context: ComponentContext,
@@ -35,7 +37,7 @@ internal class RootScreenComponent(
 
     @Composable
     override fun Render(modifier: Modifier) {
-        QaTheme {
+        QaTheme(yaml) {
             Surface {
                 navigationRoot.Render(Modifier)
             }
