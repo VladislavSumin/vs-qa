@@ -198,7 +198,10 @@ internal class LogViewerViewModel(
      */
     private fun scrollToRecordIndex(index: Int) = launch {
         val logs = state.value.logsViewState
-        val additionalIndex = logs.runIdOrders?.let { it.indexOfFirst { index in it.orderRange } } ?: -1
+        val additionalIndex = logs.runIdOrders?.let { runs ->
+            val order = logs.rawLogs[index].order
+            runs.indexOfFirst { order in it.orderRange }
+        } ?: -1
         val finalIndex = if (additionalIndex == -1) {
             index
         } else {

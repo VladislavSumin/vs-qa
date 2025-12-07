@@ -1,6 +1,8 @@
 package ru.vladislavsumin.feature.logViewer.domain.logs
 
 /**
+ * @param logs список логов после фильтра.
+ * @param runIdOrders оригинальный список [RunIdInfo] без учета фильтров.
  * @param totalLogRecords общее количество записей в оригинальном списке (до фильтра).
  */
 data class LogIndex(
