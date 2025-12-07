@@ -77,6 +77,7 @@ kotlin {
             implementation(vsCoreLibs.vs.core.decompose.components)
             implementation(vsCoreLibs.vs.core.decompose.compose)
             implementation(vsCoreLibs.vs.core.di)
+            implementation(vsCoreLibs.vs.core.fs.impl)
             implementation(vsCoreLibs.vs.core.navigation.impl)
             implementation(vsCoreLibs.vs.core.navigation.di)
 

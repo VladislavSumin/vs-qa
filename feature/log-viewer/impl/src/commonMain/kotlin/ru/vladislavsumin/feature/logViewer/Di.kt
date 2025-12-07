@@ -15,7 +15,7 @@ import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenFa
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerViewModelFactory
 
 fun Modules.featureLogViewer() = DI.Module("feature-logViewer") {
-    bindSingleton<SavedFiltersRepository> { SavedFiltersRepositoryImpl() }
+    bindSingleton<SavedFiltersRepository> { SavedFiltersRepositoryImpl(i()) }
 
     bindGenericNavigation { NavigationRegistrarImpl() }
 

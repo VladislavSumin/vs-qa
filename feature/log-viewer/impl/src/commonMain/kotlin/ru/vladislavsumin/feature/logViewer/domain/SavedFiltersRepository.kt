@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import okio.Path.Companion.toOkioPath
+import okio.Path.Companion.toPath
+import ru.vladislavsumin.core.fs.FileSystemService
 import ru.vladislavsumin.feature.logViewer.LogLogger
-import kotlin.io.path.Path
 
 internal interface SavedFiltersRepository {
     fun observeSavedFilters(): Flow<List<SavedFilter>>
@@ -25,14 +25,14 @@ internal interface SavedFiltersRepository {
 }
 
 // TODO перевести это все на нормальные префы
-internal class SavedFiltersRepositoryImpl : SavedFiltersRepository {
+internal class SavedFiltersRepositoryImpl(
+    private val fileSystemService: FileSystemService,
+) : SavedFiltersRepository {
     private val savedFiltersPreferenceKey = stringPreferencesKey("saved_filters")
 
-    // TODO вынести пути в отдельное место
     private val prefs = PreferenceDataStoreFactory.createWithPath(
         produceFile = {
-            val home = System.getProperty("user.home")
-            Path(home).resolve(".vs-qa/data/saved_filters.preferences_pb").toOkioPath()
+            fileSystemService.getPreferencesDir().toString().toPath().resolve("saved_filters.preferences_pb")
         },
     )
 

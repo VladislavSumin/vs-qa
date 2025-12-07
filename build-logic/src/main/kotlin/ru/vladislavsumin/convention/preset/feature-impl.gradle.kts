@@ -13,6 +13,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":core:utils"))
             implementation(vsCoreLibs.vs.core.di)
+            implementation(vsCoreLibs.vs.core.fs.api)
             implementation(vsCoreLibs.vs.core.factoryGenerator.api)
         }
     }
