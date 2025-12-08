@@ -14,6 +14,7 @@ import ru.vladislavsumin.feature.logParser.anime.domain.featureAnimeLogParser
 import ru.vladislavsumin.feature.logViewer.featureLogViewer
 import ru.vladislavsumin.feature.windowTitle.featureWidowTitle
 import ru.vladislavsumin.qa.feature.bottomBar.featureBottomBar
+import ru.vladislavsumin.qa.feature.homeScreen.featureHomeScreen
 import ru.vladislavsumin.qa.feature.memoryIndicator.featureMemoryIndicator
 import ru.vladislavsumin.qa.feature.notifications.featureNotifications
 import ru.vladislavsumin.qa.feature.rootScreen.featureRootScreen
@@ -33,6 +34,7 @@ fun createDi(
     importOnce(Modules.coreNavigation<ComponentContext>())
 
     importOnce(Modules.featureBottomBar())
+    importOnce(Modules.featureHomeScreen())
     importOnce(Modules.featureLogViewer())
     importOnce(Modules.featureMemoryIndicator())
     importOnce(Modules.featureNotifications())

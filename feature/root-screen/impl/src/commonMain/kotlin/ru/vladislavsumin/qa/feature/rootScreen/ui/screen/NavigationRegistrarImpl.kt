@@ -4,6 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistrar
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistry
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
+import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenParams
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenFactory
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenParams
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.TabNavigationHost
@@ -17,7 +18,10 @@ internal class NavigationRegistrarImpl(
             defaultParams = RootScreenParams,
             description = "Root screen",
             navigationHosts = {
-                TabNavigationHost opens setOf(LogViewerScreenParams::class)
+                TabNavigationHost opens setOf(
+                    HomeScreenParams::class,
+                    LogViewerScreenParams::class,
+                )
             },
         )
     }

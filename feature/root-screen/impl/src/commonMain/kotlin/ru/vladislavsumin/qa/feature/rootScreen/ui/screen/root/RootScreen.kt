@@ -10,6 +10,7 @@ import ru.vladislavsumin.core.navigation.host.childNavigationPages
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenFactory
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarComponentFactory
+import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenParams
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsComponentFactory
 
 @GenerateScreenFactory
@@ -39,8 +40,7 @@ internal class RootScreen(
 
     private val tabs = childNavigationPages(
         navigationHost = TabNavigationHost,
-        // TODO https://github.com/arkivanov/Decompose/issues/866 исправлено в 3.4.0-alpha2 жду стабильную версию.
-        initialPages = { Pages(items = emptyList(), selectedIndex = 0) },
+        initialPages = { Pages(items = listOf(HomeScreenParams), selectedIndex = 0) },
     )
 
     init {
