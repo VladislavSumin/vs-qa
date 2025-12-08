@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -122,9 +123,18 @@ private fun Tab(
 @Composable
 private fun ColumnScope.TabsContent(tabs: Value<ChildPages<ConfigurationHolder, Screen>>) {
     ChildPages(
-        tabs,
+        pages = tabs,
+        pager = { modifier, state, key, pageContent ->
+            HorizontalPager(
+                modifier = modifier,
+                state = state,
+                key = key,
+                userScrollEnabled = false,
+                pageContent = pageContent,
+            )
+        },
         onPageSelected = { _ -> },
-        Modifier.weight(1f),
+        modifier = Modifier.weight(1f),
     ) { _, page ->
         // TODO разобраться почему это работает?
         val hackyContent = remember(page) {
