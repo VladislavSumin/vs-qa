@@ -40,12 +40,17 @@ internal class AnimeLogParser : LogParser {
 
         if (names.all { it.endsWith("zip") }) {
             LogParserLogger.i { "Use embedded log parser" }
-            names.forEach {
-                zip.getInputStream(zip.getEntry(it)).use { internalZipStream ->
+            names.forEach { name ->
+                zip.getInputStream(zip.getEntry(name)).use { internalZipStream ->
                     ZipInputStream(internalZipStream).use { zipStream ->
-                        zipStream.nextEntry!!
-                        val lines = zipStream.bufferedReader().lineSequence()
-                        AnimeEmbeddedLogParser.parseLines(lines, result)
+                        val entry = zipStream.nextEntry
+                        if (entry != null) {
+                            val lines = zipStream.bufferedReader().lineSequence()
+                            AnimeEmbeddedLogParser.parseLines(lines, result)
+                        } else {
+                            // TODO выводить ворнинг о нарушении формата в пользовательский интерфейс
+                            LogParserLogger.e { "Unexpected empty archive $name" }
+                        }
                     }
                 }
             }
