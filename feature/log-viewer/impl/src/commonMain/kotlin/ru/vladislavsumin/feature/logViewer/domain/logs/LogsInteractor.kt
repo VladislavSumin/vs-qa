@@ -1,7 +1,6 @@
 package ru.vladislavsumin.feature.logViewer.domain.logs
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -9,6 +8,7 @@ import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
@@ -68,6 +68,7 @@ interface LogsInteractor {
 // TODO тут нужно оптимизировать количество копирований списка, а так же equals проверки.
 class LogsInteractorImpl(
     private val scope: CoroutineScope,
+    private val dispatchers: VsDispatchers,
     private val logPath: Path,
     private val logParserProvider: LogParserProvider,
     private val notificationsUiInteractor: NotificationsUiInteractor,
@@ -86,7 +87,7 @@ class LogsInteractorImpl(
 
     @Suppress("LongMethod") // TODO разгрести эту помойку на костылях
     private fun loadLogs() {
-        scope.launch(Dispatchers.IO) {
+        scope.launch(dispatchers.IO) {
             proguardState.collectLatest { proguard ->
                 if (proguard == null &&
                     (loadingStatus.value as? LogsInteractor.LoadingStatus.Loaded)?.isDeobfuscated == false
@@ -229,7 +230,7 @@ class LogsInteractorImpl(
                 }
             }
         }
-    }.flowOn(Dispatchers.Default)
+    }.flowOn(dispatchers.Default)
 }
 
 data class ClearLogState(

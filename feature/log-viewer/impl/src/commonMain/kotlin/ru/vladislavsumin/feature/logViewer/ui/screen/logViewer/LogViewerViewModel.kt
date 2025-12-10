@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
@@ -39,6 +40,7 @@ internal class LogViewerViewModel(
     logParserProvider: LogParserProvider,
     private val windowTitleInteractor: WindowTitleInteractor,
     private val globalHotkeyManager: GlobalHotkeyManager,
+    private val dispatchers: VsDispatchers,
     @ByCreate logPath: Path,
     @ByCreate mappingPath: Path?,
     @ByCreate private val bottomBarUiInteractor: BottomBarUiInteractor,
@@ -52,6 +54,7 @@ internal class LogViewerViewModel(
 
     private val logsInteractor = LogsInteractorImpl(
         scope = viewModelScope,
+        dispatchers = dispatchers,
         logPath = logPath,
         logParserProvider = logParserProvider,
         notificationsUiInteractor = notificationsUiInteractor,
