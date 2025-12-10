@@ -6,6 +6,7 @@ android-activity-compose = "1.10.1"
 sentry = "0.22.0"
 buildkonfig = "0.17.1"
 proguard = "7.7.0"
+ktor = "3.3.3"
 
 [libraries]
 gradlePlugins-sentry = { module = "io.sentry:sentry-kotlin-multiplatform-gradle-plugin", version.ref = "sentry" }
@@ -17,3 +18,4 @@ r8 = { module = "com.android.tools:r8", version.ref = "r8" }
 google-datastore-core = { module = "androidx.datastore:datastore", version.ref = "google-datastore" }
 google-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "google-datastore" }
 android-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "android-activity-compose" }
+ktor-network = { module = "io.ktor:ktor-network", version.ref = "ktor" }

@@ -9,6 +9,7 @@ rootProject.name = "vs-qa"
 
 include(":app")
 
+include(":core:adb:client")
 include(":core:proguard-parser")
 include(":core:ui:design-system")
 include(":core:ui:drag-and-drop")
