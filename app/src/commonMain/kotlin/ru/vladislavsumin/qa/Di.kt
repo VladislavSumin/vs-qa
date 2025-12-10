@@ -5,6 +5,8 @@ import org.kodein.di.DI
 import org.kodein.di.DirectDI
 import org.kodein.di.bindSingleton
 import org.kodein.di.direct
+import ru.vladislavsumin.core.adb.client.coreAdbClient
+import ru.vladislavsumin.core.coroutines.dispatcher.coreCoroutinesDispatchers
 import ru.vladislavsumin.core.di.Modules
 import ru.vladislavsumin.core.fs.coreFs
 import ru.vladislavsumin.core.navigation.coreNavigation
@@ -31,6 +33,8 @@ fun createDi(
 
     importOnce(Modules.coreFs(appTechName = "vs-qa"))
     importOnce(Modules.coreSerializationYaml())
+    importOnce(Modules.coreCoroutinesDispatchers())
+    importOnce(Modules.coreAdbClient())
     importOnce(Modules.coreNavigation<ComponentContext>())
 
     importOnce(Modules.featureBottomBar())

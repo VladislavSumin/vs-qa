@@ -10,12 +10,20 @@ import io.ktor.utils.io.readByteArray
 import io.ktor.utils.io.writeString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
+import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 
-internal class AdbConnection(private val selector: SelectorManager) {
-    suspend fun executeCommand(command: String): String = withConnection { r, w ->
-        w.sendAdbData(command)
-        r.checkAdbStatus()
-        r.receiveAdbData()
+internal class AdbConnection(
+    private val dispatchers: VsDispatchers,
+    private val selector: SelectorManager,
+) {
+    suspend fun executeCommand(command: String): String = withContext(dispatchers.IO) {
+        withConnection { r, w ->
+            w.sendAdbData(command)
+            r.checkAdbStatus()
+            r.receiveAdbData()
+        }
     }
 
     fun executeContinuousCommand(command: String): Flow<String> = flow {
@@ -26,7 +34,7 @@ internal class AdbConnection(private val selector: SelectorManager) {
                 emit(r.receiveAdbData())
             }
         }
-    }
+    }.flowOn(dispatchers.IO)
 
     private suspend fun ByteWriteChannel.sendAdbData(data: String) {
         val len = data.length
