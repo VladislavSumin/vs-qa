@@ -15,6 +15,7 @@ import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.feature.logParser.anime.domain.featureAnimeLogParser
 import ru.vladislavsumin.feature.logViewer.featureLogViewer
 import ru.vladislavsumin.feature.windowTitle.featureWidowTitle
+import ru.vladislavsumin.qa.feature.adbDeviceList.featureAdbDeviceList
 import ru.vladislavsumin.qa.feature.bottomBar.featureBottomBar
 import ru.vladislavsumin.qa.feature.homeScreen.featureHomeScreen
 import ru.vladislavsumin.qa.feature.memoryIndicator.featureMemoryIndicator
@@ -37,6 +38,7 @@ fun createDi(
     importOnce(Modules.coreAdbClient())
     importOnce(Modules.coreNavigation<ComponentContext>())
 
+    importOnce(Modules.featureAdbDeviceList())
     importOnce(Modules.featureBottomBar())
     importOnce(Modules.featureHomeScreen())
     importOnce(Modules.featureLogViewer())

@@ -12,7 +12,7 @@ import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenViewMode
 fun Modules.featureHomeScreen() = DI.Module("feature-homeScreen") {
     bindSingleton {
         val viewModelFactory = HomeScreenViewModelFactory(i())
-        HomeScreenFactory(viewModelFactory)
+        HomeScreenFactory(viewModelFactory, i(), i())
     }
     bindGenericNavigation { NavigationRegistrarImpl(i()) }
 }
