@@ -8,7 +8,7 @@ import org.kodein.di.DirectDI
 import java.time.Instant
 
 @Database(
-    version = 1,
+    version = 2,
     exportSchema = false,
     entities = [
         LogRecentEntity::class,

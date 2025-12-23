@@ -5,5 +5,6 @@ import java.time.Instant
 
 internal data class LogRecent(
     val path: Path,
+    val mappingPath: Path?,
     val lastOpenTime: Instant,
 )

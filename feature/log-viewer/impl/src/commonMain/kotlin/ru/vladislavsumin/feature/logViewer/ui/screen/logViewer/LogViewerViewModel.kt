@@ -43,7 +43,7 @@ internal class LogViewerViewModel(
     private val windowTitleInteractor: WindowTitleInteractor,
     private val globalHotkeyManager: GlobalHotkeyManager,
     private val dispatchers: VsDispatchers,
-    @ByCreate logPath: Path,
+    @ByCreate private val logPath: Path,
     @ByCreate mappingPath: Path?,
     @ByCreate private val bottomBarUiInteractor: BottomBarUiInteractor,
     @ByCreate private val filterBarUiInteractor: FilterBarUiInteractor,
@@ -66,6 +66,14 @@ internal class LogViewerViewModel(
     init {
         launch {
             logRecentInteractor.addOrUpdateRecent(logPath)
+            if (mappingPath != null) {
+                logRecentInteractor.updateMappingPath(logPath, mappingPath)
+            } else {
+                val mapping = logRecentInteractor.getMappingPath(logPath)
+                if (mapping != null) {
+                    logsInteractor.attachMapping(mapping)
+                }
+            }
         }
     }
 
@@ -232,6 +240,7 @@ internal class LogViewerViewModel(
     fun onClickMappingButton() = launch {
         if (state.value.isMappingApplied) {
             logsInteractor.detachMapping()
+            logRecentInteractor.updateMappingPath(logPath, null)
         } else {
             showSelectMappingDialog.value = true
         }
@@ -241,6 +250,7 @@ internal class LogViewerViewModel(
         showSelectMappingDialog.value = false
         if (result != null) {
             logsInteractor.attachMapping(result)
+            logRecentInteractor.updateMappingPath(logPath, result)
         }
     }
 

@@ -10,5 +10,6 @@ data class LogRecentEntity(
     val id: Long = 0,
 
     val path: String,
+    val mappingPath: String?,
     val lastOpenTime: Instant,
 )

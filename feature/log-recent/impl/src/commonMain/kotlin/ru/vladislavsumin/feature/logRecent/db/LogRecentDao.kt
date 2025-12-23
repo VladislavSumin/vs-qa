@@ -26,6 +26,9 @@ internal abstract class LogRecentDao {
     @Query("DELETE FROM log_recent WHERE path = :path")
     abstract suspend fun deleteByPath(path: String)
 
+    @Query("UPDATE log_recent SET mappingPath = :mappingPath WHERE path = :path")
+    abstract suspend fun updateMapping(path: String, mappingPath: String?)
+
     @Transaction
     open suspend fun updateLastOpenTime(path: String) {
         val old = getByPath(path)
@@ -36,6 +39,7 @@ internal abstract class LogRecentDao {
                 LogRecentEntity(
                     path = path,
                     lastOpenTime = Instant.now(),
+                    mappingPath = null,
                 ),
             )
         }

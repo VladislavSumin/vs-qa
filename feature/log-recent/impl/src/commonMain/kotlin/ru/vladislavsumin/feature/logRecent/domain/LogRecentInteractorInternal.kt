@@ -20,6 +20,14 @@ internal class LogRecentInteractorImpl(
         repository.updateLastOpenTime(path)
     }
 
+    override suspend fun updateMappingPath(path: Path, mappingPath: Path?) {
+        repository.updateMapping(path, mappingPath)
+    }
+
+    override suspend fun getMappingPath(path: Path): Path? {
+        return repository.get(path)?.mappingPath
+    }
+
     override fun observeRecents(): Flow<List<LogRecent>> = repository.observeRecent()
     override suspend fun removeRecent(recentLog: LogRecent) = repository.remove(recentLog)
 }

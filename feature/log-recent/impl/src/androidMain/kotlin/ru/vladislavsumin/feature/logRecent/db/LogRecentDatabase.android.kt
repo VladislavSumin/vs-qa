@@ -22,5 +22,6 @@ internal actual fun DirectDI.createLogRecentDatabase(): LogRecentDatabase {
     ) { LogRecentDatabase_Impl() }
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(dispatchers.IO)
+        .fallbackToDestructiveMigration(dropAllTables = true)
         .build()
 }

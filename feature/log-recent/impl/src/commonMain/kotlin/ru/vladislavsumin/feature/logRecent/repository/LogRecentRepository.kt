@@ -11,8 +11,11 @@ import kotlin.io.path.absolutePathString
 
 internal interface LogRecentRepository {
     fun observeRecent(): Flow<List<LogRecent>>
+    suspend fun get(path: Path): LogRecent?
     suspend fun remove(logRecent: LogRecent)
+
     suspend fun updateLastOpenTime(path: Path)
+    suspend fun updateMapping(path: Path, mappingPath: Path?)
 }
 
 internal class LogRecentRepositoryImpl(
@@ -29,11 +32,18 @@ internal class LogRecentRepositoryImpl(
     override suspend fun remove(logRecent: LogRecent) {
         logRecentDao.deleteByPath(logRecent.path.toString())
     }
+
+    override suspend fun updateMapping(path: Path, mappingPath: Path?) {
+        logRecentDao.updateMapping(path.absolutePathString(), mappingPath?.absolutePathString())
+    }
+
+    override suspend fun get(path: Path): LogRecent? = logRecentDao.getByPath(path.absolutePathString())?.toDomain()
 }
 
 private fun List<LogRecentEntity>.toDomain(): List<LogRecent> = map { it.toDomain() }
 
 private fun LogRecentEntity.toDomain(): LogRecent = LogRecent(
     path = Path(path),
+    mappingPath = mappingPath?.let { Path(it) },
     lastOpenTime = lastOpenTime,
 )
