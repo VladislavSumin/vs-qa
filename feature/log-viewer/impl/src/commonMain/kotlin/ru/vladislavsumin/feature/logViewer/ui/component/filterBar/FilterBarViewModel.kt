@@ -82,6 +82,10 @@ internal class FilterBarViewModel(
         }
     }
 
+    override fun setFilter(data: String) {
+        filter.update { it.copy(text = data) }
+    }
+
     fun onFilterChange(newValue: TextFieldValue) {
         filter.value = newValue
     }

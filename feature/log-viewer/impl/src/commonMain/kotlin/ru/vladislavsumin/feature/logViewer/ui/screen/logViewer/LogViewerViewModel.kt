@@ -3,14 +3,18 @@ package ru.vladislavsumin.feature.logViewer.ui.screen.logViewer
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.input.key.Key
 import com.arkivanov.essenty.lifecycle.Lifecycle
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
@@ -33,6 +37,7 @@ import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import java.nio.file.Path
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.io.path.name
 
 @Stable
@@ -72,6 +77,29 @@ internal class LogViewerViewModel(
                 val mapping = logRecentInteractor.getMappingPath(logPath)
                 if (mapping != null) {
                     logsInteractor.attachMapping(mapping)
+                }
+            }
+
+            val searchState = logRecentInteractor.getSearchState(logPath)
+            if (searchState != null) {
+                val (search, filter) = searchState
+                onSearchChange(search)
+                filterBarUiInteractor.setFilter(filter)
+            }
+        }
+
+        // TODO подумать и сделать нормально
+        relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
+            try {
+                delay(Long.MAX_VALUE)
+            } catch (_: CancellationException) {
+                LogViewerLogger.d { "Saving current search && filter data into recents" }
+                withContext(NonCancellable) {
+                    logRecentInteractor.updateSearchState(
+                        path = logPath,
+                        searchRequest = search.value.search,
+                        filterRequest = filterBarUiInteractor.filterState.first().requestHighlight.raw,
+                    )
                 }
             }
         }

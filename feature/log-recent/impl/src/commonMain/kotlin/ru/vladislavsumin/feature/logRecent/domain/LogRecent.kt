@@ -7,4 +7,6 @@ internal data class LogRecent(
     val path: Path,
     val mappingPath: Path?,
     val lastOpenTime: Instant,
+    val searchRequest: String,
+    val filterRequest: String,
 )

@@ -7,6 +7,10 @@ interface LogRecentInteractor {
      * Создает новую или обновляет текущую запись о недавнем открытии того или иного лог файла.
      */
     suspend fun addOrUpdateRecent(path: Path)
+
     suspend fun updateMappingPath(path: Path, mappingPath: Path?)
     suspend fun getMappingPath(path: Path): Path?
+
+    suspend fun updateSearchState(path: Path, searchRequest: String, filterRequest: String)
+    suspend fun getSearchState(path: Path): Pair<String, String>?
 }

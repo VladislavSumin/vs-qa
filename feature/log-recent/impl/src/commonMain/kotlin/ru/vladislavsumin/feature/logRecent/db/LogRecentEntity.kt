@@ -12,4 +12,7 @@ data class LogRecentEntity(
     val path: String,
     val mappingPath: String?,
     val lastOpenTime: Instant,
+
+    val searchRequest: String,
+    val filterRequest: String,
 )

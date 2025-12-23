@@ -16,6 +16,7 @@ internal interface LogRecentRepository {
 
     suspend fun updateLastOpenTime(path: Path)
     suspend fun updateMapping(path: Path, mappingPath: Path?)
+    suspend fun updateSearchState(path: Path, searchRequest: String, filterRequest: String)
 }
 
 internal class LogRecentRepositoryImpl(
@@ -37,6 +38,12 @@ internal class LogRecentRepositoryImpl(
         logRecentDao.updateMapping(path.absolutePathString(), mappingPath?.absolutePathString())
     }
 
+    override suspend fun updateSearchState(
+        path: Path,
+        searchRequest: String,
+        filterRequest: String,
+    ) = logRecentDao.updateSearchRequest(path.absolutePathString(), searchRequest, filterRequest)
+
     override suspend fun get(path: Path): LogRecent? = logRecentDao.getByPath(path.absolutePathString())?.toDomain()
 }
 
@@ -46,4 +53,6 @@ private fun LogRecentEntity.toDomain(): LogRecent = LogRecent(
     path = Path(path),
     mappingPath = mappingPath?.let { Path(it) },
     lastOpenTime = lastOpenTime,
+    searchRequest = searchRequest,
+    filterRequest = filterRequest,
 )
