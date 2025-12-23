@@ -7,6 +7,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.feature.logRecent.api)
             implementation(projects.feature.logParser.api)
             implementation(projects.feature.bottomBar.api)
             implementation(projects.feature.notifications.api)

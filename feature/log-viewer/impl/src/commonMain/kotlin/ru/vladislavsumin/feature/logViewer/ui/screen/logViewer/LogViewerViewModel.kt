@@ -18,6 +18,7 @@ import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
+import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
@@ -38,6 +39,7 @@ import kotlin.io.path.name
 @GenerateFactory
 internal class LogViewerViewModel(
     logParserProvider: LogParserProvider,
+    private val logRecentInteractor: LogRecentInteractor,
     private val windowTitleInteractor: WindowTitleInteractor,
     private val globalHotkeyManager: GlobalHotkeyManager,
     private val dispatchers: VsDispatchers,
@@ -60,6 +62,12 @@ internal class LogViewerViewModel(
         notificationsUiInteractor = notificationsUiInteractor,
         proguardInteractor = mappingPath?.let { ProguardInteractorImpl(it) },
     )
+
+    init {
+        launch {
+            logRecentInteractor.addOrUpdateRecent(logPath)
+        }
+    }
 
     val state: StateFlow<LogViewerViewState> = combine(
         logsInteractor.observeLogIndex(

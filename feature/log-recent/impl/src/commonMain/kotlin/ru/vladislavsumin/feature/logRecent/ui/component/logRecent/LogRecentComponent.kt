@@ -8,7 +8,12 @@ import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 
 @GenerateFactory(LogRecentComponentFactory::class)
-internal class LogRecentComponent(context: ComponentContext) : Component(context), ComposeComponent {
+internal class LogRecentComponent(
+    logRecentViewModelFactory: LogRecentViewModelFactory,
+    context: ComponentContext,
+) : Component(context), ComposeComponent {
+    private val viewModel = viewModel { logRecentViewModelFactory.create() }
+
     @Composable
     override fun Render(modifier: Modifier) {
         // no ui now
