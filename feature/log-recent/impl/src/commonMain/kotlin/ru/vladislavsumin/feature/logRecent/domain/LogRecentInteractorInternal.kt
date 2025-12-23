@@ -9,6 +9,8 @@ internal interface LogRecentInteractorInternal : LogRecentInteractor {
      * Возвращает список недавних логов в порядке их последнего открытия (новые сверху)
      */
     fun observeRecents(): Flow<List<LogRecent>>
+
+    suspend fun removeRecent(recentLog: LogRecent)
 }
 
 internal class LogRecentInteractorImpl(
@@ -19,4 +21,5 @@ internal class LogRecentInteractorImpl(
     }
 
     override fun observeRecents(): Flow<List<LogRecent>> = repository.observeRecent()
+    override suspend fun removeRecent(recentLog: LogRecent) = repository.remove(recentLog)
 }

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Stable
 import kotlinx.coroutines.flow.map
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
+import ru.vladislavsumin.feature.logRecent.domain.LogRecent
 import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractorInternal
 
 @GenerateFactory
@@ -14,4 +15,8 @@ internal class LogRecentViewModel(
     val state = logRecentInteractor.observeRecents()
         .map { recents -> LogRecentViewState(recents) }
         .stateIn(LogRecentViewState.STUB)
+
+    fun onClickRemoveRecent(recent: LogRecent) {
+        launch { logRecentInteractor.removeRecent(recent) }
+    }
 }

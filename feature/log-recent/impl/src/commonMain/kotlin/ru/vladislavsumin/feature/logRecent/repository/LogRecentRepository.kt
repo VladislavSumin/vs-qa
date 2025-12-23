@@ -11,6 +11,7 @@ import kotlin.io.path.absolutePathString
 
 internal interface LogRecentRepository {
     fun observeRecent(): Flow<List<LogRecent>>
+    suspend fun remove(logRecent: LogRecent)
     suspend fun updateLastOpenTime(path: Path)
 }
 
@@ -23,6 +24,10 @@ internal class LogRecentRepositoryImpl(
 
     override suspend fun updateLastOpenTime(path: Path) {
         logRecentDao.updateLastOpenTime(path.absolutePathString())
+    }
+
+    override suspend fun remove(logRecent: LogRecent) {
+        logRecentDao.deleteByPath(logRecent.path.toString())
     }
 }
 
