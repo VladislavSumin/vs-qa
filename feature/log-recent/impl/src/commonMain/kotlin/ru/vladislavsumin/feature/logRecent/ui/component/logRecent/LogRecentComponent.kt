@@ -15,7 +15,5 @@ internal class LogRecentComponent(
     private val viewModel = viewModel { logRecentViewModelFactory.create() }
 
     @Composable
-    override fun Render(modifier: Modifier) {
-        // no ui now
-    }
+    override fun Render(modifier: Modifier) = LogRecentContent(viewModel, modifier)
 }

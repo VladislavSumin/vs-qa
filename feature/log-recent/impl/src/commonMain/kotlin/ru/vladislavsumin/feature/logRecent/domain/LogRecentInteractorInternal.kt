@@ -33,7 +33,7 @@ internal class LogRecentInteractorImpl : LogRecentInteractorInternal {
                 )
             }
 
-            new.sortBy { it.lastOpenTime }
+            new.sortByDescending { it.lastOpenTime }
             new
         }
     }
