@@ -27,6 +27,11 @@ val kspSourcesCopyTask = tasks.register<Copy>("copyKspSourcesFromJvmToCommonSour
     dependsOn("kspKotlinJvm")
     from("build/generated/ksp/jvm/jvmMain/kotlin")
     into("build/generated/ksp/metadata/commonMain/kotlin")
+    eachFile {
+        if (this.sourcePath.contains("/db/")) {
+            this.exclude()
+        }
+    }
 }
 tasks.named("compileKotlinJvm") { dependsOn(kspSourcesCopyTask) }
 
@@ -34,6 +39,8 @@ tasks.named("compileKotlinJvm") { dependsOn(kspSourcesCopyTask) }
 afterEvaluate {
     tasks.named("compileReleaseKotlinAndroid") { dependsOn(kspSourcesCopyTask) }
     tasks.named("compileDebugKotlinAndroid") { dependsOn(kspSourcesCopyTask) }
+    tasks.named("kspDebugKotlinAndroid") { dependsOn(kspSourcesCopyTask) }
+    tasks.named("kspReleaseKotlinAndroid") { dependsOn(kspSourcesCopyTask) }
 }
 
 // Исключаем сгенерированные jvm ksp исходные коды из компиляции.
@@ -45,7 +52,12 @@ kotlin.sourceSets.jvmMain.configure {
         this.exclude { element ->
             // Нормальную проверку тут сделать нельзя из-за кешей поэтому так
             val file = element.file.relativeToOrNull(File(".").absoluteFile)
-            file?.path?.contains("build/generated/ksp/jvm/jvmMain/kotlin") == true
+
+            // TODO позвонить в дурку. Эти костыли уже не спасти
+            val a = file?.path?.contains("build/generated/ksp/jvm/jvmMain/kotlin") == true
+            val b = file?.path?.contains("/db") == false
+            val c = file?.path?.contains(".kt") == true
+            a && b && c
         }
     }
 }

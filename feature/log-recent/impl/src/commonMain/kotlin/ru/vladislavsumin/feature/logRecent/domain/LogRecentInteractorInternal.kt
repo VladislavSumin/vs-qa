@@ -1,10 +1,8 @@
 package ru.vladislavsumin.feature.logRecent.domain
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import ru.vladislavsumin.feature.logRecent.repository.LogRecentRepository
 import java.nio.file.Path
-import java.time.Instant
 
 internal interface LogRecentInteractorInternal : LogRecentInteractor {
     /**
@@ -13,30 +11,12 @@ internal interface LogRecentInteractorInternal : LogRecentInteractor {
     fun observeRecents(): Flow<List<LogRecent>>
 }
 
-internal class LogRecentInteractorImpl : LogRecentInteractorInternal {
-    private val recents = MutableStateFlow<List<LogRecent>>(emptyList())
-
+internal class LogRecentInteractorImpl(
+    private val repository: LogRecentRepository,
+) : LogRecentInteractorInternal {
     override suspend fun addOrUpdateRecent(path: Path) {
-        val absolutePath = path.toAbsolutePath()
-        recents.update { old ->
-            val new = old.toMutableList()
-
-            val index = new.indexOfFirst { absolutePath == it.path }
-            if (index != -1) {
-                new[index] = new[index].copy(lastOpenTime = Instant.now())
-            } else {
-                new.add(
-                    LogRecent(
-                        path = absolutePath,
-                        lastOpenTime = Instant.now(),
-                    ),
-                )
-            }
-
-            new.sortByDescending { it.lastOpenTime }
-            new
-        }
+        repository.updateLastOpenTime(path)
     }
 
-    override fun observeRecents(): Flow<List<LogRecent>> = recents
+    override fun observeRecents(): Flow<List<LogRecent>> = repository.observeRecent()
 }

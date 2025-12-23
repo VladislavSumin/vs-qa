@@ -11,6 +11,7 @@ dependencies {
 
     implementation(vsCoreLibs.gradlePlugins.kotlin.core)
     implementation(vsCoreLibs.gradlePlugins.jb.compose)
+    implementation(libs.gradlePlugins.room)
     implementation(libs.gradlePlugins.sentry)
     implementation(libs.gradlePlugins.buildkonfig)
     implementation(libs.gradlePlugins.proguard)
