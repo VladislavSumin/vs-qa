@@ -13,6 +13,7 @@ import ru.vladislavsumin.core.navigation.coreNavigation
 import ru.vladislavsumin.core.serialization.yaml.coreSerializationYaml
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.feature.logParser.anime.domain.featureAnimeLogParser
+import ru.vladislavsumin.feature.logRecent.featureLogRecent
 import ru.vladislavsumin.feature.logViewer.featureLogViewer
 import ru.vladislavsumin.feature.windowTitle.featureWidowTitle
 import ru.vladislavsumin.qa.feature.adbDeviceList.featureAdbDeviceList
@@ -41,6 +42,7 @@ fun createDi(
     importOnce(Modules.featureAdbDeviceList())
     importOnce(Modules.featureBottomBar())
     importOnce(Modules.featureHomeScreen())
+    importOnce(Modules.featureLogRecent())
     importOnce(Modules.featureLogViewer())
     importOnce(Modules.featureMemoryIndicator())
     importOnce(Modules.featureNotifications())

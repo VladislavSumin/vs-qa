@@ -69,6 +69,7 @@ kotlin {
             implementation(projects.feature.bottomBar.impl)
             implementation(projects.feature.homeScreen.impl)
             implementation(projects.feature.logViewer.impl)
+            implementation(projects.feature.logRecent.impl)
             implementation(projects.feature.logParser.anime)
             implementation(projects.feature.memoryIndicator.impl)
             implementation(projects.feature.notifications.impl)

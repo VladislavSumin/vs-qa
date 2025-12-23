@@ -22,6 +22,7 @@ import ru.vladislavsumin.core.ui.filePicker.FilePickerDialog
 @Composable
 internal fun HomeScreenContent(
     viewModel: HomeScreenViewModel,
+    logRecentComponent: ComposeComponent,
     adbDeviceListComponent: ComposeComponent?,
 ) {
     val state by viewModel.state.collectAsState()
@@ -39,6 +40,8 @@ internal fun HomeScreenContent(
                 )
                 Spacer(Modifier.height(16.dp))
                 Button(onClick = viewModel::onClickOpen) { Text("Open new file") }
+                Spacer(Modifier.height(16.dp))
+                logRecentComponent.Render(Modifier)
             }
         }
         if (adbDeviceListComponent != null) {
