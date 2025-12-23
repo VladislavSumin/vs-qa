@@ -46,6 +46,7 @@ class MainActivity : ComponentActivity(), DIAware {
         MainLogger.d { "processIntent(): intent = $intent" }
         when (intent.action) {
             Intent.ACTION_SEND -> processActionSendIntent(intent)
+            Intent.ACTION_VIEW -> processActionViewIntent(intent)
             else -> MainLogger.w { "processIntent(): unknown intent" }
         }
     }
@@ -54,6 +55,12 @@ class MainActivity : ComponentActivity(), DIAware {
     private fun processActionSendIntent(intent: Intent) {
         val uri = intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)!!
         val path = uriToFile(uri)
+        di.direct.instance<Navigation>().open(LogViewerScreenParams(path))
+    }
+
+    // TODO вот эту все ересь нормально написать.
+    private fun processActionViewIntent(intent: Intent) {
+        val path = uriToFile(intent.data!!)
         di.direct.instance<Navigation>().open(LogViewerScreenParams(path))
     }
 
