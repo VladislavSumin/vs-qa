@@ -3,6 +3,9 @@
 
 -keep class ru.vladislavsumin.qa.MainKt { *; }
 
+# Классы Sqlite базы данных, там много на рефлексии, не трогаем их
+-keep class androidx.sqlite.driver.bundled.** { *; }
+
 -keep class com.arkivanov.decompose.extensions.compose.mainthread.SwingMainThreadChecker { *;}
 -keep class kotlinx.coroutines.swing.SwingDispatcherFactory { *; }
 
