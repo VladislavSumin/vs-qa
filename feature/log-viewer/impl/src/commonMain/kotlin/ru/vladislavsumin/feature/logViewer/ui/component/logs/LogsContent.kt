@@ -1,5 +1,6 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.logs
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -13,16 +14,26 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -36,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.TextSelectionSeparator
@@ -78,17 +90,28 @@ internal fun LogsContent(
 
     Row(modifier) {
         Box(Modifier.weight(1f)) {
-            SelectionContainer {
-                LazyColumn(
-                    state = lazyListState,
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    logs.forEachIndexed { runNumber, sectionInfo ->
-                        if (state.showRunNumbers) {
-                            stickyHeader(key = -runNumber - 1) { Header(runNumber + 1, sectionInfo.meta, textSizeDp) }
-                        }
-                        items(sectionInfo.logs, { it.order }) {
-                            Record(it, it.order == state.currentSelectedItemOrder, textSizeDp)
+            Scaffold(
+                containerColor = Color.Unspecified,
+                floatingActionButton = { ScrollToBottom(state = state, lazyListState = lazyListState) },
+            ) { innerPadding ->
+                SelectionContainer {
+                    LazyColumn(
+                        state = lazyListState,
+                        modifier = Modifier.fillMaxSize().padding(innerPadding),
+                    ) {
+                        logs.forEachIndexed { runNumber, sectionInfo ->
+                            if (state.showRunNumbers) {
+                                stickyHeader(key = -runNumber - 1) {
+                                    Header(
+                                        runNumber + 1,
+                                        sectionInfo.meta,
+                                        textSizeDp,
+                                    )
+                                }
+                            }
+                            items(sectionInfo.logs, { it.order }) {
+                                Record(it, it.order == state.currentSelectedItemOrder, textSizeDp)
+                            }
                         }
                     }
                 }
@@ -96,6 +119,27 @@ internal fun LogsContent(
             VerticalDivider(Modifier.padding(start = textSizeDp + 8.dp))
         }
         LogsVerticalScrollBar(lazyListState)
+    }
+}
+
+@Composable
+private fun ScrollToBottom(
+    state: LogsViewState,
+    lazyListState: LazyListState,
+) {
+    // TODO сделать нормальные расширения для адаптивной верстки
+    val withDp = with(LocalDensity.current) {
+        LocalWindowInfo.current.containerSize.width.toDp()
+    }
+    if (withDp <= 600.dp) {
+        val scope = rememberCoroutineScope()
+        AnimatedVisibility(
+            visible = lazyListState.isScrollingUp().value,
+        ) {
+            FloatingActionButton(onClick = { scope.launch { lazyListState.scrollToItem(state.logs.size, 0) } }) {
+                Icon(Icons.Default.ArrowDropDown, null)
+            }
+        }
     }
 }
 
@@ -169,4 +213,22 @@ private fun measureTextWidth(text: String, style: TextStyle): Dp {
     val textMeasurer = rememberTextMeasurer()
     val widthInPixels = textMeasurer.measure(text, style).size.width
     return with(LocalDensity.current) { widthInPixels.toDp() }
+}
+
+@Composable
+fun LazyListState.isScrollingUp(): State<Boolean> {
+    return produceState(initialValue = true) {
+        var lastIndex = 0
+        var lastScroll = Int.MAX_VALUE
+        snapshotFlow {
+            firstVisibleItemIndex to firstVisibleItemScrollOffset
+        }.collect { (currentIndex, currentScroll) ->
+            if (currentIndex != lastIndex || currentScroll != lastScroll) {
+                value = currentIndex < lastIndex ||
+                    (currentIndex == lastIndex && currentScroll < lastScroll)
+                lastIndex = currentIndex
+                lastScroll = currentScroll
+            }
+        }
+    }
 }
