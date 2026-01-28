@@ -28,14 +28,23 @@ internal class LogRecentInteractorImpl(
         return repository.get(path)?.mappingPath
     }
 
-    override suspend fun updateSearchState(
+    override suspend fun updateLogViewerState(
         path: Path,
         searchRequest: String,
         filterRequest: String,
-    ) = repository.updateSearchState(path, searchRequest, filterRequest)
+        selectedSearchIndex: Int,
+        scrollPosition: Int,
+    ) = repository.updateLogViewerState(path, searchRequest, filterRequest, selectedSearchIndex, scrollPosition)
 
-    override suspend fun getSearchState(path: Path): Pair<String, String>? {
-        return repository.get(path)?.let { it.searchRequest to it.filterRequest }
+    override suspend fun getLogViewerState(path: Path): LogRecentInteractor.LogViewerState? {
+        return repository.get(path)?.let {
+            LogRecentInteractor.LogViewerState(
+                searchRequest = it.searchRequest,
+                filterRequest = it.filterRequest,
+                selectedSearchIndex = it.selectedSearchIndex,
+                scrollPosition = it.scrollPosition,
+            )
+        }
     }
 
     override fun observeRecents(): Flow<List<LogRecent>> = repository.observeRecent()

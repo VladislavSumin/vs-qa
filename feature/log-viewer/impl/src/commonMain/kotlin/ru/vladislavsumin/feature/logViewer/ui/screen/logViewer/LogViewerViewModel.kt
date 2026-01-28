@@ -80,11 +80,10 @@ internal class LogViewerViewModel(
                 }
             }
 
-            val searchState = logRecentInteractor.getSearchState(logPath)
+            val searchState = logRecentInteractor.getLogViewerState(logPath)
             if (searchState != null) {
-                val (search, filter) = searchState
-                onSearchChange(search)
-                filterBarUiInteractor.setFilter(filter)
+                onSearchChange(searchState.searchRequest)
+                filterBarUiInteractor.setFilter(searchState.filterRequest)
             }
         }
 
@@ -95,15 +94,19 @@ internal class LogViewerViewModel(
             } catch (_: CancellationException) {
                 LogViewerLogger.d { "Saving current search && filter data into recents" }
                 withContext(NonCancellable) {
-                    logRecentInteractor.updateSearchState(
+                    logRecentInteractor.updateLogViewerState(
                         path = logPath,
                         searchRequest = search.value.search,
                         filterRequest = filterBarUiInteractor.filterState.first().requestHighlight.raw,
+                        selectedSearchIndex = selectedSearchIndex.value,
+                        scrollPosition = firstVisibleIndex.value,
                     )
                 }
             }
         }
     }
+
+    private var isOpenedOnce = false
 
     val state: StateFlow<LogViewerViewState> = combine(
         logsInteractor.observeLogIndex(
@@ -111,21 +114,37 @@ internal class LogViewerViewModel(
             search = search,
         )
             .onEach {
-                // TODO убрать эту жесть, ну какой onEach?
-                if (it.lastSuccessIndex.searchIndex.index.isNotEmpty()) {
-                    var selectedIndex = 0
-
-                    // Ищем первый подходящий индекс в видимой части экрана или за ее пределами снизу.
-                    // Если такого нет, то берем первый индекс выше видимой части экрана.
-                    for ((index, recordIndex) in it.lastSuccessIndex.searchIndex.index.withIndex()) {
-                        selectedIndex = index
-                        if (recordIndex >= firstVisibleIndex.value) break
+                // TODO отлично onEach стал еще больше. Теперь тут двойной костыль.
+                @Suppress("ComplexCondition")
+                if (!isOpenedOnce &&
+                    !it.isSearchingNow &&
+                    !it.isFilteringNow &&
+                    logsInteractor.observeLoadingStatus().value is LogsInteractor.LoadingStatus.Loaded &&
+                    it.lastSuccessIndex.logs.isNotEmpty()
+                ) {
+                    isOpenedOnce = true
+                    val state = logRecentInteractor.getLogViewerState(logPath)
+                    if (state != null) {
+                        if (state.selectedSearchIndex >= 0) selectedSearchIndex.value = state.selectedSearchIndex
+                        if (state.scrollPosition >= 0) scrollToIndex(state.scrollPosition)
                     }
-
-                    selectedSearchIndex.value = selectedIndex
-                    scrollToRecordIndex(it.lastSuccessIndex.searchIndex.index[selectedSearchIndex.value])
                 } else {
-                    selectedSearchIndex.value = 0
+                    // TODO убрать эту жесть, ну какой onEach?
+                    if (it.lastSuccessIndex.searchIndex.index.isNotEmpty()) {
+                        var selectedIndex = 0
+
+                        // Ищем первый подходящий индекс в видимой части экрана или за ее пределами снизу.
+                        // Если такого нет, то берем первый индекс выше видимой части экрана.
+                        for ((index, recordIndex) in it.lastSuccessIndex.searchIndex.index.withIndex()) {
+                            selectedIndex = index
+                            if (recordIndex >= firstVisibleIndex.value) break
+                        }
+
+                        selectedSearchIndex.value = selectedIndex
+                        scrollToRecordIndex(it.lastSuccessIndex.searchIndex.index[selectedSearchIndex.value])
+                    } else {
+                        selectedSearchIndex.value = 0
+                    }
                 }
             },
         search,

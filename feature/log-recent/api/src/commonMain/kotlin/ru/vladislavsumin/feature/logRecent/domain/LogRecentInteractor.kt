@@ -11,6 +11,20 @@ interface LogRecentInteractor {
     suspend fun updateMappingPath(path: Path, mappingPath: Path?)
     suspend fun getMappingPath(path: Path): Path?
 
-    suspend fun updateSearchState(path: Path, searchRequest: String, filterRequest: String)
-    suspend fun getSearchState(path: Path): Pair<String, String>?
+    suspend fun updateLogViewerState(
+        path: Path,
+        searchRequest: String,
+        filterRequest: String,
+        selectedSearchIndex: Int,
+        scrollPosition: Int,
+    )
+
+    suspend fun getLogViewerState(path: Path): LogViewerState?
+
+    data class LogViewerState(
+        val searchRequest: String,
+        val filterRequest: String,
+        val selectedSearchIndex: Int,
+        val scrollPosition: Int,
+    )
 }

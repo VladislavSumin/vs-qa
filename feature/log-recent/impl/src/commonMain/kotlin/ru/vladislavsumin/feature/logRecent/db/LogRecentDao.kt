@@ -29,8 +29,17 @@ internal abstract class LogRecentDao {
     @Query("UPDATE log_recent SET mappingPath = :mappingPath WHERE path = :path")
     abstract suspend fun updateMapping(path: String, mappingPath: String?)
 
-    @Query("UPDATE log_recent SET searchRequest = :searchRequest, filterRequest = :filterRequest WHERE path = :path")
-    abstract suspend fun updateSearchRequest(path: String, searchRequest: String, filterRequest: String)
+    @Suppress("MaximumLineLength", "MaxLineLength")
+    @Query(
+        "UPDATE log_recent SET searchRequest = :searchRequest, filterRequest = :filterRequest, selectedSearchIndex = :selectedSearchIndex, scrollPosition = :scrollPosition WHERE path = :path",
+    )
+    abstract suspend fun updateLogViewerState(
+        path: String,
+        searchRequest: String,
+        filterRequest: String,
+        selectedSearchIndex: Int,
+        scrollPosition: Int,
+    )
 
     @Transaction
     open suspend fun updateLastOpenTime(path: String) {
@@ -45,6 +54,8 @@ internal abstract class LogRecentDao {
                     mappingPath = null,
                     searchRequest = "",
                     filterRequest = "",
+                    selectedSearchIndex = -1,
+                    scrollPosition = -1,
                 ),
             )
         }

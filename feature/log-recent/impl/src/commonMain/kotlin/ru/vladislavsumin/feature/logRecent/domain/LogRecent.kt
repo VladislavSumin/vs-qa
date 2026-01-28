@@ -9,4 +9,6 @@ internal data class LogRecent(
     val lastOpenTime: Instant,
     val searchRequest: String,
     val filterRequest: String,
+    val selectedSearchIndex: Int,
+    val scrollPosition: Int,
 )
