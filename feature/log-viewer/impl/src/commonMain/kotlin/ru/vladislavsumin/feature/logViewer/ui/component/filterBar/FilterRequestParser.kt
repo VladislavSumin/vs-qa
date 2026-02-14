@@ -122,8 +122,9 @@ internal class FilterRequestParser(
             ),
         )
 
-        val unquotedMaybeSavedFilter = any map {
-            val content = it.text
+        // При поиске по [any] строке это может быть как обычная строка так название сохраненного фильтра.
+        val unquotedMaybeSavedFilter = any map { token ->
+            val content = token.text
             val savedFilter = savedFilters.value.find { it.name == content }
             if (savedFilter != null) {
                 val tokens = tokenizer.tokenize(savedFilter.content)
@@ -159,12 +160,12 @@ internal class FilterRequestParser(
             FilterRequest.FilterOperation.TimeAfter(it)
         }
         private val filter: Parser<FilterRequest.FilterOperation> =
-            (fields and operations and filters) map { (a, b, c) ->
-                val operation = when (b) {
-                    Operation.Exactly -> FilterRequest.Operation.Exactly(c)
-                    Operation.Contains -> FilterRequest.Operation.Contains(c)
+            (fields and operations and filters) map { (field, operator, data) ->
+                val operation = when (operator) {
+                    Operation.Exactly -> FilterRequest.Operation.Exactly(data)
+                    Operation.Contains -> FilterRequest.Operation.Contains(data)
                 }
-                when (a) {
+                when (field) {
                     Field.All -> FilterRequest.FilterOperation.All(operation)
                     Field.Tag -> FilterRequest.FilterOperation.Tag(operation)
                     Field.ProcessId -> FilterRequest.FilterOperation.ProcessId(operation)
@@ -172,21 +173,23 @@ internal class FilterRequestParser(
                     Field.Message -> FilterRequest.FilterOperation.Message(operation)
                 }
             }
-        private val allFilter = unquotedMaybeSavedFilter or (
-            filters map {
-                FilterRequest.FilterOperation.All(FilterRequest.Operation.Contains(it))
-            }
-            )
-        private val anyPositiveFilter =
-            levelFilter or filter or allFilter or runNumberFilter or timeAfterFilter or timeBeforeFilter
-        private val anyNotFilter = (-(not or minus) and anyPositiveFilter) map { FilterRequest.FilterOperation.Not(it) }
+        private val allFilter = OrCombinator(
+            listOf(
+                unquotedMaybeSavedFilter,
+                filters map { FilterRequest.FilterOperation.All(FilterRequest.Operation.Contains(it)) },
+            ),
+        )
 
-        private val anyFilter = anyPositiveFilter or anyNotFilter
+        private val anyFilter =
+            levelFilter or filter or allFilter or runNumberFilter or timeAfterFilter or timeBeforeFilter
 
         private val bracedExpression: Parser<FilterRequest.FilterOperation> =
             -lpar and parser(this::autoChain) and -rpar
 
-        private val expression = anyFilter or bracedExpression
+        private val expressionPositive = anyFilter or bracedExpression
+        private val expressionNegative =
+            (-(not or minus) and expressionPositive) map { FilterRequest.FilterOperation.Not(it) }
+        private val expression = expressionPositive or expressionNegative
 
         private val andChain = leftAssociative(expression, and) { l, _, r ->
             FilterRequest.FilterOperation.And(listOf(l, r))
@@ -197,7 +200,11 @@ internal class FilterRequestParser(
         }
 
         private val autoChain = zeroOrMore(orChain) map {
-            FilterRequest.FilterOperation.Auto(it)
+            when (it.size) {
+                0 -> FilterRequest.FilterOperation.NoOp
+                1 -> it.first()
+                else -> FilterRequest.FilterOperation.Auto(it)
+            }
         }
 
         override val rootParser: Parser<FilterRequest.FilterOperation> = autoChain

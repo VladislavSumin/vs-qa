@@ -18,5 +18,11 @@ kotlin {
             implementation(libs.google.datastore.preferences)
             implementation(vsCoreLibs.kotlin.serialization.json)
         }
+        commonTest.dependencies {
+            // TODO порешать с логером в тестах
+            implementation(vsCoreLibs.vs.core.logger.manager)
+            // TODO вынести в общий код
+            implementation(kotlin("test"))
+        }
     }
 }
