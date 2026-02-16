@@ -9,6 +9,8 @@ import ru.vladislavsumin.feature.logViewer.domain.SavedFiltersRepository
 import ru.vladislavsumin.feature.logViewer.domain.SavedFiltersRepositoryImpl
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponentFactory
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarViewModelFactory
+import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintComponentFactory
+import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintViewModelFactory
 import ru.vladislavsumin.feature.logViewer.ui.screen.NavigationRegistrarImpl
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenFactory
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenFactoryImpl
@@ -21,11 +23,16 @@ fun Modules.featureLogViewer() = DI.Module("feature-logViewer") {
 
     bindSingleton<FilterBarComponentFactory> {
         val vmf = FilterBarViewModelFactory(i(), i())
-        FilterBarComponentFactory(vmf)
+        FilterBarComponentFactory(vmf, i())
     }
 
     bindSingleton<LogViewerScreenFactory> {
         val vmf = LogViewerViewModelFactory(i(), i(), i(), i(), i())
         LogViewerScreenFactoryImpl(vmf, i())
+    }
+
+    bindSingleton<FilterHintComponentFactory> {
+        val vmf = FilterHintViewModelFactory()
+        FilterHintComponentFactory(vmf)
     }
 }

@@ -22,20 +22,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
+import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.resetFocusOnEsc
 import ru.vladislavsumin.feature.logViewer.ui.utils.addStyle
 
 @Composable
 internal fun FilterBarContent(
     viewModel: FilterBarViewModel,
+    filterBarComponent: ComposeComponent,
+    filterBarHotkeyController: HotkeyController,
     focusRequester: FocusRequester,
     modifier: Modifier,
 ) {
@@ -45,7 +50,7 @@ internal fun FilterBarContent(
             .padding(vertical = 4.dp, horizontal = 8.dp),
     ) {
         SavedFilters(viewModel)
-        FilterField(viewModel, focusRequester)
+        FilterField(viewModel, filterBarComponent, filterBarHotkeyController, focusRequester)
     }
 }
 
@@ -87,7 +92,14 @@ private fun ColumnScope.SavedFilters(viewModel: FilterBarViewModel) {
 }
 
 @Composable
-private fun FilterField(viewModel: FilterBarViewModel, focusRequester: FocusRequester) {
+private fun FilterField(
+    viewModel: FilterBarViewModel,
+    filterBarComponent: ComposeComponent,
+    filterBarHotkeyController: HotkeyController,
+    focusRequester: FocusRequester,
+) {
+    filterBarComponent.Render(Modifier)
+
     val state by viewModel.state.collectAsState()
     if (state.error != null) {
         Text(text = state.error.toString(), color = QaTheme.colorScheme.logError.primary)
@@ -97,7 +109,8 @@ private fun FilterField(viewModel: FilterBarViewModel, focusRequester: FocusRequ
         onValueChange = viewModel::onFilterChange,
         modifier = Modifier
             .focusRequester(focusRequester)
-            .resetFocusOnEsc(),
+            .resetFocusOnEsc()
+            .onPreviewKeyEvent(filterBarHotkeyController::invoke),
         isError = state.error != null,
         placeholder = { Text("Filter...") },
         leadingContent = { Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null) },

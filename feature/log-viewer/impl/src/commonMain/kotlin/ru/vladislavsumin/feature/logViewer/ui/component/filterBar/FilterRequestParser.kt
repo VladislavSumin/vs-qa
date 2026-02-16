@@ -95,12 +95,15 @@ internal class FilterRequestParser(
         private val ws by regexToken("\\s+", ignore = true)
         private val newLine by literalToken("\n", ignore = true)
 
+        // Все ключевые слова, используются для подсветки синтаксиса.
         val keywords = setOf(
             tag, pid, tid, thread, message, level,
             runNumber, timeAfter, timeBefore, exactly,
             contains, not, minus,
             and, or, lpar, rpar,
         )
+
+        // Токены данных поискового запроса (текста), используются для подсветки.
         val data = setOf(stingLiteral, any)
 
         // Поля по которым можно вести поиск.

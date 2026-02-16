@@ -4,11 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.childContext
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
+import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintComponentFactory
 
 /**
  * Компонент строки фильтра.
@@ -19,9 +21,11 @@ import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 @GenerateFactory
 internal class FilterBarComponent(
     private val viewModelFactory: FilterBarViewModelFactory,
+    filterHintComponentFactory: FilterHintComponentFactory,
     @ByCreate context: ComponentContext,
 ) : Component(context), ComposeComponent {
     private val viewModel = viewModel { viewModelFactory.create() }
+    private val filterHintComponent = filterHintComponentFactory.create(context.childContext("filter-hint"))
 
     val filterBarUiInteractor = viewModel
     private val focusRequester = FocusRequester()
@@ -39,6 +43,8 @@ internal class FilterBarComponent(
     @Composable
     override fun Render(modifier: Modifier) = FilterBarContent(
         viewModel = viewModel,
+        filterBarComponent = filterHintComponent,
+        filterBarHotkeyController = filterHintComponent.hotkeyController,
         focusRequester = focusRequester,
         modifier = modifier,
     )
