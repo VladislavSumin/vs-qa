@@ -1,9 +1,13 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterHint
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,7 +58,10 @@ private fun HintContent(
         properties = PopupProperties(),
     ) {
         // TODO поработать над логикой вычисления размеров.
-        Card(modifier = Modifier.size(400.dp, 250.dp)) {
+        Card(
+            modifier = Modifier.size(400.dp, 250.dp),
+            shape = RoundedCornerShape(2.dp),
+        ) {
             LazyColumn {
                 items(state.items, key = { it.text }) {
                     val modifier = if (it.key == state.selectedItemKey) {
@@ -62,11 +69,15 @@ private fun HintContent(
                     } else {
                         Modifier
                     }
-                    val span = buildAnnotatedString {
-                        append(it.text)
-                        this.addStyle(SpanStyle(fontWeight = FontWeight.Bold), 0, it.selectedPartLength)
+                    Row(modifier.padding(horizontal = 8.dp, vertical = 2.dp)) {
+                        val span = buildAnnotatedString {
+                            append(it.text)
+                            this.addStyle(SpanStyle(fontWeight = FontWeight.Bold), 0, it.selectedPartLength)
+                        }
+                        Text(span)
+                        Spacer(modifier.weight(1f))
+                        Text(it.hint, color = QaTheme.colorScheme.logTrace.primary)
                     }
-                    Text(span, modifier = modifier)
                 }
             }
         }

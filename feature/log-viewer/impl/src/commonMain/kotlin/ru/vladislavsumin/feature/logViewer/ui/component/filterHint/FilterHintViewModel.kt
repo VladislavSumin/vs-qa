@@ -35,6 +35,7 @@ internal class FilterHintViewModel(
                     .map {
                         FilterHintItem(
                             text = it.name,
+                            hint = it.hint,
                             selectedPartLength = currentTokenPrediction?.startText?.length ?: 0,
                         )
                     },
