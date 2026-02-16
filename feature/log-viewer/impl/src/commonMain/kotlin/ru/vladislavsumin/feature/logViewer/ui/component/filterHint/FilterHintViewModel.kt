@@ -1,27 +1,39 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterHint
 
 import androidx.compose.runtime.Stable
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import ru.vladislavsumin.core.decompose.components.ViewModel
+import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
+import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterRequestParser
 
 @GenerateFactory
 @Stable
-internal class FilterHintViewModel : ViewModel() {
+internal class FilterHintViewModel(
+    @ByCreate private val currentTokenPrediction: Flow<FilterRequestParser.CurrentTokenPrediction?>,
+) : ViewModel() {
     private val showHint = MutableStateFlow(false)
     private val selectedItemKey = MutableStateFlow("tag")
 
-    val state = combine(showHint, selectedItemKey) { showHint, selectedItemKey ->
+    val state = combine(
+        showHint,
+        selectedItemKey,
+        currentTokenPrediction,
+    ) { showHint, selectedItemKey, currentTokenPrediction ->
         if (showHint) {
             FilterHintViewState.Show(
                 selectedItemKey = selectedItemKey,
-                listOf(
-                    FilterHintItem("tag"),
-                    FilterHintItem("message"),
-                    FilterHintItem("timeAfter"),
-                ),
+                keywordFilterHintItems
+                    .filter { it.name.startsWith(currentTokenPrediction?.startText ?: "") }
+                    .map {
+                        FilterHintItem(
+                            text = it.name,
+                            selectedPartLength = currentTokenPrediction?.startText?.length ?: 0,
+                        )
+                    },
             )
         } else {
             FilterHintViewState.Hidden

@@ -36,7 +36,7 @@ internal class FilterBarViewModel(
     private val filterRequestParser = FilterRequestParser(savedFilters)
 
     override val filterState: SharedFlow<FilterRequestParser.ParserResult> = filter.map { filter ->
-        filterRequestParser.tokenize(filter.text)
+        filterRequestParser.parse(request = filter.text, cursorPosition = filter.selection.start)
     }.shareIn(viewModelScope, SharingStarted.Eagerly, 1)
 
     private val savedFiltersState = combine(

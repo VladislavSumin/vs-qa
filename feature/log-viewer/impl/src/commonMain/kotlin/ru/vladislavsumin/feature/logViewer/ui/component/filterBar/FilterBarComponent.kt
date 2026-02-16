@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
@@ -24,8 +25,11 @@ internal class FilterBarComponent(
     filterHintComponentFactory: FilterHintComponentFactory,
     @ByCreate context: ComponentContext,
 ) : Component(context), ComposeComponent {
-    private val viewModel = viewModel { viewModelFactory.create() }
-    private val filterHintComponent = filterHintComponentFactory.create(context.childContext("filter-hint"))
+    private val viewModel: FilterBarViewModel = viewModel { viewModelFactory.create() }
+    private val filterHintComponent = filterHintComponentFactory.create(
+        currentTokenPrediction = viewModel.filterState.map { it.currentTokenPredictionInfo.getOrNull() },
+        context.childContext("filter-hint"),
+    )
 
     val filterBarUiInteractor = viewModel
     private val focusRequester = FocusRequester()

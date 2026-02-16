@@ -4,19 +4,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
 import com.arkivanov.decompose.ComponentContext
+import kotlinx.coroutines.flow.Flow
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
+import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterRequestParser
 
 @GenerateFactory
 internal class FilterHintComponent(
     viewModelFactory: FilterHintViewModelFactory,
+    @ByCreate private val currentTokenPrediction: Flow<FilterRequestParser.CurrentTokenPrediction?>,
     @ByCreate context: ComponentContext,
 ) : Component(context), ComposeComponent {
-    private val viewModel: FilterHintViewModel = viewModel { viewModelFactory.create() }
+    private val viewModel: FilterHintViewModel = viewModel { viewModelFactory.create(currentTokenPrediction) }
 
     /**
      * Контроллер нажатий для работы с попапом, должен подключаться к внешнему элементу который находится в фокусе

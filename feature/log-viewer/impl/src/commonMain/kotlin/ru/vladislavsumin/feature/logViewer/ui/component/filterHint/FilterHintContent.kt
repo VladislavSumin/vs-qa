@@ -1,6 +1,6 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterHint
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,7 +12,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
@@ -21,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
+import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 
 @Composable
 internal fun FilterHintContent(
@@ -50,15 +53,20 @@ private fun HintContent(
         onDismissRequest = viewModel::onCloseRequest,
         properties = PopupProperties(),
     ) {
+        // TODO поработать над логикой вычисления размеров.
         Card(modifier = Modifier.size(400.dp, 250.dp)) {
             LazyColumn {
                 items(state.items, key = { it.text }) {
                     val modifier = if (it.key == state.selectedItemKey) {
-                        Modifier.border(width = 1.dp, color = Color.Red)
+                        Modifier.background(QaTheme.colorScheme.logHighlightSelected)
                     } else {
                         Modifier
                     }
-                    Text(it.text, modifier = modifier)
+                    val span = buildAnnotatedString {
+                        append(it.text)
+                        this.addStyle(SpanStyle(fontWeight = FontWeight.Bold), 0, it.selectedPartLength)
+                    }
+                    Text(span, modifier = modifier)
                 }
             }
         }

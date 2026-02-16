@@ -30,6 +30,11 @@ internal class FilterRequestParser(
     data class ParserResult(
         val requestHighlight: RequestHighlight,
         val searchRequest: Result<FilterRequest>,
+        val currentTokenPredictionInfo: Result<CurrentTokenPrediction>,
+    )
+
+    data class CurrentTokenPrediction(
+        val startText: String,
     )
 
     sealed interface RequestHighlight {
@@ -236,9 +241,20 @@ internal class FilterRequestParser(
         return highlight(request, tokens)
     }
 
-    fun tokenize(request: String): ParserResult {
+    fun parse(
+        request: String,
+        cursorPosition: Int = -1,
+    ): ParserResult {
         val (tokenizeTime, tokens) = measureTimeMillisWithResult {
             runCatching { grammar.tokenizer.tokenize(request) }
+        }
+
+        val currentTokenPredictionInfo = tokens.mapCatching { tokens ->
+            CurrentTokenPrediction(
+                startText = tokens
+                    .first { it.offset <= cursorPosition && it.offset + it.length >= cursorPosition }
+                    .text,
+            )
         }
 
         val (parseTime, filterRequest) = measureTimeMillisWithResult {
@@ -256,6 +272,7 @@ internal class FilterRequestParser(
         return ParserResult(
             requestHighlight = highlight,
             searchRequest = filterRequest,
+            currentTokenPredictionInfo = currentTokenPredictionInfo,
         )
     }
 }
