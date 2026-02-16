@@ -253,7 +253,7 @@ internal class FilterRequestParser(
             CurrentTokenPrediction(
                 startText = tokens
                     .first { it.offset <= cursorPosition && it.offset + it.length >= cursorPosition }
-                    .text,
+                    .let { token -> token.text.substring(0, cursorPosition - token.offset) },
             )
         }
 

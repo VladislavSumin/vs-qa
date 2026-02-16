@@ -21,6 +21,8 @@ internal class FilterHintComponent(
 ) : Component(context), ComposeComponent {
     private val viewModel: FilterHintViewModel = viewModel { viewModelFactory.create(currentTokenPrediction) }
 
+    val filterHintUiInteractor: FilterHintUiInteractor get() = viewModel
+
     /**
      * Контроллер нажатий для работы с попапом, должен подключаться к внешнему элементу который находится в фокусе
      * при открытии попапа и может корректно перехватывать нажатия.
@@ -41,6 +43,11 @@ internal class FilterHintComponent(
         KeyModifier.Control + Key.Spacebar to {
             // TODO какой то баг в compose хоткей отрабатывает но пробел все равно добавляется к полю.
             viewModel.onShowRequest()
+            true
+        },
+
+        KeyModifier.None + Key.Enter to {
+            viewModel.onAcceptCurrentHint()
             true
         },
     )

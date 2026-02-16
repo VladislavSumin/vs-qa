@@ -12,6 +12,7 @@ import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintComponentFactory
+import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintUiInteractor
 
 /**
  * Компонент строки фильтра.
@@ -39,6 +40,13 @@ internal class FilterBarComponent(
             viewModel.events.receiveAsFlow().collect { event ->
                 when (event) {
                     FilterBarEvent.Focus -> focusRequester.requestFocus()
+                }
+            }
+        }
+        launch {
+            filterHintComponent.filterHintUiInteractor.events.receiveAsFlow().collect { event ->
+                when (event) {
+                    is FilterHintUiInteractor.Event.AppendText -> viewModel.appendFilterText(event.text)
                 }
             }
         }
