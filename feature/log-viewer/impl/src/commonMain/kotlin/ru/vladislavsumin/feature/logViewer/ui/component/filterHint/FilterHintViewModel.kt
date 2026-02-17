@@ -5,6 +5,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
@@ -16,7 +17,11 @@ import ru.vladislavsumin.feature.logViewer.LogLogger
 internal class FilterHintViewModel(
     @ByCreate private val currentTokenPrediction: Flow<CurrentTokenPrediction?>,
 ) : ViewModel(), FilterHintUiInteractor {
+    /**
+     * Предпочтение к показу подсказки. Этот флаг еще не означает что подсказка будет отображена.
+     */
     private val showHint = MutableStateFlow(false)
+
     private val selectedItemKey = MutableStateFlow("tag")
 
     override val events: Channel<FilterHintUiInteractor.Event> = Channel()
@@ -48,7 +53,14 @@ internal class FilterHintViewModel(
         } else {
             FilterHintViewState.Hidden
         }
-    }.stateIn(FilterHintViewState.Hidden)
+    }
+        .onEach {
+            // TODO очередной всратый костыль с onEach. Нужно сделать нормальное решение для всего.
+            if (it is FilterHintViewState.Show && it.items.none { it.key == selectedItemKey.value }) {
+                selectedItemKey.value = it.items.first().key
+            }
+        }
+        .stateIn(FilterHintViewState.Hidden)
 
     override fun requestShow() {
         onShowRequest()
