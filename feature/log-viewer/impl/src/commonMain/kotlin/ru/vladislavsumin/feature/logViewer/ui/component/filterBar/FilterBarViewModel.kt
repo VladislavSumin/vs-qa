@@ -1,6 +1,7 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.channels.Channel
@@ -36,7 +37,7 @@ internal class FilterBarViewModel(
     private val filterRequestParser = FilterRequestParser(savedFilters)
 
     override val filterState: SharedFlow<FilterRequestParser.ParserResult> = filter.map { filter ->
-        filterRequestParser.tokenize(filter.text)
+        filterRequestParser.parse(request = filter.text, cursorPosition = filter.selection.start)
     }.shareIn(viewModelScope, SharingStarted.Eagerly, 1)
 
     private val savedFiltersState = combine(
@@ -87,7 +88,26 @@ internal class FilterBarViewModel(
     }
 
     fun onFilterChange(newValue: TextFieldValue) {
-        filter.value = newValue
+        filter.update { old ->
+            if (old.text.length < newValue.text.length) {
+                events.trySend(FilterBarEvent.RequestShowHint)
+            }
+            newValue
+        }
+    }
+
+    fun appendFilterText(text: String) {
+        filter.update { old ->
+            val newText = old.text.substring(0, old.selection.start) + text + old.text.substring(
+                (old.selection.end).coerceAtMost(old.text.length),
+                old.text.length,
+            )
+
+            old.copy(
+                text = newText,
+                selection = TextRange(start = old.selection.start + text.length, end = old.selection.end + text.length),
+            )
+        }
     }
 
     fun onClickSavedFilters() {

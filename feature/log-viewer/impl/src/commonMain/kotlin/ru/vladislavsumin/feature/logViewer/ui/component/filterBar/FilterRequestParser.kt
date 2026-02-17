@@ -10,6 +10,7 @@ import com.github.h0tk3y.betterParse.combinators.unaryMinus
 import com.github.h0tk3y.betterParse.combinators.zeroOrMore
 import com.github.h0tk3y.betterParse.grammar.Grammar
 import com.github.h0tk3y.betterParse.grammar.parser
+import com.github.h0tk3y.betterParse.lexer.TokenMatch
 import com.github.h0tk3y.betterParse.lexer.TokenMatchesSequence
 import com.github.h0tk3y.betterParse.lexer.literalToken
 import com.github.h0tk3y.betterParse.lexer.regexToken
@@ -18,8 +19,10 @@ import com.github.h0tk3y.betterParse.parser.parseToEnd
 import kotlinx.coroutines.flow.StateFlow
 import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
+import ru.vladislavsumin.feature.logViewer.TokenPredictionLogger
 import ru.vladislavsumin.feature.logViewer.domain.SavedFiltersRepository
 import ru.vladislavsumin.feature.logViewer.domain.logs.FilterRequest
+import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.CurrentTokenPrediction
 import kotlin.map
 import kotlin.sequences.map
 
@@ -30,6 +33,7 @@ internal class FilterRequestParser(
     data class ParserResult(
         val requestHighlight: RequestHighlight,
         val searchRequest: Result<FilterRequest>,
+        val currentTokenPredictionInfo: CurrentTokenPrediction?,
     )
 
     sealed interface RequestHighlight {
@@ -95,12 +99,26 @@ internal class FilterRequestParser(
         private val ws by regexToken("\\s+", ignore = true)
         private val newLine by literalToken("\n", ignore = true)
 
-        val keywords = setOf(
-            tag, pid, tid, thread, message, level,
-            runNumber, timeAfter, timeBefore, exactly,
-            contains, not, minus,
-            and, or, lpar, rpar,
+        val tokenGroupFields = setOf(
+            tag, pid, tid, thread, message, level, runNumber, timeAfter, timeBefore,
         )
+        val tokenGroupFilterType = setOf(
+            exactly,
+            contains,
+        )
+        val tokenGroupOthers = setOf(
+            not,
+            minus,
+            and,
+            or,
+            lpar,
+            rpar,
+        )
+
+        // Все ключевые слова, используются для подсветки синтаксиса.
+        val keywords = tokenGroupFields + tokenGroupFilterType + tokenGroupOthers
+
+        // Токены данных поискового запроса (текста), используются для подсветки.
         val data = setOf(stingLiteral, any)
 
         // Поля по которым можно вести поиск.
@@ -233,10 +251,15 @@ internal class FilterRequestParser(
         return highlight(request, tokens)
     }
 
-    fun tokenize(request: String): ParserResult {
+    fun parse(
+        request: String,
+        cursorPosition: Int = -1,
+    ): ParserResult {
         val (tokenizeTime, tokens) = measureTimeMillisWithResult {
             runCatching { grammar.tokenizer.tokenize(request) }
         }
+
+        val currentTokenPredictionInfo = tokenPredict(request, cursorPosition)
 
         val (parseTime, filterRequest) = measureTimeMillisWithResult {
             tokens.mapCatching { tokens ->
@@ -253,6 +276,69 @@ internal class FilterRequestParser(
         return ParserResult(
             requestHighlight = highlight,
             searchRequest = filterRequest,
+            currentTokenPredictionInfo = currentTokenPredictionInfo,
         )
     }
+
+    /**
+     * Пробует предсказать тип токена который сейчас вводится по текущей позиции курсора.
+     */
+    private fun tokenPredict(
+        request: String,
+        cursorPosition: Int,
+    ): CurrentTokenPrediction? {
+        val tokens =
+            runCatching { grammar.tokenizer.tokenize(request.substring(0, cursorPosition)) }.getOrNull() ?: return null
+
+        val currentTokenIndex = tokens.indexOfFirst {
+            it.offset <= cursorPosition && it.offset + it.length >= cursorPosition
+        }
+        if (currentTokenIndex < 0) return null
+
+        val currentToken = tokens[currentTokenIndex]!!
+        val prevToken = if (currentTokenIndex > 0) tokens[currentTokenIndex - 1] else null
+
+        val currentText = currentToken.text.substring(0, cursorPosition - currentToken.offset)
+
+        TokenPredictionLogger.d { "tokenPredict(), current=$currentToken, prev=$prevToken" }
+
+        val prediction = when {
+            currentToken.isFieldGroup() && prevToken?.isFilterTypeGroup() != true -> {
+                CurrentTokenPrediction(
+                    startText = "",
+                    type = CurrentTokenPrediction.Type.SearchType,
+                )
+            }
+
+            currentToken.isFilterTypeGroup() && prevToken?.isFieldGroup() == true -> {
+                TokenPredictionLogger.w { "Filter content prediction is not supported now" }
+                null
+            }
+
+            prevToken == null || (!prevToken.isFilterTypeGroup() && !prevToken.isFieldGroup()) -> {
+                CurrentTokenPrediction(
+                    startText = currentText,
+                    type = CurrentTokenPrediction.Type.Keyword,
+                )
+            }
+
+            prevToken.isFieldGroup() -> {
+                CurrentTokenPrediction(
+                    startText = currentText,
+                    type = CurrentTokenPrediction.Type.SearchType,
+                )
+            }
+
+            else -> {
+                TokenPredictionLogger.d { "Unknown token combination" }
+                null
+            }
+        }
+
+        TokenPredictionLogger.d { "Prediction $prediction" }
+        return prediction
+    }
+
+    private fun TokenMatch.isFieldGroup() = type in grammar.tokenGroupFields
+    private fun TokenMatch.isFilterTypeGroup() = type in grammar.tokenGroupFilterType
 }

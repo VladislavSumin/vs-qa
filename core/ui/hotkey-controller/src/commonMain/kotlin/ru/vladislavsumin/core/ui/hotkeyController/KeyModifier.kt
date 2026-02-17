@@ -2,6 +2,7 @@ package ru.vladislavsumin.core.ui.hotkeyController
 
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
+import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.isShiftPressed
 
@@ -25,6 +26,10 @@ sealed class KeyModifier {
         override val mask = COMMAND
     }
 
+    data object Control : KeyModifier() {
+        override val mask = CONTROL
+    }
+
     internal data class Composite(
         val left: KeyModifier,
         val right: KeyModifier,
@@ -37,11 +42,13 @@ sealed class KeyModifier {
             var mask = 0
             if (event.isMetaPressed) mask = mask or COMMAND
             if (event.isShiftPressed) mask = mask or SHIFT
+            if (event.isCtrlPressed) mask = mask or CONTROL
             return mask
         }
 
         private const val NONE = 0
         private const val COMMAND = 1 shl 0
         private const val SHIFT = 1 shl 1
+        private const val CONTROL = 1 shl 2
     }
 }

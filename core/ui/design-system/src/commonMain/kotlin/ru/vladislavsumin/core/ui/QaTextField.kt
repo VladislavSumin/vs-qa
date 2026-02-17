@@ -92,7 +92,7 @@ fun QaTextField(
         maxLines = maxLines,
         decorationBox = { text ->
             Row(
-                modifier
+                Modifier
                     .border(border = BorderStroke(width = 1.dp, color = borderColor))
                     .padding(2.dp),
                 verticalAlignment = Alignment.CenterVertically,

@@ -1,9 +1,6 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import ru.vladislavsumin.core.logger.common.LogLevel
-import ru.vladislavsumin.core.logger.manager.ExternalLogger
-import ru.vladislavsumin.core.logger.manager.LoggerManager
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -17,7 +14,7 @@ class FilterRequestParserTest {
     @Test
     fun testEmpty() {
         val parser = createParser()
-        val request = parser.tokenize("").searchRequest
+        val request = parser.parse("").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "NoOp",
@@ -28,7 +25,7 @@ class FilterRequestParserTest {
     @Test
     fun testSimple() {
         val parser = createParser()
-        val request = parser.tokenize("search").searchRequest
+        val request = parser.parse("search").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "All(operation=Contains(data=search))",
@@ -39,7 +36,7 @@ class FilterRequestParserTest {
     @Test
     fun testSimpleQuoted() {
         val parser = createParser()
-        val request = parser.tokenize("\"search\"").searchRequest
+        val request = parser.parse("\"search\"").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "All(operation=Contains(data=search))",
@@ -50,7 +47,7 @@ class FilterRequestParserTest {
     @Test
     fun testFieldContains() {
         val parser = createParser()
-        val request = parser.tokenize("tag=search").searchRequest
+        val request = parser.parse("tag=search").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "Tag(operation=Contains(data=search))",
@@ -61,7 +58,7 @@ class FilterRequestParserTest {
     @Test
     fun testFieldExactly() {
         val parser = createParser()
-        val request = parser.tokenize("tag:=search").searchRequest
+        val request = parser.parse("tag:=search").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "Tag(operation=Exactly(data=search))",
@@ -72,7 +69,7 @@ class FilterRequestParserTest {
     @Test
     fun testNot() {
         val parser = createParser()
-        val request = parser.tokenize("!search").searchRequest
+        val request = parser.parse("!search").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "Not(operation=All(operation=Contains(data=search)))",
@@ -83,7 +80,7 @@ class FilterRequestParserTest {
     @Test
     fun testFieldNot() {
         val parser = createParser()
-        val request = parser.tokenize("!tag=search").searchRequest
+        val request = parser.parse("!tag=search").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "Not(operation=Tag(operation=Contains(data=search)))",
@@ -94,7 +91,7 @@ class FilterRequestParserTest {
     @Test
     fun testOr() {
         val parser = createParser()
-        val request = parser.tokenize("a | b").searchRequest
+        val request = parser.parse("a | b").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "Or(operations=[All(operation=Contains(data=a)), All(operation=Contains(data=b))])",
@@ -105,7 +102,7 @@ class FilterRequestParserTest {
     @Test
     fun testAutoOr() {
         val parser = createParser()
-        val request = parser.tokenize("tag=a tag=b").searchRequest
+        val request = parser.parse("tag=a tag=b").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "Auto(operation=Or(operations=[Tag(operation=Contains(data=a)), Tag(operation=Contains(data=b))]))",
@@ -116,7 +113,7 @@ class FilterRequestParserTest {
     @Test
     fun testAutoAnd() {
         val parser = createParser()
-        val request = parser.tokenize("tag=a b").searchRequest
+        val request = parser.parse("tag=a b").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "Auto(operation=And(operations=[Tag(operation=Contains(data=a)), All(operation=Contains(data=b))]))",
@@ -127,7 +124,7 @@ class FilterRequestParserTest {
     @Test
     fun testAutoAndOr() {
         val parser = createParser()
-        val request = parser.tokenize("tag=a tag=b c").searchRequest
+        val request = parser.parse("tag=a tag=b c").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "Auto(operation=And(operations=[Or(operations=[Tag(operation=Contains(data=a)), Tag(operation=Contains(data=b))]), All(operation=Contains(data=c))]))",
@@ -138,7 +135,7 @@ class FilterRequestParserTest {
     @Test
     fun testAutoAndOrSmellOrder() {
         val parser = createParser()
-        val request = parser.tokenize("tag=a c tag=b").searchRequest
+        val request = parser.parse("tag=a c tag=b").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "Auto(operation=And(operations=[Or(operations=[Tag(operation=Contains(data=a)), Tag(operation=Contains(data=b))]), All(operation=Contains(data=c))]))",
@@ -149,7 +146,7 @@ class FilterRequestParserTest {
     @Test
     fun testAutoPriorityAnd() {
         val parser = createParser()
-        val request = parser.tokenize("tag=a tag=b & c").searchRequest
+        val request = parser.parse("tag=a tag=b & c").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "Auto(operation=And(operations=[Tag(operation=Contains(data=a)), And(operations=[Tag(operation=Contains(data=b)), All(operation=Contains(data=c))])]))",
@@ -160,7 +157,7 @@ class FilterRequestParserTest {
     @Test
     fun testAutoPriorityOr() {
         val parser = createParser()
-        val request = parser.tokenize("tag=a tag=b | c").searchRequest
+        val request = parser.parse("tag=a tag=b | c").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "Auto(operation=And(operations=[Tag(operation=Contains(data=a)), Or(operations=[Tag(operation=Contains(data=b)), All(operation=Contains(data=c))])]))",
@@ -183,7 +180,7 @@ class FilterRequestParserTest {
     @Test
     fun testOrNoSpaces() {
         val parser = createParser()
-        val request = parser.tokenize("a|b").searchRequest
+        val request = parser.parse("a|b").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             // Это не ошибка, кажется такое вполне логично.
@@ -195,7 +192,7 @@ class FilterRequestParserTest {
     @Test
     fun testEmptyBracket() {
         val parser = createParser()
-        val request = parser.tokenize("()").searchRequest
+        val request = parser.parse("()").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "NoOp",
@@ -206,7 +203,7 @@ class FilterRequestParserTest {
     @Test
     fun testSimpleBracket() {
         val parser = createParser()
-        val request = parser.tokenize("(simple)").searchRequest
+        val request = parser.parse("(simple)").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "All(operation=Contains(data=simple))",
@@ -217,7 +214,7 @@ class FilterRequestParserTest {
     @Test
     fun testSimpleDoubleBracket() {
         val parser = createParser()
-        val request = parser.tokenize("((simple))").searchRequest
+        val request = parser.parse("((simple))").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "All(operation=Contains(data=simple))",
@@ -228,7 +225,7 @@ class FilterRequestParserTest {
     @Test
     fun testOrNot() {
         val parser = createParser()
-        val request = parser.tokenize("a | !b").searchRequest
+        val request = parser.parse("a | !b").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "Or(operations=[All(operation=Contains(data=a)), Not(operation=All(operation=Contains(data=b)))])",
@@ -239,7 +236,7 @@ class FilterRequestParserTest {
     @Test
     fun testNotSimpleBracket() {
         val parser = createParser()
-        val request = parser.tokenize("!(simple)").searchRequest
+        val request = parser.parse("!(simple)").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
             expected = "Not(operation=All(operation=Contains(data=simple)))",
@@ -248,29 +245,4 @@ class FilterRequestParserTest {
     }
 
     private fun createParser() = FilterRequestParser(savedFilters = MutableStateFlow(emptyList()))
-}
-
-// TODO вынести в базовые методы.
-private object TestLogger {
-    private var isInitialized = false
-    fun init() {
-        if (!isInitialized) {
-            isInitialized = true
-            LoggerManager.init(externalLoggerFactory = {
-                object : ExternalLogger {
-                    override fun log(level: LogLevel, msg: String) {
-                        // no_op
-                    }
-
-                    override fun log(
-                        level: LogLevel,
-                        throwable: Throwable,
-                        msg: String,
-                    ) {
-                        // no_op
-                    }
-                }
-            })
-        }
-    }
 }
