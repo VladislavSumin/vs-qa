@@ -45,6 +45,10 @@ internal class FilterHintViewModel(
         }
     }.stateIn(FilterHintViewState.Hidden)
 
+    override fun requestShow() {
+        onShowRequest()
+    }
+
     /**
      * @return был ли запрос выполнен успешно.
      */

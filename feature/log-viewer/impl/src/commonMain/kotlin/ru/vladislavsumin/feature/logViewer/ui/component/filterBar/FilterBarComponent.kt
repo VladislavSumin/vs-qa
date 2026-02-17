@@ -32,7 +32,7 @@ internal class FilterBarComponent(
         context.childContext("filter-hint"),
     )
 
-    val filterBarUiInteractor = viewModel
+    val filterBarUiInteractor: FilterBarUiInteractor = viewModel
     private val focusRequester = FocusRequester()
 
     init {
@@ -40,6 +40,7 @@ internal class FilterBarComponent(
             viewModel.events.receiveAsFlow().collect { event ->
                 when (event) {
                     FilterBarEvent.Focus -> focusRequester.requestFocus()
+                    FilterBarEvent.RequestShowHint -> filterHintComponent.filterHintUiInteractor.requestShow()
                 }
             }
         }

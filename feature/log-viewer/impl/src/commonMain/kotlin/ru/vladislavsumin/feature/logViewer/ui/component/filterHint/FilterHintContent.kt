@@ -59,7 +59,7 @@ private fun HintContent(
     ) {
         // TODO поработать над логикой вычисления размеров.
         Card(
-            modifier = Modifier.size(400.dp, 250.dp),
+            modifier = modifier.size(400.dp, 250.dp),
             shape = RoundedCornerShape(2.dp),
         ) {
             LazyColumn {

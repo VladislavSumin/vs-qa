@@ -88,7 +88,12 @@ internal class FilterBarViewModel(
     }
 
     fun onFilterChange(newValue: TextFieldValue) {
-        filter.value = newValue
+        filter.update { old ->
+            if (old.text.length < newValue.text.length) {
+                events.trySend(FilterBarEvent.RequestShowHint)
+            }
+            newValue
+        }
     }
 
     fun appendFilterText(text: String) {
