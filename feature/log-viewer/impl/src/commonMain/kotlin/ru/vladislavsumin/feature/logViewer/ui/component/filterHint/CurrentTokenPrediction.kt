@@ -17,5 +17,10 @@ internal data class CurrentTokenPrediction(
          * Тип поиска (=, :=, etc)
          */
         SearchType,
+
+        /**
+         * Уровень лога (VERBOSE, DEBUG, INFO, etc)
+         */
+        LogLevel,
     }
 }

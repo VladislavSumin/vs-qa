@@ -1,5 +1,7 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterHint
 
+import ru.vladislavsumin.feature.logParser.domain.LogLevel
+
 internal data class FilterHintItem(
     val text: String,
     val hint: String,
@@ -28,3 +30,11 @@ internal val typeFilterHintItems = listOf(
     KeywordFilterHint(name = "=", hint = "Contains"),
     KeywordFilterHint(name = ":=", hint = "Exactly"),
 )
+
+internal val logLevelFilterHintItems = LogLevel.entries.map { level ->
+    val aliases = level.aliases.filter { it != level.name }.joinToString(", ") { it.lowercase() }
+    KeywordFilterHint(
+        name = level.aliases.first().lowercase(),
+        hint = "${level.name.lowercase()} ($aliases)",
+    )
+}

@@ -71,7 +71,7 @@ internal class FilterRequestParser(
         private val tid by literalToken("tid")
         private val thread by literalToken("thread")
         private val message by literalToken("message")
-        private val level by literalToken("level")
+        val level by literalToken("level")
 
         private val runNumber by literalToken("runNumber")
         private val timeAfter by literalToken("timeAfter")
@@ -283,6 +283,7 @@ internal class FilterRequestParser(
     /**
      * Пробует предсказать тип токена который сейчас вводится по текущей позиции курсора.
      */
+    @Suppress("CyclomaticComplexMethod")
     private fun tokenPredict(
         request: String,
         cursorPosition: Int,
@@ -311,8 +312,18 @@ internal class FilterRequestParser(
             }
 
             currentToken.isFilterTypeGroup() && prevToken?.isFieldGroup() == true -> {
-                TokenPredictionLogger.w { "Filter content prediction is not supported now" }
-                null
+                when (prevToken.type) {
+                    grammar.level -> {
+                        CurrentTokenPrediction(
+                            startText = "",
+                            type = CurrentTokenPrediction.Type.LogLevel,
+                        )
+                    }
+                    else -> {
+                        TokenPredictionLogger.w { "Filter content prediction is not supported now" }
+                        null
+                    }
+                }
             }
 
             prevToken == null || (!prevToken.isFilterTypeGroup() && !prevToken.isFieldGroup()) -> {

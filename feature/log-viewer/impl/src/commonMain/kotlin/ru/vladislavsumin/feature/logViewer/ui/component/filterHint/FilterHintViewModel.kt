@@ -35,6 +35,7 @@ internal class FilterHintViewModel(
             val hints = when (currentTokenPrediction.type) {
                 CurrentTokenPrediction.Type.Keyword -> keywordFilterHintItems
                 CurrentTokenPrediction.Type.SearchType -> typeFilterHintItems
+                CurrentTokenPrediction.Type.LogLevel -> logLevelFilterHintItems
             }
             val items = hints
                 .filter { it.name.startsWith(currentTokenPrediction.startText) }
