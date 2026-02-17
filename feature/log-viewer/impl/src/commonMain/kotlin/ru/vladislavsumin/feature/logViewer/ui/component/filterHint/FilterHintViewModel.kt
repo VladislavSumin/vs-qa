@@ -31,18 +31,20 @@ internal class FilterHintViewModel(
                 CurrentTokenPrediction.Type.Keyword -> keywordFilterHintItems
                 CurrentTokenPrediction.Type.SearchType -> typeFilterHintItems
             }
-            FilterHintViewState.Show(
-                selectedItemKey = selectedItemKey,
-                hints
-                    .filter { it.name.startsWith(currentTokenPrediction.startText) }
-                    .map {
-                        FilterHintItem(
-                            text = it.name,
-                            hint = it.hint,
-                            selectedPartLength = currentTokenPrediction.startText.length,
-                        )
-                    },
-            )
+            val items = hints
+                .filter { it.name.startsWith(currentTokenPrediction.startText) }
+                .map {
+                    FilterHintItem(
+                        text = it.name,
+                        hint = it.hint,
+                        selectedPartLength = currentTokenPrediction.startText.length,
+                    )
+                }
+            if (items.isNotEmpty()) {
+                FilterHintViewState.Show(selectedItemKey = selectedItemKey, items = items)
+            } else {
+                FilterHintViewState.Hidden
+            }
         } else {
             FilterHintViewState.Hidden
         }
