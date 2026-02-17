@@ -1,9 +1,6 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import ru.vladislavsumin.core.logger.common.LogLevel
-import ru.vladislavsumin.core.logger.manager.ExternalLogger
-import ru.vladislavsumin.core.logger.manager.LoggerManager
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -248,29 +245,4 @@ class FilterRequestParserTest {
     }
 
     private fun createParser() = FilterRequestParser(savedFilters = MutableStateFlow(emptyList()))
-}
-
-// TODO вынести в базовые методы.
-private object TestLogger {
-    private var isInitialized = false
-    fun init() {
-        if (!isInitialized) {
-            isInitialized = true
-            LoggerManager.init(externalLoggerFactory = {
-                object : ExternalLogger {
-                    override fun log(level: LogLevel, msg: String) {
-                        // no_op
-                    }
-
-                    override fun log(
-                        level: LogLevel,
-                        throwable: Throwable,
-                        msg: String,
-                    ) {
-                        // no_op
-                    }
-                }
-            })
-        }
-    }
 }

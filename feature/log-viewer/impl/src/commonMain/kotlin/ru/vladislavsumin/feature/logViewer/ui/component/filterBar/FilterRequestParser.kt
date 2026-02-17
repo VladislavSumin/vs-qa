@@ -33,7 +33,7 @@ internal class FilterRequestParser(
     data class ParserResult(
         val requestHighlight: RequestHighlight,
         val searchRequest: Result<FilterRequest>,
-        val currentTokenPredictionInfo: Result<CurrentTokenPrediction?>,
+        val currentTokenPredictionInfo: CurrentTokenPrediction?,
     )
 
     sealed interface RequestHighlight {
@@ -259,9 +259,7 @@ internal class FilterRequestParser(
             runCatching { grammar.tokenizer.tokenize(request) }
         }
 
-        val currentTokenPredictionInfo = tokens.map { tokens ->
-            tokenPredict(tokens, cursorPosition)
-        }
+        val currentTokenPredictionInfo = tokenPredict(request, cursorPosition)
 
         val (parseTime, filterRequest) = measureTimeMillisWithResult {
             tokens.mapCatching { tokens ->
@@ -285,7 +283,13 @@ internal class FilterRequestParser(
     /**
      * Пробует предсказать тип токена который сейчас вводится по текущей позиции курсора.
      */
-    private fun tokenPredict(tokens: TokenMatchesSequence, cursorPosition: Int): CurrentTokenPrediction? {
+    private fun tokenPredict(
+        request: String,
+        cursorPosition: Int,
+    ): CurrentTokenPrediction? {
+        val tokens =
+            runCatching { grammar.tokenizer.tokenize(request.substring(0, cursorPosition)) }.getOrNull() ?: return null
+
         val currentTokenIndex = tokens.indexOfFirst {
             it.offset <= cursorPosition && it.offset + it.length >= cursorPosition
         }

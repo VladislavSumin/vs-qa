@@ -28,7 +28,7 @@ internal class FilterBarComponent(
 ) : Component(context), ComposeComponent {
     private val viewModel: FilterBarViewModel = viewModel { viewModelFactory.create() }
     private val filterHintComponent = filterHintComponentFactory.create(
-        currentTokenPrediction = viewModel.filterState.map { it.currentTokenPredictionInfo.getOrNull() },
+        currentTokenPrediction = viewModel.filterState.map { it.currentTokenPredictionInfo },
         context.childContext("filter-hint"),
     )
 
