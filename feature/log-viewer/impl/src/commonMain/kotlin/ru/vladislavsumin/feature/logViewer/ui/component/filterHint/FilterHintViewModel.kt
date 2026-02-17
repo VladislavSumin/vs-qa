@@ -10,12 +10,11 @@ import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.feature.logViewer.LogLogger
-import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterRequestParser
 
 @GenerateFactory
 @Stable
 internal class FilterHintViewModel(
-    @ByCreate private val currentTokenPrediction: Flow<FilterRequestParser.CurrentTokenPrediction?>,
+    @ByCreate private val currentTokenPrediction: Flow<CurrentTokenPrediction?>,
 ) : ViewModel(), FilterHintUiInteractor {
     private val showHint = MutableStateFlow(false)
     private val selectedItemKey = MutableStateFlow("tag")
@@ -27,16 +26,20 @@ internal class FilterHintViewModel(
         selectedItemKey,
         currentTokenPrediction,
     ) { showHint, selectedItemKey, currentTokenPrediction ->
-        if (showHint) {
+        if (showHint && currentTokenPrediction != null) {
+            val hints = when (currentTokenPrediction.type) {
+                CurrentTokenPrediction.Type.Keyword -> keywordFilterHintItems
+                CurrentTokenPrediction.Type.SearchType -> typeFilterHintItems
+            }
             FilterHintViewState.Show(
                 selectedItemKey = selectedItemKey,
-                keywordFilterHintItems
-                    .filter { it.name.startsWith(currentTokenPrediction?.startText ?: "") }
+                hints
+                    .filter { it.name.startsWith(currentTokenPrediction.startText) }
                     .map {
                         FilterHintItem(
                             text = it.name,
                             hint = it.hint,
-                            selectedPartLength = currentTokenPrediction?.startText?.length ?: 0,
+                            selectedPartLength = currentTokenPrediction.startText.length,
                         )
                     },
             )

@@ -11,12 +11,11 @@ import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
-import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterRequestParser
 
 @GenerateFactory
 internal class FilterHintComponent(
     viewModelFactory: FilterHintViewModelFactory,
-    @ByCreate private val currentTokenPrediction: Flow<FilterRequestParser.CurrentTokenPrediction?>,
+    @ByCreate private val currentTokenPrediction: Flow<CurrentTokenPrediction?>,
     @ByCreate context: ComponentContext,
 ) : Component(context), ComposeComponent {
     private val viewModel: FilterHintViewModel = viewModel { viewModelFactory.create(currentTokenPrediction) }

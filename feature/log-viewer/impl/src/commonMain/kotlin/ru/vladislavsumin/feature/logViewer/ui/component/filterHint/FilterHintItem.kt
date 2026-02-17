@@ -23,3 +23,8 @@ internal val keywordFilterHintItems = listOf(
     KeywordFilterHint(name = "timeAfter", hint = "Filter by time after"),
     KeywordFilterHint(name = "timeBefore", hint = "Filter by time before"),
 )
+
+internal val typeFilterHintItems = listOf(
+    KeywordFilterHint(name = "=", hint = "Contains"),
+    KeywordFilterHint(name = ":=", hint = "Exactly"),
+)
