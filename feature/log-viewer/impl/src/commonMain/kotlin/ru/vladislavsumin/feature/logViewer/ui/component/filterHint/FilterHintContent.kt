@@ -1,6 +1,7 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterHint
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -69,7 +70,11 @@ private fun HintContent(
                     } else {
                         Modifier
                     }
-                    Row(modifier.padding(horizontal = 8.dp, vertical = 2.dp)) {
+                    Row(
+                        modifier
+                            .clickable(onClick = { viewModel.onAcceptHint(it) })
+                            .padding(horizontal = 8.dp, vertical = 2.dp),
+                    ) {
                         val span = buildAnnotatedString {
                             append(it.text)
                             this.addStyle(SpanStyle(fontWeight = FontWeight.Bold), 0, it.selectedPartLength)

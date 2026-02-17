@@ -91,6 +91,10 @@ internal class FilterHintViewModel(
     fun onAcceptCurrentHint() {
         val state = state.value as FilterHintViewState.Show
         val hint = state.items.first { it.key == state.selectedItemKey }
+        onAcceptHint(hint)
+    }
+
+    fun onAcceptHint(hint: FilterHintItem) {
         LogLogger.d { "onAcceptCurrentHint(), hint: $hint" }
         events.trySend(
             FilterHintUiInteractor.Event.AppendText(
