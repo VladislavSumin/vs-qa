@@ -89,10 +89,11 @@ internal class FilterHintViewModel(
         }
     }
 
-    fun onAcceptCurrentHint() {
-        val state = state.value as FilterHintViewState.Show
+    fun onAcceptCurrentHint(): Boolean {
+        val state = state.value as? FilterHintViewState.Show ?: return false
         val hint = state.items.first { it.key == state.selectedItemKey }
         onAcceptHint(hint)
+        return true
     }
 
     fun onAcceptHint(hint: FilterHintItem) {

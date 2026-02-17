@@ -47,7 +47,6 @@ internal class FilterHintComponent(
 
         KeyModifier.None + Key.Enter to {
             viewModel.onAcceptCurrentHint()
-            true
         },
     )
 
