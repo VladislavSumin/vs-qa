@@ -81,7 +81,9 @@ private fun HintContent(
                         }
                         Text(span)
                         Spacer(modifier.weight(1f))
-                        Text(it.hint, color = QaTheme.colorScheme.logTrace.primary)
+                        if (it.hint != null) {
+                            Text(it.hint, color = QaTheme.colorScheme.logTrace.primary)
+                        }
                     }
                 }
             }

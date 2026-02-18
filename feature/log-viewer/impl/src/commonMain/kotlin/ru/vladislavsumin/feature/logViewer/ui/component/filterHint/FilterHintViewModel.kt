@@ -15,7 +15,8 @@ import ru.vladislavsumin.feature.logViewer.LogLogger
 @GenerateFactory
 @Stable
 internal class FilterHintViewModel(
-    @ByCreate private val currentTokenPrediction: Flow<CurrentTokenPrediction?>,
+    @ByCreate currentTokenPrediction: Flow<CurrentTokenPrediction?>,
+    @ByCreate currentTags: Flow<Set<String>>,
 ) : ViewModel(), FilterHintUiInteractor {
     /**
      * Предпочтение к показу подсказки. Этот флаг еще не означает что подсказка будет отображена.
@@ -30,15 +31,17 @@ internal class FilterHintViewModel(
         showHint,
         selectedItemKey,
         currentTokenPrediction,
-    ) { showHint, selectedItemKey, currentTokenPrediction ->
+        currentTags,
+    ) { showHint, selectedItemKey, currentTokenPrediction, currentTags ->
         if (showHint && currentTokenPrediction != null) {
             val hints = when (currentTokenPrediction.type) {
                 CurrentTokenPrediction.Type.Keyword -> keywordFilterHintItems
                 CurrentTokenPrediction.Type.SearchType -> typeFilterHintItems
                 CurrentTokenPrediction.Type.LogLevel -> logLevelFilterHintItems
+                CurrentTokenPrediction.Type.Tag -> currentTags.map { KeywordFilterHint(it) }
             }
             val items = hints
-                .filter { it.name.startsWith(currentTokenPrediction.startText) }
+                .filter { it.name.startsWith(currentTokenPrediction.startText, ignoreCase = true) }
                 .map {
                     FilterHintItem(
                         text = it.name,

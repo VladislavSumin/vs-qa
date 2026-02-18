@@ -38,6 +38,8 @@ interface LogsInteractor {
     suspend fun detachMapping()
     suspend fun attachMapping(path: Path)
 
+    fun observeLogs(): Flow<List<LogRecord>>
+
     /**
      * Строит "Индекс" (результат фильтрации и последующего поиска) на основе [filter] и [search].
      */
@@ -177,6 +179,8 @@ class LogsInteractorImpl(
         proguardState.value = ProguardInteractorImpl(path)
     }
 
+    override fun observeLogs(): Flow<List<LogRecord>> = logs.mapState { it.logs }
+
     override fun observeLoadingStatus(): StateFlow<LogsInteractor.LoadingStatus> = loadingStatus
 
     override fun observeLogIndex(
@@ -233,7 +237,7 @@ class LogsInteractorImpl(
     }.flowOn(dispatchers.Default)
 }
 
-data class ClearLogState(
+internal data class ClearLogState(
     val logs: List<LogRecord>,
     val runIdIndexes: List<RunIdInfo>?,
 )

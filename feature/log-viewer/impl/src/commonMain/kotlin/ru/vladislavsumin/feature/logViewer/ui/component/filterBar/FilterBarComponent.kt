@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.decompose.components.Component
@@ -22,13 +23,15 @@ import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintUiI
  */
 @GenerateFactory
 internal class FilterBarComponent(
-    private val viewModelFactory: FilterBarViewModelFactory,
+    viewModelFactory: FilterBarViewModelFactory,
     filterHintComponentFactory: FilterHintComponentFactory,
+    @ByCreate currentTags: Flow<Set<String>>,
     @ByCreate context: ComponentContext,
 ) : Component(context), ComposeComponent {
     private val viewModel: FilterBarViewModel = viewModel { viewModelFactory.create() }
     private val filterHintComponent = filterHintComponentFactory.create(
         currentTokenPrediction = viewModel.filterState.map { it.currentTokenPredictionInfo },
+        currentTags = currentTags,
         context.childContext("filter-hint"),
     )
 

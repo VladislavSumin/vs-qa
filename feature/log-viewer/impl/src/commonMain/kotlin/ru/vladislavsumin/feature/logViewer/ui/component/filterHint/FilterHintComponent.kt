@@ -15,10 +15,13 @@ import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 @GenerateFactory
 internal class FilterHintComponent(
     viewModelFactory: FilterHintViewModelFactory,
-    @ByCreate private val currentTokenPrediction: Flow<CurrentTokenPrediction?>,
+    @ByCreate currentTokenPrediction: Flow<CurrentTokenPrediction?>,
+    @ByCreate currentTags: Flow<Set<String>>,
     @ByCreate context: ComponentContext,
 ) : Component(context), ComposeComponent {
-    private val viewModel: FilterHintViewModel = viewModel { viewModelFactory.create(currentTokenPrediction) }
+    private val viewModel: FilterHintViewModel = viewModel {
+        viewModelFactory.create(currentTokenPrediction, currentTags)
+    }
 
     val filterHintUiInteractor: FilterHintUiInteractor get() = viewModel
 

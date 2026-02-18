@@ -22,5 +22,10 @@ internal data class CurrentTokenPrediction(
          * Уровень лога (VERBOSE, DEBUG, INFO, etc)
          */
         LogLevel,
+
+        /**
+         * Тег из списка всех присутствующий для данных логов.
+         */
+        Tag,
     }
 }

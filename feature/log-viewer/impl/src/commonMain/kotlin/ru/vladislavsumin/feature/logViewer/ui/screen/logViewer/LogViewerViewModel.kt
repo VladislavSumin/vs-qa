@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -23,12 +25,14 @@ import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractor
+import ru.vladislavsumin.feature.logViewer.LinkedFlow
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
 import ru.vladislavsumin.feature.logViewer.domain.logs.SearchRequest
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
+import ru.vladislavsumin.feature.logViewer.link
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarUiInteractor
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsEvents
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
@@ -50,6 +54,7 @@ internal class LogViewerViewModel(
     private val dispatchers: VsDispatchers,
     @ByCreate private val logPath: Path,
     @ByCreate mappingPath: Path?,
+    @ByCreate private val currentTags: LinkedFlow<Set<String>>,
     @ByCreate private val bottomBarUiInteractor: BottomBarUiInteractor,
     @ByCreate private val filterBarUiInteractor: FilterBarUiInteractor,
     @ByCreate private val notificationsUiInteractor: NotificationsUiInteractor,
@@ -59,7 +64,7 @@ internal class LogViewerViewModel(
     private val showSelectMappingDialog = MutableStateFlow(false)
     private val firstVisibleIndex = MutableStateFlow(0)
 
-    private val logsInteractor = LogsInteractorImpl(
+    private val logsInteractor: LogsInteractor = LogsInteractorImpl(
         scope = viewModelScope,
         dispatchers = dispatchers,
         logPath = logPath,
@@ -104,6 +109,11 @@ internal class LogViewerViewModel(
                 }
             }
         }
+
+        logsInteractor.observeLogs()
+            .map { it.map { it.raw.substring(it.tag) }.toSet() }
+            .distinctUntilChanged()
+            .link(currentTags)
     }
 
     private var isOpenedOnce = false

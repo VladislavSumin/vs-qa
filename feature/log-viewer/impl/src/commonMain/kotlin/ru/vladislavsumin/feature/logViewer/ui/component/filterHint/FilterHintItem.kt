@@ -4,14 +4,14 @@ import ru.vladislavsumin.feature.logParser.domain.LogLevel
 
 internal data class FilterHintItem(
     val text: String,
-    val hint: String,
+    val hint: String?,
     val key: String = text,
     val selectedPartLength: Int,
 )
 
 internal data class KeywordFilterHint(
     val name: String,
-    val hint: String,
+    val hint: String? = null,
 )
 
 internal val keywordFilterHintItems = listOf(

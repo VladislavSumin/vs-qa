@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.feature.logViewer.LinkedFlow
 import ru.vladislavsumin.feature.logViewer.ui.component.dragAndDropOverlay.DragAndDropOverlayComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponentFactory
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
@@ -28,14 +29,19 @@ internal class LogViewerScreen(
 ) : Screen(context) {
     private val searchFocusRequester = FocusRequester()
 
+    // TODO подумать нормально ли делать так?
+    private val currentTagLink = LinkedFlow<Set<String>>()
+
     private val filterBarComponent = filterBarComponentFactory.create(
+        currentTags = currentTagLink,
         context = context.childContext("filter-bar"),
     )
 
-    private val viewModel = viewModel {
+    private val viewModel: LogViewerViewModel = viewModel {
         viewModelFactory.create(
             logPath = params.logPath,
             mappingPath = (intents.tryReceive().getOrNull() as? LogViewerScreenIntent.OpenMapping)?.mappingPath,
+            currentTags = currentTagLink,
             bottomBarUiInteractor = bottomBarUiInteractor,
             filterBarUiInteractor = filterBarComponent.filterBarUiInteractor,
             notificationsUiInteractor = notificationsUiInteractor,

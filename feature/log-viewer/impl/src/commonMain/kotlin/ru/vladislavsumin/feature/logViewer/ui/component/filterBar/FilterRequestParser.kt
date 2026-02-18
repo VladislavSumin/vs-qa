@@ -66,7 +66,7 @@ internal class FilterRequestParser(
 
     @Suppress("UnusedPrivateProperty")
     private val grammar = object : Grammar<FilterRequest.FilterOperation>() {
-        private val tag by literalToken("tag")
+        val tag by literalToken("tag")
         private val pid by literalToken("pid")
         private val tid by literalToken("tid")
         private val thread by literalToken("thread")
@@ -283,7 +283,7 @@ internal class FilterRequestParser(
     /**
      * Пробует предсказать тип токена который сейчас вводится по текущей позиции курсора.
      */
-    @Suppress("CyclomaticComplexMethod")
+    @Suppress("CyclomaticComplexMethod", "LongMethod")
     private fun tokenPredict(
         request: String,
         cursorPosition: Int,
@@ -298,6 +298,7 @@ internal class FilterRequestParser(
 
         val currentToken = tokens[currentTokenIndex]!!
         val prevToken = if (currentTokenIndex > 0) tokens[currentTokenIndex - 1] else null
+        val thirdToken = if (currentTokenIndex > 1) tokens[currentTokenIndex - 2] else null
 
         val currentText = currentToken.text.substring(0, cursorPosition - currentToken.offset)
 
@@ -313,12 +314,16 @@ internal class FilterRequestParser(
 
             currentToken.isFilterTypeGroup() && prevToken?.isFieldGroup() == true -> {
                 when (prevToken.type) {
-                    grammar.level -> {
-                        CurrentTokenPrediction(
-                            startText = "",
-                            type = CurrentTokenPrediction.Type.LogLevel,
-                        )
-                    }
+                    grammar.level -> CurrentTokenPrediction(
+                        startText = "",
+                        type = CurrentTokenPrediction.Type.LogLevel,
+                    )
+
+                    grammar.tag -> CurrentTokenPrediction(
+                        startText = "",
+                        type = CurrentTokenPrediction.Type.Tag,
+                    )
+
                     else -> {
                         TokenPredictionLogger.w { "Filter content prediction is not supported now" }
                         null
@@ -338,6 +343,25 @@ internal class FilterRequestParser(
                     startText = currentText,
                     type = CurrentTokenPrediction.Type.SearchType,
                 )
+            }
+
+            thirdToken?.isFieldGroup() == true && prevToken.isFilterTypeGroup() -> {
+                when (thirdToken.type) {
+                    grammar.level -> CurrentTokenPrediction(
+                        startText = currentText,
+                        type = CurrentTokenPrediction.Type.LogLevel,
+                    )
+
+                    grammar.tag -> CurrentTokenPrediction(
+                        startText = currentText,
+                        type = CurrentTokenPrediction.Type.Tag,
+                    )
+
+                    else -> {
+                        TokenPredictionLogger.w { "Filter content prediction is not supported now" }
+                        null
+                    }
+                }
             }
 
             else -> {
