@@ -62,6 +62,7 @@ internal class FilterBarViewModel(
     ) { filter, filterState, showHelpMenu, savedFiltersState ->
         FilterBarViewState(
             field = filter,
+            predictionWordLength = filterState.currentTokenPredictionInfo?.startText?.length ?: 0,
             highlight = filterState.requestHighlight,
             error = filterState.searchRequest.exceptionOrNull()?.let { it.message ?: "No error message provided" },
             showHelpMenu = showHelpMenu,

@@ -18,6 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -26,20 +29,20 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
-import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.resetFocusOnEsc
+import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintComponent
 import ru.vladislavsumin.feature.logViewer.ui.utils.addStyle
 
 @Composable
 internal fun FilterBarContent(
     viewModel: FilterBarViewModel,
-    filterBarComponent: ComposeComponent,
-    filterBarHotkeyController: HotkeyController,
+    filterHintComponent: FilterHintComponent,
+    filterHintHotkeyController: HotkeyController,
     focusRequester: FocusRequester,
     modifier: Modifier,
 ) {
@@ -49,7 +52,7 @@ internal fun FilterBarContent(
             .padding(vertical = 4.dp, horizontal = 8.dp),
     ) {
         SavedFilters(viewModel)
-        FilterField(viewModel, filterBarComponent, filterBarHotkeyController, focusRequester)
+        FilterField(viewModel, filterHintComponent, filterHintHotkeyController, focusRequester)
     }
 }
 
@@ -93,25 +96,33 @@ private fun SavedFilters(viewModel: FilterBarViewModel) {
 @Composable
 private fun FilterField(
     viewModel: FilterBarViewModel,
-    filterBarComponent: ComposeComponent,
-    filterBarHotkeyController: HotkeyController,
+    filterHintComponent: FilterHintComponent,
+    filterHintHotkeyController: HotkeyController,
     focusRequester: FocusRequester,
 ) {
-    filterBarComponent.Render(Modifier)
+    var cursorPosition by remember { mutableFloatStateOf(0f) }
 
     val state by viewModel.state.collectAsState()
     if (state.error != null) {
         Text(text = state.error.toString(), color = QaTheme.colorScheme.logError.primary)
     }
+
     QaTextField(
         value = state.field.copy(annotatedString = state.highlight.colorize()),
         onValueChange = viewModel::onFilterChange,
         modifier = Modifier
             .focusRequester(focusRequester)
             .resetFocusOnEsc()
-            .onPreviewKeyEvent(filterBarHotkeyController::invoke),
+            .onPreviewKeyEvent(filterHintHotkeyController::invoke),
         isError = state.error != null,
+        onTextLayout = { layout ->
+            cursorPosition = layout.getHorizontalPosition(
+                offset = state.field.selection.start - state.predictionWordLength,
+                usePrimaryDirection = true,
+            )
+        },
         placeholder = { Text("Filter...") },
+        centerContent = { filterHintComponent.Render(Modifier, cursorPosition) },
         leadingContent = { Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null) },
         trailingContent = {
             QaToggleIconButton(

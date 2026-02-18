@@ -7,6 +7,7 @@ import ru.vladislavsumin.feature.logViewer.domain.SavedFiltersRepository
 @Stable
 internal data class FilterBarViewState(
     val field: TextFieldValue,
+    val predictionWordLength: Int,
     val highlight: FilterRequestParser.RequestHighlight,
     val error: String?,
     val showHelpMenu: Boolean,
@@ -23,6 +24,7 @@ internal data class FilterBarViewState(
     companion object {
         val STUB = FilterBarViewState(
             field = TextFieldValue(),
+            predictionWordLength = 0,
             highlight = FilterRequestParser.RequestHighlight.InvalidSyntax(""),
             error = null,
             showHelpMenu = false,

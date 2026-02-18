@@ -60,8 +60,8 @@ internal class FilterBarComponent(
     @Composable
     override fun Render(modifier: Modifier) = FilterBarContent(
         viewModel = viewModel,
-        filterBarComponent = filterHintComponent,
-        filterBarHotkeyController = filterHintComponent.hotkeyController,
+        filterHintComponent = filterHintComponent,
+        filterHintHotkeyController = filterHintComponent.hotkeyController,
         focusRequester = focusRequester,
         modifier = modifier,
     )

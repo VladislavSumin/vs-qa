@@ -34,10 +34,11 @@ import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 internal fun FilterHintContent(
     viewModel: FilterHintViewModel,
     modifier: Modifier,
+    offsetX: Float,
 ) {
     when (val state = viewModel.state.collectAsState().value) {
         is FilterHintViewState.Hidden -> Unit
-        is FilterHintViewState.Show -> HintContent(viewModel, state, modifier)
+        is FilterHintViewState.Show -> HintContent(viewModel, state, modifier, offsetX)
     }
 }
 
@@ -46,6 +47,7 @@ private fun HintContent(
     viewModel: FilterHintViewModel,
     state: FilterHintViewState.Show,
     modifier: Modifier,
+    cursorOffset: Float,
 ) {
     val focusRequester = remember { FocusRequester() }
 
@@ -54,7 +56,7 @@ private fun HintContent(
     }
 
     Popup(
-        popupPositionProvider = remember { HintPopupPositionProvider() },
+        popupPositionProvider = remember(cursorOffset) { HintPopupPositionProvider(cursorOffset) },
         onDismissRequest = viewModel::onCloseRequest,
         properties = PopupProperties(),
     ) {
@@ -92,14 +94,18 @@ private fun HintContent(
 }
 
 @Suppress("MagicNumber")
-// TODO написать нормальный код вычисления местоположения
-private class HintPopupPositionProvider : PopupPositionProvider {
+private class HintPopupPositionProvider(
+    private val offsetX: Float,
+) : PopupPositionProvider {
     override fun calculatePosition(
         anchorBounds: IntRect,
         windowSize: IntSize,
         layoutDirection: LayoutDirection,
         popupContentSize: IntSize,
     ): IntOffset {
-        return IntOffset(anchorBounds.left + 20, anchorBounds.top - 20 - popupContentSize.height)
+        return IntOffset(
+            x = anchorBounds.left + offsetX.toInt(),
+            y = anchorBounds.top - popupContentSize.height - 16,
+        )
     }
 }

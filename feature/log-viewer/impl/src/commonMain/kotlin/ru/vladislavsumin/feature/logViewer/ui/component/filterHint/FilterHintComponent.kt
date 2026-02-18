@@ -6,7 +6,6 @@ import androidx.compose.ui.input.key.Key
 import com.arkivanov.decompose.ComponentContext
 import kotlinx.coroutines.flow.Flow
 import ru.vladislavsumin.core.decompose.components.Component
-import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
@@ -18,7 +17,7 @@ internal class FilterHintComponent(
     @ByCreate currentTokenPrediction: Flow<CurrentTokenPrediction?>,
     @ByCreate currentTags: Flow<Set<String>>,
     @ByCreate context: ComponentContext,
-) : Component(context), ComposeComponent {
+) : Component(context) {
     private val viewModel: FilterHintViewModel = viewModel {
         viewModelFactory.create(currentTokenPrediction, currentTags)
     }
@@ -53,6 +52,10 @@ internal class FilterHintComponent(
         },
     )
 
+    /**
+     * @param offsetX смещение по оси х в пикселях на которое нужно сдвинуть подсказку относительно ее базового
+     * контейнера.
+     */
     @Composable
-    override fun Render(modifier: Modifier) = FilterHintContent(viewModel, modifier)
+    fun Render(modifier: Modifier, offsetX: Float) = FilterHintContent(viewModel, modifier, offsetX)
 }
