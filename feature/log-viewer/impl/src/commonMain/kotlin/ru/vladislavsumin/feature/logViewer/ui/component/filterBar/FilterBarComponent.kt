@@ -11,6 +11,7 @@ import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
+import ru.vladislavsumin.feature.logViewer.LinkedFlow
 import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintComponentFactory
 import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintUiInteractor
 
@@ -24,9 +25,10 @@ import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintUiI
 internal class FilterBarComponent(
     private val viewModelFactory: FilterBarViewModelFactory,
     filterHintComponentFactory: FilterHintComponentFactory,
+    @ByCreate linkedBarState: LinkedFlow<FilterRequestParser.ParserResult>,
     @ByCreate context: ComponentContext,
 ) : Component(context), ComposeComponent {
-    private val viewModel: FilterBarViewModel = viewModel { viewModelFactory.create() }
+    private val viewModel: FilterBarViewModel = viewModel { viewModelFactory.create(linkedBarState) }
     private val filterHintComponent = filterHintComponentFactory.create(
         currentTokenPrediction = viewModel.filterState.map { it.currentTokenPredictionInfo },
         context.childContext("filter-hint"),

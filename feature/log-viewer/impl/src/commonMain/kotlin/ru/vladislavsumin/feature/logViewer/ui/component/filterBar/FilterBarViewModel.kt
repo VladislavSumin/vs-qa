@@ -13,16 +13,21 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import ru.vladislavsumin.core.decompose.components.ViewModel
+import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
+import ru.vladislavsumin.feature.logViewer.LinkedFlow
 import ru.vladislavsumin.feature.logViewer.domain.SavedFiltersRepository
+import ru.vladislavsumin.feature.logViewer.link
 
 @GenerateFactory
 internal class FilterBarViewModel(
     private val globalHotkeyManager: GlobalHotkeyManager,
     private val savedFiltersRepository: SavedFiltersRepository,
-) : ViewModel(), FilterBarUiInteractor {
+    @ByCreate linkedBarState: LinkedFlow<FilterRequestParser.ParserResult>,
+
+    ) : ViewModel(), FilterBarUiInteractor {
     private val filter = MutableStateFlow(TextFieldValue())
 
     private val showHelpMenu = MutableStateFlow(false)
@@ -36,7 +41,7 @@ internal class FilterBarViewModel(
 
     private val filterRequestParser = FilterRequestParser(savedFilters)
 
-    override val filterState: SharedFlow<FilterRequestParser.ParserResult> = filter.map { filter ->
+    val filterState: SharedFlow<FilterRequestParser.ParserResult> = filter.map { filter ->
         filterRequestParser.parse(request = filter.text, cursorPosition = filter.selection.start)
     }.shareIn(viewModelScope, SharingStarted.Eagerly, 1)
 
@@ -81,6 +86,7 @@ internal class FilterBarViewModel(
                 },
             )
         }
+        filterState.link(linkedBarState)
     }
 
     override fun setFilter(data: String) {

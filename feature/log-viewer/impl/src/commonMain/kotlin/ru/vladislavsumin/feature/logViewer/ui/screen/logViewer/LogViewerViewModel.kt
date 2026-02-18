@@ -39,6 +39,8 @@ import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Not
 import java.nio.file.Path
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.io.path.name
+import kotlinx.coroutines.flow.Flow
+import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterRequestParser
 
 @Stable
 @GenerateFactory
@@ -53,6 +55,7 @@ internal class LogViewerViewModel(
     @ByCreate private val bottomBarUiInteractor: BottomBarUiInteractor,
     @ByCreate private val filterBarUiInteractor: FilterBarUiInteractor,
     @ByCreate private val notificationsUiInteractor: NotificationsUiInteractor,
+    @ByCreate private val filterBarState: Flow<FilterRequestParser.ParserResult>,
 ) : NavigationViewModel() {
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
@@ -97,7 +100,7 @@ internal class LogViewerViewModel(
                     logRecentInteractor.updateLogViewerState(
                         path = logPath,
                         searchRequest = search.value.search,
-                        filterRequest = filterBarUiInteractor.filterState.first().requestHighlight.raw,
+                        filterRequest = filterBarState.first().requestHighlight.raw,
                         selectedSearchIndex = selectedSearchIndex.value,
                         scrollPosition = firstVisibleIndex.value,
                     )
@@ -110,7 +113,7 @@ internal class LogViewerViewModel(
 
     val state: StateFlow<LogViewerViewState> = combine(
         logsInteractor.observeLogIndex(
-            filter = filterBarUiInteractor.filterState.mapNotNull { it.searchRequest.getOrNull() },
+            filter = filterBarState.mapNotNull { it.searchRequest.getOrNull() },
             search = search,
         )
             .onEach {
@@ -203,7 +206,7 @@ internal class LogViewerViewModel(
                 isMatchCase = search.matchCase,
                 isRegex = search.useRegex,
                 isBadRegex = !logIndexProgress.isSearchingNow &&
-                    logIndexProgress.lastSuccessIndex.searchIndex is LogIndex.SearchIndex.BadRegex,
+                        logIndexProgress.lastSuccessIndex.searchIndex is LogIndex.SearchIndex.BadRegex,
                 currentSearchResultIndex = selectedSearchIndex,
                 totalSearchResults = logIndexProgress.lastSuccessIndex.searchIndex.index.size,
             ),

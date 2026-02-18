@@ -10,8 +10,10 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.feature.logViewer.LinkedFlow
 import ru.vladislavsumin.feature.logViewer.ui.component.dragAndDropOverlay.DragAndDropOverlayComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponentFactory
+import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterRequestParser
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
@@ -28,17 +30,22 @@ internal class LogViewerScreen(
 ) : Screen(context) {
     private val searchFocusRequester = FocusRequester()
 
+    // TODO конечно это по хорошему через remember тут так для примера что это работает
+    private val filterBarState = LinkedFlow<FilterRequestParser.ParserResult>()
+
     private val filterBarComponent = filterBarComponentFactory.create(
+        linkedBarState = filterBarState,
         context = context.childContext("filter-bar"),
     )
 
-    private val viewModel = viewModel {
+    private val viewModel: LogViewerViewModel = viewModel {
         viewModelFactory.create(
             logPath = params.logPath,
             mappingPath = (intents.tryReceive().getOrNull() as? LogViewerScreenIntent.OpenMapping)?.mappingPath,
             bottomBarUiInteractor = bottomBarUiInteractor,
             filterBarUiInteractor = filterBarComponent.filterBarUiInteractor,
             notificationsUiInteractor = notificationsUiInteractor,
+            filterBarState = filterBarState
         )
     }
 
