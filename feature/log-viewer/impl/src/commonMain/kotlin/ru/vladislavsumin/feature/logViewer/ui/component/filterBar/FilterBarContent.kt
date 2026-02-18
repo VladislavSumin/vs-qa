@@ -2,7 +2,6 @@ package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -56,7 +55,7 @@ internal fun FilterBarContent(
 
 @Composable
 @Suppress("MagicNumber")
-private fun ColumnScope.SavedFilters(viewModel: FilterBarViewModel) {
+private fun SavedFilters(viewModel: FilterBarViewModel) {
     val state = viewModel.state.collectAsState().value.savedFiltersState
     if (!state.showSavedFilters) return
 
