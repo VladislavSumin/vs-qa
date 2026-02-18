@@ -92,7 +92,7 @@ internal fun LogsContent(
         Box(Modifier.weight(1f)) {
             Scaffold(
                 containerColor = Color.Unspecified,
-                floatingActionButton = { ScrollToBottom(state = state, lazyListState = lazyListState) },
+                floatingActionButton = { ScrollToBottom(lazyListState = lazyListState) },
             ) { innerPadding ->
                 SelectionContainer {
                     LazyColumn(
@@ -123,10 +123,7 @@ internal fun LogsContent(
 }
 
 @Composable
-private fun ScrollToBottom(
-    state: LogsViewState,
-    lazyListState: LazyListState,
-) {
+private fun ScrollToBottom(lazyListState: LazyListState) {
     // TODO сделать нормальные расширения для адаптивной верстки
     val withDp = with(LocalDensity.current) {
         LocalWindowInfo.current.containerSize.width.toDp()
@@ -136,7 +133,9 @@ private fun ScrollToBottom(
         AnimatedVisibility(
             visible = lazyListState.isScrollingUp().value,
         ) {
-            FloatingActionButton(onClick = { scope.launch { lazyListState.scrollToItem(state.logs.size, 0) } }) {
+            FloatingActionButton(
+                onClick = { scope.launch { lazyListState.scrollToItem(Int.MAX_VALUE, 0) } },
+            ) {
                 Icon(Icons.Default.ArrowDropDown, null)
             }
         }
