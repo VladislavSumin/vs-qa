@@ -1,6 +1,10 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.logs
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -132,6 +136,8 @@ private fun ScrollToBottom(lazyListState: LazyListState) {
         val scope = rememberCoroutineScope()
         AnimatedVisibility(
             visible = lazyListState.isScrollingUp().value,
+            enter = fadeIn() + scaleIn(initialScale = 0.7f),
+            exit = scaleOut(targetScale = 0.7f) + fadeOut(),
         ) {
             FloatingActionButton(
                 onClick = { scope.launch { lazyListState.scrollToItem(Int.MAX_VALUE, 0) } },
