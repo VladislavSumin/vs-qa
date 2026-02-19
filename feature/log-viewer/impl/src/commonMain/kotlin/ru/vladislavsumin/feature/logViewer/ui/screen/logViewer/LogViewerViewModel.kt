@@ -353,4 +353,7 @@ internal class LogViewerViewModel(
     fun onSearchChange(newValue: String) = search.update { it.copy(search = newValue) }
     fun onClickSearchMatchCase(newValue: Boolean) = search.update { it.copy(matchCase = newValue) }
     fun onClickSearchUseRegex(newValue: Boolean) = search.update { it.copy(useRegex = newValue) }
+    fun onClickScrollToBottom() {
+        logsEvents.trySend(LogsEvents.ScrollToIndex(Int.MAX_VALUE))
+    }
 }

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.FilePresent
 import androidx.compose.material3.HorizontalDivider
@@ -21,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -49,7 +51,7 @@ internal fun LogViewerContent(
 ) {
     Surface(modifier = modifier) {
         val state = viewModel.state.collectAsState()
-        val searchState = derivedStateOf { state.value.searchState }
+        val searchState = remember { derivedStateOf { state.value.searchState } }
         Column {
             SearchBarContent(viewModel, searchState, searchFocusRequester)
             Row(Modifier.weight(1f)) {
@@ -103,6 +105,10 @@ private fun SidePanelContent(
             Icon(Icons.Default.FilePresent, null)
         }
         Spacer(Modifier.weight(1f))
+        QaIconButton(
+            onClick = { viewModel.onClickScrollToBottom() },
+            Modifier.padding(4.dp),
+        ) { Icon(Icons.Default.ArrowDownward, null) }
         HorizontalDivider(color = QaTheme.colorScheme.surface, thickness = 1.5.dp)
     }
 }
