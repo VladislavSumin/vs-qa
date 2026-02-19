@@ -11,12 +11,14 @@ import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.feature.logViewer.LogLogger
+import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 
 @GenerateFactory
 @Stable
 internal class FilterHintViewModel(
     @ByCreate currentTokenPrediction: Flow<CurrentTokenPrediction?>,
     @ByCreate currentTags: Flow<Set<String>>,
+    @ByCreate currentRuns: Flow<List<RunIdInfo>>,
 ) : ViewModel(), FilterHintUiInteractor {
     /**
      * Предпочтение к показу подсказки. Этот флаг еще не означает что подсказка будет отображена.
@@ -32,13 +34,20 @@ internal class FilterHintViewModel(
         selectedItemKey,
         currentTokenPrediction,
         currentTags,
-    ) { showHint, selectedItemKey, currentTokenPrediction, currentTags ->
+        currentRuns,
+    ) { showHint, selectedItemKey, currentTokenPrediction, currentTags, currentRuns ->
         if (showHint && currentTokenPrediction != null) {
             val hints = when (currentTokenPrediction.type) {
                 CurrentTokenPrediction.Type.Keyword -> keywordFilterHintItems
                 CurrentTokenPrediction.Type.SearchType -> typeFilterHintItems
                 CurrentTokenPrediction.Type.LogLevel -> logLevelFilterHintItems
                 CurrentTokenPrediction.Type.Tag -> currentTags.map { KeywordFilterHint(it) }
+                CurrentTokenPrediction.Type.RunNumber -> currentRuns.mapIndexed { index, info ->
+                    KeywordFilterHint(
+                        name = (index + 1).toString(),
+                        hint = info.meta.values.joinToString(),
+                    )
+                }
             }
             val items = hints
                 .filter { it.name.startsWith(currentTokenPrediction.startText, ignoreCase = true) }

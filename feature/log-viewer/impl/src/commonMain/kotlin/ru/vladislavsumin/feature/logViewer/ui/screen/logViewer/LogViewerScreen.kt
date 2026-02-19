@@ -11,6 +11,7 @@ import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.feature.logViewer.LinkedFlow
+import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 import ru.vladislavsumin.feature.logViewer.ui.component.dragAndDropOverlay.DragAndDropOverlayComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponentFactory
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
@@ -30,10 +31,12 @@ internal class LogViewerScreen(
     private val searchFocusRequester = FocusRequester()
 
     // TODO подумать нормально ли делать так?
-    private val currentTagLink = LinkedFlow<Set<String>>()
+    private val currentTagsLink = LinkedFlow<Set<String>>()
+    private val currentRunsLink = LinkedFlow<List<RunIdInfo>>()
 
     private val filterBarComponent = filterBarComponentFactory.create(
-        currentTags = currentTagLink,
+        currentTags = currentTagsLink,
+        currentRuns = currentRunsLink,
         context = context.childContext("filter-bar"),
     )
 
@@ -41,7 +44,8 @@ internal class LogViewerScreen(
         viewModelFactory.create(
             logPath = params.logPath,
             mappingPath = (intents.tryReceive().getOrNull() as? LogViewerScreenIntent.OpenMapping)?.mappingPath,
-            currentTags = currentTagLink,
+            currentTags = currentTagsLink,
+            currentRuns = currentRunsLink,
             bottomBarUiInteractor = bottomBarUiInteractor,
             filterBarUiInteractor = filterBarComponent.filterBarUiInteractor,
             notificationsUiInteractor = notificationsUiInteractor,

@@ -27,5 +27,10 @@ internal data class CurrentTokenPrediction(
          * Тег из списка всех присутствующий для данных логов.
          */
         Tag,
+
+        /**
+         * Номера доступных запусков.
+         */
+        RunNumber,
     }
 }

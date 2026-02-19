@@ -39,6 +39,7 @@ interface LogsInteractor {
     suspend fun attachMapping(path: Path)
 
     fun observeLogs(): Flow<List<LogRecord>>
+    fun observeRuns(): Flow<List<RunIdInfo>?>
 
     /**
      * Строит "Индекс" (результат фильтрации и последующего поиска) на основе [filter] и [search].
@@ -180,6 +181,7 @@ class LogsInteractorImpl(
     }
 
     override fun observeLogs(): Flow<List<LogRecord>> = logs.mapState { it.logs }
+    override fun observeRuns(): Flow<List<RunIdInfo>?> = logs.mapState { it.runIdIndexes }
 
     override fun observeLoadingStatus(): StateFlow<LogsInteractor.LoadingStatus> = loadingStatus
 

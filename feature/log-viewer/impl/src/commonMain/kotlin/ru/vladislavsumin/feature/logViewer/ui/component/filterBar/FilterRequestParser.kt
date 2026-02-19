@@ -73,7 +73,7 @@ internal class FilterRequestParser(
         private val message by literalToken("message")
         val level by literalToken("level")
 
-        private val runNumber by literalToken("runNumber")
+        val runNumber by literalToken("runNumber")
         private val timeAfter by literalToken("timeAfter")
         private val timeBefore by literalToken("timeBefore")
 
@@ -324,6 +324,11 @@ internal class FilterRequestParser(
                         type = CurrentTokenPrediction.Type.Tag,
                     )
 
+                    grammar.runNumber -> CurrentTokenPrediction(
+                        startText = "",
+                        type = CurrentTokenPrediction.Type.RunNumber,
+                    )
+
                     else -> {
                         TokenPredictionLogger.w { "Filter content prediction is not supported now" }
                         null
@@ -355,6 +360,11 @@ internal class FilterRequestParser(
                     grammar.tag -> CurrentTokenPrediction(
                         startText = currentText,
                         type = CurrentTokenPrediction.Type.Tag,
+                    )
+
+                    grammar.runNumber -> CurrentTokenPrediction(
+                        startText = currentText,
+                        type = CurrentTokenPrediction.Type.RunNumber,
                     )
 
                     else -> {

@@ -30,6 +30,7 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
+import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 import ru.vladislavsumin.feature.logViewer.domain.logs.SearchRequest
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
 import ru.vladislavsumin.feature.logViewer.link
@@ -54,7 +55,8 @@ internal class LogViewerViewModel(
     private val dispatchers: VsDispatchers,
     @ByCreate private val logPath: Path,
     @ByCreate mappingPath: Path?,
-    @ByCreate private val currentTags: LinkedFlow<Set<String>>,
+    @ByCreate currentTags: LinkedFlow<Set<String>>,
+    @ByCreate currentRuns: LinkedFlow<List<RunIdInfo>>,
     @ByCreate private val bottomBarUiInteractor: BottomBarUiInteractor,
     @ByCreate private val filterBarUiInteractor: FilterBarUiInteractor,
     @ByCreate private val notificationsUiInteractor: NotificationsUiInteractor,
@@ -114,6 +116,9 @@ internal class LogViewerViewModel(
             .map { it.map { it.raw.substring(it.tag) }.toSet() }
             .distinctUntilChanged()
             .link(currentTags)
+        logsInteractor.observeRuns()
+            .map { it ?: emptyList() }
+            .link(currentRuns)
     }
 
     private var isOpenedOnce = false
