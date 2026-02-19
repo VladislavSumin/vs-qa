@@ -254,7 +254,7 @@ private fun RawLogRecord.toLogRecord(order: Int) = LogRecord(
     thread = thread,
     tag = tag,
     message = message,
-    searchHighlight = null,
+    searchHighlights = null,
     logLevel = logLevel,
 )
 

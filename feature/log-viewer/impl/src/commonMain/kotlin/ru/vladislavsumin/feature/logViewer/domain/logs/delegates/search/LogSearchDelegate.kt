@@ -37,13 +37,17 @@ internal class LogSearchDelegate {
             }
 
             val searchedLogs = logs.parallelStream().map { log ->
-                val math = regex.find(log.raw)
-                val range = math?.range
-                range?.let { log.copy(searchHighlight = it) } ?: log
+                val maths = regex.findAll(log.raw)
+                val ranges = maths.map { it.range }.toList()
+                if (ranges.isNotEmpty()) {
+                    log.copy(searchHighlights = ranges)
+                } else {
+                    log
+                }
             }.toList()
 
             val searchIndex = searchedLogs.mapIndexedNotNull { index, record ->
-                if (record.searchHighlight != null) index else null
+                if (record.searchHighlights != null) index else null
             }
 
             LogIndex(

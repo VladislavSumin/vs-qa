@@ -19,7 +19,7 @@ fun LogRecord.colorize(isSelected: Boolean): AnnotatedString {
         addStyle(SpanStyle(fontStyle = FontStyle.Italic), thread)
         addStyle(SpanStyle(color = logColor.primary, fontWeight = FontWeight.Bold), tag)
         addStyle(SpanStyle(color = logColor.primary), message)
-        searchHighlight?.let { index ->
+        searchHighlights?.forEach { index ->
             addStyle(
                 SpanStyle(
                     background = if (isSelected) {

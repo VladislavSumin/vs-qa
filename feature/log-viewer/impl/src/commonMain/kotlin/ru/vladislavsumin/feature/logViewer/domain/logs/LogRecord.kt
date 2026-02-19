@@ -14,6 +14,6 @@ data class LogRecord(
     val tag: IntRange,
     val message: IntRange,
 
-    val searchHighlight: IntRange?,
+    val searchHighlights: List<IntRange>?,
     val logLevel: LogLevel,
 )
