@@ -1,6 +1,5 @@
 package ru.vladislavsumin.feature.logParser.anime.domain
 
-import ru.vladislavsumin.core.logger.api.logger
 import ru.vladislavsumin.feature.logParser.domain.LogParser
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
 import java.nio.file.Path
@@ -14,7 +13,7 @@ import kotlin.system.measureTimeMillis
 internal class AnimeLogParser : LogParser {
     override suspend fun parseLog(filePath: Path): List<RawLogRecord> {
         // Производительность тут примерно 1,2кк строк в секунду, поэтому дополнительные оптимизации пока не нужны.
-        LogParserLogger.i { "Start parsing file $filePath with ${this.javaClass.simpleName}" }
+        AnimeLogger.i { "Start parsing file $filePath with ${this.javaClass.simpleName}" }
 
         val result = mutableListOf<RawLogRecord>()
         val totalParseTime = measureTimeMillis {
@@ -24,7 +23,7 @@ internal class AnimeLogParser : LogParser {
                 parseLogFile(filePath, result)
             }
         }
-        LogParserLogger.d { "Parsed file $filePath at ${totalParseTime}ms. logs = ${result.size}}" }
+        AnimeLogger.d { "Parsed file $filePath at ${totalParseTime}ms. logs = ${result.size}}" }
         return result
     }
 
@@ -39,7 +38,7 @@ internal class AnimeLogParser : LogParser {
             .sorted()
 
         if (names.all { it.endsWith("zip") }) {
-            LogParserLogger.i { "Use embedded log parser" }
+            AnimeLogger.i { "Use embedded log parser" }
             names.forEach { name ->
                 zip.getInputStream(zip.getEntry(name)).use { internalZipStream ->
                     ZipInputStream(internalZipStream).use { zipStream ->
@@ -49,13 +48,13 @@ internal class AnimeLogParser : LogParser {
                             AnimeEmbeddedLogParser.parseLines(lines, result)
                         } else {
                             // TODO выводить ворнинг о нарушении формата в пользовательский интерфейс
-                            LogParserLogger.e { "Unexpected empty archive $name" }
+                            AnimeLogger.e { "Unexpected empty archive $name" }
                         }
                     }
                 }
             }
         } else {
-            LogParserLogger.i { "Use logcat log parser" }
+            AnimeLogger.i { "Use logcat log parser" }
             names.forEach {
                 zip.getInputStream(zip.getEntry(it)).use { internalZipStream ->
                     val lines = internalZipStream.bufferedReader().lineSequence()
@@ -70,5 +69,3 @@ internal class AnimeLogParser : LogParser {
         AnimeEmbeddedLogParser.parseLines(lines, result)
     }
 }
-
-private val LogParserLogger = logger("anime-log-parser")

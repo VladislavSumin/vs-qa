@@ -16,6 +16,7 @@ internal class AnimeRunIdParser : RunIdParser {
 
         // For embedded logs
         val indexes = mutableListOf<RawRunIdInfo>()
+        var prevPid = -1
         logs.forEachIndexed { index, record ->
             if (
                 record.raw.substring(record.tag) == "OneMeFileLogger" &&
@@ -29,7 +30,13 @@ internal class AnimeRunIdParser : RunIdParser {
                         k.trim() to v.trim()
                     }
                 val version = data["AppVersion"]!!
-                indexes.add(RawRunIdInfo(index, "version" to version))
+                val pid = data["PID"]?.toIntOrNull()
+                if (pid == null || pid != prevPid) {
+                    prevPid = pid ?: -1
+                    indexes.add(RawRunIdInfo(index, "version" to version))
+                } else {
+                    AnimeLogger.d { "Find more then one log start marker for $pid, concatenate it" }
+                }
             }
         }
         return if (indexes.isEmpty()) null else indexes
