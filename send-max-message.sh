@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Вайбкод помойка, мне стыдно честно, но этот ваш qwen бесполезный кусок говна
 # Скрипт для отправки сообщения и файлов в чат MAX
 # Использование: MAX_BOT_TOKEN=<token> ./send-max-message.sh <chat_id> <message> [file1 file2 ...]
 
@@ -174,57 +175,31 @@ echo "🚀 Отправка сообщения в чат MAX"
 echo "   Чат: $CHAT_ID"
 echo "   Сообщение: $MESSAGE"
 
-# Массив для attachments
-ATTACHMENTS="[]"
+# Массив для хранения токенов загруженных файлов
+declare -a FILE_TOKENS
 
-# Если есть файлы, загружаем их
+# Если есть файлы, сначала загружаем их все
 if [ ${#FILES[@]} -gt 0 ]; then
     echo ""
     echo "📎 Файлов для отправки: ${#FILES[@]}"
     echo ""
 
-    ATTACHMENTS="["
-    first=true
-
     for file in "${FILES[@]}"; do
-        file_token=$(upload_file "$file")
-
-        if [ "$first" = true ]; then
-            first=false
-        else
-            ATTACHMENTS+=","
-        fi
-
-        # Добавляем файл в attachments как file с token
-        ATTACHMENTS+="{\"type\":\"file\",\"payload\":{\"token\":\"$file_token\"}}"
+        token=$(upload_file "$file")
+        FILE_TOKENS+=("$token")
     done
-
-    ATTACHMENTS+="]"
 fi
 
-# Формируем тело запроса
-if [ "$ATTACHMENTS" == "[]" ]; then
-    # Только текст
-    REQUEST_BODY=$(cat <<EOF
+# Отправляем текстовое сообщение
+REQUEST_BODY=$(cat <<EOF
 {
-  "text": "$MESSAGE",
-  "format": "markdown"
+  "text": "$MESSAGE"
 }
 EOF
 )
-else
-    # Текст с вложениями
-    REQUEST_BODY=$(cat <<EOF
-{
-  "text": "$MESSAGE",
-  "attachments": $ATTACHMENTS
-}
-EOF
-)
-fi
 
 # Костыль что бы файлы обработались.
-sleep 10
+sleep 20
 
 echo ""
 echo "📤 Отправка сообщения..."
@@ -234,3 +209,28 @@ echo "✅ Сообщение успешно отправлено!"
 echo ""
 echo "Ответ сервера:"
 echo "$response"
+
+# Если есть файлы, отправляем каждый отдельным сообщением
+if [ ${#FILE_TOKENS[@]} -gt 0 ]; then
+    echo ""
+    echo "📤 Отправка файлов отдельными сообщениями..."
+    
+    for token in "${FILE_TOKENS[@]}"; do
+        file_request=$(cat <<EOF
+{
+  "attachments": [
+    {
+      "type": "file",
+      "payload": {
+        "token": "$token"
+      }
+    }
+  ]
+}
+EOF
+)
+        echo "   Отправка файла с token: $token"
+        response=$(send_request "POST" "$API_BASE/messages?chat_id=$CHAT_ID" "$file_request")
+        echo "   ✅ Файл отправлен"
+    done
+fi
