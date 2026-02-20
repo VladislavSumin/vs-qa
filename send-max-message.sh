@@ -89,42 +89,84 @@ upload_file() {
         exit 1
     fi
 
-    echo "📤 Загрузка файла: $file_name"
+    # Определяем тип файла для API
+    local file_type="file"
+    local extension="${file_name##*.}"
+    extension=$(echo "$extension" | tr '[:upper:]' '[:lower:]')
+    
+    case "$extension" in
+        jpg|jpeg|png|gif|tiff|bmp|heic)
+            file_type="image"
+            ;;
+        mp4|mov|mkv|webm|matroska)
+            file_type="video"
+            ;;
+        mp3|wav|m4a)
+            file_type="audio"
+            ;;
+    esac
 
-    local response
-    response=$(curl -s -w "\n%{http_code}" \
+    echo "📤 Загрузка файла: $file_name (тип: $file_type)" >&2
+
+    # Шаг 1: Получаем URL для загрузки
+    local upload_response
+    upload_response=$(curl -s -w "\n%{http_code}" \
         -X POST \
         -H "Authorization: $TOKEN" \
-        -F "file=@\"$file_path\"" \
-        "$API_BASE/uploads")
+        "$API_BASE/uploads?type=$file_type")
 
-    local http_code
-    http_code=$(echo "$response" | tail -n1)
-    local body
-    body=$(echo "$response" | sed '$d')
+    local upload_http_code
+    upload_http_code=$(echo "$upload_response" | tail -n1)
+    local upload_body
+    upload_body=$(echo "$upload_response" | sed '$d')
 
-    if [ "$http_code" -ge 400 ]; then
-        echo "❌ Ошибка загрузки файла (HTTP $http_code): $body" >&2
+    if [ "$upload_http_code" -ge 400 ]; then
+        echo "❌ Ошибка получения URL загрузки (HTTP $upload_http_code): $upload_body" >&2
         exit 1
     fi
 
-    # Извлекаем URL файла из ответа
-    # Предполагаемый формат ответа: {"url": "https://...", "file_id": "..."}
-    local file_url
-    file_url=$(echo "$body" | grep -o '"url"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/"url"[[:space:]]*:[[:space:]]*"\([^"]*\)"/\1/')
+    # Извлекаем URL и token из ответа
+    local upload_url
+    upload_url=$(echo "$upload_body" | grep -o '"url"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/"url"[[:space:]]*:[[:space:]]*"\([^"]*\)"/\1/')
 
-    if [ -z "$file_url" ]; then
-        # Пробуем получить file_id если url нет
-        file_url=$(echo "$body" | grep -o '"file_id"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/"file_id"[[:space:]]*:[[:space:]]*"\([^"]*\)"/\1/')
-    fi
+    local file_token
+    file_token=$(echo "$upload_body" | grep -o '"token"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/"token"[[:space:]]*:[[:space:]]*"\([^"]*\)"/\1/')
 
-    if [ -z "$file_url" ]; then
-        echo "⚠️ Не удалось извлечь URL файла из ответа: $body" >&2
+    if [ -z "$upload_url" ]; then
+        echo "⚠️ Не удалось извлечь URL из ответа: $upload_body" >&2
         exit 1
     fi
 
-    echo "✅ Файл загружен: $file_url"
-    echo "$file_url"
+    # Шаг 2: Загружаем файл по полученному URL
+    local file_response
+    file_response=$(curl -s -w "\n%{http_code}" \
+        -X POST \
+        -H "Authorization: $TOKEN" \
+        -F "data=@\"$file_path\"" \
+        "$upload_url")
+
+    local file_http_code
+    file_http_code=$(echo "$file_response" | tail -n1)
+    local file_body
+    file_body=$(echo "$file_response" | sed '$d')
+
+    if [ "$file_http_code" -ge 400 ]; then
+        echo "❌ Ошибка загрузки файла (HTTP $file_http_code): $file_body" >&2
+        exit 1
+    fi
+
+    # Извлекаем token из ответа после загрузки (если не получили на шаге 1)
+    if [ -z "$file_token" ]; then
+        file_token=$(echo "$file_body" | grep -o '"token"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | sed 's/"token"[[:space:]]*:[[:space:]]*"\([^"]*\)"/\1/')
+    fi
+
+    if [ -z "$file_token" ]; then
+        echo "⚠️ Не удалось извлечь token из ответа: $file_body" >&2
+        exit 1
+    fi
+
+    echo "✅ Файл загружен, $file_name" >&2
+    echo "$file_token"
 }
 
 # Основной скрипт
@@ -145,7 +187,7 @@ if [ ${#FILES[@]} -gt 0 ]; then
     first=true
 
     for file in "${FILES[@]}"; do
-        file_url=$(upload_file "$file")
+        file_token=$(upload_file "$file")
 
         if [ "$first" = true ]; then
             first=false
@@ -153,8 +195,8 @@ if [ ${#FILES[@]} -gt 0 ]; then
             ATTACHMENTS+=","
         fi
 
-        # Добавляем файл в attachments как document
-        ATTACHMENTS+="{\"type\":\"document\",\"payload\":{\"url\":\"$file_url\"}}"
+        # Добавляем файл в attachments как file с token
+        ATTACHMENTS+="{\"type\":\"file\",\"payload\":{\"token\":\"$file_token\"}}"
     done
 
     ATTACHMENTS+="]"
@@ -165,7 +207,8 @@ if [ "$ATTACHMENTS" == "[]" ]; then
     # Только текст
     REQUEST_BODY=$(cat <<EOF
 {
-  "text": "$MESSAGE"
+  "text": "$MESSAGE",
+  "format": "markdown"
 }
 EOF
 )
@@ -180,8 +223,12 @@ EOF
 )
 fi
 
+# Костыль что бы файлы обработались.
+sleep 10
+
 echo ""
 echo "📤 Отправка сообщения..."
+echo "$REQUEST_BODY"
 response=$(send_request "POST" "$API_BASE/messages?chat_id=$CHAT_ID" "$REQUEST_BODY")
 
 echo "✅ Сообщение успешно отправлено!"
