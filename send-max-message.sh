@@ -228,7 +228,6 @@ sleep 10
 
 echo ""
 echo "📤 Отправка сообщения..."
-echo "$REQUEST_BODY"
 response=$(send_request "POST" "$API_BASE/messages?chat_id=$CHAT_ID" "$REQUEST_BODY")
 
 echo "✅ Сообщение успешно отправлено!"
