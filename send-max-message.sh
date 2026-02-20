@@ -96,7 +96,7 @@ upload_file() {
         -X POST \
         -H "Authorization: $TOKEN" \
         -F "file=@\"$file_path\"" \
-        "$API_BASE/upload")
+        "$API_BASE/uploads")
 
     local http_code
     http_code=$(echo "$response" | tail -n1)
@@ -165,9 +165,7 @@ if [ "$ATTACHMENTS" == "[]" ]; then
     # Только текст
     REQUEST_BODY=$(cat <<EOF
 {
-  "chat_id": "$CHAT_ID",
-  "text": "$MESSAGE",
-  "format": "plain"
+  "text": "$MESSAGE"
 }
 EOF
 )
@@ -175,9 +173,7 @@ else
     # Текст с вложениями
     REQUEST_BODY=$(cat <<EOF
 {
-  "chat_id": "$CHAT_ID",
   "text": "$MESSAGE",
-  "format": "plain",
   "attachments": $ATTACHMENTS
 }
 EOF
@@ -186,7 +182,7 @@ fi
 
 echo ""
 echo "📤 Отправка сообщения..."
-response=$(send_request "POST" "$API_BASE/messages" "$REQUEST_BODY")
+response=$(send_request "POST" "$API_BASE/messages?chat_id=$CHAT_ID" "$REQUEST_BODY")
 
 echo "✅ Сообщение успешно отправлено!"
 echo ""
