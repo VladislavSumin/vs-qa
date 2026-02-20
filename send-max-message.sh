@@ -194,6 +194,7 @@ fi
 REQUEST_BODY=$(cat <<EOF
 {
   "text": "$MESSAGE"
+  "format": "markdown"
 }
 EOF
 )
