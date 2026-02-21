@@ -6,9 +6,9 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import kotlin.math.abs
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
+import kotlin.math.abs
 
 @Composable
 fun LogRecord.colorize(isSelected: Boolean): AnnotatedString {

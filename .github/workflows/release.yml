@@ -85,7 +85,7 @@ jobs:
       - name: Send release notification to MAX chat
         run: |
           cd vs-qa
-          chmod +x send-max-message.sh
+          chmod +x ./scripts/send-max-message.sh
           ./scripts/send-max-message.sh "${{ vars.MAX_CHAT_ID }}" "🚀 **Release ${{ github.ref_name }}**
 
           ${{ steps.changelog.outputs.changelog }}" \

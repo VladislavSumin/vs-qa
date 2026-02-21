@@ -4,12 +4,12 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.Transient
 
 @Immutable
 @Suppress("MagicNumber")
@@ -76,6 +76,22 @@ private fun defaultTagColors(): List<Color> = listOf(
     Color(0xFF6AE8C9), // аква
     Color(0xFF8AE87A), // салатовый
     Color(0xFFE8B86A), // янтарный
+    Color(0xFF5CB8E8), // тёмно-голубой
+    Color(0xFF4AC9A8), // мятный
+    Color(0xFF6BC95A), // изумрудный
+    Color(0xFF9ED95A), // жёлто-зелёный
+    Color(0xFFD9C05A), // золотистый
+    Color(0xFFD98A4A), // тёмно-оранжевый
+    Color(0xFFD96A5A), // терракотовый
+    Color(0xFFD95A8E), // малиновый
+    Color(0xFFB86AD9), // пурпурный
+    Color(0xFF906AD9), // индиго
+    Color(0xFF6A7AD9), // перванш
+    Color(0xFF5A98D9), // стальной синий
+    Color(0xFF5AD9B8), // циан
+    Color(0xFF7AD96A), // зелёное яблоко
+    Color(0xFFD9A85A), // медовый
+    Color(0xFFC98AD9), // орхидея
 )
 
 /**
