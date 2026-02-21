@@ -10,6 +10,7 @@ import ru.vladislavsumin.core.navigation.host.childNavigationPages
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenFactory
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarComponentFactory
+import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenFactory
 import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenParams
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsComponentFactory
 
@@ -18,6 +19,7 @@ internal class RootScreen(
     viewModelFactory: RootViewModelFactory,
     bottomBarComponentFactory: BottomBarComponentFactory,
     logViewerScreenFactory: LogViewerScreenFactory,
+    homeScreenFactory: HomeScreenFactory,
     notificationsComponentFactory: NotificationsComponentFactory,
     context: ComponentContext,
 ) : Screen(context) {
@@ -33,6 +35,13 @@ internal class RootScreen(
                 notificationsUiInteractor = notificationsComponent.notificationsUiInteractor,
                 params = params,
                 intents = intents,
+                context = context,
+            )
+        }
+        registerCustomFactory { context, params, _ ->
+            homeScreenFactory.create(
+                notificationsUiInteractor = notificationsComponent.notificationsUiInteractor,
+                params = params,
                 context = context,
             )
         }

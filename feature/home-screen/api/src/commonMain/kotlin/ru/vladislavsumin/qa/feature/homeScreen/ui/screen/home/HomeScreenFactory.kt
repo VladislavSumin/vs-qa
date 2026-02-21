@@ -1,14 +1,13 @@
-package ru.vladislavsumin.feature.logRecent.ui.component.logRecent
+package ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home
 
 import com.arkivanov.decompose.ComponentContext
-import ru.vladislavsumin.core.decompose.compose.ComposeComponent
+import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
-import java.nio.file.Path
 
-interface LogRecentComponentFactory {
+interface HomeScreenFactory {
     fun create(
         notificationsUiInteractor: NotificationsUiInteractor,
-        onOpenLogRecent: (path: Path) -> Unit,
+        params: HomeScreenParams,
         context: ComponentContext,
-    ): ComposeComponent
+    ): Screen
 }

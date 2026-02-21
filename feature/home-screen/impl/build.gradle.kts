@@ -5,6 +5,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.feature.notifications.api)
             implementation(projects.feature.adbDeviceList.api)
             implementation(projects.feature.logRecent.api)
             implementation(projects.feature.logViewer.api)

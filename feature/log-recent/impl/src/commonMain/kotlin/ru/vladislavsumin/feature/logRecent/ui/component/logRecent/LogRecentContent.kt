@@ -31,7 +31,11 @@ internal fun LogRecentContent(
             Row(
                 Modifier
                     .clip(RoundedCornerShape(4.dp))
-                    .clickable { onOpenLogRecent(recentLog.path) }
+                    .clickable {
+                        if (viewModel.checkRecentCanBeOpened(recentLog)) {
+                            onOpenLogRecent(recentLog.path)
+                        }
+                    }
                     .padding(vertical = 2.dp, horizontal = 4.dp),
             ) {
                 Text(recentLog.path.toString())
