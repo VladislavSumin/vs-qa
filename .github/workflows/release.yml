@@ -81,16 +81,3 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Send release notification to MAX chat
-        run: |
-          cd vs-qa
-          chmod +x send-max-message.sh
-          ./send-max-message.sh "${{ vars.MAX_CHAT_ID }}" "🚀 **Release ${{ github.ref_name }}**
-
-          ${{ steps.changelog.outputs.changelog }}" \
-            ./app/build/libs/vs-qa.jar \
-            ./app/build/libs/vs-qa-min.jar \
-            ./app/build/outputs/apk/release/app-release.apk
-        env:
-          MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
