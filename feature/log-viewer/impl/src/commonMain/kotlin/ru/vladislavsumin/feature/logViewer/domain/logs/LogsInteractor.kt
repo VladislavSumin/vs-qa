@@ -248,6 +248,7 @@ private fun RawLogRecord.toLogRecord(order: Int) = LogRecord(
     order = order,
     raw = raw,
     time = time,
+    timeDate = timeDate,
     timeInstant = timeInstant,
     level = level,
     processId = processId,

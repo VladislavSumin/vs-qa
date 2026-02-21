@@ -59,6 +59,7 @@ import ru.vladislavsumin.feature.logViewer.ui.utils.VsVerticalScrollbar
 import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
 
 @Composable
+@Suppress("LongMethod")
 internal fun LogsContent(
     onFirstVisibleIndexChange: (Int) -> Unit,
     events: ReceiveChannel<LogsEvents>,
@@ -114,7 +115,12 @@ internal fun LogsContent(
                                 }
                             }
                             items(sectionInfo.logs, { it.order }) {
-                                Record(it, it.order == state.currentSelectedItemOrder, textSizeDp)
+                                Record(
+                                    log = it,
+                                    isSelected = it.order == state.currentSelectedItemOrder,
+                                    stripDate = state.stripDate,
+                                    textSizeDp = textSizeDp,
+                                )
                             }
                         }
                     }
@@ -180,6 +186,7 @@ private fun Header(
 private fun Record(
     log: LogRecord,
     isSelected: Boolean,
+    stripDate: Boolean,
     textSizeDp: Dp,
 ) {
     Box {
@@ -197,7 +204,7 @@ private fun Record(
             )
         }
         Text(
-            text = log.colorize(isSelected),
+            text = log.colorize(isSelected, stripDate),
             style = MaterialTheme.typography.bodyMedium,
             fontFamily = FontFamily.Monospace,
             modifier = Modifier

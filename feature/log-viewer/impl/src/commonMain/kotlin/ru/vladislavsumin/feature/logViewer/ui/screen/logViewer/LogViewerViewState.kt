@@ -15,6 +15,7 @@ internal data class LogViewerViewState(
     val logsViewState: LogsViewState,
     val searchState: SearchBarViewState,
     val isMappingApplied: Boolean,
+    val isStripDate: Boolean,
     val showSelectMappingDialog: Boolean,
     val logRecordsAfterApplyFilter: Int,
 ) {
@@ -24,6 +25,7 @@ internal data class LogViewerViewState(
             logsViewState = LogsViewState.STUB,
             searchState = SearchBarViewState.STUB,
             isMappingApplied = false,
+            isStripDate = false,
             showSelectMappingDialog = false,
             logRecordsAfterApplyFilter = 0,
         )

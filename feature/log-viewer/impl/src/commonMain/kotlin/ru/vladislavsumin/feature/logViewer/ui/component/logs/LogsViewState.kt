@@ -10,6 +10,7 @@ internal data class LogsViewState(
     val currentSelectedItemOrder: Int,
     val showRunNumbers: Boolean,
     val maxLogNumberDigits: Int,
+    val stripDate: Boolean,
 ) {
 
     data class SectionInfo(
@@ -25,6 +26,7 @@ internal data class LogsViewState(
             currentSelectedItemOrder = -1,
             showRunNumbers = false,
             maxLogNumberDigits = 0,
+            stripDate = false,
         )
     }
 }

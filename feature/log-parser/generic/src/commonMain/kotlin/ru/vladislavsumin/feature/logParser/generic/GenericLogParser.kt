@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter
 abstract class GenericLogParser {
     protected abstract val logRegex: Regex
     protected abstract val timeGroupId: Int
+    protected abstract val timeDateGroupId: Int
     protected abstract val processIdGroupId: Int?
     protected abstract val threadGroupId: Int
     protected abstract val levelGroupId: Int
@@ -49,6 +50,7 @@ abstract class GenericLogParser {
                 cache = RawLogRecord(
                     raw = "",
                     time = matches.groups[timeGroupId]!!.range,
+                    timeDate = matches.groups[timeDateGroupId]!!.range,
                     timeInstant = OffsetDateTime.parse(
                         matches.groups[timeGroupId]!!.value,
                         dateTimeFormatter,

@@ -16,6 +16,7 @@ data class RawLogRecord(
     val raw: String,
 
     val time: IntRange,
+    val timeDate: IntRange,
     val timeInstant: Instant,
 
     val level: IntRange,

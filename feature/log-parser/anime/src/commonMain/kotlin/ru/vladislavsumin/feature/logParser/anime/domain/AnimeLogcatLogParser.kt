@@ -90,6 +90,7 @@ object AnimeLogcatLogParser {
                 cache = RawLogRecord(
                     raw = "",
                     time = dateRange,
+                    timeDate = IntRange(0, 0), // TODO поддержать
                     timeInstant = OffsetDateTime.parse(date, DATE_FORMATTER).toInstant(),
                     processId = pidRange,
                     thread = tidRange,

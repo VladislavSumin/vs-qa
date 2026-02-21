@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.CopyAll
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.FilePresent
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -103,6 +104,13 @@ private fun SidePanelContent(
             Modifier.padding(4.dp),
         ) {
             Icon(Icons.Default.FilePresent, null)
+        }
+        QaToggleIconButton(
+            checked = state.value.isStripDate,
+            onCheckedChange = { viewModel.onClickStipDate() },
+            Modifier.padding(4.dp),
+        ) {
+            Icon(Icons.Default.DateRange, null)
         }
         Spacer(Modifier.weight(1f))
         QaIconButton(

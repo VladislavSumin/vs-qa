@@ -9,7 +9,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -18,6 +17,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
+import ru.vladislavsumin.core.coroutines.utils.combine
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
@@ -64,6 +64,7 @@ internal class LogViewerViewModel(
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
     private val showSelectMappingDialog = MutableStateFlow(false)
+    private val stripDate = MutableStateFlow(false)
     private val firstVisibleIndex = MutableStateFlow(0)
 
     private val logsInteractor: LogsInteractor = LogsInteractorImpl(
@@ -166,9 +167,10 @@ internal class LogViewerViewModel(
         selectedSearchIndex,
         logsInteractor.observeMappingStatus(),
         showSelectMappingDialog,
+        stripDate,
     ) {
             logIndexProgress, search, selectedSearchIndex, mappingStatus,
-            showSelectMappingDialog,
+            showSelectMappingDialog, stripDate,
         ->
 
         val runIdOrders = logIndexProgress.lastSuccessIndex.runIdOrders
@@ -212,6 +214,7 @@ internal class LogViewerViewModel(
                 currentSelectedItemOrder = currentSelectedItemOrder,
                 showRunNumbers = runIdOrders != null,
                 maxLogNumberDigits = (logIndexProgress.lastSuccessIndex.totalLogRecords + 1).toString().length,
+                stripDate = stripDate,
             ),
             searchState = SearchBarViewState(
                 searchRequest = search.search,
@@ -226,6 +229,7 @@ internal class LogViewerViewModel(
                 LogsInteractor.MappingStatus.Attached -> true
                 LogsInteractor.MappingStatus.NotAttached -> false
             },
+            isStripDate = stripDate,
             showSelectMappingDialog = showSelectMappingDialog,
             logRecordsAfterApplyFilter = logIndexProgress.lastSuccessIndex.logs.size,
         )
@@ -314,6 +318,10 @@ internal class LogViewerViewModel(
             logsInteractor.attachMapping(result)
             logRecentInteractor.updateMappingPath(logPath, result)
         }
+    }
+
+    fun onClickStipDate() {
+        stripDate.update { !it }
     }
 
     fun onDragAndDropLogsFile(path: Path) {

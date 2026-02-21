@@ -11,12 +11,15 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import kotlin.math.abs
 
 @Composable
-fun LogRecord.colorize(isSelected: Boolean): AnnotatedString {
+fun LogRecord.colorize(
+    isSelected: Boolean,
+    stripDate: Boolean,
+): AnnotatedString {
     val logColor = LevelColors.getLevelColor(logLevel)
     val tagColors = QaTheme.colorScheme.tagColors
     val tagText = raw.substring(tag)
     val tagColor = tagColors[abs(tagText.hashCode()) % tagColors.size]
-    return buildAnnotatedString {
+    val result = buildAnnotatedString {
         append(raw)
         addStyle(SpanStyle(color = QaTheme.colorScheme.onSurfaceVariant), time)
         addStyle(SpanStyle(background = logColor.background, color = logColor.onBackground), level)
@@ -35,6 +38,13 @@ fun LogRecord.colorize(isSelected: Boolean): AnnotatedString {
                 index,
             )
         }
+    }
+    return if (stripDate) {
+        // TODO это работает только для даты расположенной в начале записи
+        check(timeDate.first == 0) { "timeDate not at start, not supported now!" }
+        result.subSequence(timeDate.last + 2, raw.length)
+    } else {
+        result
     }
 }
 
