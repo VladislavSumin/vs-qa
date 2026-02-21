@@ -9,6 +9,7 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.Transient
 
 @Immutable
 @Suppress("MagicNumber")
@@ -53,6 +54,28 @@ data class QaColorScheme(
         primary = Color(0xFFBBBBBB),
         background = Color(0xFFD6D6D6),
     ),
+
+    @Transient
+    val tagColors: List<Color> = defaultTagColors(),
+)
+
+@Suppress("MagicNumber")
+private fun defaultTagColors(): List<Color> = listOf(
+    Color(0xFF6EC1E8), // голубой
+    Color(0xFF5DD9B5), // бирюзовый
+    Color(0xFF7ED96B), // зелёный
+    Color(0xFFB8E86A), // лайм
+    Color(0xFFE8D46A), // жёлтый
+    Color(0xFFE8A85C), // оранжевый
+    Color(0xFFE87A6A), // коралловый
+    Color(0xFFE86A9E), // розовый
+    Color(0xFFC97AE8), // сиреневый
+    Color(0xFFA87AE8), // фиолетовый
+    Color(0xFF7A8AE8), // синий
+    Color(0xFF6AB8E8), // светло-синий
+    Color(0xFF6AE8C9), // аква
+    Color(0xFF8AE87A), // салатовый
+    Color(0xFFE8B86A), // янтарный
 )
 
 /**
