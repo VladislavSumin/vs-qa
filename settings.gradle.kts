@@ -1,6 +1,10 @@
 apply { from("build-logic/common-settings.gradle.kts") }
 
-includeBuild("../vs-core")
+val useVsCoreSources = extra["ru.vs.core.useVsCoreSources"].toString().toBoolean()
+if (useVsCoreSources) {
+    includeBuild("../vs-core")
+}
+
 pluginManagement {
     includeBuild("build-logic")
 }
