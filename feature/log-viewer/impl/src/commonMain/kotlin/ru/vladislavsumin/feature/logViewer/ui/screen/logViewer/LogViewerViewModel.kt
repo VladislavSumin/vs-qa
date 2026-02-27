@@ -17,7 +17,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
+import ru.vladislavsumin.core.coroutines.utils.LinkedFlow
 import ru.vladislavsumin.core.coroutines.utils.combine
+import ru.vladislavsumin.core.coroutines.utils.linkTo
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
@@ -25,7 +27,6 @@ import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractor
-import ru.vladislavsumin.feature.logViewer.LinkedFlow
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
@@ -33,7 +34,6 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 import ru.vladislavsumin.feature.logViewer.domain.logs.SearchRequest
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
-import ru.vladislavsumin.feature.logViewer.link
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarUiInteractor
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsEvents
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
@@ -116,10 +116,10 @@ internal class LogViewerViewModel(
         logsInteractor.observeLogs()
             .map { it.map { it.raw.substring(it.tag) }.toSet() }
             .distinctUntilChanged()
-            .link(currentTags)
+            .linkTo(currentTags)
         logsInteractor.observeRuns()
             .map { it ?: emptyList() }
-            .link(currentRuns)
+            .linkTo(currentRuns)
     }
 
     private var isOpenedOnce = false

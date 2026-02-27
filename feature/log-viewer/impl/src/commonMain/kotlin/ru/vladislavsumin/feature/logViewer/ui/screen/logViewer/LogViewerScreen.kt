@@ -7,10 +7,10 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.receiveAsFlow
+import ru.vladislavsumin.core.coroutines.utils.LinkedFlow
 import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
-import ru.vladislavsumin.feature.logViewer.LinkedFlow
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 import ru.vladislavsumin.feature.logViewer.ui.component.dragAndDropOverlay.DragAndDropOverlayComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponentFactory
