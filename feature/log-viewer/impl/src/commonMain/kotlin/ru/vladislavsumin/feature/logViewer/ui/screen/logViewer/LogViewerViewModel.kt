@@ -169,9 +169,10 @@ internal class LogViewerViewModel(
         logsInteractor.observeMappingStatus(),
         showSelectMappingDialog,
         logViewerSettingsRepository.isStripDateEnabled,
+        logViewerSettingsRepository.logFontSize,
     ) {
             logIndexProgress, search, selectedSearchIndex, mappingStatus,
-            showSelectMappingDialog, stripDate,
+            showSelectMappingDialog, stripDate, logFontSize,
         ->
 
         val runIdOrders = logIndexProgress.lastSuccessIndex.runIdOrders
@@ -216,6 +217,7 @@ internal class LogViewerViewModel(
                 showRunNumbers = runIdOrders != null,
                 maxLogNumberDigits = (logIndexProgress.lastSuccessIndex.totalLogRecords + 1).toString().length,
                 stripDate = stripDate,
+                logFontSize = logFontSize,
             ),
             searchState = SearchBarViewState(
                 searchRequest = search.search,
@@ -323,6 +325,14 @@ internal class LogViewerViewModel(
 
     fun onClickStripDate() = launch {
         logViewerSettingsRepository.setIsStripDateEnabled(!state.value.isStripDate)
+    }
+
+    fun onClickFontUp() = launch {
+        logViewerSettingsRepository.setLogFontSize(state.value.logsViewState.logFontSize + 1)
+    }
+
+    fun onClickFontDown() = launch {
+        logViewerSettingsRepository.setLogFontSize(state.value.logsViewState.logFontSize - 1)
     }
 
     fun onDragAndDropLogsFile(path: Path) {

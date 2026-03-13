@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -71,7 +72,10 @@ internal fun LogsContent(
     val maxLogNumberDigits = state.maxLogNumberDigits
     val textSizeDp = measureTextWidth(
         " ".repeat(maxLogNumberDigits),
-        MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace),
+        MaterialTheme.typography.bodyMedium.copy(
+            fontFamily = FontFamily.Monospace,
+            fontSize = state.logFontSize.sp,
+        ),
     )
     val lazyListState = rememberLazyListState()
 
@@ -110,6 +114,7 @@ internal fun LogsContent(
                                     Header(
                                         runNumber + 1,
                                         sectionInfo.meta,
+                                        state.logFontSize + 2,
                                         textSizeDp,
                                     )
                                 }
@@ -119,6 +124,7 @@ internal fun LogsContent(
                                     log = it,
                                     isSelected = it.order == state.currentSelectedItemOrder,
                                     stripDate = state.stripDate,
+                                    fontSize = state.logFontSize,
                                     textSizeDp = textSizeDp,
                                 )
                             }
@@ -158,6 +164,7 @@ private fun ScrollToBottom(lazyListState: LazyListState) {
 private fun Header(
     runNumber: Int,
     meta: Map<String, String>?,
+    fontSize: Int,
     textSizeDp: Dp,
 ) {
     Row(
@@ -178,7 +185,12 @@ private fun Header(
                 append(" ")
             }
         }
-        Text(text, Modifier.padding(start = textSizeDp + 13.dp + 8.dp, end = 4.dp))
+        Text(
+            text = text,
+            fontSize = fontSize.sp,
+            lineHeight = fontSize.sp * 1.42,
+            modifier = Modifier.padding(start = textSizeDp + 13.dp + 8.dp, end = 4.dp),
+        )
     }
 }
 
@@ -187,6 +199,7 @@ private fun Record(
     log: LogRecord,
     isSelected: Boolean,
     stripDate: Boolean,
+    fontSize: Int,
     textSizeDp: Dp,
 ) {
     Box {
@@ -196,6 +209,9 @@ private fun Record(
                 text = "${log.order + 1}",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
+                fontSize = fontSize.sp,
+                // TODO вынести в константу что ли?
+                lineHeight = fontSize.sp * 1.42,
                 fontFamily = FontFamily.Monospace,
                 textAlign = TextAlign.End,
                 modifier = Modifier
@@ -206,6 +222,8 @@ private fun Record(
         Text(
             text = log.colorize(isSelected, stripDate),
             style = MaterialTheme.typography.bodyMedium,
+            fontSize = fontSize.sp,
+            lineHeight = fontSize.sp * 1.42,
             fontFamily = FontFamily.Monospace,
             modifier = Modifier
                 .fillMaxWidth() // Что бы выделение работало после конца текста

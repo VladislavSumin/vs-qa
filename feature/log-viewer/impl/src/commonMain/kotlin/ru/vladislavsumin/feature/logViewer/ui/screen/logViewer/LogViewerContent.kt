@@ -15,6 +15,8 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.FilePresent
+import androidx.compose.material.icons.filled.ZoomIn
+import androidx.compose.material.icons.filled.ZoomOut
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
@@ -111,6 +113,22 @@ private fun SidePanelContent(
             Modifier.padding(4.dp),
         ) {
             Icon(Icons.Default.DateRange, null)
+        }
+        QaIconButton(
+            onClick = { viewModel.onClickFontUp() },
+            Modifier.padding(4.dp),
+        ) {
+            Icon(Icons.Default.ZoomIn, null)
+        }
+        Text(
+            state.value.logsViewState.logFontSize.toString(),
+            Modifier.padding(4.dp),
+        )
+        QaIconButton(
+            onClick = { viewModel.onClickFontDown() },
+            Modifier.padding(4.dp),
+        ) {
+            Icon(Icons.Default.ZoomOut, null)
         }
         Spacer(Modifier.weight(1f))
         QaIconButton(

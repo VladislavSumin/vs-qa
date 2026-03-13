@@ -11,6 +11,7 @@ internal data class LogsViewState(
     val showRunNumbers: Boolean,
     val maxLogNumberDigits: Int,
     val stripDate: Boolean,
+    val logFontSize: Int,
 ) {
 
     data class SectionInfo(
@@ -27,6 +28,7 @@ internal data class LogsViewState(
             showRunNumbers = false,
             maxLogNumberDigits = 0,
             stripDate = false,
+            logFontSize = 14,
         )
     }
 }
