@@ -332,7 +332,7 @@ internal class LogViewerViewModel(
     }
 
     fun onClickFontDown() = launch {
-        logViewerSettingsRepository.setLogFontSize(state.value.logsViewState.logFontSize - 1)
+        logViewerSettingsRepository.setLogFontSize((state.value.logsViewState.logFontSize - 1).coerceAtLeast(1))
     }
 
     fun onDragAndDropLogsFile(path: Path) {

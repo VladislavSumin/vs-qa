@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -23,6 +25,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.ui.QaTextField
@@ -39,6 +42,7 @@ import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerViewMode
 internal fun SearchBarContent(
     viewModel: LogViewerViewModel,
     state: State<SearchBarViewState>,
+    showSideMenu: MutableState<Boolean>,
     focusRequester: FocusRequester,
     modifier: Modifier = Modifier,
 ) {
@@ -119,6 +123,16 @@ internal fun SearchBarContent(
                         checked = state.isRegex,
                         onCheckedChange = viewModel::onClickSearchUseRegex,
                     ) { Text(".*") }
+
+                    val withDp = with(LocalDensity.current) {
+                        LocalWindowInfo.current.containerSize.width.toDp()
+                    }
+                    if (withDp <= 600.dp) {
+                        QaToggleIconButton(
+                            checked = showSideMenu.value,
+                            onCheckedChange = { showSideMenu.value = it },
+                        ) { Icon(Icons.Default.MoreVert, null) }
+                    }
                 }
             },
         )

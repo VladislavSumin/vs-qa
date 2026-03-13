@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -55,15 +56,17 @@ internal fun LogViewerContent(
     Surface(modifier = modifier) {
         val state = viewModel.state.collectAsState()
         val searchState = remember { derivedStateOf { state.value.searchState } }
+        // TODO вынести эту логику в viewModel.
+        val showSideMenu = remember { mutableStateOf(false) }
         Column {
-            SearchBarContent(viewModel, searchState, searchFocusRequester)
+            SearchBarContent(viewModel, searchState, showSideMenu, searchFocusRequester)
             Row(Modifier.weight(1f)) {
                 logsComponent.Render(Modifier.weight(1f))
                 // TODO сделать нормальные расширения для адаптивной верстки
                 val withDp = with(LocalDensity.current) {
                     LocalWindowInfo.current.containerSize.width.toDp()
                 }
-                if (withDp > 600.dp) {
+                if (withDp > 600.dp || showSideMenu.value) {
                     SidePanelContent(viewModel, state)
                 }
             }
