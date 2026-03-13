@@ -107,7 +107,7 @@ private fun SidePanelContent(
         }
         QaToggleIconButton(
             checked = state.value.isStripDate,
-            onCheckedChange = { viewModel.onClickStipDate() },
+            onCheckedChange = { viewModel.onClickStripDate() },
             Modifier.padding(4.dp),
         ) {
             Icon(Icons.Default.DateRange, null)

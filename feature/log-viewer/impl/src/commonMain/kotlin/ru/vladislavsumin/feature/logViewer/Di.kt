@@ -5,8 +5,10 @@ import org.kodein.di.bindSingleton
 import ru.vladislavsumin.core.di.Modules
 import ru.vladislavsumin.core.di.i
 import ru.vladislavsumin.core.navigation.registration.bindGenericNavigation
-import ru.vladislavsumin.feature.logViewer.domain.SavedFiltersRepository
-import ru.vladislavsumin.feature.logViewer.domain.SavedFiltersRepositoryImpl
+import ru.vladislavsumin.feature.logViewer.repository.LogViewerSettingsRepository
+import ru.vladislavsumin.feature.logViewer.repository.LogViewerSettingsRepositoryImpl
+import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
+import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepositoryImpl
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponentFactory
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarViewModelFactory
 import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintComponentFactory
@@ -18,6 +20,7 @@ import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerViewMode
 
 fun Modules.featureLogViewer() = DI.Module("feature-logViewer") {
     bindSingleton<SavedFiltersRepository> { SavedFiltersRepositoryImpl(i()) }
+    bindSingleton<LogViewerSettingsRepository> { LogViewerSettingsRepositoryImpl(i()) }
 
     bindGenericNavigation { NavigationRegistrarImpl() }
 
@@ -27,7 +30,7 @@ fun Modules.featureLogViewer() = DI.Module("feature-logViewer") {
     }
 
     bindSingleton<LogViewerScreenFactory> {
-        val vmf = LogViewerViewModelFactory(i(), i(), i(), i(), i())
+        val vmf = LogViewerViewModelFactory(i(), i(), i(), i(), i(), i())
         LogViewerScreenFactoryImpl(vmf, i())
     }
 

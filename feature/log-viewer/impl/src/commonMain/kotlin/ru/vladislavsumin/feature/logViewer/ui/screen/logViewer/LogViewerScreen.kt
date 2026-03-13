@@ -13,6 +13,7 @@ import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 import ru.vladislavsumin.feature.logViewer.ui.component.dragAndDropOverlay.DragAndDropOverlayComponent
+import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponentFactory
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
@@ -34,7 +35,7 @@ internal class LogViewerScreen(
     private val currentTagsLink = LinkedFlow<Set<String>>()
     private val currentRunsLink = LinkedFlow<List<RunIdInfo>>()
 
-    private val filterBarComponent = filterBarComponentFactory.create(
+    private val filterBarComponent: FilterBarComponent = filterBarComponentFactory.create(
         currentTags = currentTagsLink,
         currentRuns = currentRunsLink,
         context = context.childContext("filter-bar"),

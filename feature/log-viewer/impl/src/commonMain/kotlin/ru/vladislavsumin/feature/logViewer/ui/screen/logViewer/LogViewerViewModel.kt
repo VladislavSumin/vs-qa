@@ -34,6 +34,7 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 import ru.vladislavsumin.feature.logViewer.domain.logs.SearchRequest
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
+import ru.vladislavsumin.feature.logViewer.repository.LogViewerSettingsRepository
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarUiInteractor
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsEvents
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
@@ -49,6 +50,7 @@ import kotlin.io.path.name
 @GenerateFactory
 internal class LogViewerViewModel(
     logParserProvider: LogParserProvider,
+    private val logViewerSettingsRepository: LogViewerSettingsRepository,
     private val logRecentInteractor: LogRecentInteractor,
     private val windowTitleInteractor: WindowTitleInteractor,
     private val globalHotkeyManager: GlobalHotkeyManager,
@@ -64,7 +66,6 @@ internal class LogViewerViewModel(
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
     private val showSelectMappingDialog = MutableStateFlow(false)
-    private val stripDate = MutableStateFlow(false)
     private val firstVisibleIndex = MutableStateFlow(0)
 
     private val logsInteractor: LogsInteractor = LogsInteractorImpl(
@@ -167,7 +168,7 @@ internal class LogViewerViewModel(
         selectedSearchIndex,
         logsInteractor.observeMappingStatus(),
         showSelectMappingDialog,
-        stripDate,
+        logViewerSettingsRepository.isStripDateEnabled,
     ) {
             logIndexProgress, search, selectedSearchIndex, mappingStatus,
             showSelectMappingDialog, stripDate,
@@ -320,8 +321,8 @@ internal class LogViewerViewModel(
         }
     }
 
-    fun onClickStipDate() {
-        stripDate.update { !it }
+    fun onClickStripDate() = launch {
+        logViewerSettingsRepository.setIsStripDateEnabled(!state.value.isStripDate)
     }
 
     fun onDragAndDropLogsFile(path: Path) {

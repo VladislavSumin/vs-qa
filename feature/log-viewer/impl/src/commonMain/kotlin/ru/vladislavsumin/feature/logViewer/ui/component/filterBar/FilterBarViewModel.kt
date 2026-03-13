@@ -16,7 +16,7 @@ import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
-import ru.vladislavsumin.feature.logViewer.domain.SavedFiltersRepository
+import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 
 @GenerateFactory
 internal class FilterBarViewModel(
