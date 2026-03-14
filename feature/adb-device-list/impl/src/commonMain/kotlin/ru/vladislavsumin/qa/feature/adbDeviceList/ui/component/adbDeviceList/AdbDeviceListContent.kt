@@ -25,7 +25,17 @@ internal fun AdbDeviceListContent(
     modifier: Modifier,
 ) {
     val state by viewModel.state.collectAsState()
+    when (val state = state) {
+        is AdbDeviceListViewState.DeviceList -> DeviceList(state, modifier)
+        AdbDeviceListViewState.Error -> {
+            // TODO Сделать нормальный статус ошибки.
+            Text("Adb error, TODO")
+        }
+    }
+}
 
+@Composable
+internal fun DeviceList(state: AdbDeviceListViewState.DeviceList, modifier: Modifier) {
     Box(modifier) {
         LazyColumn {
             item {

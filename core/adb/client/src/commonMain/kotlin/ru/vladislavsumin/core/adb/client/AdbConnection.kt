@@ -14,6 +14,11 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 
+/**
+ * Соединение с ADB, позволяет выполнять команды.
+ *
+ * Создает **отдельное** tcp соединение на каждую команду (это требование adb).
+ */
 internal class AdbConnection(
     private val dispatchers: VsDispatchers,
     private val selector: SelectorManager,

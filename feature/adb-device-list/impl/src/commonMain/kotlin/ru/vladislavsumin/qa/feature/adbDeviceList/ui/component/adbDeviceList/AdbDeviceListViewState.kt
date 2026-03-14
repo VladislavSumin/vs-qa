@@ -1,8 +1,12 @@
 package ru.vladislavsumin.qa.feature.adbDeviceList.ui.component.adbDeviceList
 
-internal data class AdbDeviceListViewState(
-    val devices: List<Device>,
-) {
+internal sealed interface AdbDeviceListViewState {
+    data class DeviceList(
+        val devices: List<Device>,
+    ) : AdbDeviceListViewState
+
+    data object Error : AdbDeviceListViewState
+
     data class Device(
         val name: String,
         val status: String,
@@ -16,6 +20,6 @@ internal data class AdbDeviceListViewState(
     }
 
     companion object {
-        val STUB = AdbDeviceListViewState(devices = emptyList())
+        val STUB = DeviceList(devices = emptyList())
     }
 }
