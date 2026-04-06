@@ -1,4 +1,5 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import org.gradle.internal.jvm.Jvm
 import proguard.gradle.ProGuardTask
 import ru.vladislavsumin.configuration.projectConfiguration
 import ru.vladislavsumin.utils.fatJar
@@ -133,6 +134,8 @@ tasks.register<ProGuardTask>("buildFatJarMainMin") {
     configuration("proguard-rules.pro")
     printconfiguration("build/reports/proguard/proguard.pro")
 
+    // Если синк падает тут с NPE, то скорее всего выбрана jvm из комплекта поставкии студии
+    // в ней нет jmods, необходимо использовать какую-нибудь нормальную jvm
     File("${System.getProperty("java.home")}/jmods/").listFiles().forEach { file ->
         libraryjars(
             mapOf(
