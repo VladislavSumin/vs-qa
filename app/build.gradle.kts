@@ -1,5 +1,4 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
-import org.gradle.internal.jvm.Jvm
 import proguard.gradle.ProGuardTask
 import ru.vladislavsumin.configuration.projectConfiguration
 import ru.vladislavsumin.utils.fatJar
