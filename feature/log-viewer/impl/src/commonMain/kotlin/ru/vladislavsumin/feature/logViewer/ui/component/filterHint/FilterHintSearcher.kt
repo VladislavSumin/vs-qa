@@ -1,5 +1,7 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterHint
 
+import ru.vladislavsumin.core.searchUtils.SearchUtils
+
 internal object FilterHintSearcher {
     fun search(hints: List<KeywordFilterHint>, search: String): List<FilterHintItem> {
         return hints.parallelStream()
@@ -17,14 +19,14 @@ internal object FilterHintSearcher {
     }
 
     private fun checkHint(hint: KeywordFilterHint, search: String): MatchResult? {
-        return startWithSearch(hint, search) ?: containsSearch(hint, search)
+        return startWithSearch(hint, search) ?: containsSearch(hint, search) ?: subsequenceSearch(hint, search)
     }
 
     private fun startWithSearch(hint: KeywordFilterHint, search: String): MatchResult? {
         return if (hint.name.startsWith(search, ignoreCase = true)) {
             MatchResult(
                 hint,
-                highlights = listOf(IntRange(0, search.length)),
+                highlights = listOf(search.indices),
                 score = 5,
             )
         } else {
@@ -37,8 +39,21 @@ internal object FilterHintSearcher {
         return if (index >= 0) {
             MatchResult(
                 hint,
-                highlights = listOf(IntRange(index, index + search.length)),
+                highlights = listOf(index..<(index + search.length)),
                 score = 4,
+            )
+        } else {
+            null
+        }
+    }
+
+    private fun subsequenceSearch(hint: KeywordFilterHint, search: String): MatchResult? {
+        val result = SearchUtils.subsequenceSearch(hint.name, search)
+        return if (result != null) {
+            MatchResult(
+                hint,
+                highlights = result,
+                score = 3,
             )
         } else {
             null

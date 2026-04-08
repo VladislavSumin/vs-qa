@@ -80,7 +80,11 @@ private fun HintContent(
                         val span = buildAnnotatedString {
                             append(it.text)
                             it.highlights.forEach { highlight ->
-                                this.addStyle(SpanStyle(fontWeight = FontWeight.Bold), highlight.first, highlight.last)
+                                this.addStyle(
+                                    SpanStyle(fontWeight = FontWeight.Bold),
+                                    highlight.first,
+                                    highlight.last + 1,
+                                )
                             }
                         }
                         Text(span)
