@@ -19,7 +19,10 @@ internal object FilterHintSearcher {
     }
 
     private fun checkHint(hint: KeywordFilterHint, search: String): MatchResult? {
-        return startWithSearch(hint, search) ?: containsSearch(hint, search) ?: subsequenceSearch(hint, search)
+        return startWithSearch(hint, search)
+            ?: containsSearch(hint, search)
+            ?: subsequenceSearch(hint, search, ignoreCase = false)
+            ?: subsequenceSearch(hint, search, ignoreCase = true)
     }
 
     private fun startWithSearch(hint: KeywordFilterHint, search: String): MatchResult? {
@@ -47,13 +50,13 @@ internal object FilterHintSearcher {
         }
     }
 
-    private fun subsequenceSearch(hint: KeywordFilterHint, search: String): MatchResult? {
-        val result = SearchUtils.subsequenceSearch(hint.name, search)
+    private fun subsequenceSearch(hint: KeywordFilterHint, search: String, ignoreCase: Boolean): MatchResult? {
+        val result = SearchUtils.subsequenceSearch(hint.name, search, ignoreCase)
         return if (result != null) {
             MatchResult(
                 hint,
                 highlights = result,
-                score = 3,
+                score = if (ignoreCase) 2 else 3,
             )
         } else {
             null

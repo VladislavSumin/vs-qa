@@ -1,9 +1,11 @@
 package ru.vladislavsumin.core.searchUtils
 
 object SearchUtils {
-    fun subsequenceSearch(text: String, pattern: String): List<IntRange>? {
+    fun subsequenceSearch(text: String, pattern: String, ignoreCase: Boolean = false): List<IntRange>? {
         if (pattern.isEmpty()) return emptyList()
         if (text.isEmpty()) return null
+
+        fun Char.normalize() = if (ignoreCase) lowercaseChar() else this
 
         val ranges = mutableListOf<IntRange>()
         var currentStartIndex = -1
@@ -11,7 +13,7 @@ object SearchUtils {
         var j = 0
         var i = 0
         while (i < text.length) {
-            if (text[i].lowercaseChar() == pattern[j].lowercaseChar()) {
+            if (text[i].normalize() == pattern[j].normalize()) {
                 j++
                 if (currentStartIndex == -1) {
                     currentStartIndex = i
