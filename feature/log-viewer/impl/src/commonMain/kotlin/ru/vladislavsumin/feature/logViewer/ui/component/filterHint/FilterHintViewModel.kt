@@ -55,7 +55,7 @@ internal class FilterHintViewModel(
                 CurrentTokenPrediction.Type.RunNumber -> currentRuns
             }
             val items = FilterHintSearcher.search(hints, currentTokenPrediction.startText)
-            if (items.isNotEmpty()) {
+            if (items.isNotEmpty() && (items.size > 1 || items.first().text != currentTokenPrediction.startText)) {
                 FilterHintViewState.Show(selectedItemKey = selectedItemKey, items = items)
             } else {
                 FilterHintViewState.Hidden
