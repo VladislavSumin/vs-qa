@@ -5,6 +5,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import ru.vladislavsumin.core.decompose.components.ViewModel
@@ -25,7 +26,7 @@ internal class FilterHintViewModel(
      */
     private val showHint = MutableStateFlow(false)
 
-    private val selectedItemKey = MutableStateFlow("tag")
+    private val selectedItemKey = MutableStateFlow("")
 
     override val events: Channel<FilterHintUiInteractor.Event> = Channel()
 
@@ -33,31 +34,27 @@ internal class FilterHintViewModel(
         showHint,
         selectedItemKey,
         currentTokenPrediction,
-        currentTags,
-        currentRuns,
+        currentTags.map { currentTags ->
+            currentTags.map { KeywordFilterHint(it) }
+        },
+        currentRuns.map { currentRuns ->
+            currentRuns.mapIndexed { index, info ->
+                KeywordFilterHint(
+                    name = (index + 1).toString(),
+                    hint = info.meta.values.joinToString(),
+                )
+            }
+        },
     ) { showHint, selectedItemKey, currentTokenPrediction, currentTags, currentRuns ->
         if (showHint && currentTokenPrediction != null) {
             val hints = when (currentTokenPrediction.type) {
                 CurrentTokenPrediction.Type.Keyword -> keywordFilterHintItems
                 CurrentTokenPrediction.Type.SearchType -> typeFilterHintItems
                 CurrentTokenPrediction.Type.LogLevel -> logLevelFilterHintItems
-                CurrentTokenPrediction.Type.Tag -> currentTags.map { KeywordFilterHint(it) }
-                CurrentTokenPrediction.Type.RunNumber -> currentRuns.mapIndexed { index, info ->
-                    KeywordFilterHint(
-                        name = (index + 1).toString(),
-                        hint = info.meta.values.joinToString(),
-                    )
-                }
+                CurrentTokenPrediction.Type.Tag -> currentTags
+                CurrentTokenPrediction.Type.RunNumber -> currentRuns
             }
-            val items = hints
-                .filter { it.name.startsWith(currentTokenPrediction.startText, ignoreCase = true) }
-                .map {
-                    FilterHintItem(
-                        text = it.name,
-                        hint = it.hint,
-                        selectedPartLength = currentTokenPrediction.startText.length,
-                    )
-                }
+            val items = FilterHintSearcher.search(hints, currentTokenPrediction.startText)
             if (items.isNotEmpty()) {
                 FilterHintViewState.Show(selectedItemKey = selectedItemKey, items = items)
             } else {
@@ -69,6 +66,9 @@ internal class FilterHintViewModel(
     }
         .onEach {
             // TODO очередной всратый костыль с onEach. Нужно сделать нормальное решение для всего.
+            if (it is FilterHintViewState.Hidden) {
+                selectedItemKey.value = ""
+            }
             if (it is FilterHintViewState.Show && it.items.none { it.key == selectedItemKey.value }) {
                 selectedItemKey.value = it.items.first().key
             }
@@ -111,8 +111,9 @@ internal class FilterHintViewModel(
     fun onAcceptHint(hint: FilterHintItem) {
         LogLogger.d { "onAcceptCurrentHint(), hint: $hint" }
         events.trySend(
-            FilterHintUiInteractor.Event.AppendText(
-                hint.text.substring(hint.selectedPartLength),
+            FilterHintUiInteractor.Event.ReplaceText(
+                removeLen = hint.searchLength,
+                text = hint.text,
             ),
         )
     }

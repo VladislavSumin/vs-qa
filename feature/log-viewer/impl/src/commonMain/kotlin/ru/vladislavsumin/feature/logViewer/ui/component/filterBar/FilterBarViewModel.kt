@@ -97,16 +97,19 @@ internal class FilterBarViewModel(
         }
     }
 
-    fun appendFilterText(text: String) {
+    fun replaceFilterText(removeLen: Int, text: String) {
         filter.update { old ->
-            val newText = old.text.substring(0, old.selection.start) + text + old.text.substring(
+            val newText = old.text.substring(0, old.selection.start - removeLen) + text + old.text.substring(
                 (old.selection.end).coerceAtMost(old.text.length),
                 old.text.length,
             )
 
             old.copy(
                 text = newText,
-                selection = TextRange(start = old.selection.start + text.length, end = old.selection.end + text.length),
+                selection = TextRange(
+                    start = old.selection.start + text.length - removeLen,
+                    end = old.selection.end + text.length - removeLen,
+                ),
             )
         }
     }

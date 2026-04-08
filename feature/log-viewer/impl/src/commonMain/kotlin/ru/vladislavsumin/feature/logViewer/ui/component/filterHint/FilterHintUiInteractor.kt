@@ -12,8 +12,9 @@ internal interface FilterHintUiInteractor {
 
     sealed interface Event {
         /**
-         * Добавить текст после текущей позиции курсора и подвинуть курсор на длину этого текста.
+         * Убрать [removeLen] символов перед текущей позицией и добавить [text] после текущей позиции курсора
+         * и подвинуть курсор на длину этого текста.
          */
-        data class AppendText(val text: String) : Event
+        data class ReplaceText(val removeLen: Int, val text: String) : Event
     }
 }

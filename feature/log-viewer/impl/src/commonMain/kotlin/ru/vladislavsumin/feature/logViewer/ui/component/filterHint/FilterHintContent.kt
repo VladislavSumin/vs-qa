@@ -79,7 +79,9 @@ private fun HintContent(
                     ) {
                         val span = buildAnnotatedString {
                             append(it.text)
-                            this.addStyle(SpanStyle(fontWeight = FontWeight.Bold), 0, it.selectedPartLength)
+                            it.highlights.forEach { highlight ->
+                                this.addStyle(SpanStyle(fontWeight = FontWeight.Bold), highlight.first, highlight.last)
+                            }
                         }
                         Text(span)
                         Spacer(modifier.weight(1f))
