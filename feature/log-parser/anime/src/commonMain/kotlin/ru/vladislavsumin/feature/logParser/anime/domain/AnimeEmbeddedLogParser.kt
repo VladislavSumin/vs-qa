@@ -27,7 +27,7 @@ internal object AnimeEmbeddedLogParser : GenericLogParser() {
 
     override val logRegex: Regex = LOG_REGEX
     override val timeGroupId: Int = 1
-    override val timeDateGroupId: Int = 3
+    override val timeDateGroupId: Int = 2
     override val threadGroupId: Int = 4
     override val processIdGroupId: Int? = null
     override val levelGroupId: Int = 5
