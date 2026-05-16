@@ -67,6 +67,7 @@ internal class LogViewerViewModel(
     private val selectedSearchIndex = MutableStateFlow(0)
     private val showSelectMappingDialog = MutableStateFlow(false)
     private val firstVisibleIndex = MutableStateFlow(0)
+    private val showTagStat = MutableStateFlow(false)
 
     private val logsInteractor: LogsInteractor = LogsInteractorImpl(
         scope = viewModelScope,
@@ -170,9 +171,10 @@ internal class LogViewerViewModel(
         showSelectMappingDialog,
         logViewerSettingsRepository.isStripDateEnabled,
         logViewerSettingsRepository.logFontSize,
+        showTagStat,
     ) {
             logIndexProgress, search, selectedSearchIndex, mappingStatus,
-            showSelectMappingDialog, stripDate, logFontSize,
+            showSelectMappingDialog, stripDate, logFontSize, showTagStat,
         ->
 
         val runIdOrders = logIndexProgress.lastSuccessIndex.runIdOrders
@@ -235,6 +237,7 @@ internal class LogViewerViewModel(
             isStripDate = stripDate,
             showSelectMappingDialog = showSelectMappingDialog,
             logRecordsAfterApplyFilter = logIndexProgress.lastSuccessIndex.logs.size,
+            showTagStat = showTagStat,
         )
     }
         .stateIn(LogViewerViewState.STUB)
@@ -333,6 +336,10 @@ internal class LogViewerViewModel(
 
     fun onClickFontDown() = launch {
         logViewerSettingsRepository.setLogFontSize((state.value.logsViewState.logFontSize - 1).coerceAtLeast(1))
+    }
+
+    fun onClickShowTagStat() {
+        showTagStat.update { !it }
     }
 
     fun onDragAndDropLogsFile(path: Path) {

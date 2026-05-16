@@ -18,6 +18,7 @@ internal data class LogViewerViewState(
     val isStripDate: Boolean,
     val showSelectMappingDialog: Boolean,
     val logRecordsAfterApplyFilter: Int,
+    val showTagStat: Boolean,
 ) {
     companion object {
         val STUB = LogViewerViewState(
@@ -28,6 +29,7 @@ internal data class LogViewerViewState(
             isStripDate = false,
             showSelectMappingDialog = false,
             logRecordsAfterApplyFilter = 0,
+            showTagStat = false,
         )
     }
 }
