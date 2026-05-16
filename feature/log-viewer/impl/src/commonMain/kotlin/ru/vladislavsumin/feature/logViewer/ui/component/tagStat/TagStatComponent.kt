@@ -15,5 +15,5 @@ internal class TagStatComponent(
     private val viewModel: TagStatViewModel = viewModel { TagStatViewModel(logs) }
 
     @Composable
-    override fun Render(modifier: Modifier) = TagStatContent(modifier)
+    override fun Render(modifier: Modifier) = TagStatContent(viewModel, modifier)
 }

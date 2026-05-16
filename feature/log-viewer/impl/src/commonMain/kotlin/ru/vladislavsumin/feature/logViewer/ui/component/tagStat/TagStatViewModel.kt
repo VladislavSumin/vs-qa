@@ -1,11 +1,13 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.tagStat
 
+import androidx.compose.runtime.Stable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 
+@Stable
 internal class TagStatViewModel(
     logs: Flow<List<LogRecord>>,
 ) : ViewModel() {
@@ -17,7 +19,7 @@ internal class TagStatViewModel(
                 .mapValues { it.value.size }
                 .toList()
                 .map { TagStatViewState.TagStatInfo(tag = it.first, recordCount = it.second) }
-                .sortedBy { it.recordCount }
+                .sortedByDescending { it.recordCount }
             TagStatViewState(tags)
         }
         .stateIn(
