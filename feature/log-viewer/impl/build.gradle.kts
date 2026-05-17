@@ -19,6 +19,7 @@ kotlin {
             implementation(libs.google.datastore.core)
             implementation(libs.google.datastore.preferences)
             implementation(vsCoreLibs.kotlin.serialization.json)
+            implementation(vsCoreLibs.vs.core.uikit.pieChart)
         }
         commonTest.dependencies {
             // TODO порешать с логером в тестах

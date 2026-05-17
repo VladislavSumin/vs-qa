@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import ru.vladislavsumin.core.decompose.components.ViewModel
+import ru.vladislavsumin.feature.logParser.domain.LogLevel
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 
 @Stable
@@ -16,9 +17,15 @@ internal class TagStatViewModel(
             // TODO излишне сложная цепочка с кучей лишних коллекций, оптимизировать.
             val tags = logRecords
                 .groupBy { it.raw.substring(it.tag) }
-                .mapValues { it.value.size }
-                .toList()
-                .map { TagStatViewState.TagStatInfo(tag = it.first, recordCount = it.second) }
+                .map { (tag, records) ->
+                    val totalSize = records.size
+                    val levels = mutableMapOf<LogLevel, Int>()
+                    records.forEach { record ->
+                        levels[record.logLevel] = (levels[record.logLevel] ?: 0) + 1
+                    }
+                    val levelsList = levels.toList().sortedByDescending { it.first.rawLevel }
+                    TagStatViewState.TagStatInfo(tag = tag, recordCount = totalSize, levels = levelsList)
+                }
                 .sortedByDescending { it.recordCount }
             TagStatViewState(tags)
         }
