@@ -20,7 +20,7 @@ import java.time.Instant
  * @param searchHighlights выделения поисковых вхождений.
  */
 data class LogRecord(
-    val order: Int,
+    val order: LogOrder,
     val raw: String,
 
     val time: IntRange,
@@ -36,3 +36,16 @@ data class LogRecord(
     val logLevel: LogLevel,
     val searchHighlights: List<IntRange>?,
 )
+
+@JvmInline
+value class LogOrder(val value: Int) : Comparable<LogOrder> {
+    override fun compareTo(other: LogOrder): Int = value.compareTo(other.value)
+    override fun toString(): String = value.toString()
+}
+
+data class LogOrderRange(
+    override val start: LogOrder,
+    override val endInclusive: LogOrder,
+) : ClosedRange<LogOrder> {
+    val last: LogOrder get() = endInclusive
+}

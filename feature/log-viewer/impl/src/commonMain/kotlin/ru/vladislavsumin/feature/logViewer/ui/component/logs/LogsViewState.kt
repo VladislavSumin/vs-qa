@@ -1,5 +1,6 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.logs
 
+import ru.vladislavsumin.feature.logViewer.domain.logs.LogOrder
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 
@@ -13,7 +14,7 @@ internal data class LogsViewState(
     val logs: List<SectionInfo>,
     val rawLogs: List<LogRecord>,
     val runIdOrders: List<RunIdInfo>?,
-    val currentSelectedItemOrder: Int,
+    val currentSelectedItemOrder: LogOrder,
 
     val showRunNumbers: Boolean,
     val maxLogNumberDigits: Int,
@@ -31,7 +32,7 @@ internal data class LogsViewState(
             logs = emptyList(),
             rawLogs = emptyList(),
             runIdOrders = null,
-            currentSelectedItemOrder = -1,
+            currentSelectedItemOrder = LogOrder(-1),
             showRunNumbers = false,
             maxLogNumberDigits = 0,
             stripDate = false,

@@ -206,7 +206,7 @@ private fun Record(
         DisableSelection {
             Text(
                 // order нумеруется с 0, но визуально записи более правильно нумеровать с единицы.
-                text = "${log.order + 1}",
+                text = "${log.order.value + 1}",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
                 fontSize = fontSize.sp,

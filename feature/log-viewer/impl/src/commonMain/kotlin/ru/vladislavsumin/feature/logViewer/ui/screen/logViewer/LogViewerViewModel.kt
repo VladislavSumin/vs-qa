@@ -28,6 +28,7 @@ import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
+import ru.vladislavsumin.feature.logViewer.domain.logs.LogOrder
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
@@ -207,7 +208,7 @@ internal class LogViewerViewModel(
 
         val currentSelectedItemOrder = logIndexProgress.lastSuccessIndex.logs.getOrNull(
             logIndexProgress.lastSuccessIndex.searchIndex.index.getOrNull(selectedSearchIndex) ?: -1,
-        )?.order ?: -1
+        )?.order ?: LogOrder(-1)
 
         LogViewerViewState(
             searchIndex = logIndexProgress.lastSuccessIndex.searchIndex.index,
