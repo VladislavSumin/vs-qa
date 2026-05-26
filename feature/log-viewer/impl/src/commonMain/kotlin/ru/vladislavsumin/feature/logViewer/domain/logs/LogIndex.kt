@@ -14,9 +14,9 @@ data class LogIndex(
     sealed interface SearchIndex {
         /**
          * Индекс поиска. Тут ключ это номер поискового результата,
-         * а значение номер соответствующей записи в [LogIndex.logs].
+         * а значение — позиция соответствующей записи в [LogIndex.logs].
          */
-        val index: List<Int> get() = emptyList()
+        val index: List<FilteredLogPosition> get() = emptyList()
 
         /**
          * Пустой поисковый запрос.
@@ -32,7 +32,7 @@ data class LogIndex(
          * Поиск с как минимум одним результатом.
          */
         data class Search(
-            override val index: List<Int>,
+            override val index: List<FilteredLogPosition>,
         ) : SearchIndex
 
         /**

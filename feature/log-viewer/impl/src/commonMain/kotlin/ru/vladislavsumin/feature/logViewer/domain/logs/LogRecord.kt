@@ -49,3 +49,9 @@ data class LogOrderRange(
 ) : ClosedRange<LogOrder> {
     val last: LogOrder get() = endInclusive
 }
+
+@JvmInline
+value class FilteredLogPosition(val value: Int) : Comparable<FilteredLogPosition> {
+    override fun compareTo(other: FilteredLogPosition): Int = value.compareTo(other.value)
+    override fun toString(): String = value.toString()
+}

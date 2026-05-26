@@ -1,6 +1,7 @@
 package ru.vladislavsumin.feature.logViewer.ui.screen.logViewer
 
 import androidx.compose.runtime.Immutable
+import ru.vladislavsumin.feature.logViewer.domain.logs.FilteredLogPosition
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
 import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarViewState
 
@@ -11,7 +12,7 @@ import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarViewS
  */
 @Immutable
 internal data class LogViewerViewState(
-    val searchIndex: List<Int>,
+    val searchIndex: List<FilteredLogPosition>,
     val logsViewState: LogsViewState,
     val searchState: SearchBarViewState,
     val isMappingApplied: Boolean,

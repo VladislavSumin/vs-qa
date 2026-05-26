@@ -3,6 +3,7 @@ package ru.vladislavsumin.feature.logViewer.domain.logs.delegates.search
 import ru.vladislavsumin.core.boyerMooreSearch.toBoyerMoorePattern
 import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
 import ru.vladislavsumin.feature.logViewer.LogLogger
+import ru.vladislavsumin.feature.logViewer.domain.logs.FilteredLogPosition
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
@@ -61,7 +62,7 @@ internal class LogSearchDelegate {
             }
 
             val searchIndex = searchedLogs.mapIndexedNotNull { index, record ->
-                if (record.searchHighlights != null) index else null
+                if (record.searchHighlights != null) FilteredLogPosition(index) else null
             }
 
             LogIndex(
