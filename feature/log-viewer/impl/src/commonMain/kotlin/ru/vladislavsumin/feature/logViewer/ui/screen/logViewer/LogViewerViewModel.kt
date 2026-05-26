@@ -27,7 +27,6 @@ import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractor
-import ru.vladislavsumin.feature.logViewer.domain.logs.FilteredLogPosition
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogOrder
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
@@ -157,7 +156,7 @@ internal class LogViewerViewModel(
                         // Если такого нет, то берем первый индекс выше видимой части экрана.
                         for ((index, recordIndex) in it.lastSuccessIndex.searchIndex.index.withIndex()) {
                             selectedIndex = index
-                            if (recordIndex.value >= firstVisibleIndex.value) break
+                            if (recordIndex >= firstVisibleIndex.value) break
                         }
 
                         selectedSearchIndex.value = selectedIndex
@@ -207,10 +206,9 @@ internal class LogViewerViewModel(
             }
         }
 
-        val currentSelectedItemOrder = logIndexProgress.lastSuccessIndex.searchIndex.index
-            .getOrNull(selectedSearchIndex)
-            ?.let { logIndexProgress.lastSuccessIndex.logs.getOrNull(it.value) }
-            ?.order ?: LogOrder(-1)
+        val currentSelectedItemOrder = logIndexProgress.lastSuccessIndex.logs.getOrNull(
+            logIndexProgress.lastSuccessIndex.searchIndex.index.getOrNull(selectedSearchIndex) ?: -1,
+        )?.order ?: LogOrder(-1)
 
         LogViewerViewState(
             searchIndex = logIndexProgress.lastSuccessIndex.searchIndex.index,
@@ -290,16 +288,16 @@ internal class LogViewerViewModel(
     /**
      * Скролит к записи логов по ее индексу автоматически добавляет офсет заголовка
      */
-    private fun scrollToRecordIndex(index: FilteredLogPosition) = launch {
+    private fun scrollToRecordIndex(index: Int) = launch {
         val logs = state.value.logsViewState
         val additionalIndex = logs.runIdOrders?.let { runs ->
-            val order = logs.rawLogs[index.value].order
+            val order = logs.rawLogs[index].order
             runs.indexOfFirst { order in it.orderRange }
         } ?: -1
         val finalIndex = if (additionalIndex == -1) {
-            index.value
+            index
         } else {
-            index.value + additionalIndex + 1
+            index + additionalIndex + 1
         }
         scrollToIndex(finalIndex)
     }
