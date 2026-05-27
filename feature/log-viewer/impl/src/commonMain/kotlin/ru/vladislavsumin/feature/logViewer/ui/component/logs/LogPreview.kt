@@ -43,7 +43,7 @@ internal fun LogPreview(
             if (layoutInfo.visibleItemsInfo.isEmpty()) {
                 IntRange.EMPTY
             } else {
-                val first = layoutInfo.visibleItemsInfo.first().index
+                val first = layoutInfo.visibleItemsInfo.firstOrNull { it.key as Int >= 0 }?.index ?: 0
                 val last = layoutInfo.visibleItemsInfo.last().index
                 first..last
             }

@@ -52,7 +52,7 @@ internal fun LazyListScope.logItems(
             }
             itemIndex++
         }
-        items(sectionInfo.logs, { it.order }) { log ->
+        items(sectionInfo.logs, { it.order.value }) { log ->
             record(itemIndex, log)
             itemIndex++
         }
