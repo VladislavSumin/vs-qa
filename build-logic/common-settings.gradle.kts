@@ -16,7 +16,7 @@ dependencyResolutionManagement {
             if (useVsCoreSources) {
                 from(files("../../vs-core/libs.versions.toml"))
             } else {
-                from("ru.vladislavsumin:vs-core:1.4.3")
+                from("ru.vladislavsumin:vs-core:${extra["ru.vs.core.version"]}")
             }
         }
         create("libs") {
@@ -31,5 +31,15 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+    }
+    val useVsCoreSources = extra["ru.vs.core.useVsCoreSources"].toString().toBoolean()
+    if (!useVsCoreSources) {
+        resolutionStrategy {
+            eachPlugin {
+                if (requested.id.id.startsWith("ru.vladislavsumin.convention.")) {
+                    useVersion(extra["ru.vs.core.version"].toString())
+                }
+            }
+        }
     }
 }
