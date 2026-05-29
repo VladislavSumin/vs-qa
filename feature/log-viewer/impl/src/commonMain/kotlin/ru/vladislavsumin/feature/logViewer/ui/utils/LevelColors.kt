@@ -5,6 +5,7 @@ import ru.vladislavsumin.core.ui.designSystem.theme.LogColor
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
 
+// TODO переписать как функцию расширение
 object LevelColors {
     @Composable
     fun getLevelColor(level: LogLevel): LogColor {

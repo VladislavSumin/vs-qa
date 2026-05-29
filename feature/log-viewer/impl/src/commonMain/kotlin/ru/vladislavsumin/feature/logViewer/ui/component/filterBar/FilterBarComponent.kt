@@ -54,7 +54,10 @@ internal class FilterBarComponent(
         launch {
             filterHintComponent.filterHintUiInteractor.events.receiveAsFlow().collect { event ->
                 when (event) {
-                    is FilterHintUiInteractor.Event.AppendText -> viewModel.appendFilterText(event.text)
+                    is FilterHintUiInteractor.Event.ReplaceText -> viewModel.replaceFilterText(
+                        event.removeLen,
+                        event.text,
+                    )
                 }
             }
         }

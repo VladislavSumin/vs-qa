@@ -6,7 +6,8 @@ internal data class FilterHintItem(
     val text: String,
     val hint: String?,
     val key: String = text,
-    val selectedPartLength: Int,
+    val highlights: List<IntRange>,
+    val searchLength: Int,
 )
 
 internal data class KeywordFilterHint(

@@ -7,6 +7,6 @@ package ru.vladislavsumin.feature.logViewer.domain.logs
  * @param meta любая дополнительная информация о ране
  */
 data class RunIdInfo(
-    val orderRange: IntRange,
+    val orderRange: LogOrderRange,
     val meta: Map<String, String>,
 )

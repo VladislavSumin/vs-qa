@@ -244,7 +244,7 @@ internal data class ClearLogState(
     val runIdIndexes: List<RunIdInfo>?,
 )
 
-private fun RawLogRecord.toLogRecord(order: Int) = LogRecord(
+private fun RawLogRecord.toLogRecord(order: LogOrder) = LogRecord(
     order = order,
     raw = raw,
     time = time,
@@ -260,7 +260,7 @@ private fun RawLogRecord.toLogRecord(order: Int) = LogRecord(
 )
 
 private fun List<RawLogRecord>.toLogRecords(): List<LogRecord> =
-    mapIndexed { index, record -> record.toLogRecord(index) }
+    mapIndexed { index, record -> record.toLogRecord(LogOrder(index)) }
 
 private fun List<RawRunIdInfo>.toRunIdInfo(
     obfuscatedLogs: List<RawLogRecord>,
@@ -276,7 +276,7 @@ private fun List<RawRunIdInfo>.toRunIdInfo(
     val duration = ChronoUnit.SECONDS.between(startTime, endTime).seconds
 
     RunIdInfo(
-        orderRange = IntRange(info.startIndex, endIndex),
+        orderRange = LogOrderRange(LogOrder(info.startIndex), LogOrder(endIndex)),
         meta = info.meta + ("duration" to duration.toString()),
     )
 }

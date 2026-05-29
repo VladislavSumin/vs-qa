@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -55,7 +55,7 @@ data class QaColorScheme(
         background = Color(0xFFD6D6D6),
     ),
 
-    @Transient
+    @Serializable(with = ColorListAsStringSerializer::class)
     val tagColors: List<Color> = defaultTagColors(),
 )
 
@@ -132,5 +132,19 @@ private object ColorAsStringSerializer : KSerializer<Color> {
         val string = decoder.decodeString()
         @Suppress("MagicNumber")
         return Color(string.toLong(16))
+    }
+}
+
+private object ColorListAsStringSerializer : KSerializer<List<Color>> {
+    private val delegate = ListSerializer(ColorAsStringSerializer)
+
+    override val descriptor: SerialDescriptor = delegate.descriptor
+
+    override fun serialize(encoder: Encoder, value: List<Color>) {
+        error("Serialization non implemented")
+    }
+
+    override fun deserialize(decoder: Decoder): List<Color> {
+        return delegate.deserialize(decoder)
     }
 }

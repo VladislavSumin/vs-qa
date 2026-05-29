@@ -1,16 +1,25 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.logs
 
+import ru.vladislavsumin.feature.logViewer.domain.logs.LogOrder
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 
+/**
+ * @param logs список секций логов (раны/секции + логи внутри секции).
+ * @param rawLogs сырой список логов (без разбивки на секции).
+ * @param runIdOrders отдельно список ранов (секций)
+ * @param currentSelectedItemOrder позиция [LogRecord.order] текущей выбранной записи (подсветка поискового вхождения).
+ */
 internal data class LogsViewState(
     val logs: List<SectionInfo>,
     val rawLogs: List<LogRecord>,
     val runIdOrders: List<RunIdInfo>?,
-    val currentSelectedItemOrder: Int,
+    val currentSelectedItemOrder: LogOrder,
+
     val showRunNumbers: Boolean,
     val maxLogNumberDigits: Int,
     val stripDate: Boolean,
+    val logFontSize: Int,
 ) {
 
     data class SectionInfo(
@@ -23,10 +32,11 @@ internal data class LogsViewState(
             logs = emptyList(),
             rawLogs = emptyList(),
             runIdOrders = null,
-            currentSelectedItemOrder = -1,
+            currentSelectedItemOrder = LogOrder(-1),
             showRunNumbers = false,
             maxLogNumberDigits = 0,
             stripDate = false,
+            logFontSize = 14,
         )
     }
 }

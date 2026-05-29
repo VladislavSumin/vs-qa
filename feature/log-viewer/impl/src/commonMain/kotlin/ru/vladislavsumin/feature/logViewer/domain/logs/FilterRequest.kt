@@ -39,7 +39,7 @@ data class FilterRequest(val operation: FilterOperation) {
                 return orders?.let { PreparedRunOrder(orders) }
             }
 
-            private class PreparedRunOrder(private val orders: IntRange) : PreparedFilterOperation {
+            private class PreparedRunOrder(private val orders: LogOrderRange) : PreparedFilterOperation {
                 override fun check(record: LogRecord): Boolean = record.order in orders
             }
         }

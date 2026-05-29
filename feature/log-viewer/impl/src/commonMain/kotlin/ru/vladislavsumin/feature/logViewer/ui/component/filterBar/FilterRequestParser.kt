@@ -20,8 +20,8 @@ import kotlinx.coroutines.flow.StateFlow
 import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
 import ru.vladislavsumin.feature.logViewer.TokenPredictionLogger
-import ru.vladislavsumin.feature.logViewer.domain.SavedFiltersRepository
 import ru.vladislavsumin.feature.logViewer.domain.logs.FilterRequest
+import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.CurrentTokenPrediction
 import kotlin.map
 import kotlin.sequences.map

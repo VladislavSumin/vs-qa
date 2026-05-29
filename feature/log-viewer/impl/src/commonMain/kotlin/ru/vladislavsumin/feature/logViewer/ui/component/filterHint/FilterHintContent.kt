@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -29,6 +30,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.feature.logViewer.ui.utils.VsVerticalScrollbar
 
 @Composable
 internal fun FilterHintContent(
@@ -65,28 +67,40 @@ private fun HintContent(
             modifier = modifier.size(400.dp, 250.dp),
             shape = RoundedCornerShape(2.dp),
         ) {
-            LazyColumn {
-                items(state.items, key = { it.text }) {
-                    val modifier = if (it.key == state.selectedItemKey) {
-                        Modifier.background(QaTheme.colorScheme.logHighlightSelected)
-                    } else {
-                        Modifier
-                    }
-                    Row(
-                        modifier
-                            .clickable(onClick = { viewModel.onAcceptHint(it) })
-                            .padding(horizontal = 8.dp, vertical = 2.dp),
-                    ) {
-                        val span = buildAnnotatedString {
-                            append(it.text)
-                            this.addStyle(SpanStyle(fontWeight = FontWeight.Bold), 0, it.selectedPartLength)
+            Row {
+                val lazyListState = rememberLazyListState()
+                LazyColumn(Modifier.weight(1f), state = lazyListState) {
+                    items(state.items, key = { it.text }) {
+                        val modifier = if (it.key == state.selectedItemKey) {
+                            Modifier.background(QaTheme.colorScheme.logHighlightSelected)
+                        } else {
+                            Modifier
                         }
-                        Text(span)
-                        Spacer(modifier.weight(1f))
-                        if (it.hint != null) {
-                            Text(it.hint, color = QaTheme.colorScheme.logTrace.primary)
+                        Row(
+                            modifier
+                                .clickable(onClick = { viewModel.onAcceptHint(it) })
+                                .padding(horizontal = 8.dp, vertical = 2.dp),
+                        ) {
+                            val span = buildAnnotatedString {
+                                append(it.text)
+                                it.highlights.forEach { highlight ->
+                                    this.addStyle(
+                                        SpanStyle(fontWeight = FontWeight.Bold),
+                                        highlight.first,
+                                        highlight.last + 1,
+                                    )
+                                }
+                            }
+                            Text(span)
+                            Spacer(modifier.weight(1f))
+                            if (it.hint != null) {
+                                Text(it.hint, color = QaTheme.colorScheme.logTrace.primary)
+                            }
                         }
                     }
+                }
+                if (lazyListState.canScrollForward || lazyListState.canScrollBackward) {
+                    VsVerticalScrollbar(lazyListState)
                 }
             }
         }

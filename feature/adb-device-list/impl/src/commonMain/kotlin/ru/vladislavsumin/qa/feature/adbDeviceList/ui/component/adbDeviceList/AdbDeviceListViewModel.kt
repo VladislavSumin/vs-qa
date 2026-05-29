@@ -12,23 +12,27 @@ import ru.vladislavsumin.qa.feature.adbDeviceList.ui.component.adbDeviceList.Adb
 @GenerateFactory
 @Stable
 internal class AdbDeviceListViewModel(
-    private val adbClient: AdbClient,
+    adbClient: AdbClient,
 ) : ViewModel() {
     val state: StateFlow<AdbDeviceListViewState> = adbClient.observeDevices()
-        .map { deviceInfos ->
-            val devices = deviceInfos.map { (name, status) ->
-                AdbDeviceListViewState.Device(
-                    name = name,
-                    status = status.name,
-                    statusColor = when (status) {
-                        ConnectionStatus.Device -> StatusColor.Green
-                        ConnectionStatus.Authorizing -> StatusColor.Yellow
-                        ConnectionStatus.Offline -> StatusColor.Red
-                    },
-                )
+        .map { result ->
+            when (result) {
+                is AdbClient.AdbResult.Err<*> -> AdbDeviceListViewState.Error
+                is AdbClient.AdbResult.Ok<List<AdbClient.DeviceInfo>> -> {
+                    val devices = result.data.map { (name, status) ->
+                        AdbDeviceListViewState.Device(
+                            name = name,
+                            status = status.name,
+                            statusColor = when (status) {
+                                ConnectionStatus.Device -> StatusColor.Green
+                                ConnectionStatus.Authorizing -> StatusColor.Yellow
+                                ConnectionStatus.Offline -> StatusColor.Red
+                            },
+                        )
+                    }
+                    AdbDeviceListViewState.DeviceList(devices)
+                }
             }
-
-            AdbDeviceListViewState(devices)
         }
         .stateIn(AdbDeviceListViewState.STUB)
 }

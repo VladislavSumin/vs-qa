@@ -1,4 +1,4 @@
-package ru.vladislavsumin.feature.logViewer.domain
+package ru.vladislavsumin.feature.logViewer.repository
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.edit

@@ -17,7 +17,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
+import ru.vladislavsumin.core.coroutines.utils.LinkedFlow
 import ru.vladislavsumin.core.coroutines.utils.combine
+import ru.vladislavsumin.core.coroutines.utils.linkTo
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
@@ -25,15 +27,15 @@ import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractor
-import ru.vladislavsumin.feature.logViewer.LinkedFlow
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
+import ru.vladislavsumin.feature.logViewer.domain.logs.LogOrder
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 import ru.vladislavsumin.feature.logViewer.domain.logs.SearchRequest
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
-import ru.vladislavsumin.feature.logViewer.link
+import ru.vladislavsumin.feature.logViewer.repository.LogViewerSettingsRepository
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarUiInteractor
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsEvents
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
@@ -49,6 +51,7 @@ import kotlin.io.path.name
 @GenerateFactory
 internal class LogViewerViewModel(
     logParserProvider: LogParserProvider,
+    private val logViewerSettingsRepository: LogViewerSettingsRepository,
     private val logRecentInteractor: LogRecentInteractor,
     private val windowTitleInteractor: WindowTitleInteractor,
     private val globalHotkeyManager: GlobalHotkeyManager,
@@ -64,8 +67,8 @@ internal class LogViewerViewModel(
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
     private val showSelectMappingDialog = MutableStateFlow(false)
-    private val stripDate = MutableStateFlow(false)
     private val firstVisibleIndex = MutableStateFlow(0)
+    private val showTagStat = MutableStateFlow(false)
 
     private val logsInteractor: LogsInteractor = LogsInteractorImpl(
         scope = viewModelScope,
@@ -116,10 +119,10 @@ internal class LogViewerViewModel(
         logsInteractor.observeLogs()
             .map { it.map { it.raw.substring(it.tag) }.toSet() }
             .distinctUntilChanged()
-            .link(currentTags)
+            .linkTo(currentTags)
         logsInteractor.observeRuns()
             .map { it ?: emptyList() }
-            .link(currentRuns)
+            .linkTo(currentRuns)
     }
 
     private var isOpenedOnce = false
@@ -167,10 +170,12 @@ internal class LogViewerViewModel(
         selectedSearchIndex,
         logsInteractor.observeMappingStatus(),
         showSelectMappingDialog,
-        stripDate,
+        logViewerSettingsRepository.isStripDateEnabled,
+        logViewerSettingsRepository.logFontSize,
+        showTagStat,
     ) {
             logIndexProgress, search, selectedSearchIndex, mappingStatus,
-            showSelectMappingDialog, stripDate,
+            showSelectMappingDialog, stripDate, logFontSize, showTagStat,
         ->
 
         val runIdOrders = logIndexProgress.lastSuccessIndex.runIdOrders
@@ -203,7 +208,7 @@ internal class LogViewerViewModel(
 
         val currentSelectedItemOrder = logIndexProgress.lastSuccessIndex.logs.getOrNull(
             logIndexProgress.lastSuccessIndex.searchIndex.index.getOrNull(selectedSearchIndex) ?: -1,
-        )?.order ?: -1
+        )?.order ?: LogOrder(-1)
 
         LogViewerViewState(
             searchIndex = logIndexProgress.lastSuccessIndex.searchIndex.index,
@@ -215,6 +220,7 @@ internal class LogViewerViewModel(
                 showRunNumbers = runIdOrders != null,
                 maxLogNumberDigits = (logIndexProgress.lastSuccessIndex.totalLogRecords + 1).toString().length,
                 stripDate = stripDate,
+                logFontSize = logFontSize,
             ),
             searchState = SearchBarViewState(
                 searchRequest = search.search,
@@ -232,6 +238,7 @@ internal class LogViewerViewModel(
             isStripDate = stripDate,
             showSelectMappingDialog = showSelectMappingDialog,
             logRecordsAfterApplyFilter = logIndexProgress.lastSuccessIndex.logs.size,
+            showTagStat = showTagStat,
         )
     }
         .stateIn(LogViewerViewState.STUB)
@@ -320,8 +327,20 @@ internal class LogViewerViewModel(
         }
     }
 
-    fun onClickStipDate() {
-        stripDate.update { !it }
+    fun onClickStripDate() = launch {
+        logViewerSettingsRepository.setIsStripDateEnabled(!state.value.isStripDate)
+    }
+
+    fun onClickFontUp() = launch {
+        logViewerSettingsRepository.setLogFontSize(state.value.logsViewState.logFontSize + 1)
+    }
+
+    fun onClickFontDown() = launch {
+        logViewerSettingsRepository.setLogFontSize((state.value.logsViewState.logFontSize - 1).coerceAtLeast(1))
+    }
+
+    fun onClickShowTagStat() {
+        showTagStat.update { !it }
     }
 
     fun onDragAndDropLogsFile(path: Path) {

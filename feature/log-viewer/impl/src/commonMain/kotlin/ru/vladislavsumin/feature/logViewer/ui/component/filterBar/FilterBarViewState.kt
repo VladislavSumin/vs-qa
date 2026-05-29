@@ -2,7 +2,7 @@ package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.text.input.TextFieldValue
-import ru.vladislavsumin.feature.logViewer.domain.SavedFiltersRepository
+import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 
 @Stable
 internal data class FilterBarViewState(

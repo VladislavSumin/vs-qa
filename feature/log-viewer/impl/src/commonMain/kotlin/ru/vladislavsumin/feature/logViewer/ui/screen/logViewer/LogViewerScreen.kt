@@ -6,15 +6,18 @@ import androidx.compose.ui.focus.FocusRequester
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import ru.vladislavsumin.core.coroutines.utils.LinkedFlow
 import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
-import ru.vladislavsumin.feature.logViewer.LinkedFlow
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 import ru.vladislavsumin.feature.logViewer.ui.component.dragAndDropOverlay.DragAndDropOverlayComponent
+import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponentFactory
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
+import ru.vladislavsumin.feature.logViewer.ui.component.tagStat.TagStatComponent
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 
@@ -34,7 +37,7 @@ internal class LogViewerScreen(
     private val currentTagsLink = LinkedFlow<Set<String>>()
     private val currentRunsLink = LinkedFlow<List<RunIdInfo>>()
 
-    private val filterBarComponent = filterBarComponentFactory.create(
+    private val filterBarComponent: FilterBarComponent = filterBarComponentFactory.create(
         currentTags = currentTagsLink,
         currentRuns = currentRunsLink,
         context = context.childContext("filter-bar"),
@@ -57,6 +60,11 @@ internal class LogViewerScreen(
         state = viewModel.state.mapState { it.logsViewState },
         onFirstVisibleIndexChange = viewModel::onFirstVisibleIndexUpdate,
         context = context.childContext("logs"),
+    )
+
+    private val tagStatComponent = TagStatComponent(
+        logs = viewModel.state.map { it.logsViewState.rawLogs },
+        context = context.childContext("tagStat"),
     )
 
     private val dragAndDropOverlayComponent = DragAndDropOverlayComponent(
@@ -82,6 +90,7 @@ internal class LogViewerScreen(
         filterBarComponent = filterBarComponent,
         dragAndDropOverlayComponent = dragAndDropOverlayComponent,
         logsComponent = logsComponent,
+        tagStatComponent = tagStatComponent,
         modifier = modifier,
     )
 }

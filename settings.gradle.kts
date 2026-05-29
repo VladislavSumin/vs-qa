@@ -14,7 +14,9 @@ rootProject.name = "vs-qa"
 include(":app")
 
 include(":core:adb:client")
+include(":core:boyer-moore-search")
 include(":core:proguard-parser")
+include(":core:search-utils")
 include(":core:ui:design-system")
 include(":core:ui:drag-and-drop")
 include(":core:ui:file-picker")
