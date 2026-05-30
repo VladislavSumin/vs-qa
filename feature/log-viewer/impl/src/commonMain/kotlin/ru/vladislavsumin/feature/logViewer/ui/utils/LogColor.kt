@@ -11,7 +11,7 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import kotlin.math.abs
 
 @Composable
-fun LogRecord.colorize(isSelected: Boolean, stripDate: Boolean,): AnnotatedString {
+fun LogRecord.colorize(isSelected: Boolean, stripDate: Boolean): AnnotatedString {
     val logColor = LevelColors.getLevelColor(logLevel)
     val tagColors = QaTheme.colorScheme.tagColors
     val tagText = raw.substring(tag)

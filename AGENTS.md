@@ -7,11 +7,11 @@
 
 | Command | What it does |
 |---|---|
-| `./gradlew :app:buildFatJarMain` | Build desktop fat JAR (`app/build/libs/vs-qa.jar`) |
-| `./gradlew :app:buildFatJarMainMin --info` | Build minimized JAR (`app/build/libs/vs-qa-min.jar`). Pass `--info` to see ProGuard logs. |
-| `./gradlew :app:jvmRun` | Run desktop app (see `.run/` for IntelliJ run configs). |
-| `./gradlew :app:jvmRun --args "<log_path> [mapping_path]"` | Run with CLI args. |
-| `./gradlew :app:assembleRelease` | Build Android release APK (signed with `debug.jks`). |
+| `./gradlew :app:jvm:buildFatJarMain` | Build desktop fat JAR (`app/jvm/build/libs/vs-qa.jar`) |
+| `./gradlew :app:jvm:buildFatJarMainMin --info` | Build minimized JAR (`app/jvm/build/libs/vs-qa-min.jar`). Pass `--info` to see ProGuard logs. |
+| `./gradlew :app:jvm:jvmRun` | Run desktop app (see `.run/` for IntelliJ run configs). |
+| `./gradlew :app:jvm:jvmRun --args "<log_path> [mapping_path]"` | Run with CLI args. |
+| `./gradlew :app:android:assembleRelease` | Build Android release APK (signed with `debug.jks`). |
 
 ## Quality
 
@@ -27,18 +27,20 @@ CI order in `.github/workflows/ci.yml`: **detekt → unit tests → build**.
 Kotlin Multiplatform project targeting **JVM (desktop via Compose Multiplatform)** and **Android**.
 
 ### Module structure
-- `:app` — app entrypoints (`jvmMain/Main.kt`, `androidMain/App.kt`), DI wiring (`Di.kt`).
+- `:app:core` — shared KMP library (common DI wiring, initialization).
+- `:app:jvm` — desktop JVM entrypoint (`Main.kt`, ProGuard, BuildConfig).
+- `:app:android` — Android application entrypoint (`App.kt`, `MainActivity.kt`).
 - `:core:*` — reusable utilities and services (adb client, search algos, ProGuard parser, UI primitives).
 - `:feature:<name>:api` — public contracts (interfaces, screen factories, params).
-- `:feature:<name>:impl` — implementations. Dependencies from `:app` only reference `impl` modules; `api` modules are transitive.
+- `:feature:<name>:impl` — implementations. Dependencies from `:app:*` only reference `impl` modules; `api` modules are transitive.
 
 ### Key technologies
 - **Compose Multiplatform** for UI (desktop + Android)
 - **Decompose** for component lifecycle and navigation
 - **Kodein** for DI
-- **ProGuard** for desktop JAR minimization (`app/proguard-rules.pro`)
+- **ProGuard** for desktop JAR minimization (`app/jvm/proguard-rules.pro`)
 - **R8** for Android release minification
-- **Sentry** for crash reporting (desktop only)
+- **Sentry** for crash reporting
 
 ## Testing
 - Tests live in `commonTest`/`jvmTest`/`androidTest` sourcesets alongside main code.

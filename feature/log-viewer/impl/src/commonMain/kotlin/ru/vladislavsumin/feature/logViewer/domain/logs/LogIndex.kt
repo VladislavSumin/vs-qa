@@ -31,7 +31,7 @@ data class LogIndex(
         /**
          * Поиск с как минимум одним результатом.
          */
-        data class Search(override val index: List<Int>,) : SearchIndex
+        data class Search(override val index: List<Int>) : SearchIndex
 
         /**
          * Ошибка поиска, некорректный Regex.

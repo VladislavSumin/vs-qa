@@ -90,7 +90,7 @@ internal fun LogViewerContent(
 
 @Composable
 @Suppress("LongMethod")
-private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogViewerViewState>,) {
+private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogViewerViewState>) {
     val clipboard = LocalClipboardManager.current
     Column(
         Modifier.fillMaxHeight().width(IntrinsicSize.Min).background(QaTheme.colorScheme.surfaceVariant),

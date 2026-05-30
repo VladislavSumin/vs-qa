@@ -26,7 +26,7 @@ import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.CurrentTokenP
 import kotlin.map
 import kotlin.sequences.map
 
-internal class FilterRequestParser(private val savedFilters: StateFlow<List<SavedFiltersRepository.SavedFilter>>,) {
+internal class FilterRequestParser(private val savedFilters: StateFlow<List<SavedFiltersRepository.SavedFilter>>) {
 
     data class ParserResult(
         val requestHighlight: RequestHighlight,
@@ -37,10 +37,10 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
     sealed interface RequestHighlight {
         val raw: String
 
-        data class Success(override val raw: String, val keywords: List<IntRange>, val data: List<IntRange>,) :
+        data class Success(override val raw: String, val keywords: List<IntRange>, val data: List<IntRange>) :
             RequestHighlight
 
-        data class InvalidSyntax(override val raw: String,) : RequestHighlight
+        data class InvalidSyntax(override val raw: String) : RequestHighlight
     }
 
     private enum class Operation {
@@ -221,30 +221,29 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
         override val rootParser: Parser<FilterRequest.FilterOperation> = autoChain
     }
 
-    private fun highlight(request: String, tokens: Result<TokenMatchesSequence>): RequestHighlight = tokens.map {
-            tokens
-        ->
-        val keywords = tokens
-            .filter { it.type in grammar.keywords }
-            .map { IntRange(it.offset, it.offset + it.length - 1) }
-            .toList()
-        val data = tokens
-            .filter { it.type in grammar.data }
-            .map { IntRange(it.offset, it.offset + it.length - 1) }
-            .toList()
-        RequestHighlight.Success(
-            raw = request,
-            keywords = keywords,
-            data = data,
-        )
-    }.getOrElse { RequestHighlight.InvalidSyntax(request) }
+    private fun highlight(request: String, tokens: Result<TokenMatchesSequence>): RequestHighlight =
+        tokens.map { tokens ->
+            val keywords = tokens
+                .filter { it.type in grammar.keywords }
+                .map { IntRange(it.offset, it.offset + it.length - 1) }
+                .toList()
+            val data = tokens
+                .filter { it.type in grammar.data }
+                .map { IntRange(it.offset, it.offset + it.length - 1) }
+                .toList()
+            RequestHighlight.Success(
+                raw = request,
+                keywords = keywords,
+                data = data,
+            )
+        }.getOrElse { RequestHighlight.InvalidSyntax(request) }
 
     fun justHighlight(request: String): RequestHighlight {
         val tokens = runCatching { grammar.tokenizer.tokenize(request) }
         return highlight(request, tokens)
     }
 
-    fun parse(request: String, cursorPosition: Int = -1,): ParserResult {
+    fun parse(request: String, cursorPosition: Int = -1): ParserResult {
         val (tokenizeTime, tokens) = measureTimeMillisWithResult {
             runCatching { grammar.tokenizer.tokenize(request) }
         }
@@ -274,7 +273,7 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
      * Пробует предсказать тип токена который сейчас вводится по текущей позиции курсора.
      */
     @Suppress("CyclomaticComplexMethod", "LongMethod")
-    private fun tokenPredict(request: String, cursorPosition: Int,): CurrentTokenPrediction? {
+    private fun tokenPredict(request: String, cursorPosition: Int): CurrentTokenPrediction? {
         val tokens =
             runCatching { grammar.tokenizer.tokenize(request.substring(0, cursorPosition)) }.getOrNull() ?: return null
 

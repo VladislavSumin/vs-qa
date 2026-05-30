@@ -137,7 +137,7 @@ private fun FilterField(
 }
 
 @Composable
-private fun HelpButton(viewModel: FilterBarViewModel, state: FilterBarViewState,) {
+private fun HelpButton(viewModel: FilterBarViewModel, state: FilterBarViewState) {
     QaIconButton(onClick = viewModel::onClickHelpButton) {
         DropdownMenu(
             expanded = state.showHelpMenu,
