@@ -6,6 +6,11 @@ on:
       - master
   pull_request:
   workflow_dispatch:
+    inputs:
+      use-vs-core-sources:
+        description: 'Use vs-core sources instead of Maven artifacts'
+        type: boolean
+        default: false
 
 jobs:
   detekt:
@@ -19,6 +24,7 @@ jobs:
           path: vs-qa
 
       - name: Clone vs-core repository
+        if: inputs.use-vs-core-sources == 'true'
         uses: actions/checkout@v4
         with:
           repository: VladislavSumin/vs-core
@@ -28,7 +34,9 @@ jobs:
         uses: ./vs-qa/.github/actions/run_gradle_default
         with:
           key: "detekt"
-          gradle_command: detekt
+          gradle_command: >-
+            -Pru.vs.core.useVsCoreSources=${{ inputs.use-vs-core-sources || 'false' }}
+            detekt
 
   unit-tests:
     name: unit tests
@@ -41,6 +49,7 @@ jobs:
           path: vs-qa
 
       - name: Clone vs-core repository
+        if: inputs.use-vs-core-sources == 'true'
         uses: actions/checkout@v4
         with:
           repository: VladislavSumin/vs-core
@@ -50,7 +59,9 @@ jobs:
         uses: ./vs-qa/.github/actions/run_gradle_default
         with:
           key: "unit-tests"
-          gradle_command: test allTests
+          gradle_command: >-
+            -Pru.vs.core.useVsCoreSources=${{ inputs.use-vs-core-sources || 'false' }}
+            test allTests
 
   build:
     name: build app
@@ -63,6 +74,7 @@ jobs:
           path: vs-qa
 
       - name: Clone vs-core repository
+        if: inputs.use-vs-core-sources == 'true'
         uses: actions/checkout@v4
         with:
           repository: VladislavSumin/vs-core
@@ -73,6 +85,7 @@ jobs:
         with:
           key: "build"
           gradle_command: >-
+            -Pru.vs.core.useVsCoreSources=${{ inputs.use-vs-core-sources || 'false' }}
             :app:buildFatJarMain 
             :app:buildFatJarMainMin
             :app:assembleRelease
