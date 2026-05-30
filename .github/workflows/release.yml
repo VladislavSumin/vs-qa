@@ -84,6 +84,7 @@ jobs:
           sed -e "s/%%VERSION%%/$VERSION/g" -e "s/%%SHA256%%/$SHA256/g" \
             homebrew/vs-qa.rb > /tmp/vs-qa.rb
           git clone https://x-access-token:${{ secrets.HOMEBREW_TAP_TOKEN }}@github.com/VladislavSumin/homebrew-vs-qa.git /tmp/homebrew-vs-qa
+          mkdir -p /tmp/homebrew-vs-qa/Formula
           cp /tmp/vs-qa.rb /tmp/homebrew-vs-qa/Formula/vs-qa.rb
           cd /tmp/homebrew-vs-qa
           git add Formula/vs-qa.rb
