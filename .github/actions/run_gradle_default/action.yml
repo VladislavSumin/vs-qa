@@ -19,15 +19,15 @@ runs:
   using: composite
   steps:
     - name: Setup java
-      uses: VladislavSumin/vs-core/.github/actions/setup_java@main
+      uses: VladislavSumin/vs-core/.github/actions/setup_java@master
 
     - name: Gradle cache
-      uses: VladislavSumin/vs-core/.github/actions/gradle_cache@main
+      uses: VladislavSumin/vs-core/.github/actions/gradle_cache@master
       with:
         key: ${{ inputs.key }}
 
     - name: Run gradle
-      uses: VladislavSumin/vs-core/.github/actions/run_gradle@main
+      uses: VladislavSumin/vs-core/.github/actions/run_gradle@master
       with:
         working-directory: ./vs-qa
         gradle_command: ${{ inputs.gradle_command }}
