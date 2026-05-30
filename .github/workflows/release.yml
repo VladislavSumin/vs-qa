@@ -77,6 +77,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Update Homebrew tap
+        run: |
+          cd vs-qa
+          SHA256=$(shasum -a 256 app/jvm/build/libs/vs-qa-min.jar | cut -d ' ' -f1)
+          sed -e "s/%%VERSION%%/$VERSION/g" -e "s/%%SHA256%%/$SHA256/g" \
+            homebrew/vs-qa.rb > /tmp/vs-qa.rb
+          git clone https://x-access-token:${{ secrets.HOMEBREW_TAP_TOKEN }}@github.com/VladislavSumin/homebrew-vs-qa.git /tmp/homebrew-vs-qa
+          cp /tmp/vs-qa.rb /tmp/homebrew-vs-qa/Formula/vs-qa.rb
+          cd /tmp/homebrew-vs-qa
+          git add Formula/vs-qa.rb
+          git -c user.name="github-actions[bot]" -c user.email="github-actions[bot]@users.noreply.github.com" \
+            commit -m "Update vs-qa to v${VERSION}"
+          git push
+
       - name: Send release notification to MAX chat
         run: |
           cd vs-qa
@@ -86,9 +100,7 @@ jobs:
 
           ${ESCAPED_CHANGELOG}
 
-          Злые админы макса запретили этому боту выкладывать апк, но вы знаете где ее можно скачать если что." \
-            ./app/jvm/build/libs/vs-qa.jar \
-            ./app/jvm/build/libs/vs-qa-min.jar
-#            ./app/build/outputs/apk/release/app-release.apk
+          Десктоп версия теперь устанавливается через brew.
+          Злые админы макса запретили этому боту выкладывать апк, но вы знаете где ее можно скачать если что."
         env:
           MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
