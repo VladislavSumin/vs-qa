@@ -16,7 +16,7 @@ object TestLogger {
                         // no_op
                     }
 
-                    override fun log(level: LogLevel, throwable: Throwable, msg: String,) {
+                    override fun log(level: LogLevel, throwable: Throwable, msg: String) {
                         // no_op
                     }
                 }

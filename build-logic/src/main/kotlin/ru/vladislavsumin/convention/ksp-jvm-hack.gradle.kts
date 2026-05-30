@@ -1,5 +1,7 @@
 package ru.vladislavsumin.convention
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+
 /**
  * Хак для подключения KSP к commonMain в kmp модулях с java only таргетом.
  * После подключения добавляем ksp вот так:
@@ -33,14 +35,15 @@ val kspSourcesCopyTask = tasks.register<Copy>("copyKspSourcesFromJvmToCommonSour
         }
     }
 }
-tasks.named("compileKotlinJvm") { dependsOn(kspSourcesCopyTask) }
 
-// TODO временное решение, убрать отсюда
-afterEvaluate {
-    tasks.named("compileReleaseKotlinAndroid") { dependsOn(kspSourcesCopyTask) }
-    tasks.named("compileDebugKotlinAndroid") { dependsOn(kspSourcesCopyTask) }
-    tasks.named("kspDebugKotlinAndroid") { dependsOn(kspSourcesCopyTask) }
-    tasks.named("kspReleaseKotlinAndroid") { dependsOn(kspSourcesCopyTask) }
+tasks.withType<KotlinCompilationTask<*>>().configureEach {
+    dependsOn(kspSourcesCopyTask)
+}
+
+tasks.configureEach {
+    if (name.startsWith("ksp") && name != "kspKotlinJvm") {
+        dependsOn(kspSourcesCopyTask)
+    }
 }
 
 // Исключаем сгенерированные jvm ksp исходные коды из компиляции.

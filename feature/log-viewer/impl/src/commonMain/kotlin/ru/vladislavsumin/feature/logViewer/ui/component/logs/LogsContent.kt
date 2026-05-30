@@ -161,7 +161,7 @@ private fun ScrollToBottom(lazyListState: LazyListState) {
 }
 
 @Composable
-private fun Header(runNumber: Int, meta: Map<String, String>?, fontSize: Int, textSizeDp: Dp,) {
+private fun Header(runNumber: Int, meta: Map<String, String>?, fontSize: Int, textSizeDp: Dp) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -190,7 +190,7 @@ private fun Header(runNumber: Int, meta: Map<String, String>?, fontSize: Int, te
 }
 
 @Composable
-private fun Record(log: LogRecord, isSelected: Boolean, stripDate: Boolean, fontSize: Int, textSizeDp: Dp,) {
+private fun Record(log: LogRecord, isSelected: Boolean, stripDate: Boolean, fontSize: Int, textSizeDp: Dp) {
     Box {
         DisableSelection {
             Text(

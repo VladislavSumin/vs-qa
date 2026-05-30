@@ -148,6 +148,6 @@ internal class FilterBarViewModel(
         showHelpMenu.value = false
     }
 
-    fun highlightSavedFilter(filter: SavedFiltersRepository.SavedFilter,): FilterRequestParser.RequestHighlight =
+    fun highlightSavedFilter(filter: SavedFiltersRepository.SavedFilter): FilterRequestParser.RequestHighlight =
         filterRequestParser.justHighlight(filter.content)
 }

@@ -25,7 +25,7 @@ import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 
 @GenerateFactory(NotificationsComponentFactory::class)
-internal class NotificationsComponentImpl(viewModelFactory: NotificationsViewModelFactory, context: ComponentContext,) :
+internal class NotificationsComponentImpl(viewModelFactory: NotificationsViewModelFactory, context: ComponentContext) :
     Component(context),
     NotificationsComponent {
     private val viewModel = viewModel { viewModelFactory.create() }

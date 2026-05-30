@@ -30,9 +30,9 @@ jobs:
           gradle_command: >-
             -Pru.vs.core.useVsCoreSources=false
             -Pru.vs.version=${{ env.VERSION }}
-            :app:buildFatJarMain 
-            :app:buildFatJarMainMin
-            :app:assembleRelease
+            :app:jvm:buildFatJarMain 
+            :app:jvm:buildFatJarMainMin
+            :app:android:assembleRelease
 
       - name: Generate changelog
         id: changelog
@@ -69,9 +69,9 @@ jobs:
             
             Download the JAR file from the assets below.
           files: |
-            ./vs-qa/app/build/libs/vs-qa.jar
-            ./vs-qa/app/build/libs/vs-qa-min.jar
-            ./vs-qa/app/build/outputs/apk/release/app-release.apk
+            ./vs-qa/app/jvm/build/libs/vs-qa.jar
+            ./vs-qa/app/jvm/build/libs/vs-qa-min.jar
+            ./vs-qa/app/android/build/outputs/apk/release/app-release.apk
           draft: false
           prerelease: false
         env:
@@ -86,8 +86,8 @@ jobs:
           ${{ steps.changelog.outputs.changelog }}
 
           Злые админы макса запретили этому боту выкладывать апк, но вы знаете где ее можно скачать если что." \
-            ./app/build/libs/vs-qa.jar \
-            ./app/build/libs/vs-qa-min.jar
+            ./app/jvm/build/libs/vs-qa.jar \
+            ./app/jvm/build/libs/vs-qa-min.jar
 #            ./app/build/outputs/apk/release/app-release.apk
         env:
           MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}

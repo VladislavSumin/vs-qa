@@ -43,6 +43,6 @@ value class LogOrder(val value: Int) : Comparable<LogOrder> {
     override fun toString(): String = value.toString()
 }
 
-data class LogOrderRange(override val start: LogOrder, override val endInclusive: LogOrder,) : ClosedRange<LogOrder> {
+data class LogOrderRange(override val start: LogOrder, override val endInclusive: LogOrder) : ClosedRange<LogOrder> {
     val last: LogOrder get() = endInclusive
 }

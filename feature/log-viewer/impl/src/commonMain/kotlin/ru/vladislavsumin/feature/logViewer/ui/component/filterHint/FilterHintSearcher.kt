@@ -58,5 +58,5 @@ internal object FilterHintSearcher {
         }
     }
 
-    private data class MatchResult(val hint: KeywordFilterHint, val highlights: List<IntRange>, val score: Int,)
+    private data class MatchResult(val hint: KeywordFilterHint, val highlights: List<IntRange>, val score: Int)
 }

@@ -86,24 +86,24 @@ jobs:
           key: "build"
           gradle_command: >-
             -Pru.vs.core.useVsCoreSources=${{ inputs.use-vs-core-sources || 'false' }}
-            :app:buildFatJarMain 
-            :app:buildFatJarMainMin
-            :app:assembleRelease
+            :app:jvm:buildFatJarMain 
+            :app:jvm:buildFatJarMainMin
+            :app:android:assembleRelease
 
       - name: Upload jar
         uses: actions/upload-artifact@v4
         with:
           name: vs-qa.jar
-          path: ./vs-qa/app/build/libs/vs-qa.jar
+          path: ./vs-qa/app/jvm/build/libs/vs-qa.jar
 
       - name: Upload jar-min
         uses: actions/upload-artifact@v4
         with:
           name: vs-qa-min.jar
-          path: ./vs-qa/app/build/libs/vs-qa-min.jar
+          path: ./vs-qa/app/jvm/build/libs/vs-qa-min.jar
 
       - name: Upload app-release.apk
         uses: actions/upload-artifact@v4
         with:
           name: app-release.apk
-          path: ./vs-qa/app/build/outputs/apk/release/app-release.apk
+          path: ./vs-qa/app/android/build/outputs/apk/release/app-release.apk

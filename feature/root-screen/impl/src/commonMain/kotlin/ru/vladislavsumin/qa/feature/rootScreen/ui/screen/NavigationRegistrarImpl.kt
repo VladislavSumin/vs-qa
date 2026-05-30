@@ -9,7 +9,7 @@ import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenFactory
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenParams
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.TabNavigationHost
 
-internal class NavigationRegistrarImpl(private val rootScreenFactory: RootScreenFactory,) : NavigationRegistrar {
+internal class NavigationRegistrarImpl(private val rootScreenFactory: RootScreenFactory) : NavigationRegistrar {
     override fun NavigationRegistry<ComponentContext>.register() {
         registerScreen(
             factory = rootScreenFactory,

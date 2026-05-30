@@ -11,7 +11,9 @@ dependencies {
     implementation("ru.vladislavsumin:build-scripts:${property("ru.vs.core.version")}")
 
     implementation(vsCoreLibs.gradlePlugins.kotlin.core)
+    implementation(vsCoreLibs.gradlePlugins.kotlin.compose.compiler)
     implementation(vsCoreLibs.gradlePlugins.jb.compose)
+    implementation(vsCoreLibs.gradlePlugins.android)
     implementation(libs.gradlePlugins.room)
     implementation(libs.gradlePlugins.sentry)
     implementation(libs.gradlePlugins.buildkonfig)

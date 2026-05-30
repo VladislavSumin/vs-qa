@@ -22,7 +22,7 @@ internal data class LogsViewState(
     val logFontSize: Int,
 ) {
 
-    data class SectionInfo(val logs: List<LogRecord>, val meta: Map<String, String>?,)
+    data class SectionInfo(val logs: List<LogRecord>, val meta: Map<String, String>?)
 
     companion object {
         val STUB = LogsViewState(

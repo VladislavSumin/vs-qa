@@ -10,7 +10,7 @@ internal data class FilterHintItem(
     val searchLength: Int,
 )
 
-internal data class KeywordFilterHint(val name: String, val hint: String? = null,)
+internal data class KeywordFilterHint(val name: String, val hint: String? = null)
 
 internal val keywordFilterHintItems = listOf(
     KeywordFilterHint(name = "tag", hint = "Filter by log tag"),

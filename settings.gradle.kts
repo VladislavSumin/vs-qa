@@ -11,7 +11,9 @@ pluginManagement {
 
 rootProject.name = "vs-qa"
 
-include(":app")
+include(":app:core")
+include(":app:android")
+include(":app:jvm")
 
 include(":core:adb:client")
 include(":core:boyer-moore-search")

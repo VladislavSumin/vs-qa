@@ -44,7 +44,7 @@ interface LogsInteractor {
     /**
      * Строит "Индекс" (результат фильтрации и последующего поиска) на основе [filter] и [search].
      */
-    fun observeLogIndex(filter: Flow<FilterRequest>, search: Flow<SearchRequest>,): Flow<LogIndexProgress>
+    fun observeLogIndex(filter: Flow<FilterRequest>, search: Flow<SearchRequest>): Flow<LogIndexProgress>
 
     /**
      * Статус загрузки логов.
@@ -182,7 +182,7 @@ class LogsInteractorImpl(
 
     override fun observeLoadingStatus(): StateFlow<LogsInteractor.LoadingStatus> = loadingStatus
 
-    override fun observeLogIndex(filter: Flow<FilterRequest>, search: Flow<SearchRequest>,): Flow<LogIndexProgress> =
+    override fun observeLogIndex(filter: Flow<FilterRequest>, search: Flow<SearchRequest>): Flow<LogIndexProgress> =
         channelFlow {
             // Если этот кеш не null, то в нем содержаться актуальные или прошлые результаты поиска
             var searchCache: LogIndex?
@@ -234,7 +234,7 @@ class LogsInteractorImpl(
         }.flowOn(dispatchers.Default)
 }
 
-internal data class ClearLogState(val logs: List<LogRecord>, val runIdIndexes: List<RunIdInfo>?,)
+internal data class ClearLogState(val logs: List<LogRecord>, val runIdIndexes: List<RunIdInfo>?)
 
 private fun RawLogRecord.toLogRecord(order: LogOrder) = LogRecord(
     order = order,
@@ -254,7 +254,7 @@ private fun RawLogRecord.toLogRecord(order: LogOrder) = LogRecord(
 private fun List<RawLogRecord>.toLogRecords(): List<LogRecord> =
     mapIndexed { index, record -> record.toLogRecord(LogOrder(index)) }
 
-private fun List<RawRunIdInfo>.toRunIdInfo(obfuscatedLogs: List<RawLogRecord>,): List<RunIdInfo> =
+private fun List<RawRunIdInfo>.toRunIdInfo(obfuscatedLogs: List<RawLogRecord>): List<RunIdInfo> =
     mapIndexed { index, info ->
         val endIndex = if (index + 1 < size) {
             this[index + 1].startIndex - 1
