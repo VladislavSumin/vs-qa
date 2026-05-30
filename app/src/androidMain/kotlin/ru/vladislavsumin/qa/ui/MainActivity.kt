@@ -21,7 +21,9 @@ import ru.vladislavsumin.qa.feature.rootScreen.ui.component.rootScreen.RootScree
 import java.nio.file.Path
 import java.util.UUID
 
-class MainActivity : ComponentActivity(), DIAware {
+class MainActivity :
+    ComponentActivity(),
+    DIAware {
     override val di: DI by closestDI()
 
     override fun onCreate(savedInstanceState: Bundle?) {

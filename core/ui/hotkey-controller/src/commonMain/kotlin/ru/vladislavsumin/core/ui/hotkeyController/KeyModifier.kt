@@ -30,10 +30,7 @@ sealed class KeyModifier {
         override val mask = CONTROL
     }
 
-    internal data class Composite(
-        val left: KeyModifier,
-        val right: KeyModifier,
-    ) : KeyModifier() {
+    internal data class Composite(val left: KeyModifier, val right: KeyModifier) : KeyModifier() {
         override val mask = left.mask or right.mask
     }
 

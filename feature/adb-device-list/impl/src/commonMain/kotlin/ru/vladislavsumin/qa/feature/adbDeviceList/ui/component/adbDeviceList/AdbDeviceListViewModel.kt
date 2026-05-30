@@ -11,13 +11,12 @@ import ru.vladislavsumin.qa.feature.adbDeviceList.ui.component.adbDeviceList.Adb
 
 @GenerateFactory
 @Stable
-internal class AdbDeviceListViewModel(
-    adbClient: AdbClient,
-) : ViewModel() {
+internal class AdbDeviceListViewModel(adbClient: AdbClient) : ViewModel() {
     val state: StateFlow<AdbDeviceListViewState> = adbClient.observeDevices()
         .map { result ->
             when (result) {
                 is AdbClient.AdbResult.Err<*> -> AdbDeviceListViewState.Error
+
                 is AdbClient.AdbResult.Ok<List<AdbClient.DeviceInfo>> -> {
                     val devices = result.data.map { (name, status) ->
                         AdbDeviceListViewState.Device(

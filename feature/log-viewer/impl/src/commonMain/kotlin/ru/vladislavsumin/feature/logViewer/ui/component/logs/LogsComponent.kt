@@ -13,7 +13,8 @@ internal class LogsComponent(
     private val state: StateFlow<LogsViewState>,
     private val onFirstVisibleIndexChange: (Int) -> Unit,
     context: ComponentContext,
-) : Component(context), ComposeComponent {
+) : Component(context),
+    ComposeComponent {
 
     @Composable
     override fun Render(modifier: Modifier) = LogsContent(onFirstVisibleIndexChange, logsEvents, state, modifier)

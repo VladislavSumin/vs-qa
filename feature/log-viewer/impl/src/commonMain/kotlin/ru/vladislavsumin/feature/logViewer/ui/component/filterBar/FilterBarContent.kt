@@ -137,10 +137,7 @@ private fun FilterField(
 }
 
 @Composable
-private fun HelpButton(
-    viewModel: FilterBarViewModel,
-    state: FilterBarViewState,
-) {
+private fun HelpButton(viewModel: FilterBarViewModel, state: FilterBarViewState,) {
     QaIconButton(onClick = viewModel::onClickHelpButton) {
         DropdownMenu(
             expanded = state.showHelpMenu,
@@ -151,14 +148,13 @@ private fun HelpButton(
 }
 
 @Composable
-private fun FilterRequestParser.RequestHighlight.colorize(): AnnotatedString {
-    return when (this) {
-        is FilterRequestParser.RequestHighlight.InvalidSyntax -> buildAnnotatedString { append(raw) }
-        is FilterRequestParser.RequestHighlight.Success -> buildAnnotatedString {
-            append(raw)
-            keywords.forEach { range ->
-                addStyle(SpanStyle(color = QaTheme.colorScheme.onSurfaceVariant), range)
-            }
+private fun FilterRequestParser.RequestHighlight.colorize(): AnnotatedString = when (this) {
+    is FilterRequestParser.RequestHighlight.InvalidSyntax -> buildAnnotatedString { append(raw) }
+
+    is FilterRequestParser.RequestHighlight.Success -> buildAnnotatedString {
+        append(raw)
+        keywords.forEach { range ->
+            addStyle(SpanStyle(color = QaTheme.colorScheme.onSurfaceVariant), range)
         }
     }
 }

@@ -26,9 +26,7 @@ internal interface LogRecentRepository {
     )
 }
 
-internal class LogRecentRepositoryImpl(
-    db: LogRecentDatabase,
-) : LogRecentRepository {
+internal class LogRecentRepositoryImpl(db: LogRecentDatabase) : LogRecentRepository {
     private val logRecentDao = db.logRecentDao
     override fun observeRecent(): Flow<List<LogRecent>> =
         logRecentDao.observeAllSortedByLastOpenTime().map { it.toDomain() }

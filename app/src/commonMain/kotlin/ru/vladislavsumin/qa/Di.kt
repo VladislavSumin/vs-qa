@@ -23,10 +23,7 @@ import ru.vladislavsumin.qa.feature.memoryIndicator.featureMemoryIndicator
 import ru.vladislavsumin.qa.feature.notifications.featureNotifications
 import ru.vladislavsumin.qa.feature.rootScreen.featureRootScreen
 
-fun createDi(
-    platformModule: DI.Module?,
-    globalHotkeyManager: GlobalHotkeyManager,
-): DirectDI = DI {
+fun createDi(platformModule: DI.Module?, globalHotkeyManager: GlobalHotkeyManager): DirectDI = DI {
     if (platformModule != null) {
         importOnce(platformModule)
     }

@@ -20,13 +20,11 @@ import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 
 @Composable
-internal fun AdbDeviceListContent(
-    viewModel: AdbDeviceListViewModel,
-    modifier: Modifier,
-) {
+internal fun AdbDeviceListContent(viewModel: AdbDeviceListViewModel, modifier: Modifier) {
     val state by viewModel.state.collectAsState()
     when (val state = state) {
         is AdbDeviceListViewState.DeviceList -> DeviceList(state, modifier)
+
         AdbDeviceListViewState.Error -> {
             // TODO Сделать нормальный статус ошибки.
             Text("Adb error, TODO")

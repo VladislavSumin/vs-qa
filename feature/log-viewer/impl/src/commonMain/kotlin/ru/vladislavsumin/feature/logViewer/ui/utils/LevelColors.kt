@@ -8,14 +8,12 @@ import ru.vladislavsumin.feature.logParser.domain.LogLevel
 // TODO переписать как функцию расширение
 object LevelColors {
     @Composable
-    fun getLevelColor(level: LogLevel): LogColor {
-        return when (level) {
-            LogLevel.FATAL -> QaTheme.colorScheme.logFatal
-            LogLevel.ERROR -> QaTheme.colorScheme.logError
-            LogLevel.WARN -> QaTheme.colorScheme.logWarn
-            LogLevel.INFO -> QaTheme.colorScheme.logInfo
-            LogLevel.DEBUG -> QaTheme.colorScheme.logDebug
-            LogLevel.VERBOSE -> QaTheme.colorScheme.logTrace
-        }
+    fun getLevelColor(level: LogLevel): LogColor = when (level) {
+        LogLevel.FATAL -> QaTheme.colorScheme.logFatal
+        LogLevel.ERROR -> QaTheme.colorScheme.logError
+        LogLevel.WARN -> QaTheme.colorScheme.logWarn
+        LogLevel.INFO -> QaTheme.colorScheme.logInfo
+        LogLevel.DEBUG -> QaTheme.colorScheme.logDebug
+        LogLevel.VERBOSE -> QaTheme.colorScheme.logTrace
     }
 }

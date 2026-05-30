@@ -161,12 +161,7 @@ private fun ScrollToBottom(lazyListState: LazyListState) {
 }
 
 @Composable
-private fun Header(
-    runNumber: Int,
-    meta: Map<String, String>?,
-    fontSize: Int,
-    textSizeDp: Dp,
-) {
+private fun Header(runNumber: Int, meta: Map<String, String>?, fontSize: Int, textSizeDp: Dp,) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -195,13 +190,7 @@ private fun Header(
 }
 
 @Composable
-private fun Record(
-    log: LogRecord,
-    isSelected: Boolean,
-    stripDate: Boolean,
-    fontSize: Int,
-    textSizeDp: Dp,
-) {
+private fun Record(log: LogRecord, isSelected: Boolean, stripDate: Boolean, fontSize: Int, textSizeDp: Dp,) {
     Box {
         DisableSelection {
             Text(
@@ -246,19 +235,17 @@ private fun measureTextWidth(text: String, style: TextStyle): Dp {
 }
 
 @Composable
-fun LazyListState.isScrollingUp(): State<Boolean> {
-    return produceState(initialValue = true) {
-        var lastIndex = 0
-        var lastScroll = Int.MAX_VALUE
-        snapshotFlow {
-            firstVisibleItemIndex to firstVisibleItemScrollOffset
-        }.collect { (currentIndex, currentScroll) ->
-            if (currentIndex != lastIndex || currentScroll != lastScroll) {
-                value = currentIndex < lastIndex ||
-                    (currentIndex == lastIndex && currentScroll < lastScroll)
-                lastIndex = currentIndex
-                lastScroll = currentScroll
-            }
+fun LazyListState.isScrollingUp(): State<Boolean> = produceState(initialValue = true) {
+    var lastIndex = 0
+    var lastScroll = Int.MAX_VALUE
+    snapshotFlow {
+        firstVisibleItemIndex to firstVisibleItemScrollOffset
+    }.collect { (currentIndex, currentScroll) ->
+        if (currentIndex != lastIndex || currentScroll != lastScroll) {
+            value = currentIndex < lastIndex ||
+                (currentIndex == lastIndex && currentScroll < lastScroll)
+            lastIndex = currentIndex
+            lastScroll = currentScroll
         }
     }
 }

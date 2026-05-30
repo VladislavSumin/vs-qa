@@ -18,7 +18,9 @@ import ru.vladislavsumin.core.ui.hotkeyController.Hotkey
 // Посмотреть работу с префами на счет вынесения ее в кор
 // Посмотреть вертикал скрол бар
 
-class App : Application(), DIAware {
+class App :
+    Application(),
+    DIAware {
     private var _di: DI? = null
     override val di: DI
         get() = _di!!

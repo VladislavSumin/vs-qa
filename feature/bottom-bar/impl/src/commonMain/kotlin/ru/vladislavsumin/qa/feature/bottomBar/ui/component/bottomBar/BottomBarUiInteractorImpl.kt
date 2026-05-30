@@ -8,7 +8,9 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 @Stable
-internal class BottomBarUiInteractorImpl : ViewModel(), BottomBarUiInteractor {
+internal class BottomBarUiInteractorImpl :
+    ViewModel(),
+    BottomBarUiInteractor {
     val additionalText = MutableStateFlow("")
 
     private val lock = ReentrantLock()

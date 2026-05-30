@@ -33,7 +33,5 @@ private object PathSerializer : KSerializer<Path> {
         encoder.encodeString(value.toString())
     }
 
-    override fun deserialize(decoder: Decoder): Path {
-        return Path(decoder.decodeString())
-    }
+    override fun deserialize(decoder: Decoder): Path = Path(decoder.decodeString())
 }

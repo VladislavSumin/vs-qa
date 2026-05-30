@@ -11,9 +11,7 @@ import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenParams
 
 @GenerateFactory
-internal class RootViewModel(
-    globalHotkeyManager: GlobalHotkeyManager,
-) : NavigationViewModel() {
+internal class RootViewModel(globalHotkeyManager: GlobalHotkeyManager,) : NavigationViewModel() {
     val events = Channel<RootEvent>()
 
     init {

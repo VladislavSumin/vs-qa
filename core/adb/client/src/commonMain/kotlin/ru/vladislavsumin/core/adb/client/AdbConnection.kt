@@ -19,10 +19,7 @@ import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
  *
  * Создает **отдельное** tcp соединение на каждую команду (это требование adb).
  */
-internal class AdbConnection(
-    private val dispatchers: VsDispatchers,
-    private val selector: SelectorManager,
-) {
+internal class AdbConnection(private val dispatchers: VsDispatchers, private val selector: SelectorManager) {
     suspend fun executeCommand(command: String): String = withContext(dispatchers.IO) {
         withConnection { r, w ->
             w.sendAdbData(command)
@@ -63,8 +60,8 @@ internal class AdbConnection(
         return readByteArray(len).decodeToString()
     }
 
-    private suspend fun <T> withConnection(block: suspend (ByteReadChannel, ByteWriteChannel) -> T): T {
-        return aSocket(selector)
+    private suspend fun <T> withConnection(block: suspend (ByteReadChannel, ByteWriteChannel) -> T): T =
+        aSocket(selector)
             .tcp()
             .connect(DEFAULT_HOST, DEFAULT_PORT)
             .use { socket ->
@@ -72,7 +69,6 @@ internal class AdbConnection(
                 val writeChannel = socket.openWriteChannel()
                 block(readChannel, writeChannel)
             }
-    }
 
     companion object {
         private const val OKAY = "OKAY"

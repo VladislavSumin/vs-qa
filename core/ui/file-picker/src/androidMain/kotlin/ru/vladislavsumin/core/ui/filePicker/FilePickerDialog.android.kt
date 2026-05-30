@@ -12,10 +12,7 @@ import java.nio.file.Path
 import java.util.UUID
 
 @Composable
-actual fun FilePickerDialog(
-    mimeType: String,
-    onCloseRequest: (result: Path?) -> Unit,
-) {
+actual fun FilePickerDialog(mimeType: String, onCloseRequest: (result: Path?) -> Unit) {
     val context = LocalContext.current
     val filePickerLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent(),

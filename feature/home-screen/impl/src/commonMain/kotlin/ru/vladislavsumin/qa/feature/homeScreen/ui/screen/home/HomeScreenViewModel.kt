@@ -15,9 +15,7 @@ import java.nio.file.Path
 
 @GenerateFactory
 @Stable
-internal class HomeScreenViewModel(
-    globalHotkeyManager: GlobalHotkeyManager,
-) : NavigationViewModel() {
+internal class HomeScreenViewModel(globalHotkeyManager: GlobalHotkeyManager) : NavigationViewModel() {
     private val showOpenNewFileDialog = MutableStateFlow(false)
     val state: StateFlow<Boolean> = showOpenNewFileDialog
 

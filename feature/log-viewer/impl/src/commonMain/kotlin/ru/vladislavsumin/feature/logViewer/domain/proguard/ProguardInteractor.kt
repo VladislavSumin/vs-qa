@@ -18,22 +18,17 @@ class ProguardInteractorImpl(path: Path) : ProguardInteractor {
 
     override fun warmup(): Result<Unit> = runCatching { proguardRetracer.warmup() }
 
-    private fun read(path: Path): String {
-        return if (path.extension == "zip") {
-            ZipInputStream(path.inputStream()).use { zip ->
-                zip.nextEntry
-                zip.bufferedReader().readText()
-            }
-        } else {
-            path.readText()
+    private fun read(path: Path): String = if (path.extension == "zip") {
+        ZipInputStream(path.inputStream()).use { zip ->
+            zip.nextEntry
+            zip.bufferedReader().readText()
         }
+    } else {
+        path.readText()
     }
 
-    override fun deobfuscateClass(obfuscatedClassName: String): String? {
-        return proguardRetracer.retraceClassName(obfuscatedClassName)
-    }
+    override fun deobfuscateClass(obfuscatedClassName: String): String? =
+        proguardRetracer.retraceClassName(obfuscatedClassName)
 
-    override fun deobfuscateStack(data: String): String {
-        return proguardRetracer.retraceStacktrace(data)
-    }
+    override fun deobfuscateStack(data: String): String = proguardRetracer.retraceStacktrace(data)
 }

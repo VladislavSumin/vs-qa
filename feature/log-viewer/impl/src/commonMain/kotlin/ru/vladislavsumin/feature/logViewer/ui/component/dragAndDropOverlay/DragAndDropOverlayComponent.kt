@@ -11,7 +11,8 @@ internal class DragAndDropOverlayComponent(
     private val onMappingPathSelected: (Path) -> Unit,
     private val onLogPathSelected: (Path) -> Unit,
     context: ComponentContext,
-) : Component(context), ComposeComponent {
+) : Component(context),
+    ComposeComponent {
     @Composable
     override fun Render(modifier: Modifier) {
         DragAndDropOverlayContent(onMappingPathSelected, onLogPathSelected, modifier)

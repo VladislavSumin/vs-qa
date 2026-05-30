@@ -52,12 +52,10 @@ data class RawLogRecord(
          * Если [this] расположен после [position] то он сдвигается на [offset]. А если расположен до [position],
          * то возвращается оригинальный [this] без модификации.
          */
-        private fun IntRange.moveIfAfterPosition(position: Int, offset: Int): IntRange {
-            return if (first >= position) {
-                IntRange(first + offset, last + offset)
-            } else {
-                this
-            }
+        private fun IntRange.moveIfAfterPosition(position: Int, offset: Int): IntRange = if (first >= position) {
+            IntRange(first + offset, last + offset)
+        } else {
+            this
         }
     }
 }

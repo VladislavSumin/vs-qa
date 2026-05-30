@@ -15,7 +15,8 @@ internal class LogRecentComponent(
     private val onOpenLogRecent: (path: Path) -> Unit,
     logRecentViewModelFactory: LogRecentViewModelFactory,
     context: ComponentContext,
-) : Component(context), ComposeComponent {
+) : Component(context),
+    ComposeComponent {
     private val viewModel: LogRecentViewModel =
         viewModel { logRecentViewModelFactory.create(notificationsUiInteractor) }
 

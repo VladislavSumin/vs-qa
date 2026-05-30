@@ -19,10 +19,7 @@ import ru.vladislavsumin.core.uikit.pieChart.Slice
 import ru.vladislavsumin.feature.logViewer.ui.utils.LevelColors
 
 @Composable
-internal fun TagStatContent(
-    viewModel: TagStatViewModel,
-    modifier: Modifier,
-) {
+internal fun TagStatContent(viewModel: TagStatViewModel, modifier: Modifier,) {
     val state by viewModel.state.collectAsState()
     LazyColumn(modifier) {
         items(state.tags, key = { it.tag }) { tagInfo ->

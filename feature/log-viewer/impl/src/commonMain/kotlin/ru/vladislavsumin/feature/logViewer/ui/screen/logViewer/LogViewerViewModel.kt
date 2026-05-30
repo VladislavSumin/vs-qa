@@ -174,8 +174,14 @@ internal class LogViewerViewModel(
         logViewerSettingsRepository.logFontSize,
         showTagStat,
     ) {
-            logIndexProgress, search, selectedSearchIndex, mappingStatus,
-            showSelectMappingDialog, stripDate, logFontSize, showTagStat,
+            logIndexProgress,
+            search,
+            selectedSearchIndex,
+            mappingStatus,
+            showSelectMappingDialog,
+            stripDate,
+            logFontSize,
+            showTagStat,
         ->
 
         val runIdOrders = logIndexProgress.lastSuccessIndex.runIdOrders
@@ -251,6 +257,7 @@ internal class LogViewerViewModel(
             logsInteractor.observeLoadingStatus().collectLatest {
                 when (it) {
                     is LogsInteractor.LoadingStatus.Loaded -> Unit
+
                     is LogsInteractor.LoadingStatus.LoadingLogs -> {
                         bottomBarUiInteractor.showProgressBar("Loading logs")
                     }

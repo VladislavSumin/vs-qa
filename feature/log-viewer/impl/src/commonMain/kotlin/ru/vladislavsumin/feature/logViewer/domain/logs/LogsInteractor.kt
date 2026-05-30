@@ -44,10 +44,7 @@ interface LogsInteractor {
     /**
      * Строит "Индекс" (результат фильтрации и последующего поиска) на основе [filter] и [search].
      */
-    fun observeLogIndex(
-        filter: Flow<FilterRequest>,
-        search: Flow<SearchRequest>,
-    ): Flow<LogIndexProgress>
+    fun observeLogIndex(filter: Flow<FilterRequest>, search: Flow<SearchRequest>,): Flow<LogIndexProgress>
 
     /**
      * Статус загрузки логов.
@@ -185,64 +182,59 @@ class LogsInteractorImpl(
 
     override fun observeLoadingStatus(): StateFlow<LogsInteractor.LoadingStatus> = loadingStatus
 
-    override fun observeLogIndex(
-        filter: Flow<FilterRequest>,
-        search: Flow<SearchRequest>,
-    ): Flow<LogIndexProgress> = channelFlow {
-        // Если этот кеш не null, то в нем содержаться актуальные или прошлые результаты поиска
-        var searchCache: LogIndex?
+    override fun observeLogIndex(filter: Flow<FilterRequest>, search: Flow<SearchRequest>,): Flow<LogIndexProgress> =
+        channelFlow {
+            // Если этот кеш не null, то в нем содержаться актуальные или прошлые результаты поиска
+            var searchCache: LogIndex?
 
-        filterDelegate.createFilterProgressFlow(filter).collectLatest { filterProgress ->
-            // При изменении данных фильтра всегда обнуляем кеш.
-            searchCache = null
+            filterDelegate.createFilterProgressFlow(filter).collectLatest { filterProgress ->
+                // При изменении данных фильтра всегда обнуляем кеш.
+                searchCache = null
 
-            val logs = filterProgress.logs
-            search.collectLatest { search ->
-                val isSearch = search.search.isNotEmpty()
+                val logs = filterProgress.logs
+                search.collectLatest { search ->
+                    val isSearch = search.search.isNotEmpty()
 
-                // Если новый поисковый запрос пуст, то старый кеш нам больше не нужен.
-                if (!isSearch) searchCache = null
+                    // Если новый поисковый запрос пуст, то старый кеш нам больше не нужен.
+                    if (!isSearch) searchCache = null
 
-                // Сразу отправляем результаты поиска + старый кеш далее
-                send(
-                    element = LogIndexProgress(
-                        isFilteringNow = filterProgress.isFilteringNow,
-                        isSearchingNow = isSearch,
-                        lastSuccessIndex = searchCache ?: LogIndex(
-                            logs = logs,
-                            searchIndex = LogIndex.SearchIndex.NoSearch,
-                            totalLogRecords = filterProgress.totalLogRecords,
-                            runIdOrders = filterProgress.runIdOrders,
-                        ),
-                    ),
-                )
-
-                // Проводим новый поиск
-                if (!filterProgress.isFilteringNow && isSearch) {
-                    val logIndex = searchDelegate.searchLogs(
-                        logs,
-                        search,
-                        filterProgress.totalLogRecords,
-                        filterProgress.runIdOrders,
-                    )
-                    searchCache = logIndex
+                    // Сразу отправляем результаты поиска + старый кеш далее
                     send(
                         element = LogIndexProgress(
-                            isFilteringNow = false,
-                            isSearchingNow = false,
-                            lastSuccessIndex = logIndex,
+                            isFilteringNow = filterProgress.isFilteringNow,
+                            isSearchingNow = isSearch,
+                            lastSuccessIndex = searchCache ?: LogIndex(
+                                logs = logs,
+                                searchIndex = LogIndex.SearchIndex.NoSearch,
+                                totalLogRecords = filterProgress.totalLogRecords,
+                                runIdOrders = filterProgress.runIdOrders,
+                            ),
                         ),
                     )
+
+                    // Проводим новый поиск
+                    if (!filterProgress.isFilteringNow && isSearch) {
+                        val logIndex = searchDelegate.searchLogs(
+                            logs,
+                            search,
+                            filterProgress.totalLogRecords,
+                            filterProgress.runIdOrders,
+                        )
+                        searchCache = logIndex
+                        send(
+                            element = LogIndexProgress(
+                                isFilteringNow = false,
+                                isSearchingNow = false,
+                                lastSuccessIndex = logIndex,
+                            ),
+                        )
+                    }
                 }
             }
-        }
-    }.flowOn(dispatchers.Default)
+        }.flowOn(dispatchers.Default)
 }
 
-internal data class ClearLogState(
-    val logs: List<LogRecord>,
-    val runIdIndexes: List<RunIdInfo>?,
-)
+internal data class ClearLogState(val logs: List<LogRecord>, val runIdIndexes: List<RunIdInfo>?,)
 
 private fun RawLogRecord.toLogRecord(order: LogOrder) = LogRecord(
     order = order,
@@ -262,21 +254,20 @@ private fun RawLogRecord.toLogRecord(order: LogOrder) = LogRecord(
 private fun List<RawLogRecord>.toLogRecords(): List<LogRecord> =
     mapIndexed { index, record -> record.toLogRecord(LogOrder(index)) }
 
-private fun List<RawRunIdInfo>.toRunIdInfo(
-    obfuscatedLogs: List<RawLogRecord>,
-): List<RunIdInfo> = mapIndexed { index, info ->
-    val endIndex = if (index + 1 < size) {
-        this[index + 1].startIndex - 1
-    } else {
-        Int.MAX_VALUE
+private fun List<RawRunIdInfo>.toRunIdInfo(obfuscatedLogs: List<RawLogRecord>,): List<RunIdInfo> =
+    mapIndexed { index, info ->
+        val endIndex = if (index + 1 < size) {
+            this[index + 1].startIndex - 1
+        } else {
+            Int.MAX_VALUE
+        }
+
+        val startTime = obfuscatedLogs[info.startIndex].timeInstant
+        val endTime = obfuscatedLogs[if (endIndex == Int.MAX_VALUE) obfuscatedLogs.size - 1 else endIndex].timeInstant
+        val duration = ChronoUnit.SECONDS.between(startTime, endTime).seconds
+
+        RunIdInfo(
+            orderRange = LogOrderRange(LogOrder(info.startIndex), LogOrder(endIndex)),
+            meta = info.meta + ("duration" to duration.toString()),
+        )
     }
-
-    val startTime = obfuscatedLogs[info.startIndex].timeInstant
-    val endTime = obfuscatedLogs[if (endIndex == Int.MAX_VALUE) obfuscatedLogs.size - 1 else endIndex].timeInstant
-    val duration = ChronoUnit.SECONDS.between(startTime, endTime).seconds
-
-    RunIdInfo(
-        orderRange = LogOrderRange(LogOrder(info.startIndex), LogOrder(endIndex)),
-        meta = info.meta + ("duration" to duration.toString()),
-    )
-}

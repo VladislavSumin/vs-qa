@@ -22,7 +22,8 @@ internal class RootScreenComponent(
     logPath: Path?,
     mappingPath: Path?,
     context: ComponentContext,
-) : Component(context), ComposeComponent {
+) : Component(context),
+    ComposeComponent {
 
     init {
         if (logPath != null) {

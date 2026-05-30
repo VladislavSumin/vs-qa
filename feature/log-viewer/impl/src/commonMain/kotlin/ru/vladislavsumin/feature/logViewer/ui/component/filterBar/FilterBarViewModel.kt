@@ -22,7 +22,8 @@ import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 internal class FilterBarViewModel(
     private val globalHotkeyManager: GlobalHotkeyManager,
     private val savedFiltersRepository: SavedFiltersRepository,
-) : ViewModel(), FilterBarUiInteractor {
+) : ViewModel(),
+    FilterBarUiInteractor {
     private val filter = MutableStateFlow(TextFieldValue())
 
     private val showHelpMenu = MutableStateFlow(false)
@@ -147,9 +148,6 @@ internal class FilterBarViewModel(
         showHelpMenu.value = false
     }
 
-    fun highlightSavedFilter(
-        filter: SavedFiltersRepository.SavedFilter,
-    ): FilterRequestParser.RequestHighlight {
-        return filterRequestParser.justHighlight(filter.content)
-    }
+    fun highlightSavedFilter(filter: SavedFiltersRepository.SavedFilter,): FilterRequestParser.RequestHighlight =
+        filterRequestParser.justHighlight(filter.content)
 }

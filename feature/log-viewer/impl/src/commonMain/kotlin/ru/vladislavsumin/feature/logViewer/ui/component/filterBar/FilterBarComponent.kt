@@ -29,7 +29,8 @@ internal class FilterBarComponent(
     @ByCreate currentTags: Flow<Set<String>>,
     @ByCreate currentRuns: Flow<List<RunIdInfo>>,
     @ByCreate context: ComponentContext,
-) : Component(context), ComposeComponent {
+) : Component(context),
+    ComposeComponent {
     private val viewModel: FilterBarViewModel = viewModel { viewModelFactory.create() }
 
     private val filterHintComponent = filterHintComponentFactory.create(

@@ -108,7 +108,8 @@ fun QaTextField(
                     leadingContent()
                     Spacer(Modifier.width(4.dp))
                 }
-                Box(Modifier.weight(1f)) { // TODO с весом как то грустно
+                Box(Modifier.weight(1f)) {
+                    // TODO с весом как то грустно
                     text()
                     if (placeholder != null && value.text.isEmpty()) {
                         val placeholderTextStyle =

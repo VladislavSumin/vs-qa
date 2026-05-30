@@ -17,9 +17,7 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
  *
  * @param logs исходный список логов.
  */
-internal class LogFilterDelegate(
-    private val logs: Flow<ClearLogState>,
-) {
+internal class LogFilterDelegate(private val logs: Flow<ClearLogState>,) {
     fun createFilterProgressFlow(filter: Flow<FilterRequest>): Flow<FilterLogProgress> = flow {
         // Кеширует последнее успешное отфильтрованное состояние.
         var filteredCache = emptyList<LogRecord>()

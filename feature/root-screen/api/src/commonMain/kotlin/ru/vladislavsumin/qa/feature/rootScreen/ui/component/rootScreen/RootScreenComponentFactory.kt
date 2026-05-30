@@ -5,9 +5,5 @@ import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import java.nio.file.Path
 
 interface RootScreenComponentFactory {
-    fun create(
-        logPath: Path?,
-        mappingPath: Path?,
-        context: ComponentContext,
-    ): ComposeComponent
+    fun create(logPath: Path?, mappingPath: Path?, context: ComponentContext,): ComposeComponent
 }

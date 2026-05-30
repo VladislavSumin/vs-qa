@@ -28,7 +28,9 @@ data class FilterRequest(val operation: FilterOperation) {
             override fun check(record: LogRecord): Boolean = true
         }
 
-        data class MinLogLevel(private val minLevel: LogLevel) : Simple, PreparedFilterOperation {
+        data class MinLogLevel(private val minLevel: LogLevel) :
+            Simple,
+            PreparedFilterOperation {
             override fun prepare(runIdOrders: List<RunIdInfo>?): PreparedFilterOperation = this
             override fun check(record: LogRecord): Boolean = record.logLevel.rawLevel >= minLevel.rawLevel
         }
@@ -44,38 +46,52 @@ data class FilterRequest(val operation: FilterOperation) {
             }
         }
 
-        data class TimeAfter(private val time: String) : Simple, PreparedFilterOperation {
+        data class TimeAfter(private val time: String) :
+            Simple,
+            PreparedFilterOperation {
             override fun prepare(runIdOrders: List<RunIdInfo>?): PreparedFilterOperation = this
             override fun check(record: LogRecord): Boolean = record.raw.substring(record.time) >= time
         }
 
-        data class TimeBefore(private val time: String) : Simple, PreparedFilterOperation {
+        data class TimeBefore(private val time: String) :
+            Simple,
+            PreparedFilterOperation {
             override fun prepare(runIdOrders: List<RunIdInfo>?): PreparedFilterOperation = this
             override fun check(record: LogRecord): Boolean = record.raw.substring(record.time) <= time
         }
 
-        data class All(private val operation: Operation) : Simple, PreparedFilterOperation {
+        data class All(private val operation: Operation) :
+            Simple,
+            PreparedFilterOperation {
             override fun prepare(runIdOrders: List<RunIdInfo>?): PreparedFilterOperation = this
             override fun check(record: LogRecord): Boolean = operation.check(record.raw)
         }
 
-        data class Tag(private val operation: Operation) : Simple, PreparedFilterOperation {
+        data class Tag(private val operation: Operation) :
+            Simple,
+            PreparedFilterOperation {
             override fun prepare(runIdOrders: List<RunIdInfo>?): PreparedFilterOperation = this
             override fun check(record: LogRecord): Boolean = operation.check(record.raw.substring(record.tag))
         }
 
-        data class ProcessId(private val operation: Operation) : Simple, PreparedFilterOperation {
+        data class ProcessId(private val operation: Operation) :
+            Simple,
+            PreparedFilterOperation {
             override fun prepare(runIdOrders: List<RunIdInfo>?): PreparedFilterOperation = this
             override fun check(record: LogRecord): Boolean =
                 record.processId?.let { operation.check(record.raw.substring(it)) } ?: false
         }
 
-        data class Thread(private val operation: Operation) : Simple, PreparedFilterOperation {
+        data class Thread(private val operation: Operation) :
+            Simple,
+            PreparedFilterOperation {
             override fun prepare(runIdOrders: List<RunIdInfo>?): PreparedFilterOperation = this
             override fun check(record: LogRecord): Boolean = operation.check(record.raw.substring(record.thread))
         }
 
-        data class Message(private val operation: Operation) : Simple, PreparedFilterOperation {
+        data class Message(private val operation: Operation) :
+            Simple,
+            PreparedFilterOperation {
             override fun prepare(runIdOrders: List<RunIdInfo>?): PreparedFilterOperation = this
             override fun check(record: LogRecord): Boolean = operation.check(record.raw.substring(record.message))
         }
@@ -111,9 +127,8 @@ data class FilterRequest(val operation: FilterOperation) {
                 operations.mapNotNull { it.prepare(runIdOrders) },
             )
 
-            private class PreparedAnd(
-                private val preparedOperations: List<PreparedFilterOperation>,
-            ) : PreparedFilterOperation {
+            private class PreparedAnd(private val preparedOperations: List<PreparedFilterOperation>,) :
+                PreparedFilterOperation {
                 override fun check(record: LogRecord): Boolean = preparedOperations.all { it.check(record) }
             }
         }
@@ -123,9 +138,8 @@ data class FilterRequest(val operation: FilterOperation) {
                 operations.mapNotNull { it.prepare(runIdOrders) },
             )
 
-            private class PreparedOr(
-                private val preparedOperations: List<PreparedFilterOperation>,
-            ) : PreparedFilterOperation {
+            private class PreparedOr(private val preparedOperations: List<PreparedFilterOperation>,) :
+                PreparedFilterOperation {
                 override fun check(record: LogRecord): Boolean = preparedOperations.any { it.check(record) }
             }
         }
@@ -134,9 +148,8 @@ data class FilterRequest(val operation: FilterOperation) {
             override fun prepare(runIdOrders: List<RunIdInfo>?): PreparedFilterOperation? =
                 operation.prepare(runIdOrders)?.let { PreparedNot(it) }
 
-            private class PreparedNot(
-                private val preparedOperation: PreparedFilterOperation,
-            ) : PreparedFilterOperation {
+            private class PreparedNot(private val preparedOperation: PreparedFilterOperation,) :
+                PreparedFilterOperation {
                 override fun check(record: LogRecord): Boolean = !preparedOperation.check(record)
             }
         }

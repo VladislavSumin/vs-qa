@@ -13,9 +13,7 @@ internal interface LogRecentInteractorInternal : LogRecentInteractor {
     suspend fun removeRecent(recentLog: LogRecent)
 }
 
-internal class LogRecentInteractorImpl(
-    private val repository: LogRecentRepository,
-) : LogRecentInteractorInternal {
+internal class LogRecentInteractorImpl(private val repository: LogRecentRepository) : LogRecentInteractorInternal {
     override suspend fun addOrUpdateRecent(path: Path) {
         repository.updateLastOpenTime(path)
     }
@@ -24,9 +22,7 @@ internal class LogRecentInteractorImpl(
         repository.updateMapping(path, mappingPath)
     }
 
-    override suspend fun getMappingPath(path: Path): Path? {
-        return repository.get(path)?.mappingPath
-    }
+    override suspend fun getMappingPath(path: Path): Path? = repository.get(path)?.mappingPath
 
     override suspend fun updateLogViewerState(
         path: Path,
@@ -36,8 +32,8 @@ internal class LogRecentInteractorImpl(
         scrollPosition: Int,
     ) = repository.updateLogViewerState(path, searchRequest, filterRequest, selectedSearchIndex, scrollPosition)
 
-    override suspend fun getLogViewerState(path: Path): LogRecentInteractor.LogViewerState? {
-        return repository.get(path)?.let {
+    override suspend fun getLogViewerState(path: Path): LogRecentInteractor.LogViewerState? =
+        repository.get(path)?.let {
             LogRecentInteractor.LogViewerState(
                 searchRequest = it.searchRequest,
                 filterRequest = it.filterRequest,
@@ -45,7 +41,6 @@ internal class LogRecentInteractorImpl(
                 scrollPosition = it.scrollPosition,
             )
         }
-    }
 
     override fun observeRecents(): Flow<List<LogRecent>> = repository.observeRecent()
     override suspend fun removeRecent(recentLog: LogRecent) = repository.remove(recentLog)

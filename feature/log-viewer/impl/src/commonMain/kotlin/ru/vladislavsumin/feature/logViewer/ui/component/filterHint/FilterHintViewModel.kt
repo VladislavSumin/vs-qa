@@ -20,7 +20,8 @@ internal class FilterHintViewModel(
     @ByCreate currentTokenPrediction: Flow<CurrentTokenPrediction?>,
     @ByCreate currentTags: Flow<Set<String>>,
     @ByCreate currentRuns: Flow<List<RunIdInfo>>,
-) : ViewModel(), FilterHintUiInteractor {
+) : ViewModel(),
+    FilterHintUiInteractor {
     /**
      * Предпочтение к показу подсказки. Этот флаг еще не означает что подсказка будет отображена.
      */

@@ -8,10 +8,7 @@ package ru.vladislavsumin.core.boyerMooreSearch
  * @param pattern подстрока для поиска.
  * @param ignoreCase игнорировать ли регистр при поиске.
  */
-class BoyerMoorePattern internal constructor(
-    pattern: String,
-    private val ignoreCase: Boolean = false,
-) {
+class BoyerMoorePattern internal constructor(pattern: String, private val ignoreCase: Boolean = false) {
     private val normalizedPattern: String = if (ignoreCase) pattern.lowercase() else pattern
 
     private val patternLength = normalizedPattern.length
@@ -25,9 +22,7 @@ class BoyerMoorePattern internal constructor(
         return map
     }
 
-    private fun normalizeChar(c: Char): Char {
-        return if (ignoreCase) c.lowercaseChar() else c
-    }
+    private fun normalizeChar(c: Char): Char = if (ignoreCase) c.lowercaseChar() else c
 
     /**
      * Ищет все вхождения [normalizedPattern] в [text].

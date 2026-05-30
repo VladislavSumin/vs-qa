@@ -7,7 +7,9 @@ import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 
 @GenerateFactory
-internal class NotificationsViewModel : ViewModel(), NotificationsUiInteractor {
+internal class NotificationsViewModel :
+    ViewModel(),
+    NotificationsUiInteractor {
     private val notifications = MutableStateFlow(emptyList<Notification>())
 
     val state = notifications.map { notifications ->

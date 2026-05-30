@@ -27,7 +27,8 @@ import ru.vladislavsumin.qa.feature.memoryIndicator.ui.component.memoryIndicator
 internal class BottomBarComponentImpl(
     memoryIndicatorComponentFactory: MemoryIndicatorComponentFactory,
     context: ComponentContext,
-) : Component(context), BottomBarComponent {
+) : Component(context),
+    BottomBarComponent {
     override val bottomBarUiInteractor: BottomBarUiInteractorImpl = viewModel { BottomBarUiInteractorImpl() }
 
     private val memoryIndicator = memoryIndicatorComponentFactory.create(context.childContext("memory-indicator"))

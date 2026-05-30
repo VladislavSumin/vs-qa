@@ -16,9 +16,8 @@ internal interface LogViewerSettingsRepository {
     suspend fun setLogFontSize(size: Int)
 }
 
-internal class LogViewerSettingsRepositoryImpl(
-    private val fileSystemService: FileSystemService,
-) : LogViewerSettingsRepository {
+internal class LogViewerSettingsRepositoryImpl(private val fileSystemService: FileSystemService,) :
+    LogViewerSettingsRepository {
     private val isStripDateEnabledPreferenceKey = booleanPreferencesKey("is_strip_date_enabled")
     private val logFontSizePreferenceKey = intPreferencesKey("log_font_size")
 

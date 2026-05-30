@@ -33,11 +33,7 @@ import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.feature.logViewer.ui.utils.VsVerticalScrollbar
 
 @Composable
-internal fun FilterHintContent(
-    viewModel: FilterHintViewModel,
-    modifier: Modifier,
-    offsetX: Float,
-) {
+internal fun FilterHintContent(viewModel: FilterHintViewModel, modifier: Modifier, offsetX: Float,) {
     when (val state = viewModel.state.collectAsState().value) {
         is FilterHintViewState.Hidden -> Unit
         is FilterHintViewState.Show -> HintContent(viewModel, state, modifier, offsetX)
@@ -108,18 +104,14 @@ private fun HintContent(
 }
 
 @Suppress("MagicNumber")
-private class HintPopupPositionProvider(
-    private val offsetX: Float,
-) : PopupPositionProvider {
+private class HintPopupPositionProvider(private val offsetX: Float,) : PopupPositionProvider {
     override fun calculatePosition(
         anchorBounds: IntRect,
         windowSize: IntSize,
         layoutDirection: LayoutDirection,
         popupContentSize: IntSize,
-    ): IntOffset {
-        return IntOffset(
-            x = anchorBounds.left + offsetX.toInt(),
-            y = anchorBounds.top - popupContentSize.height - 16,
-        )
-    }
+    ): IntOffset = IntOffset(
+        x = anchorBounds.left + offsetX.toInt(),
+        y = anchorBounds.top - popupContentSize.height - 16,
+    )
 }

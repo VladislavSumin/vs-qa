@@ -8,10 +8,9 @@ import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 
 @GenerateFactory(AdbDeviceListComponentFactory::class)
-internal class AdbDeviceListComponent(
-    viewModelFactory: AdbDeviceListViewModelFactory,
-    context: ComponentContext,
-) : Component(context), ComposeComponent {
+internal class AdbDeviceListComponent(viewModelFactory: AdbDeviceListViewModelFactory, context: ComponentContext) :
+    Component(context),
+    ComposeComponent {
 
     private val viewModel = viewModel { viewModelFactory.create() }
 

@@ -9,9 +9,7 @@ import ru.vladislavsumin.feature.logParser.domain.LogLevel
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 
 @Stable
-internal class TagStatViewModel(
-    logs: Flow<List<LogRecord>>,
-) : ViewModel() {
+internal class TagStatViewModel(logs: Flow<List<LogRecord>>,) : ViewModel() {
     val state = logs
         .map { logRecords ->
             // TODO излишне сложная цепочка с кучей лишних коллекций, оптимизировать.

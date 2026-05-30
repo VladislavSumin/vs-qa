@@ -18,16 +18,11 @@ internal interface SavedFiltersRepository {
     suspend fun remove(filter: SavedFilter)
 
     @Serializable
-    data class SavedFilter(
-        val name: String,
-        val content: String,
-    )
+    data class SavedFilter(val name: String, val content: String,)
 }
 
 // TODO перевести это все на нормальные префы
-internal class SavedFiltersRepositoryImpl(
-    private val fileSystemService: FileSystemService,
-) : SavedFiltersRepository {
+internal class SavedFiltersRepositoryImpl(private val fileSystemService: FileSystemService,) : SavedFiltersRepository {
     private val savedFiltersPreferenceKey = stringPreferencesKey("saved_filters")
 
     private val prefs = PreferenceDataStoreFactory.createWithPath(
@@ -36,12 +31,10 @@ internal class SavedFiltersRepositoryImpl(
         },
     )
 
-    override fun observeSavedFilters(): Flow<List<SavedFiltersRepository.SavedFilter>> {
-        return prefs.data.map { preferences ->
-            preferences[savedFiltersPreferenceKey]?.let {
-                Json.decodeFromString<List<SavedFiltersRepository.SavedFilter>>(it)
-            } ?: emptyList()
-        }
+    override fun observeSavedFilters(): Flow<List<SavedFiltersRepository.SavedFilter>> = prefs.data.map { preferences ->
+        preferences[savedFiltersPreferenceKey]?.let {
+            Json.decodeFromString<List<SavedFiltersRepository.SavedFilter>>(it)
+        } ?: emptyList()
     }
 
     override suspend fun add(name: String, content: String) {

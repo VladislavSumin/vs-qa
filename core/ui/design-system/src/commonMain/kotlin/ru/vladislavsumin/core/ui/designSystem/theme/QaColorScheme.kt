@@ -144,7 +144,5 @@ private object ColorListAsStringSerializer : KSerializer<List<Color>> {
         error("Serialization non implemented")
     }
 
-    override fun deserialize(decoder: Decoder): List<Color> {
-        return delegate.deserialize(decoder)
-    }
+    override fun deserialize(decoder: Decoder): List<Color> = delegate.deserialize(decoder)
 }

@@ -8,12 +8,11 @@ class GlobalHotkeyDispatcher : GlobalHotkeyManager {
 
     private val subscriptions = CopyOnWriteArrayList<HotkeyController>()
 
-    override suspend fun subscribe(vararg hotkeys: Pair<Hotkey, () -> Boolean>): Nothing =
-        suspendCancellableCoroutine {
-            val controller = HotkeyController(hotkeys = hotkeys)
-            subscriptions.add(controller)
-            it.invokeOnCancellation { subscriptions.remove(controller) }
-        }
+    override suspend fun subscribe(vararg hotkeys: Pair<Hotkey, () -> Boolean>): Nothing = suspendCancellableCoroutine {
+        val controller = HotkeyController(hotkeys = hotkeys)
+        subscriptions.add(controller)
+        it.invokeOnCancellation { subscriptions.remove(controller) }
+    }
 
     fun onKeyEvent(event: KeyEvent): Boolean = subscriptions.any { it(event) }
 }
