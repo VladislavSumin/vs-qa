@@ -17,12 +17,6 @@ jobs:
           path: vs-qa
           fetch-depth: 0  # Нужно для получения полной истории коммитов
 
-      - name: Clone vs-core repository
-        uses: actions/checkout@v4
-        with:
-          repository: VladislavSumin/vs-core
-          path: vs-core
-
       - name: Parse version
         run: |
           VERSION=${GITHUB_REF_NAME#v}
@@ -34,6 +28,7 @@ jobs:
         with:
           key: "release-build"
           gradle_command: >-
+            -Pru.vs.core.useVsCoreSources=false
             -Pru.vs.version=${{ env.VERSION }}
             :app:buildFatJarMain 
             :app:buildFatJarMainMin
