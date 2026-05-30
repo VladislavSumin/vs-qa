@@ -81,9 +81,10 @@ jobs:
         run: |
           cd vs-qa
           chmod +x ./scripts/send-max-message.sh
+          ESCAPED_CHANGELOG=$(printf '%s' "${{ steps.changelog.outputs.changelog }}" | sed 's/"/\\"/g')
           ./scripts/send-max-message.sh "${{ vars.MAX_CHAT_ID }}" "🚀 **Release ${{ github.ref_name }}**
 
-          ${{ steps.changelog.outputs.changelog }}
+          ${ESCAPED_CHANGELOG}
 
           Злые админы макса запретили этому боту выкладывать апк, но вы знаете где ее можно скачать если что." \
             ./app/jvm/build/libs/vs-qa.jar \
