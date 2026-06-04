@@ -71,7 +71,7 @@ jobs:
           files: |
             ./vs-qa/app/jvm/build/libs/vs-qa.jar
             ./vs-qa/app/jvm/build/libs/vs-qa-min.jar
-            ./vs-qa/app/android/build/outputs/apk/release/app-release.apk
+            ./vs-qa/app/android/build/outputs/apk/release/android-release.apk
           draft: false
           prerelease: false
         env:

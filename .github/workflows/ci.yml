@@ -102,8 +102,8 @@ jobs:
           name: vs-qa-min.jar
           path: ./vs-qa/app/jvm/build/libs/vs-qa-min.jar
 
-      - name: Upload app-release.apk
+      - name: Upload android-release.apk
         uses: actions/upload-artifact@v4
         with:
-          name: app-release.apk
-          path: ./vs-qa/app/android/build/outputs/apk/release/app-release.apk
+          name: android-release.apk
+          path: ./vs-qa/app/android/build/outputs/apk/release/android-release.apk
