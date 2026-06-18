@@ -37,6 +37,7 @@ import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
+import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScreenParams
 import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenParams
 import kotlin.io.path.name
 
@@ -125,6 +126,24 @@ private fun Tab(
                     .background(background)
                     .padding(end = 4.dp),
             ) { Icon(imageVector = Icons.Default.Home, contentDescription = "home") }
+        }
+
+        is AdbDeviceScreenParams -> {
+            Row(
+                modifier = Modifier
+                    .background(background)
+                    .clickable(onClick = { viewModel.onTabClick(item.configuration.screenParams) }),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = screenParams.deviceName,
+                    modifier = Modifier.padding(start = 8.dp, end = 4.dp),
+                )
+                QaIconButton(
+                    onClick = { viewModel.onCloseTabClick(item.configuration.screenParams) },
+                    modifier = Modifier.padding(end = 4.dp),
+                ) { Icon(imageVector = Icons.Default.Close, contentDescription = "close") }
+            }
         }
 
         else -> error("Unexpected screenParams = $screenParams")

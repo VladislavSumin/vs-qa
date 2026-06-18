@@ -20,10 +20,14 @@ import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 
 @Composable
-internal fun AdbDeviceListContent(viewModel: AdbDeviceListViewModel, modifier: Modifier) {
+internal fun AdbDeviceListContent(
+    onDeviceClick: (deviceName: String) -> Unit,
+    viewModel: AdbDeviceListViewModel,
+    modifier: Modifier,
+) {
     val state by viewModel.state.collectAsState()
     when (val state = state) {
-        is AdbDeviceListViewState.DeviceList -> DeviceList(state, modifier)
+        is AdbDeviceListViewState.DeviceList -> DeviceList(state, onDeviceClick, modifier)
 
         AdbDeviceListViewState.Error -> {
             // TODO Сделать нормальный статус ошибки.
@@ -33,7 +37,11 @@ internal fun AdbDeviceListContent(viewModel: AdbDeviceListViewModel, modifier: M
 }
 
 @Composable
-internal fun DeviceList(state: AdbDeviceListViewState.DeviceList, modifier: Modifier) {
+internal fun DeviceList(
+    state: AdbDeviceListViewState.DeviceList,
+    onDeviceClick: (deviceName: String) -> Unit,
+    modifier: Modifier,
+) {
     Box(modifier) {
         LazyColumn {
             item {
@@ -43,7 +51,7 @@ internal fun DeviceList(state: AdbDeviceListViewState.DeviceList, modifier: Modi
                 Row(
                     Modifier
                         .clip(RoundedCornerShape(4.dp))
-                        .clickable {}
+                        .clickable { onDeviceClick(it.name) }
                         .padding(vertical = 2.dp, horizontal = 4.dp),
                 ) {
                     Icon(

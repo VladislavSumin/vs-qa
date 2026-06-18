@@ -8,12 +8,15 @@ import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 
 @GenerateFactory(AdbDeviceListComponentFactory::class)
-internal class AdbDeviceListComponent(viewModelFactory: AdbDeviceListViewModelFactory, context: ComponentContext) :
-    Component(context),
+internal class AdbDeviceListComponent(
+    private val onDeviceClick: (deviceName: String) -> Unit,
+    viewModelFactory: AdbDeviceListViewModelFactory,
+    context: ComponentContext,
+) : Component(context),
     ComposeComponent {
 
-    private val viewModel = viewModel { viewModelFactory.create() }
+    private val viewModel: AdbDeviceListViewModel = viewModel { viewModelFactory.create() }
 
     @Composable
-    override fun Render(modifier: Modifier) = AdbDeviceListContent(viewModel, modifier)
+    override fun Render(modifier: Modifier) = AdbDeviceListContent(onDeviceClick, viewModel, modifier)
 }

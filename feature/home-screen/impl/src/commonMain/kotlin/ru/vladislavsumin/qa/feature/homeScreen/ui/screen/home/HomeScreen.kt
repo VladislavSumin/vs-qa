@@ -8,6 +8,7 @@ import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.feature.logRecent.ui.component.logRecent.LogRecentComponentFactory
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
+import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScreenParams
 import ru.vladislavsumin.qa.feature.adbDeviceList.domain.AdbFeatureAvailabilityInteractor
 import ru.vladislavsumin.qa.feature.adbDeviceList.ui.component.adbDeviceList.AdbDeviceListComponentFactory
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
@@ -32,7 +33,10 @@ internal class HomeScreen(
     )
 
     private val adbDeviceListComponent = if (adbFeatureAvailabilityInteractor.isAvailable) {
-        adbDeviceListComponentFactory.create(context.childContext("adb-list-component"))
+        adbDeviceListComponentFactory.create(
+            onDeviceClick = { deviceName -> navigator.open(AdbDeviceScreenParams(deviceName)) },
+            context = context.childContext("adb-list-component"),
+        )
     } else {
         null
     }

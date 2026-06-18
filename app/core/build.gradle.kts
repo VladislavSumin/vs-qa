@@ -10,6 +10,7 @@ kotlin {
             implementation(projects.core.ui.hotkeyController)
             implementation(projects.core.adb.client)
 
+            implementation(projects.feature.adbDevice.impl)
             implementation(projects.feature.adbDeviceList.impl)
             implementation(projects.feature.bottomBar.impl)
             implementation(projects.feature.homeScreen.impl)
