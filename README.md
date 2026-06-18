@@ -33,6 +33,6 @@ brew upgrade vs-qa
 Для локальной сборки проекта необходимо скачать репозиторий [vs-core](https://github.com/VladislavSumin/vs-core/) на
 один уровень файловой системы с этим репозиторием. После этого дополнительных действий не требуется.
 
-* Собрать jar файл - `./gradlew :app:buildFatJarMain`.
-* Собрать минимизированный jar файл - `./gradlew :app:buildFatJarMainMin`.
-* Запустить `./gradlew :app:jvmRun [--args "<path_to_log_file> [path_to_mapping_file]"]`.
+* Собрать jar файл - `./gradlew :app:jvm:buildFatJarMain`.
+* Собрать минимизированный jar файл - `./gradlew :app:jvm:buildFatJarMainMin`.
+* Запустить `./gradlew :app:jvm:jvmRun [--args "<path_to_log_file> [path_to_mapping_file]"]`.
