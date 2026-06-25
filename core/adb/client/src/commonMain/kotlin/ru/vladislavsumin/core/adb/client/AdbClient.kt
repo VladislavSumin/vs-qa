@@ -11,6 +11,7 @@ import java.util.Locale
 
 interface AdbClient {
     fun observeDevices(): Flow<AdbResult<List<DeviceInfo>>>
+    suspend fun executeShellCommand(deviceName: String, shellCommand: String): AdbResult<String>
 
     sealed interface AdbResult<T> {
         data class Ok<T>(val data: T) : AdbResult<T>
@@ -44,6 +45,18 @@ internal class AdbClientImpl(dispatchers: VsDispatchers) : AdbClient {
 
     private val connection = AdbConnection(dispatchers, selector)
     private val localAdbServerController = LocalAdbServerController()
+
+    @Suppress("TooGenericExceptionCaught")
+    override suspend fun executeShellCommand(deviceName: String, shellCommand: String): AdbClient.AdbResult<String> =
+        try {
+            val result = connection.executeTransportCommand(
+                transport = "host:transport:$deviceName",
+                command = "shell:$shellCommand",
+            )
+            AdbClient.AdbResult.Ok(result)
+        } catch (e: Exception) {
+            AdbClient.AdbResult.Err(e)
+        }
 
     override fun observeDevices(): Flow<AdbClient.AdbResult<List<AdbClient.DeviceInfo>>> = connection
         .executeContinuousCommand("host:track-devices")

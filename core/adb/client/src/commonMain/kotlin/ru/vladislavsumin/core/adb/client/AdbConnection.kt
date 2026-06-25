@@ -7,6 +7,7 @@ import io.ktor.network.sockets.openWriteChannel
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.ByteWriteChannel
 import io.ktor.utils.io.readByteArray
+import io.ktor.utils.io.readUTF8Line
 import io.ktor.utils.io.writeString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -20,11 +21,16 @@ import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
  * Создает **отдельное** tcp соединение на каждую команду (это требование adb).
  */
 internal class AdbConnection(private val dispatchers: VsDispatchers, private val selector: SelectorManager) {
-    suspend fun executeCommand(command: String): String = withContext(dispatchers.IO) {
+    suspend fun executeTransportCommand(transport: String, command: String): String = withContext(dispatchers.IO) {
         withConnection { r, w ->
+            // Утсанавливаем транспорт
+            w.sendAdbData(transport)
+            r.checkAdbStatus()
+            // Выполняем команду
             w.sendAdbData(command)
             r.checkAdbStatus()
-            r.receiveAdbData()
+            // Получаем ответ
+            r.receiveShellOutput()
         }
     }
 
@@ -58,6 +64,11 @@ internal class AdbConnection(private val dispatchers: VsDispatchers, private val
     private suspend fun ByteReadChannel.receiveAdbData(): String {
         val len = readByteArray(DATA_LEN_LEN).decodeToString().hexToInt()
         return readByteArray(len).decodeToString()
+    }
+
+    private suspend fun ByteReadChannel.receiveShellOutput(): String = buildString {
+        val line = readUTF8Line()
+        append(line)
     }
 
     private suspend fun <T> withConnection(block: suspend (ByteReadChannel, ByteWriteChannel) -> T): T =
