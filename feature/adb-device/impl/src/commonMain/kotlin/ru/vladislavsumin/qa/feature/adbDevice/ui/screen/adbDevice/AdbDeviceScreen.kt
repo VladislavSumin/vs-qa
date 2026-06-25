@@ -7,8 +7,17 @@ import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
 
 @GenerateFactory(AdbDeviceScreenFactory::class)
-internal class AdbDeviceScreen(private val params: AdbDeviceScreenParams, context: ComponentContext) :
-    Screen(context) {
+internal class AdbDeviceScreen(
+    viewModelFactory: DeviceControlViewModelFactory,
+    private val params: AdbDeviceScreenParams,
+    context: ComponentContext,
+) : Screen(context) {
+    private val viewModel: DeviceControlViewModel = viewModel { viewModelFactory.create(params) }
+
     @Composable
-    override fun Render(modifier: Modifier) = AdbDeviceScreenContent(deviceName = params.deviceName, modifier)
+    override fun Render(modifier: Modifier) = AdbDeviceScreenContent(
+        deviceName = params.deviceName,
+        viewModel,
+        modifier,
+    )
 }

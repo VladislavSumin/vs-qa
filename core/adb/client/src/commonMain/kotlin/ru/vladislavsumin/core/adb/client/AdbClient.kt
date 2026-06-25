@@ -13,9 +13,15 @@ interface AdbClient {
     fun observeDevices(): Flow<AdbResult<List<DeviceInfo>>>
     suspend fun executeShellCommand(deviceName: String, shellCommand: String): AdbResult<String>
 
+    // TODO снести что ли? приколько конечно но хз
     sealed interface AdbResult<T> {
         data class Ok<T>(val data: T) : AdbResult<T>
         data class Err<T>(val t: Throwable) : AdbResult<T>
+
+        fun unwrap(): T = when (this) {
+            is Err<T> -> throw t
+            is Ok<T> -> data
+        }
     }
 
     data class DeviceInfo(val name: String, val status: ConnectionStatus) {
