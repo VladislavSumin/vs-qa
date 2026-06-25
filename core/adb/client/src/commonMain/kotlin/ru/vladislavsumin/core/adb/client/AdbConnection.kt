@@ -67,8 +67,11 @@ internal class AdbConnection(private val dispatchers: VsDispatchers, private val
     }
 
     private suspend fun ByteReadChannel.receiveShellOutput(): String = buildString {
-        val line = readUTF8Line()
-        append(line)
+        while (true) {
+            val line = readUTF8Line() ?: break
+            append(line)
+            append('\n')
+        }
     }
 
     private suspend fun <T> withConnection(block: suspend (ByteReadChannel, ByteWriteChannel) -> T): T =
