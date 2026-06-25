@@ -119,7 +119,7 @@ internal fun LogsContent(
                                     )
                                 }
                             }
-                            items(sectionInfo.logs, { it.order }) {
+                            items(sectionInfo.logs, { it.order.value }) {
                                 Record(
                                     log = it,
                                     isSelected = it.order == state.currentSelectedItemOrder,
