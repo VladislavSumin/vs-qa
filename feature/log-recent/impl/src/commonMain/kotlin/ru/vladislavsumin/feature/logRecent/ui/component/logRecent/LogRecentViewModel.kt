@@ -40,4 +40,8 @@ internal class LogRecentViewModel(
     fun onClickRemoveRecent(recent: LogRecent) {
         launch { logRecentInteractor.removeRecent(recent) }
     }
+
+    fun renameRecent(recent: LogRecent, customName: String?) {
+        launch { logRecentInteractor.updateCustomName(recent.id, customName) }
+    }
 }

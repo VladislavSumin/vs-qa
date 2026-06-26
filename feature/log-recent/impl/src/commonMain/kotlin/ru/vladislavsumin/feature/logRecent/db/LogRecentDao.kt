@@ -29,6 +29,9 @@ internal abstract class LogRecentDao {
     @Query("UPDATE log_recent SET mappingPath = :mappingPath WHERE path = :path")
     abstract suspend fun updateMapping(path: String, mappingPath: String?)
 
+    @Query("UPDATE log_recent SET customName = :customName WHERE id = :id")
+    abstract suspend fun updateCustomName(id: Long, customName: String?)
+
     @Suppress("MaximumLineLength", "MaxLineLength")
     @Query(
         "UPDATE log_recent SET searchRequest = :searchRequest, filterRequest = :filterRequest, selectedSearchIndex = :selectedSearchIndex, scrollPosition = :scrollPosition WHERE path = :path",

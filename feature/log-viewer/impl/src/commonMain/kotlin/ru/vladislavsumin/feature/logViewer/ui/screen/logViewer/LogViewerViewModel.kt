@@ -276,7 +276,9 @@ internal class LogViewerViewModel(
                 }
         }
         relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
-            windowTitleInteractor.setWindowTitleExtension(logPath.name)
+            logRecentInteractor.observeCustomName(logPath).collect { customName ->
+                windowTitleInteractor.setWindowTitleExtension(customName ?: logPath.name)
+            }
         }
         relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
             globalHotkeyManager.subscribe(

@@ -24,6 +24,8 @@ internal interface LogRecentRepository {
         selectedSearchIndex: Int,
         scrollPosition: Int,
     )
+
+    suspend fun updateCustomName(id: Long, customName: String?)
 }
 
 internal class LogRecentRepositoryImpl(db: LogRecentDatabase) : LogRecentRepository {
@@ -57,12 +59,15 @@ internal class LogRecentRepositoryImpl(db: LogRecentDatabase) : LogRecentReposit
         scrollPosition,
     )
 
+    override suspend fun updateCustomName(id: Long, customName: String?) = logRecentDao.updateCustomName(id, customName)
+
     override suspend fun get(path: Path): LogRecent? = logRecentDao.getByPath(path.absolutePathString())?.toDomain()
 }
 
 private fun List<LogRecentEntity>.toDomain(): List<LogRecent> = map { it.toDomain() }
 
 private fun LogRecentEntity.toDomain(): LogRecent = LogRecent(
+    id = id,
     path = Path(path),
     mappingPath = mappingPath?.let { Path(it) },
     lastOpenTime = lastOpenTime,
@@ -70,4 +75,5 @@ private fun LogRecentEntity.toDomain(): LogRecent = LogRecent(
     filterRequest = filterRequest,
     selectedSearchIndex = selectedSearchIndex,
     scrollPosition = scrollPosition,
+    customName = customName,
 )

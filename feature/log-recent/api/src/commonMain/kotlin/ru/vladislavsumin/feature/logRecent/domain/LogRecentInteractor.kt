@@ -1,5 +1,6 @@
 package ru.vladislavsumin.feature.logRecent.domain
 
+import kotlinx.coroutines.flow.Flow
 import java.nio.file.Path
 
 interface LogRecentInteractor {
@@ -20,6 +21,8 @@ interface LogRecentInteractor {
     )
 
     suspend fun getLogViewerState(path: Path): LogViewerState?
+
+    fun observeCustomName(path: Path): Flow<String?>
 
     data class LogViewerState(
         val searchRequest: String,

@@ -8,6 +8,7 @@ import com.arkivanov.decompose.router.pages.Pages
 import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
 import ru.vladislavsumin.core.navigation.host.childNavigationPages
 import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractor
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenFactory
 import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScreenFactory
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarComponentFactory
@@ -23,6 +24,7 @@ internal class RootScreen(
     homeScreenFactory: HomeScreenFactory,
     adbDeviceScreenFactory: AdbDeviceScreenFactory,
     notificationsComponentFactory: NotificationsComponentFactory,
+    private val logRecentInteractor: LogRecentInteractor,
     context: ComponentContext,
 ) : Screen(context) {
 
@@ -75,5 +77,5 @@ internal class RootScreen(
 
     @Composable
     override fun Render(modifier: Modifier) =
-        RootContent(viewModel, tabs, bottomBarComponent, notificationsComponent, modifier)
+        RootContent(viewModel, tabs, bottomBarComponent, notificationsComponent, logRecentInteractor, modifier)
 }

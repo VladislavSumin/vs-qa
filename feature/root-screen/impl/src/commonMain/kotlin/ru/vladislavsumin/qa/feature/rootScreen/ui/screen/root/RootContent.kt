@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
@@ -36,6 +37,7 @@ import ru.vladislavsumin.core.navigation.host.ConfigurationHolder
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractor
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
 import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScreenParams
 import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenParams
@@ -47,6 +49,7 @@ internal fun RootContent(
     tabs: Value<ChildPages<ConfigurationHolder, Screen>>,
     bottomBarComponent: ComposeComponent,
     notificationsComponent: ComposeComponent,
+    logRecentInteractor: LogRecentInteractor,
     modifier: Modifier,
 ) {
     Box(
@@ -58,7 +61,7 @@ internal fun RootContent(
         Column(modifier) {
             Box(Modifier.weight(1f)) {
                 Column {
-                    Tabs(viewModel, pages)
+                    Tabs(viewModel, pages, logRecentInteractor)
                     TabsContent(tabs)
                 }
                 notificationsComponent.Render(
@@ -73,7 +76,11 @@ internal fun RootContent(
 }
 
 @Composable
-private fun Tabs(viewModel: RootViewModel, pages: ChildPages<ConfigurationHolder, Screen>) {
+private fun Tabs(
+    viewModel: RootViewModel,
+    pages: ChildPages<ConfigurationHolder, Screen>,
+    logRecentInteractor: LogRecentInteractor,
+) {
     if (pages.items.size > 1) {
         LazyRow {
             itemsIndexed(
@@ -84,7 +91,7 @@ private fun Tabs(viewModel: RootViewModel, pages: ChildPages<ConfigurationHolder
                     item.configuration.screenParams.toString()
                 },
             ) { index, item ->
-                Tab(viewModel, index, pages, item)
+                Tab(viewModel, index, pages, item, logRecentInteractor)
             }
         }
     }
@@ -96,12 +103,16 @@ private fun Tab(
     index: Int,
     pages: ChildPages<ConfigurationHolder, Screen>,
     item: Child<ConfigurationHolder, Screen>,
+    logRecentInteractor: LogRecentInteractor,
 ) {
     val colorScheme = QaTheme.colorScheme
     val background = if (index == pages.selectedIndex) colorScheme.surfaceVariant else colorScheme.surface
 
     when (val screenParams = item.configuration.screenParams) {
         is LogViewerScreenParams -> {
+            val customName by logRecentInteractor
+                .observeCustomName(screenParams.logPath)
+                .collectAsState(null)
             Row(
                 modifier = Modifier
                     .background(background)
@@ -109,7 +120,7 @@ private fun Tab(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = screenParams.logPath.name,
+                    text = customName ?: screenParams.logPath.name,
                     modifier = Modifier.padding(start = 8.dp, end = 4.dp),
                 )
                 QaIconButton(

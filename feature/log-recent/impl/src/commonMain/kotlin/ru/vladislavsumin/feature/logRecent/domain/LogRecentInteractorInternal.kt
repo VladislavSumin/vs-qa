@@ -1,6 +1,8 @@
 package ru.vladislavsumin.feature.logRecent.domain
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import ru.vladislavsumin.feature.logRecent.repository.LogRecentRepository
 import java.nio.file.Path
 
@@ -11,6 +13,8 @@ internal interface LogRecentInteractorInternal : LogRecentInteractor {
     fun observeRecents(): Flow<List<LogRecent>>
 
     suspend fun removeRecent(recentLog: LogRecent)
+
+    suspend fun updateCustomName(id: Long, customName: String?)
 }
 
 internal class LogRecentInteractorImpl(private val repository: LogRecentRepository) : LogRecentInteractorInternal {
@@ -44,4 +48,8 @@ internal class LogRecentInteractorImpl(private val repository: LogRecentReposito
 
     override fun observeRecents(): Flow<List<LogRecent>> = repository.observeRecent()
     override suspend fun removeRecent(recentLog: LogRecent) = repository.remove(recentLog)
+    override suspend fun updateCustomName(id: Long, customName: String?) = repository.updateCustomName(id, customName)
+    override fun observeCustomName(path: Path): Flow<String?> = observeRecents()
+        .map { recents -> recents.find { it.path == path }?.customName }
+        .distinctUntilChanged()
 }

@@ -4,6 +4,7 @@ import java.nio.file.Path
 import java.time.Instant
 
 internal data class LogRecent(
+    val id: Long,
     val path: Path,
     val mappingPath: Path?,
     val lastOpenTime: Instant,
@@ -11,4 +12,5 @@ internal data class LogRecent(
     val filterRequest: String,
     val selectedSearchIndex: Int,
     val scrollPosition: Int,
+    val customName: String? = null,
 )
