@@ -5,12 +5,10 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.value.Value
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.decompose.components.Component
+import ru.vladislavsumin.core.decompose.components.utils.asStateFlow
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.host.ConfigurationHolder
@@ -42,24 +40,3 @@ internal class TabsComponentImpl(
     @Composable
     override fun Render(modifier: Modifier) = TabsContent(pages, onTabClick, onTabClickClose, modifier)
 }
-
-// TODO вынести в общий код
-private class ValueStateFlow<T : Any>(private val store: Value<T>) : StateFlow<T> {
-
-    override val value: T get() = store.value
-    override val replayCache: List<T> get() = listOf(store.value)
-
-    override suspend fun collect(collector: FlowCollector<T>): Nothing {
-        val flow = MutableStateFlow(store.value)
-        val observer: (T) -> Unit = { flow.value = it }
-        val sub = store.subscribe(observer)
-
-        try {
-            flow.collect(collector)
-        } finally {
-            sub.cancel()
-        }
-    }
-}
-
-private fun <T : Any> Value<T>.asStateFlow(): StateFlow<T> = ValueStateFlow(store = this)
