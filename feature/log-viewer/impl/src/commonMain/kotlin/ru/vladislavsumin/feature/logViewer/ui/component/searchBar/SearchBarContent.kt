@@ -39,7 +39,6 @@ import ru.vladislavsumin.core.ui.hotkeyController.resetFocusOnEsc
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerViewModel
 
 @Composable
-@Suppress("LongMethod") // TODO
 internal fun SearchBarContent(
     viewModel: LogViewerViewModel,
     state: State<SearchBarViewState>,
@@ -76,71 +75,76 @@ internal fun SearchBarContent(
                 .onPreviewKeyEvent(hotkeyController::invoke),
             maxLines = 1,
             placeholder = { Text("Search...") },
-            leadingContent = {
-                Icon(imageVector = Icons.Default.Search, contentDescription = null)
-            },
+            leadingContent = { Icon(imageVector = Icons.Default.Search, contentDescription = null) },
             isError = state.isBadRegex,
-            trailingContent = {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier.padding(horizontal = 4.dp),
-                ) {
-                    QaIconButton(
-                        onClick = viewModel::onClickNextIndex,
-                        modifier = Modifier.hint("Next match"),
-                    ) { Icon(Icons.Default.ArrowDownward, null) }
-
-                    QaIconButton(
-                        onClick = viewModel::onClickPrevIndex,
-                        modifier = Modifier.hint("Previous match"),
-                    ) { Icon(Icons.Default.ArrowUpward, null) }
-
-                    // TODO написать нормально
-                    val textMeasurer = rememberTextMeasurer()
-                    val density = LocalDensity.current
-                    val style = LocalTextStyle.current
-                    val size = remember(textMeasurer, density, state.totalSearchResults) {
-                        val count = "9".repeat(state.totalSearchResults.toString().length)
-                        val testString = "$count / $count"
-                        val widthPx = textMeasurer.measure(testString, style).size.width
-                        with(density) { widthPx.toDp() }
-                    }
-
-                    Text(
-                        text = if (state.isBadRegex) {
-                            "bad pattern"
-                        } else {
-                            "${state.currentSearchResultIndex + 1} / ${state.totalSearchResults}"
-                        },
-                        Modifier
-                            .padding(horizontal = 4.dp)
-                            .defaultMinSize(minWidth = size),
-                    )
-
-                    QaToggleIconButton(
-                        checked = state.isMatchCase,
-                        onCheckedChange = viewModel::onClickSearchMatchCase,
-                        modifier = Modifier.hint("Case sensitive"),
-                    ) { Text("Cc") }
-
-                    QaToggleIconButton(
-                        checked = state.isRegex,
-                        onCheckedChange = viewModel::onClickSearchUseRegex,
-                        modifier = Modifier.hint("Use regex"),
-                    ) { Text(".*") }
-
-                    val withDp = with(LocalDensity.current) {
-                        LocalWindowInfo.current.containerSize.width.toDp()
-                    }
-                    if (withDp <= 600.dp) {
-                        QaToggleIconButton(
-                            checked = showSideMenu.value,
-                            onCheckedChange = { showSideMenu.value = it },
-                            modifier = Modifier.hint("Toggle side panel"),
-                        ) { Icon(Icons.Default.MoreVert, null) }
-                    }
-                }
-            },
+            trailingContent = { TrailingButtons(viewModel, state, showSideMenu) },
         )
+    }
+}
+
+@Composable
+private fun TrailingButtons(
+    viewModel: LogViewerViewModel,
+    state: SearchBarViewState,
+    showSideMenu: MutableState<Boolean>,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier.padding(horizontal = 4.dp),
+    ) {
+        QaIconButton(
+            onClick = viewModel::onClickNextIndex,
+            modifier = Modifier.hint("Next match"),
+        ) { Icon(Icons.Default.ArrowDownward, null) }
+
+        QaIconButton(
+            onClick = viewModel::onClickPrevIndex,
+            modifier = Modifier.hint("Previous match"),
+        ) { Icon(Icons.Default.ArrowUpward, null) }
+
+        // TODO написать нормально
+        val textMeasurer = rememberTextMeasurer()
+        val density = LocalDensity.current
+        val style = LocalTextStyle.current
+        val size = remember(textMeasurer, density, state.totalSearchResults) {
+            val count = "9".repeat(state.totalSearchResults.toString().length)
+            val testString = "$count / $count"
+            val widthPx = textMeasurer.measure(testString, style).size.width
+            with(density) { widthPx.toDp() }
+        }
+
+        Text(
+            text = if (state.isBadRegex) {
+                "bad pattern"
+            } else {
+                "${state.currentSearchResultIndex + 1} / ${state.totalSearchResults}"
+            },
+            Modifier
+                .padding(horizontal = 4.dp)
+                .defaultMinSize(minWidth = size),
+        )
+
+        QaToggleIconButton(
+            checked = state.isMatchCase,
+            onCheckedChange = viewModel::onClickSearchMatchCase,
+            modifier = Modifier.hint("Case sensitive"),
+        ) { Text("Cc") }
+
+        QaToggleIconButton(
+            checked = state.isRegex,
+            onCheckedChange = viewModel::onClickSearchUseRegex,
+            modifier = Modifier.hint("Use regex"),
+        ) { Text(".*") }
+
+        val withDp = with(LocalDensity.current) {
+            LocalWindowInfo.current.containerSize.width.toDp()
+        }
+        if (withDp <= 600.dp) {
+            QaToggleIconButton(
+                checked = showSideMenu.value,
+                onCheckedChange = { showSideMenu.value = it },
+                modifier = Modifier.hint("Toggle side panel"),
+            ) { Icon(Icons.Default.MoreVert, null) }
+        }
     }
 }
