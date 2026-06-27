@@ -41,6 +41,7 @@ import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.filePicker.FilePickerDialog
+import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarContent
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -102,7 +103,9 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
                 val data: String = state.value.logsViewState.rawLogs.joinToString(separator = "\n") { it.raw }
                 clipboard.setText(AnnotatedString(data))
             },
-            Modifier.padding(4.dp),
+            Modifier
+                .hint("Copy filtered logs")
+                .padding(4.dp),
         ) { Icon(Icons.Default.CopyAll, null) }
         if (state.value.showSelectMappingDialog) {
             FilePickerDialog(onCloseRequest = viewModel::onSelectMappingDialogResult)
@@ -110,27 +113,35 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
         QaToggleIconButton(
             checked = state.value.isMappingApplied,
             onCheckedChange = { viewModel.onClickMappingButton() },
-            Modifier.padding(4.dp),
+            Modifier
+                .hint("Attach Proguard mapping")
+                .padding(4.dp),
         ) {
             Icon(Icons.Default.FilePresent, null)
         }
         QaToggleIconButton(
             checked = state.value.isStripDate,
             onCheckedChange = { viewModel.onClickStripDate() },
-            Modifier.padding(4.dp),
+            Modifier
+                .hint("Strip date")
+                .padding(4.dp),
         ) {
             Icon(Icons.Default.DateRange, null)
         }
         QaToggleIconButton(
             checked = state.value.showTagStat,
             onCheckedChange = { viewModel.onClickShowTagStat() },
-            Modifier.padding(4.dp),
+            Modifier
+                .hint("Show tag usage statistics")
+                .padding(4.dp),
         ) {
             Icon(Icons.Default.AutoGraph, null)
         }
         QaIconButton(
             onClick = { viewModel.onClickFontUp() },
-            Modifier.padding(4.dp),
+            Modifier
+                .hint("Font size +")
+                .padding(4.dp),
         ) {
             Icon(Icons.Default.ZoomIn, null)
         }
@@ -140,14 +151,18 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
         )
         QaIconButton(
             onClick = { viewModel.onClickFontDown() },
-            Modifier.padding(4.dp),
+            Modifier
+                .hint("Font size -")
+                .padding(4.dp),
         ) {
             Icon(Icons.Default.ZoomOut, null)
         }
         Spacer(Modifier.weight(1f))
         QaIconButton(
             onClick = { viewModel.onClickScrollToBottom() },
-            Modifier.padding(4.dp),
+            Modifier
+                .hint("Scroll to bottom")
+                .padding(4.dp),
         ) { Icon(Icons.Default.ArrowDownward, null) }
         HorizontalDivider(color = QaTheme.colorScheme.surface, thickness = 1.5.dp)
     }

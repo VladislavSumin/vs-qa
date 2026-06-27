@@ -23,6 +23,7 @@ include(":core:ui:design-system")
 include(":core:ui:drag-and-drop")
 include(":core:ui:file-picker")
 include(":core:ui:hotkey-controller")
+include(":core:ui:hint")
 include(":core:utils")
 
 include(":feature:log-parser:api")
