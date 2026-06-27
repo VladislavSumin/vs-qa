@@ -30,7 +30,7 @@ import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
 @Composable
-fun Modifier.hint(text: String, delayMillis: Long = 450L): Modifier {
+fun Modifier.hint(text: String, delayMillis: Long = 450L, placement: HintPlacement = HintPlacement.BOTTOM): Modifier {
     var isHovered by remember { mutableStateOf(false) }
     var showHint by remember { mutableStateOf(false) }
     var layoutCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
@@ -46,7 +46,7 @@ fun Modifier.hint(text: String, delayMillis: Long = 450L): Modifier {
 
     if (showHint && layoutCoordinates != null) {
         Popup(
-            popupPositionProvider = remember { HintPopupPositionProvider(layoutCoordinates!!) },
+            popupPositionProvider = remember { HintPopupPositionProvider(layoutCoordinates!!, placement) },
             onDismissRequest = { showHint = false },
             properties = PopupProperties(focusable = false),
         ) {
@@ -78,37 +78,93 @@ fun Modifier.hint(text: String, delayMillis: Long = 450L): Modifier {
         }
 }
 
-private class HintPopupPositionProvider(private val elementCoordinates: LayoutCoordinates) : PopupPositionProvider {
+enum class HintPlacement { TOP, BOTTOM, LEFT, RIGHT }
+
+private class HintPopupPositionProvider(
+    private val elementCoordinates: LayoutCoordinates,
+    private val preferredPlacement: HintPlacement,
+) : PopupPositionProvider {
+
     override fun calculatePosition(
         anchorBounds: IntRect,
         windowSize: IntSize,
         layoutDirection: LayoutDirection,
         popupContentSize: IntSize,
     ): IntOffset {
-        val position = elementCoordinates.positionInWindow()
+        val pos = elementCoordinates.positionInWindow()
         val size = elementCoordinates.size
 
-        val elementCenterX = position.x.roundToInt() + size.width / 2
-        val elementTop = position.y.roundToInt()
-        val elementBottom = position.y.roundToInt() + size.height
+        val elementLeft = pos.x.roundToInt()
+        val elementRight = elementLeft + size.width
+        val elementTop = pos.y.roundToInt()
+        val elementBottom = elementTop + size.height
+        val elementCenterX = elementLeft + size.width / 2
+        val elementCenterY = elementTop + size.height / 2
 
-        val contentWidth = popupContentSize.width
-        val contentHeight = popupContentSize.height
+        val cw = popupContentSize.width
+        val ch = popupContentSize.height
         val gap = 4
+        val ww = windowSize.width
+        val wh = windowSize.height
 
-        val fitsBelow = elementBottom + gap + contentHeight <= windowSize.height
-        val fitsAbove = elementTop - gap - contentHeight >= 0
+        val placementPriority = buildPriority(preferredPlacement)
 
-        val y = when {
-            fitsBelow -> elementBottom + gap
-            fitsAbove -> elementTop - gap - contentHeight
-            else -> windowSize.height - contentHeight
-        }.coerceAtLeast(0)
+        for (p in placementPriority) {
+            when (p) {
+                HintPlacement.BOTTOM -> {
+                    if (elementBottom + gap + ch <= wh) {
+                        return IntOffset(
+                            (elementCenterX - cw / 2).coerceIn(0, (ww - cw).coerceAtLeast(0)),
+                            elementBottom + gap,
+                        )
+                    }
+                }
 
-        val x = (elementCenterX - contentWidth / 2)
-            .coerceIn(0, windowSize.width - contentWidth)
-            .coerceAtLeast(0)
+                HintPlacement.TOP -> {
+                    if (elementTop - gap - ch >= 0) {
+                        return IntOffset(
+                            (elementCenterX - cw / 2).coerceIn(0, (ww - cw).coerceAtLeast(0)),
+                            elementTop - gap - ch,
+                        )
+                    }
+                }
 
-        return IntOffset(x, y)
+                HintPlacement.RIGHT -> {
+                    if (elementRight + gap + cw <= ww) {
+                        return IntOffset(
+                            elementRight + gap,
+                            (elementCenterY - ch / 2).coerceIn(0, (wh - ch).coerceAtLeast(0)),
+                        )
+                    }
+                }
+
+                HintPlacement.LEFT -> {
+                    if (elementLeft - gap - cw >= 0) {
+                        return IntOffset(
+                            elementLeft - gap - cw,
+                            (elementCenterY - ch / 2).coerceIn(0, (wh - ch).coerceAtLeast(0)),
+                        )
+                    }
+                }
+            }
+        }
+
+        return IntOffset(
+            (elementCenterX - cw / 2).coerceIn(0, (ww - cw).coerceAtLeast(0)),
+            (wh - ch).coerceAtLeast(0),
+        )
+    }
+
+    private fun buildPriority(preferred: HintPlacement): List<HintPlacement> {
+        val opposite = when (preferred) {
+            HintPlacement.BOTTOM -> HintPlacement.TOP
+            HintPlacement.TOP -> HintPlacement.BOTTOM
+            HintPlacement.LEFT -> HintPlacement.RIGHT
+            HintPlacement.RIGHT -> HintPlacement.LEFT
+        }
+        val horizontals = listOf(HintPlacement.LEFT, HintPlacement.RIGHT)
+        val verticals = listOf(HintPlacement.TOP, HintPlacement.BOTTOM)
+        val side = if (preferred in verticals) horizontals else verticals
+        return listOf(preferred, opposite) + side
     }
 }
