@@ -5,8 +5,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.core.adb.client)
-            implementation(projects.feature.tabs.api)
+            implementation(projects.feature.windowTitle.api)
         }
     }
 }

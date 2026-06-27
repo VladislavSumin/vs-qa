@@ -6,6 +6,7 @@ import androidx.compose.ui.focus.FocusRequester
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.coroutines.utils.LinkedFlow
@@ -20,6 +21,7 @@ import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.tagStat.TagStatComponent
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
+import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
 
 @GenerateFactory(LogViewerScreenFactory::class)
 internal class LogViewerScreen(
@@ -30,7 +32,8 @@ internal class LogViewerScreen(
     params: LogViewerScreenParams,
     intents: ReceiveChannel<LogViewerScreenIntent>,
     context: ComponentContext,
-) : Screen(context) {
+) : Screen(context),
+    TabSupport {
     private val searchFocusRequester = FocusRequester()
 
     // TODO подумать нормально ли делать так?
@@ -54,6 +57,8 @@ internal class LogViewerScreen(
             notificationsUiInteractor = notificationsUiInteractor,
         )
     }
+
+    override val tabState: StateFlow<TabSupport.TabState> get() = viewModel.tabState
 
     private val logsComponent = LogsComponent(
         logsEvents = viewModel.logsEvents,

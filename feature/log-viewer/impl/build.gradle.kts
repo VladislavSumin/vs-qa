@@ -13,7 +13,7 @@ kotlin {
             implementation(projects.feature.logParser.api)
             implementation(projects.feature.bottomBar.api)
             implementation(projects.feature.notifications.api)
-            implementation(projects.feature.windowTitle.api)
+            implementation(projects.feature.tabs.api)
             implementation(projects.core.proguardParser)
             implementation(libs.betterParse)
             implementation(libs.google.datastore.core)

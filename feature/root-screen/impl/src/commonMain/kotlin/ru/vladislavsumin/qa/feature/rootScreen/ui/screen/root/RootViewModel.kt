@@ -4,17 +4,16 @@ import androidx.compose.ui.input.key.Key
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.channels.Channel
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
-import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
-import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenParams
 
 @GenerateFactory
 internal class RootViewModel(globalHotkeyManager: GlobalHotkeyManager) : NavigationViewModel() {
     val events = Channel<RootEvent>()
 
     init {
+        // TODO перенести в компонент табов.
         relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
             @Suppress("MagicNumber")
             globalHotkeyManager.subscribe(
@@ -37,8 +36,4 @@ internal class RootViewModel(globalHotkeyManager: GlobalHotkeyManager) : Navigat
         events.trySend(RootEvent.FocusTab(number))
         return true
     }
-
-    fun onTabClick(tabScreenParams: IntentScreenParams<*>) = open(tabScreenParams)
-    fun onCloseTabClick(tabScreenParams: IntentScreenParams<*>) = close(tabScreenParams)
-    fun onClickHome() = open(HomeScreenParams)
 }

@@ -23,6 +23,7 @@ import ru.vladislavsumin.qa.feature.homeScreen.featureHomeScreen
 import ru.vladislavsumin.qa.feature.memoryIndicator.featureMemoryIndicator
 import ru.vladislavsumin.qa.feature.notifications.featureNotifications
 import ru.vladislavsumin.qa.feature.rootScreen.featureRootScreen
+import ru.vladislavsumin.qa.feature.tabs.featureTabs
 
 fun createDi(platformModule: DI.Module?, globalHotkeyManager: GlobalHotkeyManager): DirectDI = DI {
     if (platformModule != null) {
@@ -47,6 +48,7 @@ fun createDi(platformModule: DI.Module?, globalHotkeyManager: GlobalHotkeyManage
     importOnce(Modules.featureNotifications())
     importOnce(Modules.featureRootScreen())
     importOnce(Modules.featureWidowTitle())
+    importOnce(Modules.featureTabs())
 
     importOnce(Modules.featureAnimeLogParser())
 }.direct

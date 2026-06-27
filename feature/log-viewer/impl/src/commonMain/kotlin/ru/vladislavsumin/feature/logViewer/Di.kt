@@ -30,7 +30,7 @@ fun Modules.featureLogViewer() = DI.Module("feature-logViewer") {
     }
 
     bindSingleton<LogViewerScreenFactory> {
-        val vmf = LogViewerViewModelFactory(i(), i(), i(), i(), i(), i())
+        val vmf = LogViewerViewModelFactory(i(), i(), i(), i(), i())
         LogViewerScreenFactoryImpl(vmf, i())
     }
 

@@ -40,9 +40,9 @@ import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarUiInt
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsEvents
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
 import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarViewState
-import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
+import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
 import java.nio.file.Path
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.io.path.name
@@ -53,7 +53,6 @@ internal class LogViewerViewModel(
     logParserProvider: LogParserProvider,
     private val logViewerSettingsRepository: LogViewerSettingsRepository,
     private val logRecentInteractor: LogRecentInteractor,
-    private val windowTitleInteractor: WindowTitleInteractor,
     private val globalHotkeyManager: GlobalHotkeyManager,
     private val dispatchers: VsDispatchers,
     @ByCreate private val logPath: Path,
@@ -126,6 +125,10 @@ internal class LogViewerViewModel(
     }
 
     private var isOpenedOnce = false
+
+    val tabState = logRecentInteractor.observeCustomName(logPath)
+        .map { TabSupport.TabState(name = it ?: logPath.name) }
+        .stateIn(TabSupport.TabState())
 
     val state: StateFlow<LogViewerViewState> = combine(
         logsInteractor.observeLogIndex(
@@ -274,11 +277,6 @@ internal class LogViewerViewModel(
                 .collect { state ->
                     bottomBarUiInteractor.setBottomBarText("Total records: ${state.logRecordsAfterApplyFilter}")
                 }
-        }
-        relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
-            logRecentInteractor.observeCustomName(logPath).collect { customName ->
-                windowTitleInteractor.setWindowTitleExtension(customName ?: logPath.name)
-            }
         }
         relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
             globalHotkeyManager.subscribe(

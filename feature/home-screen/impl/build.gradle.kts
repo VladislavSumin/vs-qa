@@ -10,6 +10,7 @@ kotlin {
             implementation(projects.feature.adbDeviceList.api)
             implementation(projects.feature.logRecent.api)
             implementation(projects.feature.logViewer.api)
+            implementation(projects.feature.tabs.api)
         }
     }
 }

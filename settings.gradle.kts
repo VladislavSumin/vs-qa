@@ -37,6 +37,7 @@ feature("log-viewer")
 feature("memory-indicator")
 feature("notifications")
 feature("root-screen")
+feature("tabs")
 feature("window-title")
 
 fun feature(name: String) {
