@@ -43,13 +43,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerButton
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.SpanStyle
@@ -230,7 +226,6 @@ private fun Header(runNumber: Int, meta: Map<String, String>?, fontSize: Int, te
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun Record(
     log: LogRecord,
@@ -245,13 +240,7 @@ private fun Record(
     onAddTimeFilter: (LogOrder, Boolean) -> Unit,
 ) {
     Box(
-        modifier = Modifier
-            .onPointerEvent(PointerEventType.Press) { event ->
-                if (event.button == PointerButton.Secondary) {
-                    event.changes.forEach { it.consume() }
-                    onShowContextMenu(event.changes.first().position)
-                }
-            },
+        modifier = Modifier.onRightClick(onShowContextMenu),
     ) {
         DisableSelection {
             Text(
