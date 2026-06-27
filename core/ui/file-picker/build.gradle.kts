@@ -6,7 +6,6 @@ plugins {
 kotlin {
     sourceSets {
         androidMain.dependencies {
-            // TODO вынести в конвеншен?
             implementation(libs.android.activity.compose)
         }
     }
