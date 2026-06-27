@@ -295,7 +295,7 @@ private fun LogItemDropDownMenu(
                     val time = log.raw.substring(log.time)
                     Column(Modifier.width(IntrinsicSize.Max)) {
                         Text(
-                            text = "timeAfter = \"$time\"",
+                            text = "timeAfter=\"$time\"",
                             style = MaterialTheme.typography.bodyMedium,
                             fontFamily = FontFamily.Monospace,
                             modifier = Modifier
@@ -307,7 +307,7 @@ private fun LogItemDropDownMenu(
                                 .padding(vertical = 8.dp, horizontal = 16.dp),
                         )
                         Text(
-                            text = "timeBefore = \"$time\"",
+                            text = "timeBefore=\"$time\"",
                             style = MaterialTheme.typography.bodyMedium,
                             fontFamily = FontFamily.Monospace,
                             modifier = Modifier
