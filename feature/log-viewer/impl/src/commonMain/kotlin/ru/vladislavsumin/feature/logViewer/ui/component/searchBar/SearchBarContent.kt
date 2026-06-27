@@ -32,6 +32,7 @@ import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.core.ui.hotkeyController.resetFocusOnEsc
@@ -86,10 +87,12 @@ internal fun SearchBarContent(
                 ) {
                     QaIconButton(
                         onClick = viewModel::onClickNextIndex,
+                        modifier = Modifier.hint("Next match"),
                     ) { Icon(Icons.Default.ArrowDownward, null) }
 
                     QaIconButton(
                         onClick = viewModel::onClickPrevIndex,
+                        modifier = Modifier.hint("Previous match"),
                     ) { Icon(Icons.Default.ArrowUpward, null) }
 
                     // TODO написать нормально
@@ -117,11 +120,13 @@ internal fun SearchBarContent(
                     QaToggleIconButton(
                         checked = state.isMatchCase,
                         onCheckedChange = viewModel::onClickSearchMatchCase,
+                        modifier = Modifier.hint("Case sensitive"),
                     ) { Text("Cc") }
 
                     QaToggleIconButton(
                         checked = state.isRegex,
                         onCheckedChange = viewModel::onClickSearchUseRegex,
+                        modifier = Modifier.hint("Use regex"),
                     ) { Text(".*") }
 
                     val withDp = with(LocalDensity.current) {
@@ -131,6 +136,7 @@ internal fun SearchBarContent(
                         QaToggleIconButton(
                             checked = showSideMenu.value,
                             onCheckedChange = { showSideMenu.value = it },
+                            modifier = Modifier.hint("Toggle side panel"),
                         ) { Icon(Icons.Default.MoreVert, null) }
                     }
                 }

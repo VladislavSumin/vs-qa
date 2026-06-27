@@ -40,6 +40,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.ui.button.QaIconButton
+import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.feature.logRecent.domain.LogRecent
 import java.nio.file.Path
 
@@ -163,6 +164,7 @@ private fun LogRecentItem(
                     editing = true
                 }
             },
+            modifier = Modifier.hint("Rename"),
         ) {
             Icon(
                 if (editing) Icons.Outlined.Save else Icons.Outlined.Edit,
@@ -170,7 +172,10 @@ private fun LogRecentItem(
             )
         }
 
-        QaIconButton(onClick = { viewModel.onClickRemoveRecent(recentLog) }) {
+        QaIconButton(
+            onClick = { viewModel.onClickRemoveRecent(recentLog) },
+            modifier = Modifier.hint("Remove from recent"),
+        ) {
             Icon(Icons.Outlined.Delete, contentDescription = null)
         }
     }

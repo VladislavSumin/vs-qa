@@ -33,6 +33,7 @@ import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.button.QaToggleIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.resetFocusOnEsc
 import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintComponent
@@ -67,7 +68,10 @@ private fun SavedFilters(viewModel: FilterBarViewModel) {
             Row {
                 Text(it.name, Modifier.weight(1f))
                 Text(viewModel.highlightSavedFilter(it).colorize(), Modifier.weight(5f))
-                QaIconButton(onClick = { viewModel.onDeleteSavedFilter(it) }) {
+                QaIconButton(
+                    onClick = { viewModel.onDeleteSavedFilter(it) },
+                    modifier = Modifier.hint("Delete saved filter"),
+                ) {
                     Icon(imageVector = Icons.Default.Delete, contentDescription = "delete")
                 }
             }
@@ -87,7 +91,10 @@ private fun SavedFilters(viewModel: FilterBarViewModel) {
             placeholder = { Text("content") },
             modifier = Modifier.weight(5f),
         )
-        QaIconButton(onClick = viewModel::onClickSaveNewFilter) {
+        QaIconButton(
+            onClick = viewModel::onClickSaveNewFilter,
+            modifier = Modifier.hint("Save new filter"),
+        ) {
             Icon(imageVector = Icons.Default.Save, contentDescription = "save")
         }
     }
@@ -128,6 +135,7 @@ private fun FilterField(
             QaToggleIconButton(
                 checked = state.savedFiltersState.showSavedFilters,
                 onCheckedChange = { viewModel.onClickSavedFilters() },
+                modifier = Modifier.hint("Saved filters"),
             ) {
                 Icon(imageVector = Icons.Default.Bookmarks, contentDescription = "saved filters")
             }
@@ -138,7 +146,10 @@ private fun FilterField(
 
 @Composable
 private fun HelpButton(viewModel: FilterBarViewModel, state: FilterBarViewState) {
-    QaIconButton(onClick = viewModel::onClickHelpButton) {
+    QaIconButton(
+        onClick = viewModel::onClickHelpButton,
+        modifier = Modifier.hint("Filter syntax help"),
+    ) {
         DropdownMenu(
             expanded = state.showHelpMenu,
             onDismissRequest = viewModel::onDismissHelpMenu,

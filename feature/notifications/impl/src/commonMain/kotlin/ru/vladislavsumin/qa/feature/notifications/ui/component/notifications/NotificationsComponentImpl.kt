@@ -23,6 +23,7 @@ import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.hint.hint
 
 @GenerateFactory(NotificationsComponentFactory::class)
 internal class NotificationsComponentImpl(viewModelFactory: NotificationsViewModelFactory, context: ComponentContext) :
@@ -49,7 +50,10 @@ internal class NotificationsComponentImpl(viewModelFactory: NotificationsViewMod
                 ) {
                     Row(Modifier.padding(vertical = 16.dp, horizontal = 24.dp)) {
                         Text(it.text, Modifier.weight(1f))
-                        QaIconButton(onClick = { viewModel.onClickCloseNotification(it.id) }) {
+                        QaIconButton(
+                            onClick = { viewModel.onClickCloseNotification(it.id) },
+                            modifier = Modifier.hint("Dismiss notification"),
+                        ) {
                             Icon(imageVector = Icons.Default.Close, contentDescription = "close")
                         }
                     }

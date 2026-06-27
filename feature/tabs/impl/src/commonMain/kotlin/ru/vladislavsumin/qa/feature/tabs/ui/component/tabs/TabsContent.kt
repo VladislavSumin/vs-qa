@@ -25,6 +25,7 @@ import ru.vladislavsumin.core.navigation.host.ConfigurationHolder
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.hint.hint
 
 @Composable
 internal fun TabsContent(
@@ -84,7 +85,7 @@ private fun Tab(
         if (state.allowClose) {
             QaIconButton(
                 onClick = { onTabClickClose(item.configuration.screenParams) },
-                modifier = Modifier.padding(end = 4.dp),
+                modifier = Modifier.hint("Close tab").padding(end = 4.dp),
             ) { Icon(imageVector = Icons.Default.Close, contentDescription = "close") }
         }
     }
