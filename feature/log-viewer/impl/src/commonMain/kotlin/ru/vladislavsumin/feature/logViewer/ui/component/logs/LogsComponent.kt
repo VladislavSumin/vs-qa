@@ -7,15 +7,23 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.StateFlow
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
+import ru.vladislavsumin.feature.logViewer.domain.logs.LogOrder
 
 internal class LogsComponent(
     private val logsEvents: ReceiveChannel<LogsEvents>,
     private val state: StateFlow<LogsViewState>,
     private val onFirstVisibleIndexChange: (Int) -> Unit,
+    private val onAddTimeFilter: (LogOrder, Boolean) -> Unit,
     context: ComponentContext,
 ) : Component(context),
     ComposeComponent {
 
     @Composable
-    override fun Render(modifier: Modifier) = LogsContent(onFirstVisibleIndexChange, logsEvents, state, modifier)
+    override fun Render(modifier: Modifier) = LogsContent(
+        onFirstVisibleIndexChange = onFirstVisibleIndexChange,
+        events = logsEvents,
+        state = state,
+        onAddTimeFilter = onAddTimeFilter,
+        modifier = modifier,
+    )
 }

@@ -384,6 +384,13 @@ internal class LogViewerViewModel(
         firstVisibleIndex.value = index
     }
 
+    fun onAddTimeFilter(order: LogOrder, isAfter: Boolean) {
+        val log = state.value.logsViewState.rawLogs.find { it.order == order } ?: return
+        val time = log.raw.substring(log.time)
+        val prefix = if (isAfter) "timeAfter" else "timeBefore"
+        filterBarUiInteractor.addToFilter("$prefix = \"$time\"")
+    }
+
     fun onSearchChange(newValue: String) = search.update { it.copy(search = newValue) }
     fun onClickSearchMatchCase(newValue: Boolean) = search.update { it.copy(matchCase = newValue) }
     fun onClickSearchUseRegex(newValue: Boolean) = search.update { it.copy(useRegex = newValue) }

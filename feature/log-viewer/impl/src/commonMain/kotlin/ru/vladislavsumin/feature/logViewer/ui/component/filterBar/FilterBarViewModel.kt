@@ -89,6 +89,14 @@ internal class FilterBarViewModel(
         filter.update { it.copy(text = data) }
     }
 
+    override fun addToFilter(part: String) {
+        filter.update { textFieldValue ->
+            val currentText = textFieldValue.text
+            val newText = if (currentText.isBlank()) part else "$currentText $part"
+            textFieldValue.copy(text = newText)
+        }
+    }
+
     fun onFilterChange(newValue: TextFieldValue) {
         filter.update { old ->
             if (old.text.length < newValue.text.length) {

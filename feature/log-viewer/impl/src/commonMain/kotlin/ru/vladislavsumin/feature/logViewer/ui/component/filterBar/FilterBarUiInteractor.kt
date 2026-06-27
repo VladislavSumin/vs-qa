@@ -5,4 +5,5 @@ import kotlinx.coroutines.flow.Flow
 internal interface FilterBarUiInteractor {
     val filterState: Flow<FilterRequestParser.ParserResult>
     fun setFilter(data: String)
+    fun addToFilter(part: String)
 }
