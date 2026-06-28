@@ -199,30 +199,35 @@ private fun ScrollToBottom(lazyListState: LazyListState) {
 
 @Composable
 private fun Header(runNumber: Int, meta: Map<String, String>?, fontSize: Int, textSizeDp: Dp) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .background(QaTheme.colorScheme.surfaceVariant),
-    ) {
-        val text = buildAnnotatedString {
-            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                append("Run $runNumber  ")
-            }
-            meta?.forEach { (k, v) ->
-                withStyle(SpanStyle(color = QaTheme.colorScheme.logTrace.primary)) {
-                    append(k)
-                    append("=")
+    DisableSelection {
+        SelectionContainer {
+            // Разделяем выделение у заголовков и контента
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .background(QaTheme.colorScheme.surfaceVariant),
+            ) {
+                val text = buildAnnotatedString {
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append("Run $runNumber  ")
+                    }
+                    meta?.forEach { (k, v) ->
+                        withStyle(SpanStyle(color = QaTheme.colorScheme.logTrace.primary)) {
+                            append(k)
+                            append("=")
+                        }
+                        append(v)
+                        append(" ")
+                    }
                 }
-                append(v)
-                append(" ")
+                Text(
+                    text = text,
+                    fontSize = fontSize.sp,
+                    lineHeight = fontSize.sp * 1.42,
+                    modifier = Modifier.padding(start = textSizeDp + 13.dp + 8.dp, end = 4.dp),
+                )
             }
         }
-        Text(
-            text = text,
-            fontSize = fontSize.sp,
-            lineHeight = fontSize.sp * 1.42,
-            modifier = Modifier.padding(start = textSizeDp + 13.dp + 8.dp, end = 4.dp),
-        )
     }
 }
 
