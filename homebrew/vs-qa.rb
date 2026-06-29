@@ -9,6 +9,10 @@ class VsQa < Formula
 
   def install
     libexec.install "vs-qa-min.jar" => "vs-qa.jar"
-    bin.write_jar_script libexec/"vs-qa.jar", "vs-qa"
+    (bin/"vs-qa").write <<~EOS
+      #!/bin/bash
+      export JAVA_HOME="#{Formula["openjdk@21"].opt_prefix}"
+      exec "#{Formula["openjdk@21"].opt_bin}/java" -jar "#{libexec}/vs-qa.jar" "$@"
+    EOS
   end
 end
