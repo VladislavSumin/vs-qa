@@ -1,5 +1,3 @@
-@file:Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "ERROR_SUPPRESSION")
-
 package ru.vladislavsumin.feature.logViewer.ui.component.logs
 
 import androidx.compose.animation.AnimatedVisibility
@@ -24,7 +22,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.DisableSelection
-import androidx.compose.foundation.text.selection.Selection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -38,7 +35,6 @@ import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -73,11 +69,11 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.selection.VsSelectionContainer
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogOrder
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.TextSelectionSeparator
@@ -133,10 +129,7 @@ internal fun LogsContent(
                 floatingActionButton = { ScrollToBottom(lazyListState = lazyListState) },
             ) { innerPadding ->
                 val hasSelection = remember { mutableStateOf(false) }
-                LaunchedEffect(hasSelection.value) {
-                    println("QWQW: has selection: ${hasSelection.value}")
-                }
-                SelectionContainer2(
+                VsSelectionContainer(
                     hasSelection = hasSelection,
                 ) {
                     LazyColumn(
@@ -187,36 +180,6 @@ internal fun LogsContent(
         }
         LogsVerticalScrollBar(lazyListState)
     }
-}
-
-// TODO экспериментальный кусок говна, вот тебе гугл
-@Composable
-@Suppress("INVISIBLE_MEMBER", "INVISIBLE_REFERENCE", "ERROR_SUPPRESSION")
-fun SelectionContainer2(
-    hasSelection: MutableState<Boolean>,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
-    var selection by remember { mutableStateOf<Selection?>(null) }
-    hasSelection.value = selection != null && selection.start != selection.end
-
-    // Короче тут такой костыль, на шару, в общем если просто кликнуть будет селекшен типа ничего но не нулл
-    // его типа надо сбросить, но если ты выделяешь кусок то если сбрасывать выделение не работает ага.
-    // по хорошему тут нужно нормально решение, но блядь, тут уже все в целом решение говна
-    if (selection != null && selection.start == selection.end) {
-        LaunchedEffect(selection) {
-            @Suppress("MagicNumber")
-            delay(500)
-            selection = null
-        }
-    }
-
-    SelectionContainer(
-        modifier = modifier,
-        selection = selection,
-        onSelectionChange = { selection = it },
-        children = content,
-    )
 }
 
 @Composable

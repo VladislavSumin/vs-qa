@@ -10,6 +10,7 @@ kotlin {
             implementation(projects.core.boyerMooreSearch)
             implementation(projects.core.searchUtils)
             implementation(projects.core.ui.hint)
+            implementation(projects.core.ui.selection)
             implementation(projects.feature.logRecent.api)
             implementation(projects.feature.logParser.api)
             implementation(projects.feature.bottomBar.api)
