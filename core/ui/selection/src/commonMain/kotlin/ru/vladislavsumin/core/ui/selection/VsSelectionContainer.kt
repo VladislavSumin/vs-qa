@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.selection.Selection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,7 +23,11 @@ fun VsSelectionContainer(
     content: @Composable () -> Unit,
 ) {
     var selection by remember { mutableStateOf<Selection?>(null) }
-    onSelectionChange(selection != null && selection.start != selection.end)
+    val hasSelection by remember { derivedStateOf { selection != null && selection.start != selection.end } }
+
+    LaunchedEffect(hasSelection) {
+        onSelectionChange(hasSelection)
+    }
 
     LaunchedEffect(selection) {
         if (selection != null && selection.start == selection.end) {
