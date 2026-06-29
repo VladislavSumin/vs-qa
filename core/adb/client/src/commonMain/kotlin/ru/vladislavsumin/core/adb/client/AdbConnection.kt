@@ -44,6 +44,19 @@ internal class AdbConnection(private val dispatchers: VsDispatchers, private val
         }
     }.flowOn(dispatchers.IO)
 
+    fun executeContinuousTransportCommand(transport: String, command: String): Flow<String> = flow {
+        withConnection { r, w ->
+            w.sendAdbData(transport)
+            r.checkAdbStatus()
+            w.sendAdbData(command)
+            r.checkAdbStatus()
+            while (true) {
+                val line = r.readUTF8Line() ?: break
+                if (line.isNotEmpty()) emit(line)
+            }
+        }
+    }.flowOn(dispatchers.IO)
+
     private suspend fun ByteWriteChannel.sendAdbData(data: String) {
         val len = data.length
         check(len <= UShort.MAX_VALUE.toInt()) { "Invalid data size len=$len" }

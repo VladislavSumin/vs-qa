@@ -12,6 +12,21 @@ import java.util.Locale
 interface AdbClient {
     fun observeDevices(): Flow<AdbResult<List<DeviceInfo>>>
     suspend fun executeShellCommand(deviceName: String, shellCommand: String): AdbResult<String>
+    fun observeLogcat(
+        deviceName: String,
+        format: LogcatOutputFormat = LogcatOutputFormat.THREADTIME,
+    ): Flow<AdbResult<String>>
+
+    enum class LogcatOutputFormat(val adbFlag: String) {
+        BRIEF("brief"),
+        PROCESS("process"),
+        TAG("tag"),
+        THREAD("thread"),
+        THREADTIME("threadtime"),
+        TIME("time"),
+        LONG("long"),
+        RAW("raw"),
+    }
 
     // TODO снести что ли? приколько конечно но хз
     sealed interface AdbResult<T> {
@@ -63,6 +78,24 @@ internal class AdbClientImpl(dispatchers: VsDispatchers) : AdbClient {
         } catch (e: Exception) {
             AdbClient.AdbResult.Err(e)
         }
+
+    override fun observeLogcat(
+        deviceName: String,
+        format: AdbClient.LogcatOutputFormat,
+    ): Flow<AdbClient.AdbResult<String>> = connection
+        .executeContinuousTransportCommand(
+            transport = "host:transport:$deviceName",
+            command = "shell:logcat -v ${format.adbFlag}",
+        )
+        .map { data ->
+            AdbClient.AdbResult.Ok(data) as AdbClient.AdbResult<String>
+        }
+        .retry(retries = 3) {
+            delay(RETRY_DELAY_MS)
+            localAdbServerController.startAdbServer()
+            true
+        }
+        .catch { emit(AdbClient.AdbResult.Err(it)) }
 
     override fun observeDevices(): Flow<AdbClient.AdbResult<List<AdbClient.DeviceInfo>>> = connection
         .executeContinuousCommand("host:track-devices")
