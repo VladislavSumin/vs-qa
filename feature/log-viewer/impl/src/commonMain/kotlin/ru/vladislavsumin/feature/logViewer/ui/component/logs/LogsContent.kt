@@ -130,7 +130,7 @@ internal fun LogsContent(
             ) { innerPadding ->
                 val hasSelection = remember { mutableStateOf(false) }
                 VsSelectionContainer(
-                    hasSelection = hasSelection,
+                    onSelectionChange = { hasSelection.value = it },
                 ) {
                     LazyColumn(
                         state = lazyListState,
