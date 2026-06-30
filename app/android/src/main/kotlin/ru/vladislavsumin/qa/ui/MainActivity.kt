@@ -37,7 +37,12 @@ class MainActivity :
 
         val defaultContext = defaultComponentContext()
         val rootComponentFactory = di.direct.instance<RootScreenComponentFactory>()
-        val rootComponent = rootComponentFactory.create(null, null, defaultContext)
+        val rootComponent = rootComponentFactory.create(
+            windowTitleInteractor = null,
+            logPath = null,
+            mappingPath = null,
+            defaultContext,
+        )
 
         setContent {
             rootComponent.Render(Modifier)

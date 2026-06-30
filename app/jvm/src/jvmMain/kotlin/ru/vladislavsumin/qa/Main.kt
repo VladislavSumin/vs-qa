@@ -14,7 +14,7 @@ import io.sentry.kotlin.multiplatform.Sentry
 import org.kodein.di.instance
 import ru.vladislavsumin.core.decompose.compose.runOnUiThread
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyDispatcher
-import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
+import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractorImpl
 import ru.vladislavsumin.qa.feature.rootScreen.ui.component.rootScreen.RootScreenComponentFactory
 import kotlin.io.path.Path
 import kotlin.system.exitProcess
@@ -37,12 +37,12 @@ fun main(args: Array<String>) {
     // Создаем рутовый Decompose lifecycle.
     val lifecycle = LifecycleRegistry()
 
+    val windowTitleInteractor = WindowTitleInteractorImpl()
+
     val rootScreenComponent = runOnUiThread {
         val context = DefaultComponentContext(lifecycle)
-        di.instance<RootScreenComponentFactory>().create(logPath, mappingPath, context)
+        di.instance<RootScreenComponentFactory>().create(windowTitleInteractor, logPath, mappingPath, context)
     }
-
-    val windowTitleInteractor = di.instance<WindowTitleInteractor>()
 
     application {
         val windowState = rememberWindowState(placement = WindowPlacement.Maximized)

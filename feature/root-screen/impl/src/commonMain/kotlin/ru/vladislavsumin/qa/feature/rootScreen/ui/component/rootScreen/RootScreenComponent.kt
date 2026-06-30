@@ -13,14 +13,18 @@ import ru.vladislavsumin.core.navigation.host.childNavigationRoot
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenIntent
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
+import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
+import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenFactory
 import java.nio.file.Path
 
 @GenerateFactory(RootScreenComponentFactory::class)
 internal class RootScreenComponent(
     navigation: Navigation,
     private val yaml: Yaml,
+    private val windowTitleInteractor: WindowTitleInteractor?,
     logPath: Path?,
     mappingPath: Path?,
+    private val rootScreenFactory: RootScreenFactory,
     context: ComponentContext,
 ) : Component(context),
     ComposeComponent {
@@ -34,7 +38,10 @@ internal class RootScreenComponent(
         }
     }
 
-    private val navigationRoot = context.childNavigationRoot(navigation)
+    private val navigationRoot = context.childNavigationRoot(
+        navigation = navigation,
+        customRootScreenFactory = { context, _, _ -> rootScreenFactory.create(windowTitleInteractor, context) },
+    )
 
     @Composable
     override fun Render(modifier: Modifier) {

@@ -17,7 +17,7 @@ import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 
 @GenerateFactory(TabsComponentFactory::class)
 internal class TabsComponentImpl(
-    private val windowTitleInteractor: WindowTitleInteractor,
+    private val windowTitleInteractor: WindowTitleInteractor?,
     private val pages: Value<ChildPages<ConfigurationHolder, Screen>>,
     private val onTabClick: (IntentScreenParams<*>) -> Unit,
     private val onTabClickClose: (IntentScreenParams<*>) -> Unit,
@@ -26,12 +26,14 @@ internal class TabsComponentImpl(
     TabsComponent {
 
     init {
-        scope.launch {
-            pages.asStateFlow().collectLatest { pages ->
-                val item = pages.items.getOrNull(pages.selectedIndex)
-                val tab = item?.instance as? TabSupport ?: return@collectLatest
-                tab.tabState.collect {
-                    windowTitleInteractor.setWindowTitleExtension(it.windowName)
+        if (windowTitleInteractor != null) {
+            scope.launch {
+                pages.asStateFlow().collectLatest { pages ->
+                    val item = pages.items.getOrNull(pages.selectedIndex)
+                    val tab = item?.instance as? TabSupport ?: return@collectLatest
+                    tab.tabState.collect {
+                        windowTitleInteractor.setWindowTitleExtension(it.windowName)
+                    }
                 }
             }
         }

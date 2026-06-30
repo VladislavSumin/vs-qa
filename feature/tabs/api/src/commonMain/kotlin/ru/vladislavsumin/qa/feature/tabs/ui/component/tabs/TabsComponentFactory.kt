@@ -6,9 +6,11 @@ import com.arkivanov.decompose.value.Value
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.host.ConfigurationHolder
 import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 
 interface TabsComponentFactory {
     fun create(
+        windowTitleInteractor: WindowTitleInteractor?,
         pages: Value<ChildPages<ConfigurationHolder, Screen>>,
         onTabClick: (IntentScreenParams<*>) -> Unit,
         onTabClickClose: (IntentScreenParams<*>) -> Unit,

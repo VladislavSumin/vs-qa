@@ -7,6 +7,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(vsCoreLibs.vs.core.navigation.impl)
+            implementation(projects.feature.windowTitle.api)
         }
     }
 }
