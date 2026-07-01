@@ -41,7 +41,7 @@ dependencies {
 
     implementation(projects.core.ui.hotkeyController)
     implementation(projects.feature.logViewer.impl)
-    implementation(projects.feature.rootScreen.impl)
+    implementation(projects.feature.multiWindow.impl)
     implementation(projects.feature.windowTitle.api)
 
     implementation(vsCoreLibs.vs.core.decompose.compose)

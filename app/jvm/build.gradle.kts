@@ -32,7 +32,7 @@ kotlin {
 
         jvmMain.dependencies {
             implementation(projects.core.ui.hotkeyController)
-            implementation(projects.feature.rootScreen.impl)
+            implementation(projects.feature.multiWindow.impl)
             implementation(projects.feature.windowTitle.impl)
 
             implementation(vsCoreLibs.vs.core.decompose.compose)

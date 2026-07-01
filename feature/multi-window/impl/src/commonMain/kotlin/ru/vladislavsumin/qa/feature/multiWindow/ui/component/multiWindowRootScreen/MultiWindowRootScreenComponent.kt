@@ -1,4 +1,4 @@
-package ru.vladislavsumin.qa.feature.rootScreen.ui.component.rootScreen
+package ru.vladislavsumin.qa.feature.multiWindow.ui.component.multiWindowRootScreen
 
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -13,18 +13,14 @@ import ru.vladislavsumin.core.navigation.host.childNavigationRoot
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenIntent
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
-import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
-import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenFactory
 import java.nio.file.Path
 
-@GenerateFactory(RootScreenComponentFactory::class)
-internal class RootScreenComponent(
+@GenerateFactory(MultiWindowRootScreenComponentFactory::class)
+internal class MultiWindowRootScreenComponent(
     navigation: Navigation,
     private val yaml: Yaml,
-    private val windowTitleInteractor: WindowTitleInteractor?,
     logPath: Path?,
     mappingPath: Path?,
-    private val rootScreenFactory: RootScreenFactory,
     context: ComponentContext,
 ) : Component(context),
     ComposeComponent {
@@ -40,7 +36,6 @@ internal class RootScreenComponent(
 
     private val navigationRoot = context.childNavigationRoot(
         navigation = navigation,
-        customRootScreenFactory = { context, _, _ -> rootScreenFactory.create(windowTitleInteractor, context) },
     )
 
     @Composable

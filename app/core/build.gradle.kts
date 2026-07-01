@@ -23,6 +23,7 @@ kotlin {
             implementation(projects.feature.rootScreen.impl)
             implementation(projects.feature.tabs.impl)
             implementation(projects.feature.windowTitle.impl)
+            implementation(projects.feature.multiWindow.impl)
 
             implementation(vsCoreLibs.vs.core.logger.api)
             implementation(vsCoreLibs.vs.core.logger.platform)

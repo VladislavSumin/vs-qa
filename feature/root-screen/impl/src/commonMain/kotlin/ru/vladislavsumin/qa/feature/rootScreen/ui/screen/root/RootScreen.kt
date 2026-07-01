@@ -6,7 +6,6 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import com.arkivanov.decompose.router.children.ChildNavState
 import com.arkivanov.decompose.router.pages.Pages
-import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.host.childNavigationPages
 import ru.vladislavsumin.core.navigation.screen.Screen
@@ -20,7 +19,7 @@ import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenParams
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsComponentFactory
 import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabsComponentFactory
 
-@GenerateFactory
+@GenerateFactory(RootScreenFactory::class)
 internal class RootScreen(
     viewModelFactory: RootViewModelFactory,
     bottomBarComponentFactory: BottomBarComponentFactory,
@@ -29,8 +28,8 @@ internal class RootScreen(
     adbDeviceScreenFactory: AdbDeviceScreenFactory,
     notificationsComponentFactory: NotificationsComponentFactory,
     tabsComponentFactory: TabsComponentFactory,
-    @ByCreate windowTitleInteractor: WindowTitleInteractor?,
-    @ByCreate context: ComponentContext,
+    windowTitleInteractor: WindowTitleInteractor?,
+    context: ComponentContext,
 ) : Screen(context) {
 
     private val viewModel: RootViewModel = viewModel { viewModelFactory.create() }

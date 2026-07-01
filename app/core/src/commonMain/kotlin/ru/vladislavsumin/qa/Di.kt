@@ -21,6 +21,7 @@ import ru.vladislavsumin.qa.feature.bottomBar.featureBottomBar
 import ru.vladislavsumin.qa.feature.debug.featureDebug
 import ru.vladislavsumin.qa.feature.homeScreen.featureHomeScreen
 import ru.vladislavsumin.qa.feature.memoryIndicator.featureMemoryIndicator
+import ru.vladislavsumin.qa.feature.multiWindow.featureMultiWindow
 import ru.vladislavsumin.qa.feature.notifications.featureNotifications
 import ru.vladislavsumin.qa.feature.rootScreen.featureRootScreen
 import ru.vladislavsumin.qa.feature.tabs.featureTabs
@@ -49,6 +50,7 @@ fun createDi(platformModule: DI.Module?, globalHotkeyManager: GlobalHotkeyManage
     importOnce(Modules.featureNotifications())
     importOnce(Modules.featureRootScreen())
     importOnce(Modules.featureTabs())
+    importOnce(Modules.featureMultiWindow())
 
     importOnce(Modules.featureAnimeLogParser())
 }.direct

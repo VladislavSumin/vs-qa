@@ -15,7 +15,7 @@ import org.kodein.di.instance
 import ru.vladislavsumin.core.decompose.compose.runOnUiThread
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyDispatcher
 import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractorImpl
-import ru.vladislavsumin.qa.feature.rootScreen.ui.component.rootScreen.RootScreenComponentFactory
+import ru.vladislavsumin.qa.feature.multiWindow.ui.component.multiWindowRootScreen.MultiWindowRootScreenComponentFactory
 import kotlin.io.path.Path
 import kotlin.system.exitProcess
 
@@ -41,7 +41,7 @@ fun main(args: Array<String>) {
 
     val rootScreenComponent = runOnUiThread {
         val context = DefaultComponentContext(lifecycle)
-        di.instance<RootScreenComponentFactory>().create(windowTitleInteractor, logPath, mappingPath, context)
+        di.instance<MultiWindowRootScreenComponentFactory>().create(logPath, mappingPath, context)
     }
 
     application {

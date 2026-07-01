@@ -17,7 +17,7 @@ import org.kodein.di.instance
 import ru.vladislavsumin.core.navigation.Navigation
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
 import ru.vladislavsumin.qa.MainLogger
-import ru.vladislavsumin.qa.feature.rootScreen.ui.component.rootScreen.RootScreenComponentFactory
+import ru.vladislavsumin.qa.feature.multiWindow.ui.component.multiWindowRootScreen.MultiWindowRootScreenComponentFactory
 import java.nio.file.Path
 import java.util.UUID
 
@@ -36,9 +36,8 @@ class MainActivity :
         }
 
         val defaultContext = defaultComponentContext()
-        val rootComponentFactory = di.direct.instance<RootScreenComponentFactory>()
+        val rootComponentFactory = di.direct.instance<MultiWindowRootScreenComponentFactory>()
         val rootComponent = rootComponentFactory.create(
-            windowTitleInteractor = null,
             logPath = null,
             mappingPath = null,
             defaultContext,
