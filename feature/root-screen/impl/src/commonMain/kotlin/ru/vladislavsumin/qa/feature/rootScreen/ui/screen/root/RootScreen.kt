@@ -14,6 +14,7 @@ import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenFa
 import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScreenFactory
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarComponentFactory
+import ru.vladislavsumin.qa.feature.debug.ui.screen.debug.DebugScreenParams
 import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenFactory
 import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenParams
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsComponentFactory
@@ -75,7 +76,7 @@ internal class RootScreen(
                 ChildNavState.Status.CREATED
             }
         },
-        initialPages = { Pages(items = listOf(HomeScreenParams), selectedIndex = 0) },
+        initialPages = { Pages(items = listOf(DebugScreenParams, HomeScreenParams), selectedIndex = 1) },
     )
 
     private val tabsComponent = tabsComponentFactory.create(
