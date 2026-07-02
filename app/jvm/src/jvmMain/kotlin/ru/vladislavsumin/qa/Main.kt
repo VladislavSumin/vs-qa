@@ -3,7 +3,6 @@ package ru.vladislavsumin.qa
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
@@ -53,12 +52,14 @@ fun main(args: Array<String>) {
         // Связываем рутовый Decompose lifecycle с жизненным циклом окна.
         LifecycleController(lifecycle, windowState)
 
-        Window(
-            title = windowTitle,
-            onCloseRequest = ::exitApplication,
-            state = windowState,
-            onKeyEvent = hotkeyDispatcher::onKeyEvent,
-        ) { rootScreenComponent.Render(Modifier) }
+//        Window(
+//            title = windowTitle,
+//            onCloseRequest = ::exitApplication,
+//            state = windowState,
+//            onKeyEvent = hotkeyDispatcher::onKeyEvent,
+//        ) { rootScreenComponent.Render(Modifier) }
+
+        rootScreenComponent.Render(Modifier)
     }
 }
 

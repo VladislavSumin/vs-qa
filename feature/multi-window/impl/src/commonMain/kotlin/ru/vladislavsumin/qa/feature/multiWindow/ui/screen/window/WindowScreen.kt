@@ -3,8 +3,12 @@ package ru.vladislavsumin.qa.feature.multiWindow.ui.screen.window
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.ComponentContext
+import com.arkivanov.decompose.router.slot.ChildSlot
+import com.arkivanov.decompose.value.Value
 import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
+import ru.vladislavsumin.core.navigation.host.ConfigurationHolder
 import ru.vladislavsumin.core.navigation.host.childNavigationSlot
+import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractorImpl
@@ -23,13 +27,11 @@ internal class WindowScreen(private val rootScreenFactory: RootScreenFactory, co
         }
     }
 
-    private val screen = childNavigationSlot(
+    private val screen: Value<ChildSlot<ConfigurationHolder, GenericScreen<ComponentContext>>> = childNavigationSlot(
         navigationHost = WindowNavigationHost,
         initialConfiguration = { RootScreenParams },
     )
 
     @Composable
-    override fun Render(modifier: Modifier) {
-        screen.value.child?.instance?.Render(modifier)
-    }
+    override fun Render(modifier: Modifier) = WindowContent(screen, modifier)
 }

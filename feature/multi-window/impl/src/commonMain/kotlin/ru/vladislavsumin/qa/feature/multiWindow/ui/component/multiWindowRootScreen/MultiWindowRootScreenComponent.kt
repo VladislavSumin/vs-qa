@@ -1,6 +1,5 @@
 package ru.vladislavsumin.qa.feature.multiWindow.ui.component.multiWindowRootScreen
 
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.ComponentContext
@@ -10,7 +9,6 @@ import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.Navigation
 import ru.vladislavsumin.core.navigation.host.childNavigationRoot
-import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenIntent
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
 import java.nio.file.Path
@@ -40,10 +38,10 @@ internal class MultiWindowRootScreenComponent(
 
     @Composable
     override fun Render(modifier: Modifier) {
-        QaTheme(yaml) {
-            Surface {
-                navigationRoot.Render(Modifier)
-            }
-        }
+//        QaTheme(yaml) {
+//            Surface {
+        navigationRoot.Render(Modifier)
+//            }
+//        }
     }
 }
