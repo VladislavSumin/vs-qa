@@ -3,7 +3,6 @@ package ru.vladislavsumin.qa
 import com.arkivanov.decompose.ComponentContext
 import org.kodein.di.DI
 import org.kodein.di.DirectDI
-import org.kodein.di.bindSingleton
 import org.kodein.di.direct
 import ru.vladislavsumin.core.adb.client.coreAdbClient
 import ru.vladislavsumin.core.coroutines.dispatcher.coreCoroutinesDispatchers
@@ -11,7 +10,6 @@ import ru.vladislavsumin.core.di.Modules
 import ru.vladislavsumin.core.fs.coreFs
 import ru.vladislavsumin.core.navigation.coreNavigation
 import ru.vladislavsumin.core.serialization.yaml.coreSerializationYaml
-import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.feature.logParser.anime.domain.featureAnimeLogParser
 import ru.vladislavsumin.feature.logRecent.featureLogRecent
 import ru.vladislavsumin.feature.logViewer.featureLogViewer
@@ -26,12 +24,10 @@ import ru.vladislavsumin.qa.feature.notifications.featureNotifications
 import ru.vladislavsumin.qa.feature.rootScreen.featureRootScreen
 import ru.vladislavsumin.qa.feature.tabs.featureTabs
 
-fun createDi(platformModule: DI.Module?, globalHotkeyManager: GlobalHotkeyManager): DirectDI = DI {
+fun createDi(platformModule: DI.Module?): DirectDI = DI {
     if (platformModule != null) {
         importOnce(platformModule)
     }
-
-    bindSingleton { globalHotkeyManager }
 
     importOnce(Modules.coreFs(appTechName = "vs-qa"))
     importOnce(Modules.coreSerializationYaml())

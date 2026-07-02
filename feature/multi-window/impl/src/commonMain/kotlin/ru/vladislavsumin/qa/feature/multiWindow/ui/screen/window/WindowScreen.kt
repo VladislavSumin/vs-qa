@@ -11,6 +11,7 @@ import ru.vladislavsumin.core.navigation.host.ConfigurationHolder
 import ru.vladislavsumin.core.navigation.host.childNavigationSlot
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyDispatcher
 import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractorImpl
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenFactory
@@ -24,10 +25,11 @@ internal class WindowScreen(
 ) : Screen(context) {
 
     private val windowTitleInteractor: WindowTitleInteractor = WindowTitleInteractorImpl()
+    private val globalHotkeyDispatcher = GlobalHotkeyDispatcher()
 
     init {
         registerCustomFactory { context, _: RootScreenParams, _ ->
-            rootScreenFactory.create(windowTitleInteractor, context)
+            rootScreenFactory.create(windowTitleInteractor, globalHotkeyDispatcher, context)
         }
     }
 
@@ -41,6 +43,7 @@ internal class WindowScreen(
         screen = screen,
         yaml = yaml,
         windowTitleInteractor = windowTitleInteractor,
+        globalHotkeyDispatcher = globalHotkeyDispatcher,
         onCloseRequest = { navigator.close() },
         modifier = modifier,
     )

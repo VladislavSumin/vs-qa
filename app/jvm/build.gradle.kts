@@ -31,7 +31,6 @@ kotlin {
         }
 
         jvmMain.dependencies {
-            implementation(projects.core.ui.hotkeyController)
             implementation(projects.feature.multiWindow.impl)
             implementation(projects.feature.windowTitle.impl)
 

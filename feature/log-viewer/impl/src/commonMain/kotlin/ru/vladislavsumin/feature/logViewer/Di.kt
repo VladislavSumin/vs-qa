@@ -25,12 +25,12 @@ fun Modules.featureLogViewer() = DI.Module("feature-logViewer") {
     bindGenericNavigation { NavigationRegistrarImpl() }
 
     bindSingleton<FilterBarComponentFactory> {
-        val vmf = FilterBarViewModelFactory(i(), i())
+        val vmf = FilterBarViewModelFactory(i())
         FilterBarComponentFactory(vmf, i())
     }
 
     bindSingleton<LogViewerScreenFactory> {
-        val vmf = LogViewerViewModelFactory(i(), i(), i(), i(), i())
+        val vmf = LogViewerViewModelFactory(i(), i(), i(), i())
         LogViewerScreenFactoryImpl(vmf, i())
     }
 

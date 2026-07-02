@@ -15,6 +15,7 @@ import com.charleskorn.kaml.Yaml
 import ru.vladislavsumin.core.navigation.host.ConfigurationHolder
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyDispatcher
 import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 
 @Composable
@@ -22,6 +23,7 @@ internal actual fun WindowContent(
     screen: Value<ChildSlot<ConfigurationHolder, GenericScreen<ComponentContext>>>,
     yaml: Yaml,
     windowTitleInteractor: WindowTitleInteractor?,
+    globalHotkeyDispatcher: GlobalHotkeyDispatcher,
     onCloseRequest: () -> Unit,
     modifier: Modifier,
 ) {
@@ -37,8 +39,7 @@ internal actual fun WindowContent(
         title = windowTitle,
         onCloseRequest = onCloseRequest,
         state = windowState,
-        // TODO переделать hotkeyDispatcher
-//            onKeyEvent = hotkeyDispatcher::onKeyEvent,
+        onKeyEvent = globalHotkeyDispatcher::onKeyEvent,
     ) {
         // TODO вынести тему отдельно
         QaTheme(yaml) {

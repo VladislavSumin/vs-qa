@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import ru.vladislavsumin.core.decompose.components.ViewModel
+import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
@@ -20,7 +21,7 @@ import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 
 @GenerateFactory
 internal class FilterBarViewModel(
-    private val globalHotkeyManager: GlobalHotkeyManager,
+    @ByCreate private val globalHotkeyManager: GlobalHotkeyManager,
     private val savedFiltersRepository: SavedFiltersRepository,
 ) : ViewModel(),
     FilterBarUiInteractor {

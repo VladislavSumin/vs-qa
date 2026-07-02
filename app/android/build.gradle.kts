@@ -39,7 +39,6 @@ dependencies {
     implementation(projects.app.core)
     implementation(libs.android.activity.compose)
 
-    implementation(projects.core.ui.hotkeyController)
     implementation(projects.feature.logViewer.impl)
     implementation(projects.feature.multiWindow.impl)
     implementation(projects.feature.windowTitle.api)
