@@ -14,7 +14,7 @@ import ru.vladislavsumin.qa.feature.multiWindow.ui.screen.window.WindowScreenFac
 fun Modules.featureMultiWindow() = DI.Module("feature-multiWindow") {
     bindGenericNavigation {
         val multiWindowRootScreenFactory = MultiWindowRootScreenFactory()
-        val windowScreenFactory = WindowScreenFactory(i())
+        val windowScreenFactory = WindowScreenFactory(i(), i())
         NavigationRegistrarImpl(multiWindowRootScreenFactory, windowScreenFactory)
     }
     bindSingleton<MultiWindowRootScreenComponentFactory> { MultiWindowRootScreenComponentFactoryImpl(i(), i()) }

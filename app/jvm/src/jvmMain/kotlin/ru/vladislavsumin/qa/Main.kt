@@ -1,19 +1,13 @@
 package ru.vladislavsumin.qa
 
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.application
-import androidx.compose.ui.window.rememberWindowState
 import com.arkivanov.decompose.DefaultComponentContext
-import com.arkivanov.decompose.extensions.compose.lifecycle.LifecycleController
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import io.sentry.kotlin.multiplatform.Sentry
 import org.kodein.di.instance
 import ru.vladislavsumin.core.decompose.compose.runOnUiThread
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyDispatcher
-import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractorImpl
 import ru.vladislavsumin.qa.feature.multiWindow.ui.component.multiWindowRootScreen.MultiWindowRootScreenComponentFactory
 import kotlin.io.path.Path
 import kotlin.system.exitProcess
@@ -36,29 +30,12 @@ fun main(args: Array<String>) {
     // Создаем рутовый Decompose lifecycle.
     val lifecycle = LifecycleRegistry()
 
-    val windowTitleInteractor = WindowTitleInteractorImpl()
-
     val rootScreenComponent = runOnUiThread {
         val context = DefaultComponentContext(lifecycle)
         di.instance<MultiWindowRootScreenComponentFactory>().create(logPath, mappingPath, context)
     }
 
     application {
-        val windowState = rememberWindowState(placement = WindowPlacement.Maximized)
-        val windowTitleExtension by windowTitleInteractor.windowTitleExtension.collectAsState()
-        val title = "vs-qa v" + BuildConfig.version
-        val windowTitle = if (windowTitleExtension == null) title else "$title: $windowTitleExtension"
-
-        // Связываем рутовый Decompose lifecycle с жизненным циклом окна.
-        LifecycleController(lifecycle, windowState)
-
-//        Window(
-//            title = windowTitle,
-//            onCloseRequest = ::exitApplication,
-//            state = windowState,
-//            onKeyEvent = hotkeyDispatcher::onKeyEvent,
-//        ) { rootScreenComponent.Render(Modifier) }
-
         rootScreenComponent.Render(Modifier)
     }
 }

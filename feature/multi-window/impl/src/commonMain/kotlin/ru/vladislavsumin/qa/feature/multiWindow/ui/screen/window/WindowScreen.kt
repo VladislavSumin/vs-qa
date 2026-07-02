@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
+import com.charleskorn.kaml.Yaml
 import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
 import ru.vladislavsumin.core.navigation.host.ConfigurationHolder
 import ru.vladislavsumin.core.navigation.host.childNavigationSlot
@@ -16,8 +17,11 @@ import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenFactory
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenParams
 
 @GenerateScreenFactory
-internal class WindowScreen(private val rootScreenFactory: RootScreenFactory, context: ComponentContext) :
-    Screen(context) {
+internal class WindowScreen(
+    private val yaml: Yaml,
+    private val rootScreenFactory: RootScreenFactory,
+    context: ComponentContext,
+) : Screen(context) {
 
     private val windowTitleInteractor: WindowTitleInteractor = WindowTitleInteractorImpl()
 
@@ -33,5 +37,11 @@ internal class WindowScreen(private val rootScreenFactory: RootScreenFactory, co
     )
 
     @Composable
-    override fun Render(modifier: Modifier) = WindowContent(screen, modifier)
+    override fun Render(modifier: Modifier) = WindowContent(
+        screen = screen,
+        yaml = yaml,
+        windowTitleInteractor = windowTitleInteractor,
+        onCloseRequest = { navigator.close() },
+        modifier = modifier,
+    )
 }
