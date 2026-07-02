@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.lifecycle.LifecycleRegistry
 import com.charleskorn.kaml.Yaml
 import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
 import ru.vladislavsumin.core.navigation.host.ConfigurationHolder
@@ -33,8 +34,11 @@ internal class WindowScreen(
         }
     }
 
+    private val lifecycleRegistry = LifecycleRegistry()
+
     private val screen: Value<ChildSlot<ConfigurationHolder, GenericScreen<ComponentContext>>> = childNavigationSlot(
         navigationHost = WindowNavigationHost,
+        extraLifecycle = lifecycleRegistry,
         initialConfiguration = { RootScreenParams },
     )
 
@@ -44,6 +48,7 @@ internal class WindowScreen(
         yaml = yaml,
         windowTitleInteractor = windowTitleInteractor,
         globalHotkeyDispatcher = globalHotkeyDispatcher,
+        lifecycleRegistry = lifecycleRegistry,
         onCloseRequest = { navigator.close() },
         modifier = modifier,
     )

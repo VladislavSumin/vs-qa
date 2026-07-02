@@ -2,10 +2,13 @@ package ru.vladislavsumin.qa.feature.multiWindow.ui.screen.window
 
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
+import com.arkivanov.essenty.lifecycle.LifecycleRegistry
+import com.arkivanov.essenty.lifecycle.resume
 import com.charleskorn.kaml.Yaml
 import ru.vladislavsumin.core.navigation.host.ConfigurationHolder
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
@@ -19,9 +22,14 @@ internal actual fun WindowContent(
     yaml: Yaml,
     windowTitleInteractor: WindowTitleInteractor?,
     @Suppress("UnusedParameter") globalHotkeyDispatcher: GlobalHotkeyDispatcher,
+    lifecycleRegistry: LifecycleRegistry,
     onCloseRequest: () -> Unit,
     modifier: Modifier,
 ) {
+    LaunchedEffect(lifecycleRegistry) {
+        // Тут все управляется внешним lifecycle так что внутренним управлять явно не нужно
+        lifecycleRegistry.resume()
+    }
     // TODO вынести тему отдельно
     QaTheme(yaml) {
         Surface {
