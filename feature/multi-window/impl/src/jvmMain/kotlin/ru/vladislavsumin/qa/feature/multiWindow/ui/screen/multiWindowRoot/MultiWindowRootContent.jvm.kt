@@ -2,6 +2,7 @@ package ru.vladislavsumin.qa.feature.multiWindow.ui.screen.multiWindowRoot
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
@@ -17,6 +18,9 @@ internal actual fun MultiWindowRootContent(
 ) {
     val windows by windows.subscribeAsState()
     for (child in windows.items) {
-        child.instance?.Render(Modifier)
+        // Key нужен что бы композ корретно обрабатывал ситуацию [1,2] -> [2] удаление младшего элемента.
+        key(child.configuration) {
+            child.instance?.Render(Modifier)
+        }
     }
 }
