@@ -16,8 +16,11 @@ import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenPa
 import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScreenParams
 import ru.vladislavsumin.qa.feature.adbDeviceList.domain.AdbFeatureAvailabilityInteractor
 import ru.vladislavsumin.qa.feature.adbDeviceList.ui.component.adbDeviceList.AdbDeviceListComponentFactory
+import ru.vladislavsumin.qa.feature.homeScreen.HomeLogger
+import ru.vladislavsumin.qa.feature.multiWindow.ui.screen.window.WindowScreenParams
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
+import kotlin.random.Random
 
 @GenerateFactory(HomeScreenFactory::class)
 @Suppress("UnusedPrivateProperty") // TODO доработать генератор фабрик?
@@ -39,7 +42,17 @@ internal class HomeScreen(
     )
     private val logRecentComponent = logRecentComponentFactory.create(
         notificationsUiInteractor = notificationsUiInteractor,
-        onOpenLogRecent = { path -> navigator.open(LogViewerScreenParams(path)) },
+        onOpenLogRecent = { path, openInNewWindow ->
+            HomeLogger.d { "Open log recent, path=$path, openInNewWindow=$openInNewWindow" }
+            if (openInNewWindow) {
+                navigator.open(
+                    screenParams = LogViewerScreenParams(path),
+                    hints = listOf(WindowScreenParams(Random.nextLong().toString())),
+                )
+            } else {
+                navigator.open(LogViewerScreenParams(path))
+            }
+        },
         context = context.childContext("log-recent"),
     )
 

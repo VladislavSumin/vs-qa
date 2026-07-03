@@ -35,6 +35,8 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.isShiftPressed
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
@@ -46,7 +48,7 @@ import java.nio.file.Path
 
 @Composable
 internal fun LogRecentContent(
-    onOpenLogRecent: (path: Path) -> Unit,
+    onOpenLogRecent: (path: Path, openInNewWindow: Boolean) -> Unit,
     viewModel: LogRecentViewModel,
     modifier: Modifier,
 ) {
@@ -66,7 +68,7 @@ internal fun LogRecentContent(
 @Suppress("LongMethod", "CyclomaticComplexMethod") // TODO починить говнокод от ии
 private fun LogRecentItem(
     recentLog: LogRecent,
-    onOpenLogRecent: (path: Path) -> Unit,
+    onOpenLogRecent: (path: Path, openInNewWindow: Boolean) -> Unit,
     viewModel: LogRecentViewModel,
 ) {
     val displayName = recentLog.customName?.takeIf { it.isNotBlank() }
@@ -87,11 +89,21 @@ private fun LogRecentItem(
                 if (editing) {
                     Modifier
                 } else {
-                    Modifier.clickable {
-                        if (viewModel.checkRecentCanBeOpened(recentLog)) {
-                            onOpenLogRecent(recentLog.path)
+                    var isShiftPressed by remember { mutableStateOf(false) }
+                    Modifier
+                        .pointerInput(recentLog) {
+                            awaitPointerEventScope {
+                                while (true) {
+                                    val event = awaitPointerEvent()
+                                    isShiftPressed = event.keyboardModifiers.isShiftPressed
+                                }
+                            }
                         }
-                    }
+                        .clickable {
+                            if (viewModel.checkRecentCanBeOpened(recentLog)) {
+                                onOpenLogRecent(recentLog.path, isShiftPressed)
+                            }
+                        }
                 },
             )
             .padding(vertical = 2.dp, horizontal = 4.dp),

@@ -5,6 +5,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.feature.multiWindow.api)
             implementation(projects.feature.notifications.api)
             implementation(projects.feature.adbDevice.api)
             implementation(projects.feature.adbDeviceList.api)

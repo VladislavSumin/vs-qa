@@ -8,7 +8,7 @@ import java.nio.file.Path
 interface LogRecentComponentFactory {
     fun create(
         notificationsUiInteractor: NotificationsUiInteractor,
-        onOpenLogRecent: (path: Path) -> Unit,
+        onOpenLogRecent: (path: Path, openInNewWindow: Boolean) -> Unit,
         context: ComponentContext,
     ): ComposeComponent
 }
