@@ -7,7 +7,6 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.core.ui.hotkeyController)
             implementation(projects.core.adb.client)
 
             implementation(projects.feature.debug.impl)

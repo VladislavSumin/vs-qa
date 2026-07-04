@@ -10,13 +10,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.feature.logRecent.ui.component.logRecent.LogRecentComponentFactory
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
 import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScreenParams
 import ru.vladislavsumin.qa.feature.adbDeviceList.domain.AdbFeatureAvailabilityInteractor
 import ru.vladislavsumin.qa.feature.adbDeviceList.ui.component.adbDeviceList.AdbDeviceListComponentFactory
+import ru.vladislavsumin.qa.feature.homeScreen.HomeLogger
+import ru.vladislavsumin.qa.feature.multiWindow.ui.screen.window.WindowScreenParams
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
+import kotlin.random.Random
 
 @GenerateFactory(HomeScreenFactory::class)
 @Suppress("UnusedPrivateProperty") // TODO доработать генератор фабрик?
@@ -26,18 +30,29 @@ internal class HomeScreen(
     adbFeatureAvailabilityInteractor: AdbFeatureAvailabilityInteractor,
     adbDeviceListComponentFactory: AdbDeviceListComponentFactory,
     notificationsUiInteractor: NotificationsUiInteractor,
+    globalHotkeyManager: GlobalHotkeyManager,
     params: HomeScreenParams,
     context: ComponentContext,
 ) : Screen(context),
     TabSupport {
-    private val viewModel: HomeScreenViewModel = viewModel { viewModelFactory.create() }
+    private val viewModel: HomeScreenViewModel = viewModel { viewModelFactory.create(globalHotkeyManager) }
 
     override val tabState: StateFlow<TabSupport.TabState> = MutableStateFlow(
         TabSupport.TabState(icon = Icons.Default.Home, allowClose = false),
     )
     private val logRecentComponent = logRecentComponentFactory.create(
         notificationsUiInteractor = notificationsUiInteractor,
-        onOpenLogRecent = { path -> navigator.open(LogViewerScreenParams(path)) },
+        onOpenLogRecent = { path, openInNewWindow ->
+            HomeLogger.d { "Open log recent, path=$path, openInNewWindow=$openInNewWindow" }
+            if (openInNewWindow) {
+                navigator.open(
+                    screenParams = LogViewerScreenParams(path),
+                    hints = listOf(WindowScreenParams(Random.nextLong().toString())),
+                )
+            } else {
+                navigator.open(LogViewerScreenParams(path))
+            }
+        },
         context = context.childContext("log-recent"),
     )
 

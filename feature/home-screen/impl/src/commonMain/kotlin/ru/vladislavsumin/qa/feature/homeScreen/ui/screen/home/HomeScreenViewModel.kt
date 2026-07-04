@@ -6,6 +6,7 @@ import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.getAndUpdate
+import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
@@ -15,7 +16,7 @@ import java.nio.file.Path
 
 @GenerateFactory
 @Stable
-internal class HomeScreenViewModel(globalHotkeyManager: GlobalHotkeyManager) : NavigationViewModel() {
+internal class HomeScreenViewModel(@ByCreate globalHotkeyManager: GlobalHotkeyManager) : NavigationViewModel() {
     private val showOpenNewFileDialog = MutableStateFlow(false)
     val state: StateFlow<Boolean> = showOpenNewFileDialog
 

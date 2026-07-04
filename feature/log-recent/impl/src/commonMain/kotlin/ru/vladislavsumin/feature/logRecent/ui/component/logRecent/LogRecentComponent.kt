@@ -12,7 +12,7 @@ import java.nio.file.Path
 @GenerateFactory(LogRecentComponentFactory::class)
 internal class LogRecentComponent(
     private val notificationsUiInteractor: NotificationsUiInteractor,
-    private val onOpenLogRecent: (path: Path) -> Unit,
+    private val onOpenLogRecent: (path: Path, openInNewWindow: Boolean) -> Unit,
     logRecentViewModelFactory: LogRecentViewModelFactory,
     context: ComponentContext,
 ) : Component(context),

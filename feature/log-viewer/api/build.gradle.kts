@@ -7,6 +7,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.feature.bottomBar.api)
             implementation(projects.feature.notifications.api)
+            implementation(projects.core.ui.hotkeyController)
 
             // TODO подумать над навигацией
             implementation(vsCoreLibs.vs.core.navigation.impl)

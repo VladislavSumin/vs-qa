@@ -13,6 +13,7 @@ import ru.vladislavsumin.core.coroutines.utils.LinkedFlow
 import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 import ru.vladislavsumin.feature.logViewer.ui.component.dragAndDropOverlay.DragAndDropOverlayComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponent
@@ -29,6 +30,7 @@ internal class LogViewerScreen(
     filterBarComponentFactory: FilterBarComponentFactory,
     bottomBarUiInteractor: BottomBarUiInteractor,
     notificationsUiInteractor: NotificationsUiInteractor,
+    globalHotkeyManager: GlobalHotkeyManager,
     params: LogViewerScreenParams,
     intents: ReceiveChannel<LogViewerScreenIntent>,
     context: ComponentContext,
@@ -43,6 +45,7 @@ internal class LogViewerScreen(
     private val filterBarComponent: FilterBarComponent = filterBarComponentFactory.create(
         currentTags = currentTagsLink,
         currentRuns = currentRunsLink,
+        globalHotkeyManager = globalHotkeyManager,
         context = context.childContext("filter-bar"),
     )
 
@@ -52,6 +55,7 @@ internal class LogViewerScreen(
             mappingPath = (intents.tryReceive().getOrNull() as? LogViewerScreenIntent.OpenMapping)?.mappingPath,
             currentTags = currentTagsLink,
             currentRuns = currentRunsLink,
+            globalHotkeyManager = globalHotkeyManager,
             bottomBarUiInteractor = bottomBarUiInteractor,
             filterBarUiInteractor = filterBarComponent.filterBarUiInteractor,
             notificationsUiInteractor = notificationsUiInteractor,

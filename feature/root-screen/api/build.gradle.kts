@@ -7,6 +7,7 @@ kotlin {
         commonMain.dependencies {
             implementation(vsCoreLibs.vs.core.navigation.impl)
             implementation(projects.feature.windowTitle.api)
+            implementation(projects.core.ui.hotkeyController)
         }
     }
 }

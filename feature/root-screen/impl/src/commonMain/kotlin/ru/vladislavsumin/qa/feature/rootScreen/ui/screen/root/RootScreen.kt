@@ -9,6 +9,7 @@ import com.arkivanov.decompose.router.pages.Pages
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.host.childNavigationPages
 import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenFactory
 import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScreenFactory
@@ -29,10 +30,11 @@ internal class RootScreen(
     notificationsComponentFactory: NotificationsComponentFactory,
     tabsComponentFactory: TabsComponentFactory,
     windowTitleInteractor: WindowTitleInteractor?,
+    globalHotkeyManager: GlobalHotkeyManager,
     context: ComponentContext,
 ) : Screen(context) {
 
-    private val viewModel: RootViewModel = viewModel { viewModelFactory.create() }
+    private val viewModel: RootViewModel = viewModel { viewModelFactory.create(globalHotkeyManager) }
     private val bottomBarComponent = bottomBarComponentFactory.create(context.childContext("bottom-bar"))
     private val notificationsComponent = notificationsComponentFactory.create(context.childContext("notifications"))
 
@@ -41,6 +43,7 @@ internal class RootScreen(
             logViewerScreenFactory.create(
                 bottomBarUiInteractor = bottomBarComponent.bottomBarUiInteractor,
                 notificationsUiInteractor = notificationsComponent.notificationsUiInteractor,
+                globalHotkeyManager = globalHotkeyManager,
                 params = params,
                 intents = intents,
                 context = context,
@@ -49,6 +52,7 @@ internal class RootScreen(
         registerCustomFactory { context, params, _ ->
             homeScreenFactory.create(
                 notificationsUiInteractor = notificationsComponent.notificationsUiInteractor,
+                globalHotkeyManager = globalHotkeyManager,
                 params = params,
                 context = context,
             )

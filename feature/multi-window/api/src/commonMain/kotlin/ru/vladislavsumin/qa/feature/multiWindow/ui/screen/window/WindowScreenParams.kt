@@ -4,4 +4,4 @@ import kotlinx.serialization.Serializable
 import ru.vladislavsumin.core.navigation.ScreenParams
 
 @Serializable
-internal data class WindowScreenParams(val id: String) : ScreenParams
+data class WindowScreenParams(val id: String) : ScreenParams

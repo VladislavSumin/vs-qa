@@ -3,13 +3,14 @@ package ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root
 import androidx.compose.ui.input.key.Key
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.channels.Channel
+import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 
 @GenerateFactory
-internal class RootViewModel(globalHotkeyManager: GlobalHotkeyManager) : NavigationViewModel() {
+internal class RootViewModel(@ByCreate globalHotkeyManager: GlobalHotkeyManager) : NavigationViewModel() {
     val events = Channel<RootEvent>()
 
     init {
