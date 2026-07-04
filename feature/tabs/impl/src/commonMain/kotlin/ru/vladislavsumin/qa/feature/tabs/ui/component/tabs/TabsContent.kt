@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +33,7 @@ internal fun TabsContent(
     pages: Value<ChildPages<ConfigurationHolder, Screen>>,
     onTabClick: (IntentScreenParams<*>) -> Unit,
     onTabClickClose: (IntentScreenParams<*>) -> Unit,
+    onTabClickDetach: (IntentScreenParams<*>) -> Unit,
     modifier: Modifier,
 ) {
     val pages by pages.subscribeAsState()
@@ -45,7 +47,7 @@ internal fun TabsContent(
                     item.configuration.screenParams.toString()
                 },
             ) { index, item ->
-                Tab(index, pages, item, onTabClick, onTabClickClose)
+                Tab(index, pages, item, onTabClick, onTabClickClose, onTabClickDetach)
             }
         }
     }
@@ -58,6 +60,7 @@ private fun Tab(
     item: Child<ConfigurationHolder, Screen>,
     onTabClick: (IntentScreenParams<*>) -> Unit,
     onTabClickClose: (IntentScreenParams<*>) -> Unit,
+    onTabClickDetach: (IntentScreenParams<*>) -> Unit,
 ) {
     val provider = (item.instance as? TabSupport)
     val state = provider?.tabState?.collectAsState()?.value ?: UNKNOWN_TAB
@@ -81,6 +84,12 @@ private fun Tab(
                 text = text,
                 modifier = Modifier.padding(start = 8.dp, end = 4.dp),
             )
+        }
+        if (state.allowDetach) {
+            QaIconButton(
+                onClick = { onTabClickDetach(item.configuration.screenParams) },
+                modifier = Modifier.hint("Открепить в новое окно"),
+            ) { Icon(imageVector = Icons.Default.OpenInNew, contentDescription = "detach") }
         }
         if (state.allowClose) {
             QaIconButton(

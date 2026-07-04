@@ -11,5 +11,6 @@ interface TabSupport {
         val name: String? = null,
         val windowName: String? = name,
         val allowClose: Boolean = true,
+        val allowDetach: Boolean = false,
     )
 }

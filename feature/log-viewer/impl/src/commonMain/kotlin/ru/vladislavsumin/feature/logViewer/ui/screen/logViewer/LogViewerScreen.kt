@@ -84,6 +84,7 @@ internal class LogViewerScreen(
     )
 
     init {
+        println("QWQW: LVS create")
         launch {
             viewModel.events.receiveAsFlow().collect { event ->
                 when (event) {

@@ -79,6 +79,8 @@ internal class LogViewerViewModel(
     )
 
     init {
+        println("QWQW: LVM create")
+
         launch {
             logRecentInteractor.addOrUpdateRecent(logPath)
             if (mappingPath != null) {
@@ -127,8 +129,8 @@ internal class LogViewerViewModel(
     private var isOpenedOnce = false
 
     val tabState = logRecentInteractor.observeCustomName(logPath)
-        .map { TabSupport.TabState(name = it ?: logPath.name) }
-        .stateIn(TabSupport.TabState())
+        .map { TabSupport.TabState(name = it ?: logPath.name, allowDetach = true) }
+        .stateIn(TabSupport.TabState(allowDetach = true))
 
     val state: StateFlow<LogViewerViewState> = combine(
         logsInteractor.observeLogIndex(

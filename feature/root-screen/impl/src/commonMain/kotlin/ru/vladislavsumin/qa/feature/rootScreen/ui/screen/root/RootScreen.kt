@@ -17,8 +17,10 @@ import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarCo
 import ru.vladislavsumin.qa.feature.debug.ui.screen.debug.DebugScreenParams
 import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenFactory
 import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenParams
+import ru.vladislavsumin.qa.feature.multiWindow.ui.screen.window.WindowScreenParams
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsComponentFactory
 import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabsComponentFactory
+import kotlin.random.Random
 
 @GenerateFactory(RootScreenFactory::class)
 internal class RootScreen(
@@ -87,6 +89,7 @@ internal class RootScreen(
         pages = tabs,
         onTabClick = { navigator.open(it) },
         onTabClickClose = { navigator.close(it) },
+        onTabClickDetach = { navigator.transfer(it, hints = listOf(WindowScreenParams(Random.nextLong().toString()))) },
         context = context.childContext("tabs"),
     )
 

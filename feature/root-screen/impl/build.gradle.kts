@@ -14,6 +14,7 @@ kotlin {
             implementation(projects.feature.logRecent.api)
             implementation(projects.feature.tabs.api)
             implementation(projects.feature.notifications.api)
+            implementation(projects.feature.multiWindow.api)
             implementation(vsCoreLibs.vs.core.serialization.yaml)
         }
     }

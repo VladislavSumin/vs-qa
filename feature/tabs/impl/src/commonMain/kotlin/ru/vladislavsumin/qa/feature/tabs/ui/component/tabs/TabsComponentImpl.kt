@@ -21,6 +21,7 @@ internal class TabsComponentImpl(
     private val pages: Value<ChildPages<ConfigurationHolder, Screen>>,
     private val onTabClick: (IntentScreenParams<*>) -> Unit,
     private val onTabClickClose: (IntentScreenParams<*>) -> Unit,
+    private val onTabClickDetach: (IntentScreenParams<*>) -> Unit,
     context: ComponentContext,
 ) : Component(context),
     TabsComponent {
@@ -40,5 +41,5 @@ internal class TabsComponentImpl(
     }
 
     @Composable
-    override fun Render(modifier: Modifier) = TabsContent(pages, onTabClick, onTabClickClose, modifier)
+    override fun Render(modifier: Modifier) = TabsContent(pages, onTabClick, onTabClickClose, onTabClickDetach, modifier)
 }
