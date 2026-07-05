@@ -3,17 +3,19 @@ package ru.vladislavsumin.feature.logViewer.ui.screen.logViewer
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.input.key.Key
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.receiveAsFlow
 import ru.vladislavsumin.core.coroutines.utils.LinkedFlow
 import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
+import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 import ru.vladislavsumin.feature.logViewer.ui.component.dragAndDropOverlay.DragAndDropOverlayComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponent
@@ -55,7 +57,6 @@ internal class LogViewerScreen(
             mappingPath = (intents.tryReceive().getOrNull() as? LogViewerScreenIntent.OpenMapping)?.mappingPath,
             currentTags = currentTagsLink,
             currentRuns = currentRunsLink,
-            globalHotkeyManager = globalHotkeyManager,
             bottomBarUiInteractor = bottomBarUiInteractor,
             filterBarUiInteractor = filterBarComponent.filterBarUiInteractor,
             notificationsUiInteractor = notificationsUiInteractor,
@@ -85,12 +86,17 @@ internal class LogViewerScreen(
 
     init {
         println("QWQW: LVS create")
-        launch {
-            viewModel.events.receiveAsFlow().collect { event ->
-                when (event) {
-                    LogViewerEvent.FocusSearch -> searchFocusRequester.requestFocus()
-                }
-            }
+        relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
+            globalHotkeyManager.subscribe(
+                KeyModifier.Command + Key.W to {
+                    navigator.close()
+                    true
+                },
+                KeyModifier.Command + Key.F to {
+                    searchFocusRequester.requestFocus()
+                    true
+                },
+            )
         }
     }
 

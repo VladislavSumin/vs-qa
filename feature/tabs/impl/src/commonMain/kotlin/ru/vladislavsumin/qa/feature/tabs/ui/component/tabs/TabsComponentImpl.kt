@@ -46,6 +46,6 @@ internal class TabsComponentImpl(
         onTabClick,
         onTabClickClose,
         onTabClickDetach,
-        modifier
+        modifier,
     )
 }
