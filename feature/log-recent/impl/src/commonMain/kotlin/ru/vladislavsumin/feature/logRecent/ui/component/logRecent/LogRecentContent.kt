@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.feature.logRecent.domain.LogRecent
+import ru.vladislavsumin.qa.feature.multiWindow.isMultiWindowSupported
 import java.nio.file.Path
 
 @Composable
@@ -101,7 +102,7 @@ private fun LogRecentItem(
                         }
                         .clickable {
                             if (viewModel.checkRecentCanBeOpened(recentLog)) {
-                                onOpenLogRecent(recentLog.path, isShiftPressed)
+                                onOpenLogRecent(recentLog.path, isShiftPressed && isMultiWindowSupported())
                             }
                         }
                 },
