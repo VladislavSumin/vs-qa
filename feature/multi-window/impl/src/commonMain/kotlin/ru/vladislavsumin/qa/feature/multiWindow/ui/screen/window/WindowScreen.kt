@@ -40,6 +40,7 @@ internal class WindowScreen(
         navigationHost = WindowNavigationHost,
         extraLifecycle = lifecycleRegistry,
         initialConfiguration = { RootScreenParams },
+        closeParentWhenEmpty = true,
     )
 
     @Composable

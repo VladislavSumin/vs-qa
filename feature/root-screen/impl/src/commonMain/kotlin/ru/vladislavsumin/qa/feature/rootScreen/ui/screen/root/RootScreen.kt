@@ -82,6 +82,7 @@ internal class RootScreen(
             }
         },
         initialPages = { Pages(items = listOf(DebugScreenParams, HomeScreenParams), selectedIndex = 1) },
+        closeParentWhenEmpty = true,
     )
 
     private val tabsComponent = tabsComponentFactory.create(
