@@ -41,5 +41,11 @@ internal class TabsComponentImpl(
     }
 
     @Composable
-    override fun Render(modifier: Modifier) = TabsContent(pages, onTabClick, onTabClickClose, onTabClickDetach, modifier)
+    override fun Render(modifier: Modifier) = TabsContent(
+        pages,
+        onTabClick,
+        onTabClickClose,
+        onTabClickDetach,
+        modifier
+    )
 }
