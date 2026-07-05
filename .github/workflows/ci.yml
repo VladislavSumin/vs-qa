@@ -6,11 +6,6 @@ on:
       - master
   pull_request:
   workflow_dispatch:
-    inputs:
-      use-vs-core-sources:
-        description: 'Use vs-core sources instead of Maven artifacts'
-        type: boolean
-        default: false
 
 jobs:
   detekt:
@@ -35,7 +30,6 @@ jobs:
         with:
           key: "detekt"
           gradle_command: >-
-            -Pru.vs.core.useVsCoreSources=${{ inputs.use-vs-core-sources || 'false' }}
             detekt
 
   unit-tests:
@@ -60,7 +54,6 @@ jobs:
         with:
           key: "unit-tests"
           gradle_command: >-
-            -Pru.vs.core.useVsCoreSources=${{ inputs.use-vs-core-sources || 'false' }}
             test allTests
 
   build:
@@ -85,7 +78,6 @@ jobs:
         with:
           key: "build"
           gradle_command: >-
-            -Pru.vs.core.useVsCoreSources=${{ inputs.use-vs-core-sources || 'false' }}
             :app:jvm:buildFatJarMain 
             :app:jvm:buildFatJarMainMin
             :app:android:assembleRelease

@@ -28,7 +28,6 @@ jobs:
         with:
           key: "release-build"
           gradle_command: >-
-            -Pru.vs.core.useVsCoreSources=false
             -Pru.vs.version=${{ env.VERSION }}
             :app:jvm:buildFatJarMain 
             :app:jvm:buildFatJarMainMin
