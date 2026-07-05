@@ -39,7 +39,7 @@ internal actual fun WindowContent(
     onCloseRequest: () -> Unit,
     modifier: Modifier,
 ) {
-    val windowState = rememberWindowState(placement = WindowPlacement.Maximized)
+    val windowState = rememberWindowState()
     val windowTitleExtension by windowTitleInteractor!!.windowTitleExtension.collectAsState()
     val title = "vs-qa"
     val windowTitle = if (windowTitleExtension == null) title else "$title: $windowTitleExtension"
