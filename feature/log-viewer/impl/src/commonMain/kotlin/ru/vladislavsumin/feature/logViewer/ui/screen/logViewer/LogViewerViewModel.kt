@@ -1,7 +1,6 @@
 package ru.vladislavsumin.feature.logViewer.ui.screen.logViewer
 
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.input.key.Key
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.Channel
@@ -23,8 +22,6 @@ import ru.vladislavsumin.core.coroutines.utils.linkTo
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
-import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
-import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
@@ -58,7 +55,6 @@ internal class LogViewerViewModel(
     @ByCreate mappingPath: Path?,
     @ByCreate currentTags: LinkedFlow<Set<String>>,
     @ByCreate currentRuns: LinkedFlow<List<RunIdInfo>>,
-    @ByCreate private val globalHotkeyManager: GlobalHotkeyManager,
     @ByCreate private val bottomBarUiInteractor: BottomBarUiInteractor,
     @ByCreate private val filterBarUiInteractor: FilterBarUiInteractor,
     @ByCreate private val notificationsUiInteractor: NotificationsUiInteractor,
@@ -79,6 +75,8 @@ internal class LogViewerViewModel(
     )
 
     init {
+        println("QWQW: LVM create")
+
         launch {
             logRecentInteractor.addOrUpdateRecent(logPath)
             if (mappingPath != null) {
@@ -127,8 +125,8 @@ internal class LogViewerViewModel(
     private var isOpenedOnce = false
 
     val tabState = logRecentInteractor.observeCustomName(logPath)
-        .map { TabSupport.TabState(name = it ?: logPath.name) }
-        .stateIn(TabSupport.TabState())
+        .map { TabSupport.TabState(name = it ?: logPath.name, allowDetach = true) }
+        .stateIn(TabSupport.TabState(allowDetach = true))
 
     val state: StateFlow<LogViewerViewState> = combine(
         logsInteractor.observeLogIndex(
@@ -253,7 +251,6 @@ internal class LogViewerViewModel(
         .stateIn(LogViewerViewState.STUB)
 
     val logsEvents = Channel<LogsEvents>()
-    val events = Channel<LogViewerEvent>()
 
     init {
         launch {
@@ -277,18 +274,6 @@ internal class LogViewerViewModel(
                 .collect { state ->
                     bottomBarUiInteractor.setBottomBarText("Total records: ${state.logRecordsAfterApplyFilter}")
                 }
-        }
-        relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
-            globalHotkeyManager.subscribe(
-                KeyModifier.Command + Key.W to {
-                    close()
-                    true
-                },
-                KeyModifier.Command + Key.F to {
-                    events.trySend(LogViewerEvent.FocusSearch)
-                    true
-                },
-            )
         }
     }
 

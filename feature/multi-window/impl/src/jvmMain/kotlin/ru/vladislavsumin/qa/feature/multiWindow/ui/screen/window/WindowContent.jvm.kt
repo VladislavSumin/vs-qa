@@ -7,9 +7,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.platform.WindowInfo
 import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.rememberWindowState
 import com.arkivanov.decompose.ComponentContext
@@ -37,14 +37,13 @@ internal actual fun WindowContent(
     globalHotkeyDispatcher: GlobalHotkeyDispatcher,
     lifecycleRegistry: LifecycleRegistry,
     onCloseRequest: () -> Unit,
+    onFocused: () -> Unit,
     modifier: Modifier,
 ) {
-    val windowState = rememberWindowState(placement = WindowPlacement.Maximized)
+    val windowState = rememberWindowState()
     val windowTitleExtension by windowTitleInteractor!!.windowTitleExtension.collectAsState()
     val title = "vs-qa"
     val windowTitle = if (windowTitleExtension == null) title else "$title: $windowTitleExtension"
-
-    LifecycleController(lifecycleRegistry, windowState)
 
     Window(
         title = windowTitle,
@@ -52,6 +51,16 @@ internal actual fun WindowContent(
         state = windowState,
         onKeyEvent = globalHotkeyDispatcher::onKeyEvent,
     ) {
+        val windowInfo = LocalWindowInfo.current
+        val isFocused = windowInfo.isWindowFocused
+
+        LaunchedEffect(isFocused) {
+            if (isFocused) {
+                onFocused()
+            }
+        }
+
+        LifecycleController(lifecycleRegistry, windowState, windowInfo)
         // TODO вынести тему отдельно
         QaTheme(yaml) {
             Surface {

@@ -19,9 +19,11 @@ import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenFactory
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenParams
 
 @GenerateScreenFactory
+@Suppress("UnusedPrivateProperty")
 internal class WindowScreen(
     private val yaml: Yaml,
     private val rootScreenFactory: RootScreenFactory,
+    private val params: WindowScreenParams,
     context: ComponentContext,
 ) : Screen(context) {
 
@@ -40,6 +42,7 @@ internal class WindowScreen(
         navigationHost = WindowNavigationHost,
         extraLifecycle = lifecycleRegistry,
         initialConfiguration = { RootScreenParams },
+        closeParentWhenEmpty = true,
     )
 
     @Composable
@@ -50,6 +53,7 @@ internal class WindowScreen(
         globalHotkeyDispatcher = globalHotkeyDispatcher,
         lifecycleRegistry = lifecycleRegistry,
         onCloseRequest = { navigator.close() },
+        onFocused = { navigator.open(params) },
         modifier = modifier,
     )
 }

@@ -1,9 +1,7 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
-import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -13,17 +11,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.update
 import ru.vladislavsumin.core.decompose.components.ViewModel
-import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
-import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
-import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 
 @GenerateFactory
-internal class FilterBarViewModel(
-    @ByCreate private val globalHotkeyManager: GlobalHotkeyManager,
-    private val savedFiltersRepository: SavedFiltersRepository,
-) : ViewModel(),
+internal class FilterBarViewModel(private val savedFiltersRepository: SavedFiltersRepository) :
+    ViewModel(),
     FilterBarUiInteractor {
     private val filter = MutableStateFlow(TextFieldValue())
 
@@ -74,17 +67,6 @@ internal class FilterBarViewModel(
         .stateIn(initialValue = FilterBarViewState.STUB)
 
     val events = Channel<FilterBarEvent>()
-
-    init {
-        relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
-            globalHotkeyManager.subscribe(
-                KeyModifier.Command + KeyModifier.Shift + Key.F to {
-                    events.trySend(FilterBarEvent.Focus)
-                    true
-                },
-            )
-        }
-    }
 
     override fun setFilter(data: String) {
         filter.update { it.copy(text = data) }

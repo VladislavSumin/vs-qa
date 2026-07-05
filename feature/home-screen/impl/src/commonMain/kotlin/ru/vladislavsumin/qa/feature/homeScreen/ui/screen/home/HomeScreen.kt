@@ -4,13 +4,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
+import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logRecent.ui.component.logRecent.LogRecentComponentFactory
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
 import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScreenParams
@@ -35,7 +38,7 @@ internal class HomeScreen(
     context: ComponentContext,
 ) : Screen(context),
     TabSupport {
-    private val viewModel: HomeScreenViewModel = viewModel { viewModelFactory.create(globalHotkeyManager) }
+    private val viewModel: HomeScreenViewModel = viewModel { viewModelFactory.create() }
 
     override val tabState: StateFlow<TabSupport.TabState> = MutableStateFlow(
         TabSupport.TabState(icon = Icons.Default.Home, allowClose = false),
@@ -63,6 +66,18 @@ internal class HomeScreen(
         )
     } else {
         null
+    }
+
+    init {
+        relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
+            globalHotkeyManager.subscribe(
+                KeyModifier.Command + Key.O to {
+                    val wasShowing = viewModel.state.value
+                    viewModel.onClickOpen()
+                    !wasShowing
+                },
+            )
+        }
     }
 
     @Composable

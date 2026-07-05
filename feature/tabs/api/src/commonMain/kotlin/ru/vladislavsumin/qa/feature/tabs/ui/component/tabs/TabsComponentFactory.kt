@@ -14,6 +14,7 @@ interface TabsComponentFactory {
         pages: Value<ChildPages<ConfigurationHolder, Screen>>,
         onTabClick: (IntentScreenParams<*>) -> Unit,
         onTabClickClose: (IntentScreenParams<*>) -> Unit,
+        onTabClickDetach: (IntentScreenParams<*>) -> Unit,
         context: ComponentContext,
     ): TabsComponent
 }

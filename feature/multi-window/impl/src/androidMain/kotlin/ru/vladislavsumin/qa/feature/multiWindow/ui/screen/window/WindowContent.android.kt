@@ -4,6 +4,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.onKeyEvent
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.router.slot.ChildSlot
 import com.arkivanov.decompose.value.Value
@@ -24,6 +25,7 @@ internal actual fun WindowContent(
     @Suppress("UnusedParameter") globalHotkeyDispatcher: GlobalHotkeyDispatcher,
     lifecycleRegistry: LifecycleRegistry,
     onCloseRequest: () -> Unit,
+    @Suppress("UnusedParameter") onFocused: () -> Unit,
     modifier: Modifier,
 ) {
     LaunchedEffect(lifecycleRegistry) {
@@ -32,7 +34,7 @@ internal actual fun WindowContent(
     }
     // TODO вынести тему отдельно
     QaTheme(yaml) {
-        Surface {
+        Surface(Modifier.onKeyEvent(globalHotkeyDispatcher::onKeyEvent)) {
             screen.value.child?.instance?.Render(modifier)
         }
     }
