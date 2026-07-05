@@ -24,6 +24,7 @@ internal actual fun WindowContent(
     @Suppress("UnusedParameter") globalHotkeyDispatcher: GlobalHotkeyDispatcher,
     lifecycleRegistry: LifecycleRegistry,
     onCloseRequest: () -> Unit,
+    @Suppress("UnusedParameter") onFocused: () -> Unit,
     modifier: Modifier,
 ) {
     LaunchedEffect(lifecycleRegistry) {

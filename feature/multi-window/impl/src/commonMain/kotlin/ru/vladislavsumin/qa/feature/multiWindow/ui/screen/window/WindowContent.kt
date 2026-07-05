@@ -20,5 +20,6 @@ internal expect fun WindowContent(
     globalHotkeyDispatcher: GlobalHotkeyDispatcher,
     lifecycleRegistry: LifecycleRegistry,
     onCloseRequest: () -> Unit,
+    onFocused: () -> Unit,
     modifier: Modifier,
 )
