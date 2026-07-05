@@ -57,7 +57,14 @@ internal fun TabsContent(
                     item.configuration.screenParams.toString()
                 },
             ) { index, item ->
-                ReorderableItem(reorderableState, key = item.configuration.screenParams.toString()) {
+                ReorderableItem(
+                    reorderableState,
+                    key = item.configuration.screenParams.toString(),
+                    animateItemModifier = Modifier.animateItem(
+                        fadeInSpec = null,
+                        fadeOutSpec = null,
+                    ),
+                ) {
                     Tab(
                         index = index,
                         pages = pages,
