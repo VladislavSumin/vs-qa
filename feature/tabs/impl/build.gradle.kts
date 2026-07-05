@@ -7,6 +7,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.core.ui.hint)
             implementation(projects.feature.windowTitle.api)
+            implementation(projects.feature.multiWindow.api)
         }
     }
 }

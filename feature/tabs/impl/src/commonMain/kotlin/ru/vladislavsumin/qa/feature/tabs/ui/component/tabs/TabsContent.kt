@@ -27,6 +27,7 @@ import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
+import ru.vladislavsumin.qa.feature.multiWindow.isMultiWindowSupported
 
 @Composable
 internal fun TabsContent(
@@ -85,7 +86,7 @@ private fun Tab(
                 modifier = Modifier.padding(start = 8.dp, end = 4.dp),
             )
         }
-        if (state.allowDetach) {
+        if (state.allowDetach && isMultiWindowSupported()) {
             QaIconButton(
                 onClick = { onTabClickDetach(item.configuration.screenParams) },
                 modifier = Modifier.hint("Открепить в новое окно"),
