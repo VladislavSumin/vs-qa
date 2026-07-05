@@ -19,7 +19,6 @@ jobs:
           path: vs-qa
 
       - name: Clone vs-core repository
-        if: inputs.use-vs-core-sources == 'true'
         uses: actions/checkout@v4
         with:
           repository: VladislavSumin/vs-core
@@ -44,7 +43,6 @@ jobs:
           path: vs-qa
 
       - name: Clone vs-core repository
-        if: inputs.use-vs-core-sources == 'true'
         uses: actions/checkout@v4
         with:
           repository: VladislavSumin/vs-core
@@ -69,7 +67,6 @@ jobs:
           path: vs-qa
 
       - name: Clone vs-core repository
-        if: inputs.use-vs-core-sources == 'true'
         uses: actions/checkout@v4
         with:
           repository: VladislavSumin/vs-core
