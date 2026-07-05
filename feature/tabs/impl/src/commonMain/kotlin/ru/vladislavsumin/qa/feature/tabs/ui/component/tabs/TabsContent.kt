@@ -65,7 +65,11 @@ internal fun TabsContent(
                         onTabClick = onTabClick,
                         onTabClickClose = onTabClickClose,
                         onTabClickDetach = onTabClickDetach,
-                        modifier = Modifier.longPressDraggableHandle(),
+                        modifier = if (useLongPressForDrag()) {
+                            Modifier.longPressDraggableHandle()
+                        } else {
+                            Modifier.draggableHandle()
+                        },
                     )
                 }
             }
