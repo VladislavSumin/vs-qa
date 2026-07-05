@@ -102,12 +102,11 @@ jobs:
         run: |
           cd vs-qa
           chmod +x ./scripts/send-max-message.sh
-          ESCAPED_CHANGELOG=$(printf '%s' "${{ steps.changelog.outputs.changelog }}" | sed 's/"/\\"/g')
+          ESCAPED_CHANGELOG=$(printf '%s' "${{ steps.changelog.outputs.changelog }}" | sed 's/ ([a-f0-9]*)$//' | sed 's/"/\\"/g')
           ./scripts/send-max-message.sh "${{ vars.MAX_CHAT_ID }}" "🚀 **Release ${{ github.ref_name }}**
 
           ${ESCAPED_CHANGELOG}
 
-          Десктоп версия теперь устанавливается через brew.
-          Злые админы макса запретили этому боту выкладывать апк, но вы знаете где ее можно скачать если что."
+          [Открыть релиз на GitHub](https://github.com/VladislavSumin/vs-qa/releases/tag/${{ github.ref_name }})"
         env:
           MAX_BOT_TOKEN: ${{ secrets.MAX_BOT_TOKEN }}
