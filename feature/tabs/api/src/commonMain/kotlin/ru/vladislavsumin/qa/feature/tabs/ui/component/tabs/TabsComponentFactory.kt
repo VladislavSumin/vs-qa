@@ -15,6 +15,7 @@ interface TabsComponentFactory {
         onTabClick: (IntentScreenParams<*>) -> Unit,
         onTabClickClose: (IntentScreenParams<*>) -> Unit,
         onTabClickDetach: (IntentScreenParams<*>) -> Unit,
+        onTabReorder: (fromIndex: Int, toIndex: Int) -> Unit,
         context: ComponentContext,
     ): TabsComponent
 }

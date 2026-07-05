@@ -22,6 +22,7 @@ internal class TabsComponentImpl(
     private val onTabClick: (IntentScreenParams<*>) -> Unit,
     private val onTabClickClose: (IntentScreenParams<*>) -> Unit,
     private val onTabClickDetach: (IntentScreenParams<*>) -> Unit,
+    private val onTabReorder: (fromIndex: Int, toIndex: Int) -> Unit,
     context: ComponentContext,
 ) : Component(context),
     TabsComponent {
@@ -46,6 +47,7 @@ internal class TabsComponentImpl(
         onTabClick,
         onTabClickClose,
         onTabClickDetach,
+        onTabReorder,
         modifier,
     )
 }

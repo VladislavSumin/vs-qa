@@ -9,6 +9,7 @@ proguard = "7.7.0"
 ktor = "3.3.3"
 room = "2.8.4"
 sqlite = "2.6.2"
+reorderable = "3.1.0"
 
 [libraries]
 gradlePlugins-sentry = { module = "io.sentry:sentry-kotlin-multiplatform-gradle-plugin", version.ref = "sentry" }
@@ -25,3 +26,4 @@ ktor-network = { module = "io.ktor:ktor-network", version.ref = "ktor" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }

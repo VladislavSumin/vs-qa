@@ -68,7 +68,7 @@ internal class RootScreen(
         }
     }
 
-    private val tabs = childNavigationPages(
+    private val tabsResult = childNavigationPages(
         navigationHost = TabNavigationHost,
         // TODO возможно для андроида нужно другое поведение?
         // Не уничтожаем контент табов.
@@ -85,6 +85,8 @@ internal class RootScreen(
         initialPages = { Pages(items = listOf(DebugScreenParams, HomeScreenParams), selectedIndex = 1) },
         closeParentWhenEmpty = true,
     )
+    private val tabs = tabsResult.pages
+    private val tabsController = tabsResult.controller
 
     private val tabsComponent = tabsComponentFactory.create(
         windowTitleInteractor = windowTitleInteractor,
@@ -92,6 +94,7 @@ internal class RootScreen(
         onTabClick = { navigator.open(it) },
         onTabClickClose = { navigator.close(it) },
         onTabClickDetach = { navigator.transfer(it, hints = listOf(WindowScreenParams(Random.nextLong().toString()))) },
+        onTabReorder = { from, to -> tabsController.reorder(from, to) },
         context = context.childContext("tabs"),
     )
 

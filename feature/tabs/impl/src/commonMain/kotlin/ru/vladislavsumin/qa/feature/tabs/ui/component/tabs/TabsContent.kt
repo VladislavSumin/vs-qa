@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.OpenInNew
@@ -28,6 +29,8 @@ import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.qa.feature.multiWindow.isMultiWindowSupported
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
 internal fun TabsContent(
@@ -35,11 +38,17 @@ internal fun TabsContent(
     onTabClick: (IntentScreenParams<*>) -> Unit,
     onTabClickClose: (IntentScreenParams<*>) -> Unit,
     onTabClickDetach: (IntentScreenParams<*>) -> Unit,
+    onTabReorder: (fromIndex: Int, toIndex: Int) -> Unit,
     modifier: Modifier,
 ) {
     val pages by pages.subscribeAsState()
+    val lazyListState = rememberLazyListState()
+    val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        onTabReorder(from.index, to.index)
+    }
+
     if (pages.items.size > 1) {
-        LazyRow(modifier) {
+        LazyRow(modifier, state = lazyListState) {
             itemsIndexed(
                 pages.items,
                 key = { _, item ->
@@ -48,7 +57,17 @@ internal fun TabsContent(
                     item.configuration.screenParams.toString()
                 },
             ) { index, item ->
-                Tab(index, pages, item, onTabClick, onTabClickClose, onTabClickDetach)
+                ReorderableItem(reorderableState, key = item.configuration.screenParams.toString()) {
+                    Tab(
+                        index = index,
+                        pages = pages,
+                        item = item,
+                        onTabClick = onTabClick,
+                        onTabClickClose = onTabClickClose,
+                        onTabClickDetach = onTabClickDetach,
+                        modifier = Modifier.longPressDraggableHandle(),
+                    )
+                }
             }
         }
     }
@@ -62,6 +81,7 @@ private fun Tab(
     onTabClick: (IntentScreenParams<*>) -> Unit,
     onTabClickClose: (IntentScreenParams<*>) -> Unit,
     onTabClickDetach: (IntentScreenParams<*>) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val provider = (item.instance as? TabSupport)
     val state = provider?.tabState?.collectAsState()?.value ?: UNKNOWN_TAB
@@ -70,7 +90,7 @@ private fun Tab(
     val background = if (index == pages.selectedIndex) colorScheme.surfaceVariant else colorScheme.surface
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .background(background)
             .clickable(onClick = { onTabClick((item.configuration.screenParams)) }),
         verticalAlignment = Alignment.CenterVertically,
