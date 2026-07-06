@@ -183,16 +183,27 @@ object AnimeLogcatLogParser {
      */
     @Suppress("MagicNumber")
     private fun parseLogcatInstant(date: String): Instant {
-        val month = date.substring(0, 2).toInt()
-        val day = date.substring(3, 5).toInt()
-        val hour = date.substring(6, 8).toInt()
-        val minute = date.substring(9, 11).toInt()
-        val second = date.substring(12, 14).toInt()
-        val millis = date.substring(15, 18).toInt()
+        val month = parseIntFromChars(date, 0, 2)
+        val day = parseIntFromChars(date, 3, 2)
+        val hour = parseIntFromChars(date, 6, 2)
+        val minute = parseIntFromChars(date, 9, 2)
+        val second = parseIntFromChars(date, 12, 2)
+        val millis = parseIntFromChars(date, 15, 3)
 
         val epochDay = LocalDate.of(Year.now().value, month, day).toEpochDay()
         val epochSecond = epochDay * 86_400 + hour * 3_600 + minute * 60 + second
         return Instant.ofEpochSecond(epochSecond, millis * 1_000_000L)
+    }
+
+    private fun parseIntFromChars(str: String, start: Int, length: Int): Int {
+        var result = 0
+        var i = start
+        val end = start + length
+        while (i < end) {
+            result = result * 10 + (str[i].code - '0'.code)
+            i++
+        }
+        return result
     }
 
     private const val LOGCAT_META_HEADER = "--------- "

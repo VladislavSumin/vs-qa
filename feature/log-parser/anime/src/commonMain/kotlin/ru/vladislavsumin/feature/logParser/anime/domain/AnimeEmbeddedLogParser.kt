@@ -80,17 +80,17 @@ internal object AnimeEmbeddedLogParser : GenericLogParser() {
      */
     @Suppress("MagicNumber", "ReturnCount")
     override fun parseInstant(value: String): Instant {
-        val year = value.substring(0, 4).toInt()
-        val month = value.substring(5, 7).toInt()
-        val day = value.substring(8, 10).toInt()
+        val year = parseIntFromChars(value, 0, 4)
+        val month = parseIntFromChars(value, 5, 2)
+        val day = parseIntFromChars(value, 8, 2)
 
         val tzChar = value[11]
         val tzOffsetSeconds: Int
         val spaceIndex: Int
         if (tzChar == '+' || tzChar == '-') {
             val sign = if (tzChar == '-') -1 else 1
-            val tzHours = value.substring(12, 14).toInt()
-            val tzMinutes = value.substring(15, 17).toInt()
+            val tzHours = parseIntFromChars(value, 12, 2)
+            val tzMinutes = parseIntFromChars(value, 15, 2)
             tzOffsetSeconds = sign * (tzHours * 3600 + tzMinutes * 60)
             spaceIndex = 17
         } else {
@@ -98,14 +98,25 @@ internal object AnimeEmbeddedLogParser : GenericLogParser() {
             spaceIndex = 12
         }
 
-        val hours = value.substring(spaceIndex + 1, spaceIndex + 3).toInt()
-        val minutes = value.substring(spaceIndex + 4, spaceIndex + 6).toInt()
-        val seconds = value.substring(spaceIndex + 7, spaceIndex + 9).toInt()
-        val millis = value.substring(spaceIndex + 10, spaceIndex + 13).toInt()
+        val hours = parseIntFromChars(value, spaceIndex + 1, 2)
+        val minutes = parseIntFromChars(value, spaceIndex + 4, 2)
+        val seconds = parseIntFromChars(value, spaceIndex + 7, 2)
+        val millis = parseIntFromChars(value, spaceIndex + 10, 3)
 
         val epochDay = LocalDate.of(year, month, day).toEpochDay()
         val epochSecond = epochDay * 86_400 + hours * 3_600 + minutes * 60 + seconds - tzOffsetSeconds
         return Instant.ofEpochSecond(epochSecond, millis * 1_000_000L)
+    }
+
+    private fun parseIntFromChars(str: String, start: Int, length: Int): Int {
+        var result = 0
+        var i = start
+        val end = start + length
+        while (i < end) {
+            result = result * 10 + (str[i].code - '0'.code)
+            i++
+        }
+        return result
     }
 
     private fun findSpace(str: String, start: Int): Int {
