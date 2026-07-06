@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
+import ru.vladislavsumin.feature.logParser.domain.substring
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 
 @Stable

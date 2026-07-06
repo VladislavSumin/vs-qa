@@ -1,72 +1,107 @@
 package ru.vladislavsumin.feature.logParser.generic
 
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
+import ru.vladislavsumin.feature.logParser.domain.LogRange
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
-import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
+import java.time.Instant
 
 abstract class GenericLogParser {
-    protected abstract val logRegex: Regex
-    protected abstract val timeGroupId: Int
-    protected abstract val timeDateGroupId: Int
-    protected abstract val processIdGroupId: Int?
-    protected abstract val threadGroupId: Int
-    protected abstract val levelGroupId: Int
-    protected abstract val tagGroupId: Int
-    protected abstract val messageGroupId: Int
+    protected class ParsedHeader(
+        val time: LogRange,
+        val timeDate: LogRange,
+        val processId: LogRange?,
+        val thread: LogRange,
+        val level: LogRange,
+        val tag: LogRange,
+        val message: LogRange,
+        val levelAlias: String,
+        val timeInstantValue: String,
+    )
 
-    abstract val dateTimeFormatter: DateTimeFormatter
+    /**
+     * Ручная проверка строки на соответствие формату заголовка лога и извлечение полей.
+     * Вместо [Regex.matchEntire] — ручная проверка разделителей на фиксированных позициях.
+     *
+     * Было: protected abstract val logRegex: Regex
+     *       val matches = logRegex.matchEntire(line)
+     *       matches.groups[timeGroupId]!!.range и т.д.
+     */
+    protected abstract fun tryParseHeader(line: String): ParsedHeader?
+
+    /**
+     * Ручной парсинг Instant из строки времени заголовка лога.
+     * Вместо [java.time.format.DateTimeFormatter] с [java.time.OffsetDateTime.parse] —
+     * извлечение компонентов даты по известным позициям и вычисление через [java.time.LocalDate.toEpochDay].
+     *
+     * Было: abstract val dateTimeFormatter: DateTimeFormatter
+     *       OffsetDateTime.parse(value, dateTimeFormatter).toInstant()
+     */
+    protected abstract fun parseInstant(value: String): Instant
+
+    protected open fun onOrphanLine(line: String) {}
 
     fun parseLines(lines: Sequence<String>, result: MutableList<RawLogRecord>) {
         var cache: RawLogRecord? = null
-        val rawBuilder: StringBuilder = StringBuilder()
+        var singleLineRaw: String? = null
+        var rawBuilder: StringBuilder? = null
         var linesCount = 0
 
         fun dumpCache() {
             cache?.let { cache ->
-                // Remove last new line
-                rawBuilder.deleteCharAt(rawBuilder.length - 1)
-
-                val raw = rawBuilder.toString()
+                val raw: String
+                if (rawBuilder != null) {
+                    rawBuilder!!.deleteCharAt(rawBuilder!!.length - 1)
+                    raw = rawBuilder!!.toString()
+                } else {
+                    raw = singleLineRaw!!
+                }
                 val record = cache.copy(
                     raw = raw,
-                    message = IntRange(
-                        start = cache.tag.last + 2, // После тега пробел, его исключаем.
+                    message = LogRange(
+                        start = cache.tag.last + 2,
                         endInclusive = raw.length - 1,
                     ),
                     lines = linesCount,
                 )
                 result.add(record)
-                rawBuilder.clear()
+                singleLineRaw = null
+                rawBuilder = null
                 linesCount = 0
             }
             cache = null
         }
 
         for (line in lines) {
-            val matches = logRegex.matchEntire(line)
-            if (matches != null) {
+            val header = tryParseHeader(line)
+            if (header != null) {
                 dumpCache()
                 cache = RawLogRecord(
                     raw = "",
-                    time = matches.groups[timeGroupId]!!.range,
-                    timeDate = matches.groups[timeDateGroupId]!!.range,
-                    timeInstant = OffsetDateTime.parse(
-                        matches.groups[timeGroupId]!!.value,
-                        dateTimeFormatter,
-                    ).toInstant(),
-                    processId = processIdGroupId?.let { matches.groups[it]!!.range },
-                    thread = matches.groups[threadGroupId]!!.range,
-                    level = matches.groups[levelGroupId]!!.range,
-                    tag = matches.groups[tagGroupId]!!.range,
-                    message = matches.groups[messageGroupId]!!.range,
-                    logLevel = LogLevel.fromAlias(matches.groups[levelGroupId]!!.value)
-                        ?: error("UNKNOWN LEVEL ${matches.groups[levelGroupId]!!.value}"),
+                    time = header.time,
+                    timeDate = header.timeDate,
+                    timeInstant = parseInstant(header.timeInstantValue),
+                    processId = header.processId,
+                    thread = header.thread,
+                    level = header.level,
+                    tag = header.tag,
+                    message = header.message,
+                    logLevel = LogLevel.fromAlias(header.levelAlias)
+                        ?: error("UNKNOWN LEVEL ${header.levelAlias}"),
                     lines = 1,
                 )
+                singleLineRaw = line
+                linesCount = 1
+            } else if (linesCount > 0) {
+                if (rawBuilder == null) {
+                    rawBuilder = StringBuilder()
+                    rawBuilder!!.appendLine(singleLineRaw!!)
+                    singleLineRaw = null
+                }
+                rawBuilder!!.appendLine(line)
+                linesCount++
+            } else {
+                onOrphanLine(line)
             }
-            rawBuilder.appendLine(line)
-            linesCount++
         }
 
         dumpCache()

@@ -23,6 +23,7 @@ import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
+import ru.vladislavsumin.feature.logParser.domain.substring
 import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogOrder

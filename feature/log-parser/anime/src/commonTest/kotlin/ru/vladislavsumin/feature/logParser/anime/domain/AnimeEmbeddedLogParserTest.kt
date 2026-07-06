@@ -2,6 +2,7 @@ package ru.vladislavsumin.feature.logParser.anime.domain
 
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
+import ru.vladislavsumin.feature.logParser.domain.substring
 import java.time.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -9,6 +10,9 @@ import kotlin.test.assertTrue
 
 @Suppress("MaximumLineLength", "MaxLineLength")
 class AnimeEmbeddedLogParserTest {
+    init {
+        TestLogger.init()
+    }
 
     @Test
     fun `single line entry`() {
@@ -183,7 +187,7 @@ class AnimeEmbeddedLogParserTest {
     }
 
     @Test
-    fun `orphan lines before first header included in first entry`() {
+    fun `orphan lines before first header are ignored`() {
         val input = sequenceOf(
             "orphan line without header",
             "2024-01-01T+00:00 00:00:00.000 t1 I Tag valid entry",
@@ -192,9 +196,9 @@ class AnimeEmbeddedLogParserTest {
 
         assertEquals(1, result.size)
         val raw = result[0].raw
-        assertTrue(raw.startsWith("orphan line"), "orphan line included at start")
-        assertTrue(raw.contains("valid entry"), "valid entry is in the raw text")
-        assertEquals(2, result[0].lines)
+        assertTrue(!raw.contains("orphan line"), "orphan line discarded")
+        assertEquals("valid entry", result[0].raw.substring(result[0].message))
+        assertEquals(1, result[0].lines)
     }
 
     @Test
