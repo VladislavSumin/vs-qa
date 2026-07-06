@@ -21,6 +21,8 @@ abstract class GenericLogParser {
     protected abstract fun tryParseHeader(line: String): ParsedHeader?
     protected abstract fun parseInstant(value: String): Instant
 
+    protected open fun onOrphanLine(line: String) {}
+
     fun parseLines(lines: Sequence<String>, result: MutableList<RawLogRecord>) {
         var cache: RawLogRecord? = null
         var singleLineRaw: String? = null
@@ -80,6 +82,8 @@ abstract class GenericLogParser {
                 }
                 rawBuilder!!.appendLine(line)
                 linesCount++
+            } else {
+                onOrphanLine(line)
             }
         }
 

@@ -99,4 +99,9 @@ internal object AnimeEmbeddedLogParser : GenericLogParser() {
         while (i < str.length && str[i] != ' ') i++
         return i
     }
+
+    override fun onOrphanLine(line: String) {
+        // TODO: show user notification about unexpected log format
+        AnimeLogger.e { "Orphan line before first header ignored: ${line.take(100)}" }
+    }
 }

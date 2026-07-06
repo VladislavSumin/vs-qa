@@ -72,7 +72,6 @@ object AnimeLogcatLogParser {
                 dumpCache()
                 val headerLine = "${header.date} ${header.pid}:${header.tid} ${header.levelAlias} ${header.tag} "
                 singleLineRaw = headerLine
-                linesCount = 1
 
                 val dateRange = LogRange(0, header.date.length - 1)
                 val pidRange = LogRange(dateRange.last + 2, dateRange.last + 1 + header.pid.length)
@@ -94,10 +93,10 @@ object AnimeLogcatLogParser {
                         ?: error("UNKNOWN LEVEL ${header.levelAlias}"),
                     lines = 1,
                 )
-            } else if (linesCount > 0) {
+            } else if (cache != null) {
                 if (rawBuilder == null) {
                     rawBuilder = StringBuilder()
-                    rawBuilder!!.appendLine(singleLineRaw!!)
+                    rawBuilder!!.append(singleLineRaw!!)
                     singleLineRaw = null
                 }
                 rawBuilder!!.appendLine(line)
