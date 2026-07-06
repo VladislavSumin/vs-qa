@@ -23,8 +23,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isShiftPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
@@ -58,6 +67,14 @@ internal fun SavedFiltersContent(viewModel: SavedFiltersViewModel, modifier: Mod
         Spacer(Modifier.height(4.dp))
         HorizontalDivider(thickness = 1.5.dp, color = QaTheme.colorScheme.surfaceVariant)
         Spacer(Modifier.height(4.dp))
+        NewFilterSection(viewModel, state)
+    }
+}
+
+@Composable
+@Suppress("MagicNumber")
+private fun NewFilterSection(viewModel: SavedFiltersViewModel, state: SavedFiltersViewState) {
+    Column {
         Text(
             "New filter",
             style = MaterialTheme.typography.bodySmall,
@@ -71,18 +88,38 @@ internal fun SavedFiltersContent(viewModel: SavedFiltersViewModel, modifier: Mod
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            val nameFocus = remember { FocusRequester() }
+            val contentFocus = remember { FocusRequester() }
             QaTextField(
                 value = state.saveNewFilterName,
                 onValueChange = viewModel::onSavedFilterNameChanged,
                 placeholder = { Text("name") },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f)
+                    .focusRequester(nameFocus)
+                    .onPreviewKeyEvent { event ->
+                        if (event.key == Key.Tab && event.type == KeyEventType.KeyDown) {
+                            contentFocus.requestFocus()
+                            true
+                        } else {
+                            false
+                        }
+                    },
             )
             Spacer(Modifier.width(4.dp))
             QaTextField(
                 value = state.saveNewFilterContent,
                 onValueChange = viewModel::onSavedFilterContentChanged,
                 placeholder = { Text("content") },
-                modifier = Modifier.weight(5f),
+                modifier = Modifier.weight(5f)
+                    .focusRequester(contentFocus)
+                    .onPreviewKeyEvent { event ->
+                        if (event.key == Key.Tab && event.type == KeyEventType.KeyDown && event.isShiftPressed) {
+                            nameFocus.requestFocus()
+                            true
+                        } else {
+                            false
+                        }
+                    },
             )
             Spacer(Modifier.width(4.dp))
             QaIconButton(
@@ -145,18 +182,42 @@ private fun EditSavedFilterRow(
             .padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        val nameFocus = remember { FocusRequester() }
+        val contentFocus = remember { FocusRequester() }
         QaTextField(
             value = state.editName,
             onValueChange = viewModel::onEditingFilterNameChanged,
             placeholder = { Text("name") },
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f)
+                .focusRequester(nameFocus)
+                .onPreviewKeyEvent { event ->
+                    if (event.key == Key.Tab && event.type == KeyEventType.KeyDown) {
+                        contentFocus.requestFocus()
+                        true
+                    } else {
+                        false
+                    }
+                },
         )
         Spacer(Modifier.width(4.dp))
         QaTextField(
             value = state.editContent,
             onValueChange = viewModel::onEditingFilterContentChanged,
             placeholder = { Text("content") },
-            modifier = Modifier.weight(5f),
+            modifier = Modifier.weight(5f)
+                .focusRequester(contentFocus)
+                .onPreviewKeyEvent { event ->
+                    if (
+                        event.key == Key.Tab &&
+                        event.type == KeyEventType.KeyDown &&
+                        event.isShiftPressed
+                    ) {
+                        nameFocus.requestFocus()
+                        true
+                    } else {
+                        false
+                    }
+                },
         )
         Spacer(Modifier.width(4.dp))
         QaIconButton(
