@@ -1,6 +1,7 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.savedFilters
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,7 +45,11 @@ import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
 
 @Composable
 @Suppress("MagicNumber")
-internal fun SavedFiltersContent(viewModel: SavedFiltersViewModel, modifier: Modifier) {
+internal fun SavedFiltersContent(
+    viewModel: SavedFiltersViewModel,
+    modifier: Modifier,
+    onSavedFilterClick: (String) -> Unit,
+) {
     val state = viewModel.state.collectAsState().value
 
     Column(modifier) {
@@ -55,7 +60,7 @@ internal fun SavedFiltersContent(viewModel: SavedFiltersViewModel, modifier: Mod
                 if (state.editingFilterName == it.name) {
                     EditSavedFilterRow(viewModel, state, it)
                 } else {
-                    SavedFilterRow(viewModel, it)
+                    SavedFilterRow(viewModel, it, onSavedFilterClick)
                 }
                 HorizontalDivider(
                     thickness = 1.dp,
@@ -134,9 +139,15 @@ private fun NewFilterSection(viewModel: SavedFiltersViewModel, state: SavedFilte
 
 @Composable
 @Suppress("MagicNumber")
-private fun SavedFilterRow(viewModel: SavedFiltersViewModel, filter: SavedFiltersRepository.SavedFilter) {
+private fun SavedFilterRow(
+    viewModel: SavedFiltersViewModel,
+    filter: SavedFiltersRepository.SavedFilter,
+    onSavedFilterClick: (String) -> Unit,
+) {
     Row(
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+        modifier = Modifier
+            .clickable { onSavedFilterClick(filter.name) }
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(

@@ -83,6 +83,11 @@ internal class FilterBarComponent(
                 }
             }
         }
+        launch {
+            savedFiltersComponent.filterClickEvents.receiveAsFlow().collect { name ->
+                viewModel.addToFilter(name)
+            }
+        }
     }
 
     @Composable
