@@ -132,9 +132,15 @@ internal class SavedFiltersViewModel(private val savedFiltersRepository: SavedFi
 
     private fun validateNameAndContent(name: String, content: String): String? = when {
         name.isBlank() -> "Filter name is required"
+
         content.isBlank() -> "Filter content is required"
-        name.any { it.isWhitespace() } -> "Filter name must be a single word"
+
+        name.any {
+            !it.isLetterOrDigit() && it != '_'
+        } -> "Filter name may only contain letters, digits and underscores"
+
         name in filterRequestParser.reservedKeywords -> "Name \"$name\" conflicts with a reserved keyword"
+
         else -> null
     }
 }
