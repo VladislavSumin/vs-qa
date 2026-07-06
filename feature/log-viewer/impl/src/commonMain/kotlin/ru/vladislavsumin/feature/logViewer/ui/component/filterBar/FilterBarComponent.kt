@@ -50,6 +50,7 @@ internal class FilterBarComponent(
         currentTokenPrediction = viewModel.filterState.map { it.currentTokenPredictionInfo },
         currentTags = currentTags,
         currentRuns = currentRuns,
+        savedFilters = savedFiltersComponent.savedFilters,
         context = context.childContext("filter-hint"),
     )
 

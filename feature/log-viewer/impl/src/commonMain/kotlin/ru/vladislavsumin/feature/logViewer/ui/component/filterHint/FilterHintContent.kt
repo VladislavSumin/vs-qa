@@ -21,6 +21,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
@@ -90,7 +91,12 @@ private fun HintContent(
                             Text(span)
                             Spacer(modifier.weight(1f))
                             if (it.hint != null) {
-                                Text(it.hint, color = QaTheme.colorScheme.logTrace.primary)
+                                Text(
+                                    it.hint,
+                                    color = QaTheme.colorScheme.logTrace.primary,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
                             }
                         }
                     }

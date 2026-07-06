@@ -4,15 +4,16 @@ import androidx.compose.runtime.Stable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import ru.vladislavsumin.core.coroutines.utils.combine
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.feature.logViewer.LogLogger
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
+import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 
 @GenerateFactory
 @Stable
@@ -20,6 +21,7 @@ internal class FilterHintViewModel(
     @ByCreate currentTokenPrediction: Flow<CurrentTokenPrediction?>,
     @ByCreate currentTags: Flow<Set<String>>,
     @ByCreate currentRuns: Flow<List<RunIdInfo>>,
+    @ByCreate savedFilters: Flow<List<SavedFiltersRepository.SavedFilter>>,
 ) : ViewModel(),
     FilterHintUiInteractor {
     /**
@@ -46,10 +48,13 @@ internal class FilterHintViewModel(
                 )
             }
         },
-    ) { showHint, selectedItemKey, currentTokenPrediction, currentTags, currentRuns ->
+        savedFilters.map { savedFilters ->
+            savedFilters.map { KeywordFilterHint(name = it.name, hint = it.content) }
+        },
+    ) { showHint, selectedItemKey, currentTokenPrediction, currentTags, currentRuns, savedFilters ->
         if (showHint && currentTokenPrediction != null) {
             val hints = when (currentTokenPrediction.type) {
-                CurrentTokenPrediction.Type.Keyword -> keywordFilterHintItems
+                CurrentTokenPrediction.Type.Keyword -> keywordFilterHintItems + savedFilters
                 CurrentTokenPrediction.Type.SearchType -> typeFilterHintItems
                 CurrentTokenPrediction.Type.LogLevel -> logLevelFilterHintItems
                 CurrentTokenPrediction.Type.Tag -> currentTags

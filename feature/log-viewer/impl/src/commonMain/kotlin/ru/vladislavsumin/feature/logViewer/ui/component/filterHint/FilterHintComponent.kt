@@ -11,6 +11,7 @@ import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
+import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 
 @GenerateFactory
 internal class FilterHintComponent(
@@ -18,10 +19,11 @@ internal class FilterHintComponent(
     @ByCreate currentTokenPrediction: Flow<CurrentTokenPrediction?>,
     @ByCreate currentTags: Flow<Set<String>>,
     @ByCreate currentRuns: Flow<List<RunIdInfo>>,
+    @ByCreate savedFilters: Flow<List<SavedFiltersRepository.SavedFilter>>,
     @ByCreate context: ComponentContext,
 ) : Component(context) {
     private val viewModel: FilterHintViewModel = viewModel {
-        viewModelFactory.create(currentTokenPrediction, currentTags, currentRuns)
+        viewModelFactory.create(currentTokenPrediction, currentTags, currentRuns, savedFilters)
     }
 
     val filterHintUiInteractor: FilterHintUiInteractor get() = viewModel
