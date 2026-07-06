@@ -1,6 +1,7 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
 import kotlinx.coroutines.flow.MutableStateFlow
+import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -244,5 +245,72 @@ class FilterRequestParserTest {
         )
     }
 
-    private fun createParser() = FilterRequestParser(savedFilters = MutableStateFlow(emptyList()))
+    @Test
+    fun testSavedFilterExpansion() {
+        val parser = createParser(listOf(SavedFiltersRepository.SavedFilter("err", "tag=Error")))
+        val request = parser.parse("err").searchRequest
+        assertTrue(request.isSuccess)
+        assertEquals(
+            expected = "Tag(operation=Contains(data=Error))",
+            actual = request.getOrThrow().operation.toString(),
+        )
+    }
+
+    @Test
+    fun testSavedFilterExpansionInExpression() {
+        val parser = createParser(listOf(SavedFiltersRepository.SavedFilter("err", "tag=Error")))
+        val request = parser.parse("err & b").searchRequest
+        assertTrue(request.isSuccess)
+        assertEquals(
+            expected = "And(operations=[Tag(operation=Contains(data=Error)), All(operation=Contains(data=b))])",
+            actual = request.getOrThrow().operation.toString(),
+        )
+    }
+
+    @Test
+    fun testLevel() {
+        val parser = createParser()
+        val request = parser.parse("level=e").searchRequest
+        assertTrue(request.isSuccess)
+        assertEquals(
+            expected = "MinLogLevel(minLevel=ERROR)",
+            actual = request.getOrThrow().operation.toString(),
+        )
+    }
+
+    @Test
+    fun testRunNumber() {
+        val parser = createParser()
+        val request = parser.parse("runNumber=1").searchRequest
+        assertTrue(request.isSuccess)
+        assertEquals(
+            expected = "RunNumber(number=0)",
+            actual = request.getOrThrow().operation.toString(),
+        )
+    }
+
+    @Test
+    fun testTimeAfter() {
+        val parser = createParser()
+        val request = parser.parse("timeAfter=12:00:00").searchRequest
+        assertTrue(request.isSuccess)
+        assertEquals(
+            expected = "TimeAfter(time=12:00:00)",
+            actual = request.getOrThrow().operation.toString(),
+        )
+    }
+
+    @Test
+    fun testTimeBefore() {
+        val parser = createParser()
+        val request = parser.parse("timeBefore=12:00:00").searchRequest
+        assertTrue(request.isSuccess)
+        assertEquals(
+            expected = "TimeBefore(time=12:00:00)",
+            actual = request.getOrThrow().operation.toString(),
+        )
+    }
+
+    private fun createParser(saved: List<SavedFiltersRepository.SavedFilter> = emptyList()) =
+        FilterRequestParser(savedFilters = MutableStateFlow(saved))
 }
