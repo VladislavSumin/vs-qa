@@ -11,8 +11,11 @@ import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 import ru.vladislavsumin.core.coroutines.utils.mapState
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
+import ru.vladislavsumin.feature.logParser.domain.LogRange
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
+import ru.vladislavsumin.feature.logParser.domain.replaceRange
 import ru.vladislavsumin.feature.logParser.domain.runId.RawRunIdInfo
+import ru.vladislavsumin.feature.logParser.domain.substring
 import ru.vladislavsumin.feature.logViewer.LogLogger
 import ru.vladislavsumin.feature.logViewer.domain.logs.delegates.filter.LogFilterDelegate
 import ru.vladislavsumin.feature.logViewer.domain.logs.delegates.search.LogSearchDelegate
@@ -128,7 +131,7 @@ class LogsInteractorImpl(
                                     val newMessage = proguard.deobfuscateStack(log.raw.substring(log.message))
                                     log.copy(
                                         raw = log.raw.replaceRange(log.message, newMessage),
-                                        message = IntRange(
+                                        message = LogRange(
                                             log.message.first,
                                             log.message.first + newMessage.length - 1,
                                         ),

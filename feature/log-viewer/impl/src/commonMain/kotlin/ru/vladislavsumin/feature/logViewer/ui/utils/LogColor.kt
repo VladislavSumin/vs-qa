@@ -7,6 +7,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.feature.logParser.domain.LogRange
+import ru.vladislavsumin.feature.logParser.domain.substring
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import kotlin.math.abs
 
@@ -47,4 +49,8 @@ fun LogRecord.colorize(isSelected: Boolean, stripDate: Boolean): AnnotatedString
 
 fun AnnotatedString.Builder.addStyle(style: SpanStyle, range: IntRange) {
     addStyle(style, range.first, range.last + 1)
+}
+
+fun AnnotatedString.Builder.addStyle(style: SpanStyle, range: LogRange) {
+    addStyle(style, range.start, range.endInclusive + 1)
 }

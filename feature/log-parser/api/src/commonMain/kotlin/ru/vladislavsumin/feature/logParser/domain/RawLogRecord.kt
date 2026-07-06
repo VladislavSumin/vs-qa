@@ -15,27 +15,27 @@ import java.time.Instant
 data class RawLogRecord(
     val raw: String,
 
-    val time: IntRange,
-    val timeDate: IntRange,
+    val time: LogRange,
+    val timeDate: LogRange,
     val timeInstant: Instant,
 
-    val level: IntRange,
+    val level: LogRange,
     val logLevel: LogLevel,
 
-    val processId: IntRange?, // pid
-    val thread: IntRange, // tid
-    val tag: IntRange,
-    val message: IntRange,
+    val processId: LogRange?, // pid
+    val thread: LogRange, // tid
+    val tag: LogRange,
+    val message: LogRange,
 
     val lines: Int,
 ) {
     /**
-     * Копирует модель с заменой поля [tag] в [raw] записи с корректным сохранением всех [IntRange]
+     * Копирует модель с заменой поля [tag] в [raw] записи с корректным сохранением всех [LogRange]
      */
     fun copyTag(newTag: String): RawLogRecord {
         val newRaw = raw.replaceRange(tag, newTag)
-        val newTagRange = IntRange(tag.first, tag.first + newTag.length - 1)
-        val lenDelta = newTag.length - tag.count()
+        val newTagRange = LogRange(tag.first, tag.first + newTag.length - 1)
+        val lenDelta = newTag.length - (tag.last - tag.first + 1)
 
         return copy(
             raw = newRaw,
@@ -45,17 +45,5 @@ data class RawLogRecord(
             thread = thread.moveIfAfterPosition(newTagRange.first, lenDelta),
             message = message.moveIfAfterPosition(newTagRange.first, lenDelta),
         )
-    }
-
-    companion object {
-        /**
-         * Если [this] расположен после [position] то он сдвигается на [offset]. А если расположен до [position],
-         * то возвращается оригинальный [this] без модификации.
-         */
-        private fun IntRange.moveIfAfterPosition(position: Int, offset: Int): IntRange = if (first >= position) {
-            IntRange(first + offset, last + offset)
-        } else {
-            this
-        }
     }
 }

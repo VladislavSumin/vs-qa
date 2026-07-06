@@ -3,6 +3,7 @@ package ru.vladislavsumin.feature.logParser.anime.domain
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
 import ru.vladislavsumin.feature.logParser.domain.runId.RawRunIdInfo
 import ru.vladislavsumin.feature.logParser.domain.runId.RunIdParser
+import ru.vladislavsumin.feature.logParser.domain.substring
 
 internal class AnimeRunIdParser : RunIdParser {
     override suspend fun provideRunIdMeta(logs: List<RawLogRecord>): List<RawRunIdInfo>? {

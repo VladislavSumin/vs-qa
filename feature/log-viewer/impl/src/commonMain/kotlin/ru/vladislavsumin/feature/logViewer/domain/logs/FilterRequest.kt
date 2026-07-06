@@ -1,6 +1,7 @@
 package ru.vladislavsumin.feature.logViewer.domain.logs
 
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
+import ru.vladislavsumin.feature.logParser.domain.substring
 
 /**
  * Набор правил для фильтрации.
