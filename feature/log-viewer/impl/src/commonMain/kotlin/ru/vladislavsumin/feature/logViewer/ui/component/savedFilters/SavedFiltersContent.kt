@@ -1,7 +1,11 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.savedFilters
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,6 +39,7 @@ import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
@@ -144,9 +149,17 @@ private fun SavedFilterRow(
     filter: SavedFiltersRepository.SavedFilter,
     onSavedFilterClick: (String) -> Unit,
 ) {
+    // Используем detectTapGestures вместо clickable, что бы не перехватывать down-событие —
+    // иначе дочерний SelectionContainer не сможет начать выделение текста drag'ом.
+    // hoverable + indication — ручная реализация hover/ripple (то же, что делает clickable внутри).
+    val interactionSource = remember { MutableInteractionSource() }
     Row(
         modifier = Modifier
-            .clickable { onSavedFilterClick(filter.name) }
+            .pointerInput(filter) {
+                detectTapGestures { onSavedFilterClick(filter.name) }
+            }
+            .hoverable(interactionSource)
+            .indication(interactionSource, LocalIndication.current)
             .padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
