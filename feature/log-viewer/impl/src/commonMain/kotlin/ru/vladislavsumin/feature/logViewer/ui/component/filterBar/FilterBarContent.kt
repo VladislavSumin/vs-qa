@@ -6,10 +6,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Bookmarks
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FilterAlt
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.DropdownMenu
@@ -36,6 +40,7 @@ import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.resetFocusOnEsc
+import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintComponent
 import ru.vladislavsumin.feature.logViewer.ui.utils.addStyle
 
@@ -65,15 +70,10 @@ private fun SavedFilters(viewModel: FilterBarViewModel) {
 
     LazyColumn {
         items(state.savedFilters, key = { it.name }) {
-            Row {
-                Text(it.name, Modifier.weight(1f))
-                Text(viewModel.highlightSavedFilter(it).colorize(), Modifier.weight(5f))
-                QaIconButton(
-                    onClick = { viewModel.onDeleteSavedFilter(it) },
-                    modifier = Modifier.hint("Delete saved filter"),
-                ) {
-                    Icon(imageVector = Icons.Default.Delete, contentDescription = "delete")
-                }
+            if (state.editingFilterName == it.name) {
+                EditSavedFilterRow(viewModel, state, it)
+            } else {
+                SavedFilterRow(viewModel, it)
             }
         }
     }
@@ -96,6 +96,64 @@ private fun SavedFilters(viewModel: FilterBarViewModel) {
             modifier = Modifier.hint("Save new filter"),
         ) {
             Icon(imageVector = Icons.Default.Save, contentDescription = "save")
+        }
+    }
+}
+
+@Composable
+@Suppress("MagicNumber")
+private fun SavedFilterRow(viewModel: FilterBarViewModel, filter: SavedFiltersRepository.SavedFilter) {
+    Row {
+        Text(filter.name, Modifier.weight(1f))
+        SelectionContainer(Modifier.weight(5f)) {
+            Text(viewModel.highlightSavedFilter(filter).colorize())
+        }
+        QaIconButton(
+            onClick = { viewModel.onStartEditingFilter(filter) },
+            modifier = Modifier.hint("Edit saved filter"),
+        ) {
+            Icon(imageVector = Icons.Default.Edit, contentDescription = "edit")
+        }
+        QaIconButton(
+            onClick = { viewModel.onDeleteSavedFilter(filter) },
+            modifier = Modifier.hint("Delete saved filter"),
+        ) {
+            Icon(imageVector = Icons.Default.Delete, contentDescription = "delete")
+        }
+    }
+}
+
+@Composable
+@Suppress("MagicNumber")
+private fun EditSavedFilterRow(
+    viewModel: FilterBarViewModel,
+    state: FilterBarViewState.SavedFiltersState,
+    filter: SavedFiltersRepository.SavedFilter,
+) {
+    Row {
+        QaTextField(
+            value = state.editName,
+            onValueChange = viewModel::onEditingFilterNameChanged,
+            placeholder = { Text("name") },
+            modifier = Modifier.weight(1f),
+        )
+        QaTextField(
+            value = state.editContent,
+            onValueChange = viewModel::onEditingFilterContentChanged,
+            placeholder = { Text("content") },
+            modifier = Modifier.weight(5f),
+        )
+        QaIconButton(
+            onClick = { viewModel.onClickSaveEditedFilter(filter) },
+            modifier = Modifier.hint("Save changes"),
+        ) {
+            Icon(imageVector = Icons.Default.Check, contentDescription = "save changes")
+        }
+        QaIconButton(
+            onClick = viewModel::onCancelEditingFilter,
+            modifier = Modifier.hint("Cancel editing"),
+        ) {
+            Icon(imageVector = Icons.Default.Close, contentDescription = "cancel editing")
         }
     }
 }

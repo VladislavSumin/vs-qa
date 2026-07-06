@@ -19,6 +19,9 @@ internal data class FilterBarViewState(
         val saveNewFilterName: String,
         val saveNewFilterContent: String,
         val savedFilters: List<SavedFiltersRepository.SavedFilter>,
+        val editingFilterName: String?,
+        val editName: String,
+        val editContent: String,
     )
 
     companion object {
@@ -33,6 +36,9 @@ internal data class FilterBarViewState(
                 saveNewFilterName = "",
                 saveNewFilterContent = "",
                 savedFilters = emptyList(),
+                editingFilterName = null,
+                editName = "",
+                editContent = "",
             ),
         )
     }

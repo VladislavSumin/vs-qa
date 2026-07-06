@@ -15,6 +15,7 @@ import ru.vladislavsumin.feature.logViewer.LogLogger
 internal interface SavedFiltersRepository {
     fun observeSavedFilters(): Flow<List<SavedFilter>>
     suspend fun add(name: String, content: String)
+    suspend fun update(oldFilter: SavedFilter, newName: String, newContent: String)
     suspend fun remove(filter: SavedFilter)
 
     @Serializable
@@ -49,6 +50,27 @@ internal class SavedFiltersRepositoryImpl(private val fileSystemService: FileSys
             preferences[savedFiltersPreferenceKey] = Json.encodeToString(
                 oldList + SavedFiltersRepository.SavedFilter(name, content),
             )
+        }
+    }
+
+    override suspend fun update(oldFilter: SavedFiltersRepository.SavedFilter, newName: String, newContent: String) {
+        prefs.edit { preferences ->
+            val oldList = observeSavedFilters().first()
+
+            val oldIndex = oldList.indexOf(oldFilter)
+            if (oldIndex == -1) {
+                LogLogger.e { "Filter ${oldFilter.name} not found" }
+                return@edit
+            }
+
+            if (newName != oldFilter.name && oldList.any { it.name == newName }) {
+                LogLogger.e { "Filter with name $newName already exists" }
+                return@edit
+            }
+
+            val newList = oldList.toMutableList()
+            newList[oldIndex] = SavedFiltersRepository.SavedFilter(newName, newContent)
+            preferences[savedFiltersPreferenceKey] = Json.encodeToString(newList)
         }
     }
 
