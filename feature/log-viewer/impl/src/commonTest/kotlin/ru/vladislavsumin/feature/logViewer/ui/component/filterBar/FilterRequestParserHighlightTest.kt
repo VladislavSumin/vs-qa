@@ -167,6 +167,45 @@ class FilterRequestParserHighlightTest {
         )
     }
 
+    @Test
+    fun testSavedFilterNameAsFieldValueIsText() {
+        val parser = createParser(listOf(SavedFiltersRepository.SavedFilter("myfilter", "tag=x")))
+        assertEquals(
+            expected = listOf(
+                FilterRequestParser.Category.Field to "tag",
+                FilterRequestParser.Category.Operator to "=",
+                FilterRequestParser.Category.Text to "myfilter",
+            ),
+            actual = parser.categories("tag=myfilter"),
+        )
+    }
+
+    @Test
+    fun testSavedFilterNameAsExactlyValueIsText() {
+        val parser = createParser(listOf(SavedFiltersRepository.SavedFilter("myfilter", "tag=x")))
+        assertEquals(
+            expected = listOf(
+                FilterRequestParser.Category.Field to "message",
+                FilterRequestParser.Category.Operator to ":=",
+                FilterRequestParser.Category.Text to "myfilter",
+            ),
+            actual = parser.categories("message:=myfilter"),
+        )
+    }
+
+    @Test
+    fun testSavedFilterNameAsValueWithSpacesIsText() {
+        val parser = createParser(listOf(SavedFiltersRepository.SavedFilter("myfilter", "tag=x")))
+        assertEquals(
+            expected = listOf(
+                FilterRequestParser.Category.Field to "tag",
+                FilterRequestParser.Category.Operator to "=",
+                FilterRequestParser.Category.Text to "myfilter",
+            ),
+            actual = parser.categories("tag = myfilter"),
+        )
+    }
+
     private fun createParser(saved: List<SavedFiltersRepository.SavedFilter> = emptyList()) =
         FilterRequestParser(MutableStateFlow(saved))
 

@@ -232,17 +232,20 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
 
     private fun highlight(request: String, tokens: Result<TokenMatchesSequence>): RequestHighlight =
         tokens.map { tokens ->
-            val spans = tokens.mapNotNull { token ->
-                val category = categorize(token) ?: return@mapNotNull null
+            // Пропускаем игнорируемые токены (пробелы, переносы строк), что бы корректно определять предыдущий
+            // значимый токен при категоризации.
+            val meaningful = tokens.filter { categorize(it, prev = null) != null }.toList()
+            val spans = meaningful.mapIndexed { index, token ->
+                val category = categorize(token, prev = meaningful.getOrNull(index - 1))!!
                 Span(IntRange(token.offset, token.offset + token.length - 1), category)
-            }.toList()
+            }
             RequestHighlight.Success(
                 raw = request,
                 spans = spans,
             )
         }.getOrElse { RequestHighlight.InvalidSyntax(request) }
 
-    private fun categorize(token: TokenMatch): Category? = when (token.type) {
+    private fun categorize(token: TokenMatch, prev: TokenMatch?): Category? = when (token.type) {
         in grammar.tokenGroupFields -> Category.Field
 
         in grammar.tokenGroupFilterType -> Category.Operator
@@ -253,7 +256,12 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
 
         in grammar.tokenGroupStringLiteral -> Category.Text
 
-        in grammar.tokenGroupText -> if (savedFilters.value.any { it.name == token.text }) {
+        // Слово трактуется как ссылка на сохраненный фильтр только если оно стоит отдельно (не является значением
+        // выражения `поле=значение`) и совпадает с именем сохраненного фильтра.
+        in grammar.tokenGroupText -> if (
+            prev?.type !in grammar.tokenGroupFilterType &&
+            savedFilters.value.any { it.name == token.text }
+        ) {
             Category.SavedFilterRef
         } else {
             Category.Text
