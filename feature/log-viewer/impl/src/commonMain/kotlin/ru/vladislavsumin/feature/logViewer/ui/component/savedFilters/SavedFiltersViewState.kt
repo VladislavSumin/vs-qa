@@ -11,6 +11,7 @@ internal data class SavedFiltersViewState(
     val editingFilterName: String?,
     val editName: String,
     val editContent: String,
+    val saveError: String?,
 ) {
     companion object {
         val STUB = SavedFiltersViewState(
@@ -20,6 +21,7 @@ internal data class SavedFiltersViewState(
             editingFilterName = null,
             editName = "",
             editContent = "",
+            saveError = null,
         )
     }
 }

@@ -64,6 +64,9 @@ internal fun SavedFiltersContent(viewModel: SavedFiltersViewModel, modifier: Mod
             color = QaTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 8.dp),
         )
+        if (state.saveError != null) {
+            SaveError(state.saveError!!)
+        }
         Row(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -169,4 +172,14 @@ private fun EditSavedFilterRow(
             Icon(imageVector = Icons.Default.Close, contentDescription = "cancel editing")
         }
     }
+}
+
+@Composable
+private fun SaveError(message: String) {
+    Text(
+        message,
+        color = QaTheme.colorScheme.logError.primary,
+        style = MaterialTheme.typography.bodySmall,
+        modifier = Modifier.padding(horizontal = 8.dp),
+    )
 }

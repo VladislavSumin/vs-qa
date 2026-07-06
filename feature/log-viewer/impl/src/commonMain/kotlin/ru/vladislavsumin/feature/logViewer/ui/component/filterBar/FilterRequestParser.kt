@@ -10,6 +10,7 @@ import com.github.h0tk3y.betterParse.combinators.unaryMinus
 import com.github.h0tk3y.betterParse.combinators.zeroOrMore
 import com.github.h0tk3y.betterParse.grammar.Grammar
 import com.github.h0tk3y.betterParse.grammar.parser
+import com.github.h0tk3y.betterParse.lexer.LiteralToken
 import com.github.h0tk3y.betterParse.lexer.TokenMatch
 import com.github.h0tk3y.betterParse.lexer.TokenMatchesSequence
 import com.github.h0tk3y.betterParse.lexer.literalToken
@@ -230,6 +231,13 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
         }
 
         override val rootParser: Parser<FilterRequest.FilterOperation> = autoChain
+    }
+
+    /**
+     * Имена ключевых слов грамматики, которые конфликтуют с именами сохранённых фильтров.
+     */
+    val reservedKeywords: Set<String> by lazy {
+        grammar.tokenGroupFields.mapNotNull { (it as? LiteralToken)?.text }.toSet()
     }
 
     private fun highlight(request: String, tokens: Result<TokenMatchesSequence>): RequestHighlight =
