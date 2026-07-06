@@ -37,10 +37,20 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
     sealed interface RequestHighlight {
         val raw: String
 
-        data class Success(override val raw: String, val keywords: List<IntRange>, val data: List<IntRange>) :
-            RequestHighlight
+        data class Success(override val raw: String, val spans: List<Span>) : RequestHighlight
 
         data class InvalidSyntax(override val raw: String) : RequestHighlight
+    }
+
+    data class Span(val range: IntRange, val category: Category)
+
+    enum class Category {
+        Field,
+        Operator,
+        Logic,
+        Bracket,
+        SavedFilterRef,
+        Text,
     }
 
     private enum class Operation {
@@ -99,20 +109,19 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
             exactly,
             contains,
         )
-        val tokenGroupOthers = setOf(
+        val tokenGroupLogic = setOf(
             not,
             minus,
             and,
             or,
+        )
+        val tokenGroupBrackets = setOf(
             lpar,
             rpar,
         )
 
-        // Все ключевые слова, используются для подсветки синтаксиса.
-        val keywords = tokenGroupFields + tokenGroupFilterType + tokenGroupOthers
-
-        // Токены данных поискового запроса (текста), используются для подсветки.
-        val data = setOf(stingLiteral, any)
+        val tokenGroupStringLiteral = setOf(stingLiteral)
+        val tokenGroupText = setOf(any)
 
         // Поля по которым можно вести поиск.
         val fields = OrCombinator(
@@ -223,20 +232,35 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
 
     private fun highlight(request: String, tokens: Result<TokenMatchesSequence>): RequestHighlight =
         tokens.map { tokens ->
-            val keywords = tokens
-                .filter { it.type in grammar.keywords }
-                .map { IntRange(it.offset, it.offset + it.length - 1) }
-                .toList()
-            val data = tokens
-                .filter { it.type in grammar.data }
-                .map { IntRange(it.offset, it.offset + it.length - 1) }
-                .toList()
+            val spans = tokens.mapNotNull { token ->
+                val category = categorize(token) ?: return@mapNotNull null
+                Span(IntRange(token.offset, token.offset + token.length - 1), category)
+            }.toList()
             RequestHighlight.Success(
                 raw = request,
-                keywords = keywords,
-                data = data,
+                spans = spans,
             )
         }.getOrElse { RequestHighlight.InvalidSyntax(request) }
+
+    private fun categorize(token: TokenMatch): Category? = when (token.type) {
+        in grammar.tokenGroupFields -> Category.Field
+
+        in grammar.tokenGroupFilterType -> Category.Operator
+
+        in grammar.tokenGroupLogic -> Category.Logic
+
+        in grammar.tokenGroupBrackets -> Category.Bracket
+
+        in grammar.tokenGroupStringLiteral -> Category.Text
+
+        in grammar.tokenGroupText -> if (savedFilters.value.any { it.name == token.text }) {
+            Category.SavedFilterRef
+        } else {
+            Category.Text
+        }
+
+        else -> null
+    }
 
     fun justHighlight(request: String): RequestHighlight {
         val tokens = runCatching { grammar.tokenizer.tokenize(request) }

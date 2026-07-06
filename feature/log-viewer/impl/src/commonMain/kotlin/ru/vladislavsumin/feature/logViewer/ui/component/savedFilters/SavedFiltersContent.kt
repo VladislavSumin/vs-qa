@@ -16,16 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
-import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
-import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterRequestParser
-import ru.vladislavsumin.feature.logViewer.ui.utils.addStyle
+import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
 
 @Composable
 @Suppress("MagicNumber")
@@ -120,18 +115,6 @@ private fun EditSavedFilterRow(
             modifier = Modifier.hint("Cancel editing"),
         ) {
             Icon(imageVector = Icons.Default.Close, contentDescription = "cancel editing")
-        }
-    }
-}
-
-@Composable
-private fun FilterRequestParser.RequestHighlight.colorize(): AnnotatedString = when (this) {
-    is FilterRequestParser.RequestHighlight.InvalidSyntax -> buildAnnotatedString { append(raw) }
-
-    is FilterRequestParser.RequestHighlight.Success -> buildAnnotatedString {
-        append(raw)
-        keywords.forEach { range ->
-            addStyle(SpanStyle(color = QaTheme.colorScheme.onSurfaceVariant), range)
         }
     }
 }

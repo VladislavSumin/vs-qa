@@ -20,9 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
@@ -33,7 +30,7 @@ import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.resetFocusOnEsc
 import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.savedFilters.SavedFiltersComponent
-import ru.vladislavsumin.feature.logViewer.ui.utils.addStyle
+import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
 
 @Composable
 internal fun FilterBarContent(
@@ -112,17 +109,5 @@ private fun HelpButton(viewModel: FilterBarViewModel, state: FilterBarViewState)
             onDismissRequest = viewModel::onDismissHelpMenu,
         ) { HelpMenuContent() }
         Icon(imageVector = Icons.AutoMirrored.Filled.Help, contentDescription = "help")
-    }
-}
-
-@Composable
-private fun FilterRequestParser.RequestHighlight.colorize(): AnnotatedString = when (this) {
-    is FilterRequestParser.RequestHighlight.InvalidSyntax -> buildAnnotatedString { append(raw) }
-
-    is FilterRequestParser.RequestHighlight.Success -> buildAnnotatedString {
-        append(raw)
-        keywords.forEach { range ->
-            addStyle(SpanStyle(color = QaTheme.colorScheme.onSurfaceVariant), range)
-        }
     }
 }
