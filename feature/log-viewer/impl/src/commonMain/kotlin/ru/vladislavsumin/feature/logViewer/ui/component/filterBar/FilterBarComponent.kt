@@ -19,6 +19,7 @@ import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintComponentFactory
 import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintUiInteractor
+import ru.vladislavsumin.feature.logViewer.ui.component.savedFilters.SavedFiltersComponentFactory
 
 /**
  * Компонент строки фильтра.
@@ -30,13 +31,20 @@ import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintUiI
 internal class FilterBarComponent(
     viewModelFactory: FilterBarViewModelFactory,
     filterHintComponentFactory: FilterHintComponentFactory,
+    savedFiltersComponentFactory: SavedFiltersComponentFactory,
     @ByCreate currentTags: Flow<Set<String>>,
     @ByCreate currentRuns: Flow<List<RunIdInfo>>,
     @ByCreate globalHotkeyManager: GlobalHotkeyManager,
     @ByCreate context: ComponentContext,
 ) : Component(context),
     ComposeComponent {
-    private val viewModel: FilterBarViewModel = viewModel { viewModelFactory.create() }
+    private val savedFiltersComponent = savedFiltersComponentFactory.create(
+        context = context.childContext("saved-filters"),
+    )
+
+    private val viewModel: FilterBarViewModel = viewModel {
+        viewModelFactory.create(savedFiltersComponent.savedFilters)
+    }
 
     private val filterHintComponent = filterHintComponentFactory.create(
         currentTokenPrediction = viewModel.filterState.map { it.currentTokenPredictionInfo },
@@ -80,6 +88,7 @@ internal class FilterBarComponent(
     override fun Render(modifier: Modifier) = FilterBarContent(
         viewModel = viewModel,
         filterHintComponent = filterHintComponent,
+        savedFiltersComponent = savedFiltersComponent,
         filterHintHotkeyController = filterHintComponent.hotkeyController,
         focusRequester = focusRequester,
         modifier = modifier,

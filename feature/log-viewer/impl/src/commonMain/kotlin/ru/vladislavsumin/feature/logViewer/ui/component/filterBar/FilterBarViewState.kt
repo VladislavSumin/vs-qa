@@ -2,7 +2,6 @@ package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.text.input.TextFieldValue
-import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 
 @Stable
 internal data class FilterBarViewState(
@@ -11,18 +10,8 @@ internal data class FilterBarViewState(
     val highlight: FilterRequestParser.RequestHighlight,
     val error: String?,
     val showHelpMenu: Boolean,
-    val savedFiltersState: SavedFiltersState,
+    val showSavedFilters: Boolean,
 ) {
-
-    data class SavedFiltersState(
-        val showSavedFilters: Boolean,
-        val saveNewFilterName: String,
-        val saveNewFilterContent: String,
-        val savedFilters: List<SavedFiltersRepository.SavedFilter>,
-        val editingFilterName: String?,
-        val editName: String,
-        val editContent: String,
-    )
 
     companion object {
         val STUB = FilterBarViewState(
@@ -31,15 +20,7 @@ internal data class FilterBarViewState(
             highlight = FilterRequestParser.RequestHighlight.InvalidSyntax(""),
             error = null,
             showHelpMenu = false,
-            savedFiltersState = SavedFiltersState(
-                showSavedFilters = false,
-                saveNewFilterName = "",
-                saveNewFilterContent = "",
-                savedFilters = emptyList(),
-                editingFilterName = null,
-                editName = "",
-                editContent = "",
-            ),
+            showSavedFilters = false,
         )
     }
 }

@@ -2,20 +2,11 @@ package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.filled.Bookmarks
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FilterAlt
-import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -40,136 +31,44 @@ import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.resetFocusOnEsc
-import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintComponent
+import ru.vladislavsumin.feature.logViewer.ui.component.savedFilters.SavedFiltersComponent
 import ru.vladislavsumin.feature.logViewer.ui.utils.addStyle
 
 @Composable
 internal fun FilterBarContent(
     viewModel: FilterBarViewModel,
     filterHintComponent: FilterHintComponent,
+    savedFiltersComponent: SavedFiltersComponent,
     filterHintHotkeyController: HotkeyController,
     focusRequester: FocusRequester,
     modifier: Modifier,
 ) {
+    val state by viewModel.state.collectAsState()
     Column(
         modifier
             .background(QaTheme.colorScheme.surfaceVariant)
             .padding(vertical = 4.dp, horizontal = 8.dp),
     ) {
-        SavedFilters(viewModel)
-        FilterField(viewModel, filterHintComponent, filterHintHotkeyController, focusRequester)
-    }
-}
-
-@Composable
-@Suppress("MagicNumber")
-private fun SavedFilters(viewModel: FilterBarViewModel) {
-    val state = viewModel.state.collectAsState().value.savedFiltersState
-    if (!state.showSavedFilters) return
-
-    LazyColumn {
-        items(state.savedFilters, key = { it.name }) {
-            if (state.editingFilterName == it.name) {
-                EditSavedFilterRow(viewModel, state, it)
-            } else {
-                SavedFilterRow(viewModel, it)
-            }
+        if (state.showSavedFilters) {
+            savedFiltersComponent.Render(Modifier)
         }
-    }
-
-    Row {
-        QaTextField(
-            value = state.saveNewFilterName,
-            onValueChange = viewModel::onSavedFilterNameChanged,
-            placeholder = { Text("name") },
-            modifier = Modifier.weight(1f),
-        )
-        QaTextField(
-            value = state.saveNewFilterContent,
-            onValueChange = viewModel::onSavedFilterContentChanged,
-            placeholder = { Text("content") },
-            modifier = Modifier.weight(5f),
-        )
-        QaIconButton(
-            onClick = viewModel::onClickSaveNewFilter,
-            modifier = Modifier.hint("Save new filter"),
-        ) {
-            Icon(imageVector = Icons.Default.Save, contentDescription = "save")
-        }
-    }
-}
-
-@Composable
-@Suppress("MagicNumber")
-private fun SavedFilterRow(viewModel: FilterBarViewModel, filter: SavedFiltersRepository.SavedFilter) {
-    Row {
-        Text(filter.name, Modifier.weight(1f))
-        SelectionContainer(Modifier.weight(5f)) {
-            Text(viewModel.highlightSavedFilter(filter).colorize())
-        }
-        QaIconButton(
-            onClick = { viewModel.onStartEditingFilter(filter) },
-            modifier = Modifier.hint("Edit saved filter"),
-        ) {
-            Icon(imageVector = Icons.Default.Edit, contentDescription = "edit")
-        }
-        QaIconButton(
-            onClick = { viewModel.onDeleteSavedFilter(filter) },
-            modifier = Modifier.hint("Delete saved filter"),
-        ) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = "delete")
-        }
-    }
-}
-
-@Composable
-@Suppress("MagicNumber")
-private fun EditSavedFilterRow(
-    viewModel: FilterBarViewModel,
-    state: FilterBarViewState.SavedFiltersState,
-    filter: SavedFiltersRepository.SavedFilter,
-) {
-    Row {
-        QaTextField(
-            value = state.editName,
-            onValueChange = viewModel::onEditingFilterNameChanged,
-            placeholder = { Text("name") },
-            modifier = Modifier.weight(1f),
-        )
-        QaTextField(
-            value = state.editContent,
-            onValueChange = viewModel::onEditingFilterContentChanged,
-            placeholder = { Text("content") },
-            modifier = Modifier.weight(5f),
-        )
-        QaIconButton(
-            onClick = { viewModel.onClickSaveEditedFilter(filter) },
-            modifier = Modifier.hint("Save changes"),
-        ) {
-            Icon(imageVector = Icons.Default.Check, contentDescription = "save changes")
-        }
-        QaIconButton(
-            onClick = viewModel::onCancelEditingFilter,
-            modifier = Modifier.hint("Cancel editing"),
-        ) {
-            Icon(imageVector = Icons.Default.Close, contentDescription = "cancel editing")
-        }
+        FilterField(viewModel, state, filterHintComponent, filterHintHotkeyController, focusRequester)
     }
 }
 
 @Composable
 private fun FilterField(
     viewModel: FilterBarViewModel,
+    state: FilterBarViewState,
     filterHintComponent: FilterHintComponent,
     filterHintHotkeyController: HotkeyController,
     focusRequester: FocusRequester,
 ) {
     var cursorPosition by remember { mutableFloatStateOf(0f) }
 
-    val state by viewModel.state.collectAsState()
     if (state.error != null) {
-        Text(text = state.error.toString(), color = QaTheme.colorScheme.logError.primary)
+        Text(text = state.error, color = QaTheme.colorScheme.logError.primary)
     }
 
     QaTextField(
@@ -191,7 +90,7 @@ private fun FilterField(
         leadingContent = { Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null) },
         trailingContent = {
             QaToggleIconButton(
-                checked = state.savedFiltersState.showSavedFilters,
+                checked = state.showSavedFilters,
                 onCheckedChange = { viewModel.onClickSavedFilters() },
                 modifier = Modifier.hint("Saved filters"),
             ) {
