@@ -8,10 +8,15 @@ import java.time.LocalDate
 @Suppress("MagicNumber")
 internal object AnimeEmbeddedLogParser : GenericLogParser() {
 
+    /**
+     * Ручная проверка заголовка лога формата YYYY-MM-DDTHH:SS±HH:MM HH:MM:SS.mmm THREAD L TAG MESSAGE.
+     * Вместо Regex.matchEntire() — ручная проверка символов-разделителей на фиксированных позициях.
+     *
+     * Было:
+     * Regex("^(\\d{4}-\\d{2}-\\d{2}T(\\+\\d{2}:\\d{2}|Z)) \\d{2}:\\d{2}:\\d{2}\\.\\d{3}) ([^ ]+) ([A-Z]) ([^ ]+) (.*)")
+     */
     @Suppress("ReturnCount", "CyclomaticComplexMethod")
     override fun tryParseHeader(line: String): ParsedHeader? {
-        // Embedded format: YYYY-MM-DDTHH:SS±HH:MM HH:MM:SS.mmm THREAD L TAG MESSAGE
-        // Minimum length for a valid header without message
         if (line.length < 25) return null
 
         if (line[4] != '-' || line[7] != '-' || line[10] != 'T') return null
@@ -64,6 +69,15 @@ internal object AnimeEmbeddedLogParser : GenericLogParser() {
         )
     }
 
+    /**
+     * Ручной парсинг Instant из строки времени формата YYYY-MM-DDTHH:SS±HH:MM HH:MM:SS.mmm.
+     * Вместо DateTimeFormatter с OffsetDateTime.parse() — извлечение компонентов по известным позициям
+     * и вычисление через LocalDate.toEpochDay().
+     *
+     * Было: DateTimeFormatterBuilder()
+     *           .append(ISO_LOCAL_DATE).appendLiteral('T').appendZoneOrOffsetId()...
+     *       OffsetDateTime.parse(value, DATE_FORMATTER).toInstant()
+     */
     @Suppress("MagicNumber", "ReturnCount")
     override fun parseInstant(value: String): Instant {
         val year = value.substring(0, 4).toInt()
@@ -101,7 +115,7 @@ internal object AnimeEmbeddedLogParser : GenericLogParser() {
     }
 
     override fun onOrphanLine(line: String) {
-        // TODO: show user notification about unexpected log format
+        // TODO show user notification about unexpected log format
         AnimeLogger.e { "Orphan line before first header ignored: ${line.take(100)}" }
     }
 }

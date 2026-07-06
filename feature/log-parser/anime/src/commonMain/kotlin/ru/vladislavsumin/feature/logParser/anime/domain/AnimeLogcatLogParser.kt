@@ -115,9 +115,14 @@ object AnimeLogcatLogParser {
         val tag: String,
     )
 
+    /**
+     * Ручная проверка заголовка logcat формата [ MM-DD HH:MM:SS.mmm PID:TID L/TAG ].
+     * Вместо Regex.matchEntire() — ручной поиск скобок, двоеточий, слэша и разделителей.
+     *
+     * Было: Regex("^\\[ (\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}) \\s*(\\d+):\\s*(\\d+) ([A-Z])/([^ ]+)\\s*]")
+     */
     @Suppress("ReturnCount", "ComplexCondition", "CyclomaticComplexMethod")
     private fun tryParseLogcatHeader(line: String): LogcatHeader? {
-        // Format: [ MM-DD HH:MM:SS.mmm PID:TID L/TAG ]
         if (line.length < 22) return null
         if (line[0] != '[' || line[1] != ' ') return null
 
@@ -165,6 +170,17 @@ object AnimeLogcatLogParser {
         return if (i >= str.length) -1 else i
     }
 
+    /**
+     * Ручной парсинг Instant из строки времени logcat формата MM-DD HH:MM:SS.mmm.
+     * Вместо DateTimeFormatter с OffsetDateTime.parse() — извлечение компонентов по известным позициям
+     * и вычисление через LocalDate.toEpochDay(). Формат logcat фиксирован, позиции известны.
+     * Год берётся текущий, offset=0 (UTC) — поведение идентично старому.
+     *
+     * Было: DateTimeFormatterBuilder()
+     *           .parseDefaulting(YEAR, Year.now().value)
+     *           .parseDefaulting(OFFSET_SECONDS, 0)
+     *       OffsetDateTime.parse(date, DATE_FORMATTER).toInstant()
+     */
     @Suppress("MagicNumber")
     private fun parseLogcatInstant(date: String): Instant {
         val month = date.substring(0, 2).toInt()

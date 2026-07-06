@@ -18,7 +18,24 @@ abstract class GenericLogParser {
         val timeInstantValue: String,
     )
 
+    /**
+     * Ручная проверка строки на соответствие формату заголовка лога и извлечение полей.
+     * Вместо [Regex.matchEntire] — ручная проверка разделителей на фиксированных позициях.
+     *
+     * Было: protected abstract val logRegex: Regex
+     *       val matches = logRegex.matchEntire(line)
+     *       matches.groups[timeGroupId]!!.range и т.д.
+     */
     protected abstract fun tryParseHeader(line: String): ParsedHeader?
+
+    /**
+     * Ручной парсинг Instant из строки времени заголовка лога.
+     * Вместо [java.time.format.DateTimeFormatter] с [java.time.OffsetDateTime.parse] —
+     * извлечение компонентов даты по известным позициям и вычисление через [java.time.LocalDate.toEpochDay].
+     *
+     * Было: abstract val dateTimeFormatter: DateTimeFormatter
+     *       OffsetDateTime.parse(value, dateTimeFormatter).toInstant()
+     */
     protected abstract fun parseInstant(value: String): Instant
 
     protected open fun onOrphanLine(line: String) {}
