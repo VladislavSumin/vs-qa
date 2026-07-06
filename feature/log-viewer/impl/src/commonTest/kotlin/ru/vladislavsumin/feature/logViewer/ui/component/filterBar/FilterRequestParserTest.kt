@@ -311,6 +311,31 @@ class FilterRequestParserTest {
         )
     }
 
+    @Test
+    fun testUnbalancedQuoteParseFailure() {
+        val parser = createParser()
+        val request = parser.parse("\"t\"\"").searchRequest
+        assertTrue(request.isFailure)
+    }
+
+    @Test
+    fun testQuoteInMiddleParseFailure() {
+        val parser = createParser()
+        val request = parser.parse("a\"b").searchRequest
+        assertTrue(request.isFailure)
+    }
+
+    @Test
+    fun testValidQuotedStringStillParses() {
+        val parser = createParser()
+        val request = parser.parse("\"t\"").searchRequest
+        assertTrue(request.isSuccess)
+        assertEquals(
+            expected = "All(operation=Contains(data=t))",
+            actual = request.getOrThrow().operation.toString(),
+        )
+    }
+
     private fun createParser(saved: List<SavedFiltersRepository.SavedFilter> = emptyList()) =
         FilterRequestParser(savedFilters = MutableStateFlow(saved))
 }

@@ -13,6 +13,7 @@ import com.github.h0tk3y.betterParse.grammar.parser
 import com.github.h0tk3y.betterParse.lexer.TokenMatch
 import com.github.h0tk3y.betterParse.lexer.TokenMatchesSequence
 import com.github.h0tk3y.betterParse.lexer.literalToken
+import com.github.h0tk3y.betterParse.lexer.noneMatched
 import com.github.h0tk3y.betterParse.lexer.regexToken
 import com.github.h0tk3y.betterParse.parser.Parser
 import com.github.h0tk3y.betterParse.parser.parseToEnd
@@ -95,8 +96,8 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
         // Строка в кавычках, может содержать экранированные кавычки внутри
         private val stingLiteral by regexToken("\"(\\\\\"|[^\"])+\"")
 
-        // Любая строка без пробелов
-        private val any by regexToken("[^ \n()]+")
+        // Любая строка без пробелов, скобок и кавычек.
+        private val any by regexToken("[^ \n()\"]+")
 
         // Определяются последними чтобы не перебивать собой другие токены, например stringLiteral.
         private val ws by regexToken("\\s+", ignore = true)
@@ -231,7 +232,9 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
     }
 
     private fun highlight(request: String, tokens: Result<TokenMatchesSequence>): RequestHighlight =
-        tokens.map { tokens ->
+        tokens.map { tokenMatchesSequence ->
+            val tokens = tokenMatchesSequence.toList()
+            if (tokens.any { it.type == noneMatched }) return@map RequestHighlight.InvalidSyntax(request)
             // Пропускаем игнорируемые токены (пробелы, переносы строк), что бы корректно определять предыдущий
             // значимый токен при категоризации.
             val meaningful = tokens.filter { categorize(it, prev = null) != null }.toList()
@@ -291,7 +294,9 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
 
         val highlight: RequestHighlight = highlight(request, tokens)
         FilterLogger.d {
-            "Parsed input, tokenize=${tokenizeTime}ms, parseTime=${parseTime}ms, input=$request"
+            "Parsed input, " +
+                "tokenize=${tokenizeTime}ms, parseTime=${parseTime}ms, " +
+                "input=$request, result=${filterRequest.getOrNull()}"
         }
 
         return ParserResult(

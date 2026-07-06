@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class FilterRequestParserHighlightTest {
     init {
@@ -164,6 +165,26 @@ class FilterRequestParserHighlightTest {
         assertEquals(
             expected = listOf(FilterRequestParser.Category.Text to "myfilter"),
             actual = createParser().categories("myfilter"),
+        )
+    }
+
+    @Test
+    fun testUnbalancedQuoteIsInvalidSyntax() {
+        val result = createParser().justHighlight("\"t\"\"")
+        assertTrue(result is FilterRequestParser.RequestHighlight.InvalidSyntax)
+    }
+
+    @Test
+    fun testQuoteInMiddleIsInvalidSyntax() {
+        val result = createParser().justHighlight("a\"b")
+        assertTrue(result is FilterRequestParser.RequestHighlight.InvalidSyntax)
+    }
+
+    @Test
+    fun testValidQuotedStringIsSuccess() {
+        assertEquals(
+            expected = listOf(FilterRequestParser.Category.Text to "\"t\""),
+            actual = createParser().categories("\"t\""),
         )
     }
 
