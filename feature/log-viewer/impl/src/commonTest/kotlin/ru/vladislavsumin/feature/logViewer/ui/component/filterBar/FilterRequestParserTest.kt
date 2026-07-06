@@ -336,6 +336,28 @@ class FilterRequestParserTest {
         )
     }
 
+    @Test
+    fun testEscapedQuoteInString() {
+        val parser = createParser()
+        val request = parser.parse("\"He said \\\"hello\\\" twice\"").searchRequest
+        assertTrue(request.isSuccess)
+        assertEquals(
+            expected = "All(operation=Contains(data=He said \"hello\" twice))",
+            actual = request.getOrThrow().operation.toString(),
+        )
+    }
+
+    @Test
+    fun testEscapedQuoteOnly() {
+        val parser = createParser()
+        val request = parser.parse("\"\\\"\"").searchRequest
+        assertTrue(request.isSuccess)
+        assertEquals(
+            expected = "All(operation=Contains(data=\"))",
+            actual = request.getOrThrow().operation.toString(),
+        )
+    }
+
     private fun createParser(saved: List<SavedFiltersRepository.SavedFilter> = emptyList()) =
         FilterRequestParser(savedFilters = MutableStateFlow(saved))
 }

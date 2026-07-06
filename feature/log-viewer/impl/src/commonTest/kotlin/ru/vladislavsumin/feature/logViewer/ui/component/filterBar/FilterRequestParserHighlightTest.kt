@@ -189,6 +189,26 @@ class FilterRequestParserHighlightTest {
     }
 
     @Test
+    fun testEscapedQuoteHighlightedAsSingleTextToken() {
+        assertEquals(
+            expected = listOf(FilterRequestParser.Category.Text to "\"He said \\\"hello\\\" twice\""),
+            actual = createParser().categories("\"He said \\\"hello\\\" twice\""),
+        )
+    }
+
+    @Test
+    fun testEmptyQuotedStringIsInvalidSyntax() {
+        val result = createParser().justHighlight("\"\"")
+        assertTrue(result is FilterRequestParser.RequestHighlight.InvalidSyntax)
+    }
+
+    @Test
+    fun testUnclosedQuoteIsInvalidSyntax() {
+        val result = createParser().justHighlight("\"a")
+        assertTrue(result is FilterRequestParser.RequestHighlight.InvalidSyntax)
+    }
+
+    @Test
     fun testSavedFilterNameAsFieldValueIsText() {
         val parser = createParser(listOf(SavedFiltersRepository.SavedFilter("myfilter", "tag=x")))
         assertEquals(
