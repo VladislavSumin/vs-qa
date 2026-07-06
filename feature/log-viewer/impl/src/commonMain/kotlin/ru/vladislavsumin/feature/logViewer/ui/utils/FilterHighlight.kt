@@ -33,6 +33,8 @@ private fun FilterRequestParser.Category.toSpanStyle(colors: QaColorScheme): Spa
 
     FilterRequestParser.Category.Bracket -> SpanStyle(color = colors.logDebug.primary)
 
+    FilterRequestParser.Category.Escape -> SpanStyle(color = colors.logWarn.primary)
+
     FilterRequestParser.Category.SavedFilterRef ->
         SpanStyle(color = colors.logDebug.primary, fontStyle = FontStyle.Italic)
 

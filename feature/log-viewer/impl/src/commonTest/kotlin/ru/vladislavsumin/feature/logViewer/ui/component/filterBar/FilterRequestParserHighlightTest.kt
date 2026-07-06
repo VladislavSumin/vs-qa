@@ -191,7 +191,11 @@ class FilterRequestParserHighlightTest {
     @Test
     fun testEscapedQuoteHighlightedAsSingleTextToken() {
         assertEquals(
-            expected = listOf(FilterRequestParser.Category.Text to "\"He said \\\"hello\\\" twice\""),
+            expected = listOf(
+                FilterRequestParser.Category.Text to "\"He said \\\"hello\\\" twice\"",
+                FilterRequestParser.Category.Escape to "\\",
+                FilterRequestParser.Category.Escape to "\\",
+            ),
             actual = createParser().categories("\"He said \\\"hello\\\" twice\""),
         )
     }
@@ -206,6 +210,38 @@ class FilterRequestParserHighlightTest {
     fun testUnclosedQuoteIsInvalidSyntax() {
         val result = createParser().justHighlight("\"a")
         assertTrue(result is FilterRequestParser.RequestHighlight.InvalidSyntax)
+    }
+
+    @Test
+    fun testEscapeCharHighlightedAsEscapeCategory() {
+        assertEquals(
+            expected = listOf(
+                FilterRequestParser.Category.Text to "\"\\\"hello\\\"\"",
+                FilterRequestParser.Category.Escape to "\\",
+                FilterRequestParser.Category.Escape to "\\",
+            ),
+            actual = createParser().categories("\"\\\"hello\\\"\""),
+        )
+    }
+
+    @Test
+    fun testMultipleEscapesInString() {
+        assertEquals(
+            expected = listOf(
+                FilterRequestParser.Category.Text to "\"a\\\"b\\\"c\"",
+                FilterRequestParser.Category.Escape to "\\",
+                FilterRequestParser.Category.Escape to "\\",
+            ),
+            actual = createParser().categories("\"a\\\"b\\\"c\""),
+        )
+    }
+
+    @Test
+    fun testBackslashNotFollowedByQuoteIsNotEscape() {
+        assertEquals(
+            expected = listOf(FilterRequestParser.Category.Text to "\"a\\\\b\""),
+            actual = createParser().categories("\"a\\\\b\""),
+        )
     }
 
     @Test

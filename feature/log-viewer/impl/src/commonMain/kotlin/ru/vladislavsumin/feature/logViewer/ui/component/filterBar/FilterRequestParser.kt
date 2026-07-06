@@ -50,6 +50,7 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
         Operator,
         Logic,
         Bracket,
+        Escape,
         SavedFilterRef,
         Text,
     }
@@ -241,7 +242,8 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
             val spans = meaningful.mapIndexed { index, token ->
                 val category = categorize(token, prev = meaningful.getOrNull(index - 1))!!
                 Span(IntRange(token.offset, token.offset + token.length - 1), category)
-            }
+            }.toMutableList()
+            addEscapeSpans(request, spans)
             RequestHighlight.Success(
                 raw = request,
                 spans = spans,
@@ -273,6 +275,26 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
         else -> null
     }
 
+    private fun addEscapeSpans(request: String, spans: MutableList<Span>) {
+        fun findEscapeCharsInString(text: String, offset: Int) {
+            var pos = 0
+            while (true) {
+                pos = text.indexOf("\\\"", startIndex = pos)
+                if (pos < 0) return
+                spans.add(Span(offset + pos..offset + pos, Category.Escape))
+                pos += 2
+            }
+        }
+
+        for (span in spans.toList()) {
+            if (span.category != Category.Text) continue
+            val spanText = request.substring(span.range)
+            if (spanText.first() == '"' && spanText.last() == '"') {
+                findEscapeCharsInString(spanText, span.range.first)
+            }
+        }
+    }
+
     fun justHighlight(request: String): RequestHighlight {
         val tokens = runCatching { grammar.tokenizer.tokenize(request) }
         return highlight(request, tokens)
@@ -293,11 +315,7 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
         }
 
         val highlight: RequestHighlight = highlight(request, tokens)
-        FilterLogger.d {
-            "Parsed input, " +
-                "tokenize=${tokenizeTime}ms, parseTime=${parseTime}ms, " +
-                "input=$request, result=${filterRequest.getOrNull()}"
-        }
+        FilterLogger.d { "Parsed input, tokenize=${tokenizeTime}ms, parseTime=${parseTime}ms, input=$request}" }
 
         return ParserResult(
             requestHighlight = highlight,
