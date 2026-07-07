@@ -20,14 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draganddrop.DragAndDropEvent
 import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.unit.dp
-import ru.vladislavsumin.core.ui.dragAndDrop.rememberDragAndDropFileTarget
+import ru.vladislavsumin.core.ui.dragAndDrop.rememberDragAndDropFilesTarget
 import java.nio.file.Path
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 internal fun DragAndDropOverlayContent(
-    onMappingPathSelected: (Path) -> Unit,
-    onLogPathSelected: (Path) -> Unit,
+    onMappingPathsSelected: (List<Path>) -> Unit,
+    onLogPathsSelected: (List<Path>) -> Unit,
     modifier: Modifier,
 ) {
     var isShowDragAndDropActions by remember { mutableStateOf(false) }
@@ -55,7 +55,7 @@ internal fun DragAndDropOverlayContent(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
-        Card(modifier = Modifier.rememberDragAndDropFileTarget(onLogPathSelected)) {
+        Card(modifier = Modifier.rememberDragAndDropFilesTarget(onLogPathsSelected)) {
             Box(
                 Modifier.defaultMinSize(
                     minWidth = 300.dp,
@@ -64,7 +64,7 @@ internal fun DragAndDropOverlayContent(
             ) { Text(text = "Drop logs here", modifier = Modifier.align(Alignment.Center)) }
         }
 
-        Card(modifier = Modifier.rememberDragAndDropFileTarget(onMappingPathSelected)) {
+        Card(modifier = Modifier.rememberDragAndDropFilesTarget(onMappingPathsSelected)) {
             Box(
                 Modifier.defaultMinSize(
                     minWidth = 300.dp,

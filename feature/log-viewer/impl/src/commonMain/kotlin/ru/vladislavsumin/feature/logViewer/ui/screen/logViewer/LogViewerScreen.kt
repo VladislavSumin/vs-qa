@@ -79,13 +79,12 @@ internal class LogViewerScreen(
     )
 
     private val dragAndDropOverlayComponent = DragAndDropOverlayComponent(
-        onMappingPathSelected = viewModel::onDragAndDropMappingFile,
-        onLogPathSelected = viewModel::onDragAndDropLogsFile,
+        onMappingPathsSelected = viewModel::onDragAndDropMappingFiles,
+        onLogPathsSelected = viewModel::onDragAndDropLogsFiles,
         context = context.childContext("drag-and-drop"),
     )
 
     init {
-        println("QWQW: LVS create")
         relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
             globalHotkeyManager.subscribe(
                 KeyModifier.Command + Key.W to {

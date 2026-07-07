@@ -39,6 +39,7 @@ import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsEvents
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
 import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarViewState
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
+import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Notification
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
 import java.nio.file.Path
@@ -76,8 +77,6 @@ internal class LogViewerViewModel(
     )
 
     init {
-        println("QWQW: LVM create")
-
         launch {
             logRecentInteractor.addOrUpdateRecent(logPath)
             if (mappingPath != null) {
@@ -336,12 +335,21 @@ internal class LogViewerViewModel(
         showTagStat.update { !it }
     }
 
-    fun onDragAndDropLogsFile(path: Path) {
-        open(LogViewerScreenParams(logPath = path))
+    fun onDragAndDropLogsFiles(paths: List<Path>) {
+        paths.forEach { open(LogViewerScreenParams(logPath = it)) }
     }
 
-    fun onDragAndDropMappingFile(path: Path) = launch {
-        logsInteractor.attachMapping(path)
+    fun onDragAndDropMappingFiles(paths: List<Path>) = launch {
+        if (paths.size != 1) {
+            notificationsUiInteractor.showNotification(
+                Notification(
+                    "Expected exactly one mapping file, but got ${paths.size}",
+                    Notification.Servility.Error,
+                ),
+            )
+            return@launch
+        }
+        logsInteractor.attachMapping(paths.single())
     }
 
     fun onClickPrevIndex() {

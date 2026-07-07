@@ -8,7 +8,7 @@ import java.io.File
 import java.nio.file.Path
 
 @OptIn(ExperimentalComposeUiApi::class)
-actual fun DragAndDropEvent.getPath(): Path {
+actual fun DragAndDropEvent.getPaths(): List<Path> {
     val files = this.awtTransferable.getTransferData(DataFlavor.javaFileListFlavor) as List<File>
-    return files.single().toPath()
+    return files.map { it.toPath() }
 }

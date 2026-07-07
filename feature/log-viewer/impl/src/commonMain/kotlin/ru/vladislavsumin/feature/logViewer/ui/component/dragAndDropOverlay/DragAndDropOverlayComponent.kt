@@ -8,13 +8,13 @@ import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import java.nio.file.Path
 
 internal class DragAndDropOverlayComponent(
-    private val onMappingPathSelected: (Path) -> Unit,
-    private val onLogPathSelected: (Path) -> Unit,
+    private val onMappingPathsSelected: (List<Path>) -> Unit,
+    private val onLogPathsSelected: (List<Path>) -> Unit,
     context: ComponentContext,
 ) : Component(context),
     ComposeComponent {
     @Composable
     override fun Render(modifier: Modifier) {
-        DragAndDropOverlayContent(onMappingPathSelected, onLogPathSelected, modifier)
+        DragAndDropOverlayContent(onMappingPathsSelected, onLogPathsSelected, modifier)
     }
 }
