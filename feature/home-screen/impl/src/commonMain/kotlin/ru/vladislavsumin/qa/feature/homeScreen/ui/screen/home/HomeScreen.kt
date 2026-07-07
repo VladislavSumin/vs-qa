@@ -83,6 +83,7 @@ internal class HomeScreen(
     @Composable
     override fun Render(modifier: Modifier) = HomeScreenContent(
         viewModel = viewModel,
+        onLogPathsSelected = viewModel::onDragAndDropLogsFiles,
         logRecentComponent = logRecentComponent,
         adbDeviceListComponent = adbDeviceListComponent,
     )

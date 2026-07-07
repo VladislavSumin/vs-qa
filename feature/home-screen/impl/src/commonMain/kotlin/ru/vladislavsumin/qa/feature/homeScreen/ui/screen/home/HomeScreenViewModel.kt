@@ -24,4 +24,8 @@ internal class HomeScreenViewModel : NavigationViewModel() {
             open(LogViewerScreenParams(path))
         }
     }
+
+    fun onDragAndDropLogsFiles(paths: List<Path>) {
+        paths.forEach { open(LogViewerScreenParams(it)) }
+    }
 }
