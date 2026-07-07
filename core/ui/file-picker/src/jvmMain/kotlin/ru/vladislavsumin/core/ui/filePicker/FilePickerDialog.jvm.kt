@@ -7,16 +7,30 @@ import java.awt.Frame
 import kotlin.io.path.Path
 
 @Composable
-actual fun FilePickerDialog(mimeType: String, onCloseRequest: (result: java.nio.file.Path?) -> Unit) = AwtWindow(
+actual fun FilePickerDialog(
+    mimeType: String,
+    multiple: Boolean,
+    onCloseRequest: (result: List<java.nio.file.Path>) -> Unit,
+) = AwtWindow(
     create = {
         object : FileDialog(null as Frame?, "Choose a file", LOAD) {
+            init {
+                if (multiple) {
+                    isMultipleMode = true
+                }
+            }
+
             override fun setVisible(value: Boolean) {
                 super.setVisible(value)
                 if (value) {
-                    if (directory != null && file != null) {
-                        onCloseRequest(Path(directory + file))
+                    if (multiple) {
+                        onCloseRequest(files?.map { Path(it.absolutePath) } ?: emptyList())
                     } else {
-                        onCloseRequest(null)
+                        if (directory != null && file != null) {
+                            onCloseRequest(listOf(Path(directory + file)))
+                        } else {
+                            onCloseRequest(emptyList())
+                        }
                     }
                 }
             }

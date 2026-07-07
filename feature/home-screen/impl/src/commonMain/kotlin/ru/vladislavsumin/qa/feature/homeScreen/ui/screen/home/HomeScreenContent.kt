@@ -42,7 +42,13 @@ internal fun HomeScreenContent(
     adbDeviceListComponent: ComposeComponent?,
 ) {
     val state by viewModel.state.collectAsState()
-    if (state) FilePickerDialog(mimeType = "application/zip", onCloseRequest = viewModel::onOpenNewFileDialogResult)
+    if (state) {
+        FilePickerDialog(
+            mimeType = "application/zip",
+            multiple = true,
+            onCloseRequest = viewModel::onOpenNewFilesDialogResult,
+        )
+    }
 
     var isShowDragAndDropActions by remember { mutableStateOf(false) }
     val rootDragAndDropTarget = remember {

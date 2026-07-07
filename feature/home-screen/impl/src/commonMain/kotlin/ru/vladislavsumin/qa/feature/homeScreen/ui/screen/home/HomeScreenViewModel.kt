@@ -18,11 +18,9 @@ internal class HomeScreenViewModel : NavigationViewModel() {
         showOpenNewFileDialog.value = true
     }
 
-    fun onOpenNewFileDialogResult(path: Path?) {
+    fun onOpenNewFilesDialogResult(paths: List<Path>) {
         showOpenNewFileDialog.value = false
-        if (path != null) {
-            open(LogViewerScreenParams(path))
-        }
+        paths.forEach { open(LogViewerScreenParams(it)) }
     }
 
     fun onDragAndDropLogsFiles(paths: List<Path>) {

@@ -12,29 +12,42 @@ import java.nio.file.Path
 import java.util.UUID
 
 @Composable
-actual fun FilePickerDialog(mimeType: String, onCloseRequest: (result: Path?) -> Unit) {
+actual fun FilePickerDialog(mimeType: String, multiple: Boolean, onCloseRequest: (result: List<Path>) -> Unit) {
     val context = LocalContext.current
     val filePickerLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.GetContent(),
-    ) { fileUri ->
-        if (fileUri != null) {
-            // TODO переписать эту жесть
-            val contentResolver = context.contentResolver
-            contentResolver.openInputStream(fileUri).use { inputStream ->
-                val name = getFileNameFromUri(context, fileUri)!!
-                val ext = name.takeLastWhile { it != '.' }
-                val cache = context.cacheDir.resolve("${UUID.randomUUID()}.$ext")
-                val bytes = inputStream!!.readAllBytes()
-                cache.writeBytes(bytes)
-                onCloseRequest(cache.toPath())
+        if (multiple) ActivityResultContracts.GetMultipleContents() else ActivityResultContracts.GetContent(),
+    ) { result ->
+        when {
+            multiple -> {
+                @Suppress("UNCHECKED_CAST")
+                val uris = result as? List<Uri> ?: emptyList()
+                onCloseRequest(uris.map { fileUri -> copyToCache(context, fileUri) })
             }
-        } else {
-            onCloseRequest(null)
+
+            result != null -> {
+                val fileUri = result as Uri
+                onCloseRequest(listOf(copyToCache(context, fileUri)))
+            }
+
+            else -> onCloseRequest(emptyList())
         }
     }
 
     LaunchedEffect(filePickerLauncher) {
         filePickerLauncher.launch(mimeType)
+    }
+}
+
+private fun copyToCache(context: Context, fileUri: Uri): Path {
+    // TODO переписать эту жесть
+    val contentResolver = context.contentResolver
+    contentResolver.openInputStream(fileUri).use { inputStream ->
+        val name = getFileNameFromUri(context, fileUri)!!
+        val ext = name.takeLastWhile { it != '.' }
+        val cache = context.cacheDir.resolve("${UUID.randomUUID()}.$ext")
+        val bytes = inputStream!!.readAllBytes()
+        cache.writeBytes(bytes)
+        return cache.toPath()
     }
 }
 

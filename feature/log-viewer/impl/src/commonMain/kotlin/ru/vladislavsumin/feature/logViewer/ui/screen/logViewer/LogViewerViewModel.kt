@@ -311,9 +311,9 @@ internal class LogViewerViewModel(
         }
     }
 
-    fun onSelectMappingDialogResult(result: Path?) = launch {
+    fun onSelectMappingDialogResult(paths: List<Path>) = launch {
         showSelectMappingDialog.value = false
-        if (result != null) {
+        paths.firstOrNull()?.let { result ->
             logsInteractor.attachMapping(result)
             logRecentInteractor.updateMappingPath(logPath, result)
         }
