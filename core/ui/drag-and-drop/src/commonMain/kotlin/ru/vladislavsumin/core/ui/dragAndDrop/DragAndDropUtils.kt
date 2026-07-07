@@ -11,10 +11,22 @@ import java.nio.file.Path
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun Modifier.rememberDragAndDropFilesTarget(onDropped: (List<Path>) -> Unit): Modifier {
-    val target = remember(onDropped) {
+fun Modifier.rememberDragAndDropFilesTarget(
+    onDropped: (List<Path>) -> Unit,
+    onHoveredStateChanged: ((Boolean) -> Unit)? = null,
+): Modifier {
+    val target = remember(onDropped, onHoveredStateChanged) {
         object : DragAndDropTarget {
+            override fun onEntered(event: DragAndDropEvent) {
+                onHoveredStateChanged?.invoke(true)
+            }
+
+            override fun onExited(event: DragAndDropEvent) {
+                onHoveredStateChanged?.invoke(false)
+            }
+
             override fun onDrop(event: DragAndDropEvent): Boolean {
+                onHoveredStateChanged?.invoke(false)
                 onDropped(event.getPaths())
                 return true
             }

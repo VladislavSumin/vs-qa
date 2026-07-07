@@ -1,6 +1,6 @@
 package ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home
 
-import androidx.compose.foundation.draganddrop.dragAndDropTarget
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -22,18 +22,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draganddrop.DragAndDropEvent
-import androidx.compose.ui.draganddrop.DragAndDropTarget
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
+import ru.vladislavsumin.core.ui.dragAndDrop.DragAndDropOverlay
 import ru.vladislavsumin.core.ui.dragAndDrop.rememberDragAndDropFilesTarget
 import ru.vladislavsumin.core.ui.filePicker.FilePickerDialog
 import java.nio.file.Path
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 internal fun HomeScreenContent(
     viewModel: HomeScreenViewModel,
@@ -48,21 +45,6 @@ internal fun HomeScreenContent(
             multiple = true,
             onCloseRequest = viewModel::onOpenNewFilesDialogResult,
         )
-    }
-
-    var isShowDragAndDropActions by remember { mutableStateOf(false) }
-    val rootDragAndDropTarget = remember {
-        object : DragAndDropTarget {
-            override fun onStarted(event: DragAndDropEvent) {
-                isShowDragAndDropActions = true
-            }
-
-            override fun onEnded(event: DragAndDropEvent) {
-                isShowDragAndDropActions = false
-            }
-
-            override fun onDrop(event: DragAndDropEvent): Boolean = false
-        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -88,26 +70,36 @@ internal fun HomeScreenContent(
             }
         }
 
+        DragAndDropOverlay(modifier = Modifier.padding(32.dp)) {
+            DropTargetCard(onLogPathsSelected)
+        }
+    }
+}
+
+@Composable
+private fun DropTargetCard(onLogPathsSelected: (List<Path>) -> Unit) {
+    var isHovered by remember { mutableStateOf(false) }
+    val borderColor = MaterialTheme.colorScheme.primary
+
+    Card(
+        modifier = Modifier
+            .fillMaxSize()
+            .rememberDragAndDropFilesTarget(
+                onDropped = onLogPathsSelected,
+                onHoveredStateChanged = { isHovered = it },
+            ),
+        border = if (isHovered) BorderStroke(2.dp, borderColor) else null,
+    ) {
         Box(
-            modifier = Modifier
-                .let { if (isShowDragAndDropActions) it.fillMaxSize().padding(32.dp) else it.size(0.dp) }
-                .dragAndDropTarget(
-                    shouldStartDragAndDrop = { true },
-                    target = rootDragAndDropTarget,
+            Modifier
+                .fillMaxSize()
+                .defaultMinSize(
+                    minWidth = 300.dp,
+                    minHeight = 200.dp,
                 ),
             contentAlignment = Alignment.Center,
         ) {
-            Card(modifier = Modifier.rememberDragAndDropFilesTarget(onLogPathsSelected)) {
-                Box(
-                    Modifier.defaultMinSize(
-                        minWidth = 300.dp,
-                        minHeight = 200.dp,
-                    ),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text("Drop logs here")
-                }
-            }
+            Text("Drop logs here")
         }
     }
 }
