@@ -1,7 +1,7 @@
 package ru.vladislavsumin.core.ui.filePicker
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.window.AwtWindow
+import androidx.compose.ui.awt.AwtWindow
 import java.awt.FileDialog
 import java.awt.Frame
 import kotlin.io.path.Path
