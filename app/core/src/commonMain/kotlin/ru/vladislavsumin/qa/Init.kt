@@ -3,10 +3,11 @@ package ru.vladislavsumin.qa
 import org.kodein.di.DI
 import org.kodein.di.DirectDI
 import ru.vladislavsumin.core.logger.manager.LoggerManager
+import ru.vladislavsumin.core.logger.platform.LogPath
 import ru.vladislavsumin.core.logger.platform.initDefault
 
 fun preInit(platformModule: DI.Module? = null): DirectDI {
-    LoggerManager.initDefault()
+    LoggerManager.initDefault(logPath = LogPath.UserHome(".vs-qa"))
     MainLogger.i("preInit()")
     // TODO сделать 2 ступени инициализации.
     return createDi(platformModule)

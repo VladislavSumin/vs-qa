@@ -9,6 +9,7 @@ import com.arkivanov.essenty.lifecycle.resume
 import io.sentry.kotlin.multiplatform.Sentry
 import org.kodein.di.instance
 import ru.vladislavsumin.core.decompose.compose.runOnUiThread
+import ru.vladislavsumin.core.logger.manager.LoggerManager
 import ru.vladislavsumin.qa.feature.multiWindow.ui.component.multiWindowRootScreen.MultiWindowRootScreenComponentFactory
 import kotlin.io.path.Path
 import kotlin.system.exitProcess
@@ -49,7 +50,12 @@ fun setExitOnUncaughtException() {
     val handler = Thread.getDefaultUncaughtExceptionHandler()
     Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
         handler?.uncaughtException(thread, throwable)
-        throwable.printStackTrace()
+        try {
+            MainLogger.e(throwable) { "Uncaught exception in thread \"${thread.name}\"" }
+            LoggerManager.shutdown()
+        } catch (_: Exception) {
+            throwable.printStackTrace()
+        }
         exitProcess(1)
     }
 }

@@ -37,6 +37,7 @@ kotlin {
             implementation(vsCoreLibs.vs.core.decompose.compose)
             implementation(vsCoreLibs.vs.core.di)
             implementation(vsCoreLibs.vs.core.logger.api)
+            implementation(vsCoreLibs.vs.core.logger.manager)
             implementation(vsCoreLibs.vs.core.navigation.impl)
 
             implementation(vsCoreLibs.decompose.core)
