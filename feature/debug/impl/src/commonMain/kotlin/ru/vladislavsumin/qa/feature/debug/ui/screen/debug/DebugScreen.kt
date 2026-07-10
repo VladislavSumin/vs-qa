@@ -1,6 +1,5 @@
 package ru.vladislavsumin.qa.feature.debug.ui.screen.debug
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.runtime.Composable
@@ -17,6 +16,7 @@ import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
 @GenerateScreenFactory
 internal class DebugScreen(
     umlDiagramComponentFactory: NavigationGraphUmlDiagramComponentFactory,
+    viewModelFactory: DebugScreenViewModelFactory,
     context: ComponentContext,
 ) : Screen(context),
     TabSupport {
@@ -25,8 +25,9 @@ internal class DebugScreen(
         TabSupport.TabState(icon = Icons.Default.BugReport, allowClose = false),
     )
 
+    private val viewModel: DebugScreenViewModel = viewModel { viewModelFactory.create() }
     private val umlComponent = umlDiagramComponentFactory.create(context.childContext("uml"))
 
     @Composable
-    override fun Render(modifier: Modifier) = umlComponent.Render(modifier.fillMaxSize())
+    override fun Render(modifier: Modifier) = DebugScreenContent(viewModel, umlComponent, modifier)
 }
