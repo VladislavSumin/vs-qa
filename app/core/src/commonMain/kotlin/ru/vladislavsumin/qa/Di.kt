@@ -18,6 +18,7 @@ import ru.vladislavsumin.qa.feature.adbDeviceList.featureAdbDeviceList
 import ru.vladislavsumin.qa.feature.bottomBar.featureBottomBar
 import ru.vladislavsumin.qa.feature.debug.featureDebug
 import ru.vladislavsumin.qa.feature.homeScreen.featureHomeScreen
+import ru.vladislavsumin.qa.feature.legalInfo.featureLegalInfo
 import ru.vladislavsumin.qa.feature.memoryIndicator.featureMemoryIndicator
 import ru.vladislavsumin.qa.feature.multiWindow.featureMultiWindow
 import ru.vladislavsumin.qa.feature.notifications.featureNotifications
@@ -40,6 +41,7 @@ fun createDi(platformModule: DI.Module?): DirectDI = DI {
     importOnce(Modules.featureAdbDeviceList())
     importOnce(Modules.featureBottomBar())
     importOnce(Modules.featureHomeScreen())
+    importOnce(Modules.featureLegalInfo())
     importOnce(Modules.featureLogRecent())
     importOnce(Modules.featureLogViewer())
     importOnce(Modules.featureMemoryIndicator())

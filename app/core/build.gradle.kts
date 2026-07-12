@@ -2,6 +2,7 @@ plugins {
     id("ru.vladislavsumin.convention.kmp.jvm")
     id("ru.vladislavsumin.convention.kmp.android-library")
     id("ru.vladislavsumin.convention.compose")
+    id("ru.vladislavsumin.convention.aboutlibraries")
 }
 
 kotlin {
@@ -14,6 +15,7 @@ kotlin {
             implementation(projects.feature.adbDeviceList.impl)
             implementation(projects.feature.bottomBar.impl)
             implementation(projects.feature.homeScreen.impl)
+            implementation(projects.feature.legalInfo.impl)
             implementation(projects.feature.logViewer.impl)
             implementation(projects.feature.logRecent.impl)
             implementation(projects.feature.logParser.anime)

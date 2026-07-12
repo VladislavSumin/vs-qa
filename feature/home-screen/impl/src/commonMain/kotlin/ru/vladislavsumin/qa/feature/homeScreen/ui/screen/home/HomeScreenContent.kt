@@ -1,6 +1,7 @@
 package ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.ui.dragAndDrop.DragAndDropOverlay
@@ -37,6 +39,7 @@ internal fun HomeScreenContent(
     onLogPathsSelected: (List<Path>) -> Unit,
     logRecentComponent: ComposeComponent,
     adbDeviceListComponent: ComposeComponent?,
+    onOpenLegalInfo: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     if (state) {
@@ -73,6 +76,16 @@ internal fun HomeScreenContent(
         DragAndDropOverlay(modifier = Modifier.padding(32.dp)) {
             DropTargetCard(onLogPathsSelected)
         }
+
+        Text(
+            text = "Правовая информация",
+            style = MaterialTheme.typography.bodySmall,
+            textDecoration = TextDecoration.Underline,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .clickable(onClick = onOpenLegalInfo)
+                .padding(8.dp),
+        )
     }
 }
 

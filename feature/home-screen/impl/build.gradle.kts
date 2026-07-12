@@ -9,6 +9,7 @@ kotlin {
             implementation(projects.feature.notifications.api)
             implementation(projects.feature.adbDevice.api)
             implementation(projects.feature.adbDeviceList.api)
+            implementation(projects.feature.legalInfo.api)
             implementation(projects.feature.logRecent.api)
             implementation(projects.feature.logViewer.api)
             implementation(projects.feature.tabs.api)

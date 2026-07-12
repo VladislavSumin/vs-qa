@@ -20,6 +20,7 @@ import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScree
 import ru.vladislavsumin.qa.feature.adbDeviceList.domain.AdbFeatureAvailabilityInteractor
 import ru.vladislavsumin.qa.feature.adbDeviceList.ui.component.adbDeviceList.AdbDeviceListComponentFactory
 import ru.vladislavsumin.qa.feature.homeScreen.HomeLogger
+import ru.vladislavsumin.qa.feature.legalInfo.ui.screen.legalInfo.LegalInfoScreenParams
 import ru.vladislavsumin.qa.feature.multiWindow.ui.screen.window.WindowScreenParams
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
@@ -86,5 +87,6 @@ internal class HomeScreen(
         onLogPathsSelected = viewModel::onDragAndDropLogsFiles,
         logRecentComponent = logRecentComponent,
         adbDeviceListComponent = adbDeviceListComponent,
+        onOpenLegalInfo = { navigator.open(LegalInfoScreenParams) },
     )
 }

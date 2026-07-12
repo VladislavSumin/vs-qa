@@ -18,6 +18,7 @@ dependencies {
     implementation(libs.gradlePlugins.sentry)
     implementation(libs.gradlePlugins.buildkonfig)
     implementation(libs.gradlePlugins.proguard)
+    implementation(libs.gradlePlugins.aboutLibraries)
 }
 
 gradlePlugin {

@@ -7,6 +7,7 @@ import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenPa
 import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScreenParams
 import ru.vladislavsumin.qa.feature.debug.ui.screen.debug.DebugScreenParams
 import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenParams
+import ru.vladislavsumin.qa.feature.legalInfo.ui.screen.legalInfo.LegalInfoScreenParams
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenParams
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.TabNavigationHost
 
@@ -21,6 +22,7 @@ internal class NavigationRegistrarImpl : NavigationRegistrar {
                     HomeScreenParams::class,
                     LogViewerScreenParams::class,
                     AdbDeviceScreenParams::class,
+                    LegalInfoScreenParams::class,
                 )
             },
         )

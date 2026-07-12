@@ -10,12 +10,14 @@ ktor = "3.3.3"
 room = "2.8.4"
 sqlite = "2.6.2"
 reorderable = "3.1.0"
+aboutLibraries = "14.1.0"
 
 [libraries]
 gradlePlugins-sentry = { module = "io.sentry:sentry-kotlin-multiplatform-gradle-plugin", version.ref = "sentry" }
 gradlePlugins-buildkonfig = { module = "com.codingfeline.buildkonfig:com.codingfeline.buildkonfig.gradle.plugin", version.ref = "buildkonfig" }
 gradlePlugins-proguard = { module = "com.guardsquare:proguard-gradle", version.ref = "proguard" }
 gradlePlugins-room = { module = "androidx.room:room-gradle-plugin", version.ref = "room" }
+gradlePlugins-aboutLibraries = { module = "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin", version.ref = "aboutLibraries" }
 
 betterParse = { module = "com.github.h0tk3y.betterParse:better-parse", version.ref = "betterParse" }
 r8 = { module = "com.android.tools:r8", version.ref = "r8" }
@@ -27,3 +29,5 @@ room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
+aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutLibraries" }
+aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
