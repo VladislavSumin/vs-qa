@@ -23,6 +23,7 @@ import ru.vladislavsumin.qa.feature.homeScreen.HomeLogger
 import ru.vladislavsumin.qa.feature.legalInfo.ui.screen.legalInfo.LegalInfoScreenParams
 import ru.vladislavsumin.qa.feature.multiWindow.ui.screen.window.WindowScreenParams
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
+import ru.vladislavsumin.qa.feature.settings.ui.screen.settings.SettingsScreenParams
 import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
 import kotlin.random.Random
 
@@ -88,5 +89,6 @@ internal class HomeScreen(
         logRecentComponent = logRecentComponent,
         adbDeviceListComponent = adbDeviceListComponent,
         onOpenLegalInfo = { navigator.open(LegalInfoScreenParams) },
+        onOpenSettings = { navigator.open(SettingsScreenParams) },
     )
 }

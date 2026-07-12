@@ -10,6 +10,7 @@ import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenParams
 import ru.vladislavsumin.qa.feature.legalInfo.ui.screen.legalInfo.LegalInfoScreenParams
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenParams
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.TabNavigationHost
+import ru.vladislavsumin.qa.feature.settings.ui.screen.settings.SettingsScreenParams
 
 internal class NavigationRegistrarImpl : NavigationRegistrar {
     override fun NavigationRegistry<ComponentContext>.register() {
@@ -23,6 +24,7 @@ internal class NavigationRegistrarImpl : NavigationRegistrar {
                     LogViewerScreenParams::class,
                     AdbDeviceScreenParams::class,
                     LegalInfoScreenParams::class,
+                    SettingsScreenParams::class,
                 )
             },
         )

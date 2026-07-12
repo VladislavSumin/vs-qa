@@ -22,6 +22,7 @@ kotlin {
             implementation(projects.feature.memoryIndicator.impl)
             implementation(projects.feature.notifications.impl)
             implementation(projects.feature.rootScreen.impl)
+            implementation(projects.feature.settings.impl)
             implementation(projects.feature.tabs.impl)
             implementation(projects.feature.windowTitle.impl)
             implementation(projects.feature.multiWindow.impl)

@@ -11,8 +11,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -40,6 +43,7 @@ internal fun HomeScreenContent(
     logRecentComponent: ComposeComponent,
     adbDeviceListComponent: ComposeComponent?,
     onOpenLegalInfo: () -> Unit,
+    onOpenSettings: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     if (state) {
@@ -77,15 +81,26 @@ internal fun HomeScreenContent(
             DropTargetCard(onLogPathsSelected)
         }
 
-        Text(
-            text = "Правовая информация",
-            style = MaterialTheme.typography.bodySmall,
-            textDecoration = TextDecoration.Underline,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .clickable(onClick = onOpenLegalInfo)
-                .padding(8.dp),
-        )
+        Row(
+            modifier = Modifier.align(Alignment.BottomEnd),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Правовая информация",
+                style = MaterialTheme.typography.bodySmall,
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier
+                    .clickable(onClick = onOpenLegalInfo)
+                    .padding(8.dp),
+            )
+            Icon(
+                imageVector = Icons.Default.Settings,
+                contentDescription = "Настройки",
+                modifier = Modifier
+                    .clickable(onClick = onOpenSettings)
+                    .padding(8.dp),
+            )
+        }
     }
 }
 

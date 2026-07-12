@@ -23,6 +23,7 @@ import ru.vladislavsumin.qa.feature.memoryIndicator.featureMemoryIndicator
 import ru.vladislavsumin.qa.feature.multiWindow.featureMultiWindow
 import ru.vladislavsumin.qa.feature.notifications.featureNotifications
 import ru.vladislavsumin.qa.feature.rootScreen.featureRootScreen
+import ru.vladislavsumin.qa.feature.settings.featureSettings
 import ru.vladislavsumin.qa.feature.tabs.featureTabs
 
 fun createDi(platformModule: DI.Module?): DirectDI = DI {
@@ -47,6 +48,7 @@ fun createDi(platformModule: DI.Module?): DirectDI = DI {
     importOnce(Modules.featureMemoryIndicator())
     importOnce(Modules.featureNotifications())
     importOnce(Modules.featureRootScreen())
+    importOnce(Modules.featureSettings())
     importOnce(Modules.featureTabs())
     importOnce(Modules.featureMultiWindow())
 

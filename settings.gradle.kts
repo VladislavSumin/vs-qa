@@ -42,6 +42,7 @@ feature("memory-indicator")
 feature("multi-window")
 feature("notifications")
 feature("root-screen")
+feature("settings")
 feature("tabs")
 feature("window-title")
 
