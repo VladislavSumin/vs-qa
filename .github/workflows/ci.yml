@@ -34,7 +34,7 @@ jobs:
 
   about-libraries:
     name: check about libraries is up to date
-    runs-on: ubuntu-24.04
+    runs-on: macos-15
     timeout-minutes: 15
     steps:
       - name: Clone vs-qa repository
