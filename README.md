@@ -20,7 +20,7 @@ vs-qa [path_to_log_file] [path_to_mapping_file]
 Обновление:
 
 ```bash
-brew upgrade vs-qa
+brew update && brew upgrade vs-qa
 ```
 
 ### Вручную
