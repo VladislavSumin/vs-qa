@@ -34,12 +34,16 @@ class LogHeadlessProcessorImplTest {
         synchronized(TestLoggerInit) {
             if (!TestLoggerInit.initialized) {
                 TestLoggerInit.initialized = true
-                LoggerManager.init(externalLoggerFactory = {
-                    object : ExternalLogger {
-                        override fun log(level: LogLevel, msg: String) = Unit
-                        override fun log(level: LogLevel, throwable: Throwable, msg: String) = Unit
-                    }
-                })
+                try {
+                    LoggerManager.init(externalLoggerFactory = {
+                        object : ExternalLogger {
+                            override fun log(level: LogLevel, msg: String) = Unit
+                            override fun log(level: LogLevel, throwable: Throwable, msg: String) = Unit
+                        }
+                    })
+                } catch (_: IllegalStateException) {
+                    // Already initialized by another test class
+                }
             }
         }
     }
