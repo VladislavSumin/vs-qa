@@ -32,6 +32,7 @@ kotlin {
         }
 
         jvmMain.dependencies {
+            implementation(projects.feature.mcp.api)
             implementation(projects.feature.logViewer.api)
             implementation(projects.feature.multiWindow.impl)
             implementation(projects.feature.windowTitle.impl)
@@ -49,8 +50,6 @@ kotlin {
             implementation(vsCoreLibs.kotlin.serialization.json)
 
             implementation(libs.clikt)
-            implementation(libs.mcp.kotlin.sdk.server)
-            implementation("org.apache.logging.log4j:log4j-slf4j2-impl:2.26.0")
         }
     }
 }

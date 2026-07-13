@@ -13,6 +13,7 @@ import ru.vladislavsumin.core.serialization.yaml.coreSerializationYaml
 import ru.vladislavsumin.feature.logParser.anime.domain.featureAnimeLogParser
 import ru.vladislavsumin.feature.logRecent.featureLogRecent
 import ru.vladislavsumin.feature.logViewer.featureLogViewer
+import ru.vladislavsumin.feature.mcp.domain.featureMcp
 import ru.vladislavsumin.qa.feature.adbDevice.featureAdbDevice
 import ru.vladislavsumin.qa.feature.adbDeviceList.featureAdbDeviceList
 import ru.vladislavsumin.qa.feature.bottomBar.featureBottomBar
@@ -45,6 +46,7 @@ fun createDi(platformModule: DI.Module?): DirectDI = DI {
     importOnce(Modules.featureLegalInfo())
     importOnce(Modules.featureLogRecent())
     importOnce(Modules.featureLogViewer())
+    importOnce(Modules.featureMcp())
     importOnce(Modules.featureMemoryIndicator())
     importOnce(Modules.featureNotifications())
     importOnce(Modules.featureRootScreen())

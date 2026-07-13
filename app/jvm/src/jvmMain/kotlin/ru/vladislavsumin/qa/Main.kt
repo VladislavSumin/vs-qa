@@ -10,6 +10,7 @@ import io.sentry.kotlin.multiplatform.Sentry
 import org.kodein.di.instance
 import ru.vladislavsumin.core.decompose.compose.runOnUiThread
 import ru.vladislavsumin.core.logger.manager.LoggerManager
+import ru.vladislavsumin.feature.mcp.domain.McpServer
 import ru.vladislavsumin.qa.feature.multiWindow.ui.component.multiWindowRootScreen.MultiWindowRootScreenComponentFactory
 import kotlin.io.path.Path
 import kotlin.system.exitProcess
@@ -24,7 +25,7 @@ fun main(args: Array<String>) {
     if (args.firstOrNull() == "--mcp-server") {
         val di = preInit(stdout = false)
         MainLogger.i("App version: ${BuildConfig.version}")
-        runMcpServer(di)
+        di.instance<McpServer>().start(BuildConfig.version)
         return
     }
 

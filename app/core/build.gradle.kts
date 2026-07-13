@@ -16,6 +16,7 @@ kotlin {
             implementation(projects.feature.bottomBar.impl)
             implementation(projects.feature.homeScreen.impl)
             implementation(projects.feature.legalInfo.impl)
+            implementation(projects.feature.mcp.impl)
             implementation(projects.feature.logViewer.impl)
             implementation(projects.feature.logRecent.impl)
             implementation(projects.feature.logParser.anime)
