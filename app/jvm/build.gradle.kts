@@ -7,6 +7,7 @@ import java.io.File
 plugins {
     id("ru.vladislavsumin.convention.kmp.jvm")
     id("ru.vladislavsumin.convention.compose")
+    kotlin("plugin.serialization")
     id("com.codingfeline.buildkonfig")
     id("io.sentry.kotlin.multiplatform.gradle")
 }

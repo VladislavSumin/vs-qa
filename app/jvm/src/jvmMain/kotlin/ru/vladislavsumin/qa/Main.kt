@@ -21,6 +21,13 @@ fun main(args: Array<String>) {
         options.dsn = "https://ac13621e67953007e14fcfd5642531c4@o512687.ingest.us.sentry.io/4510488819793920"
     }
 
+    if (args.firstOrNull() == "--mcp-server") {
+        val di = preInit(stdout = false)
+        MainLogger.i("App version: ${BuildConfig.version}")
+        runMcpServer(di)
+        return
+    }
+
     if (args.firstOrNull() == "--mcp") {
         val di = preInit(stdout = false)
         MainLogger.i("App version: ${BuildConfig.version}")
