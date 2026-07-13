@@ -21,13 +21,15 @@ fun main(args: Array<String>) {
         options.dsn = "https://ac13621e67953007e14fcfd5642531c4@o512687.ingest.us.sentry.io/4510488819793920"
     }
 
-    val di = preInit()
-    MainLogger.i("App version: ${BuildConfig.version}")
-
     if (args.firstOrNull() == "--mcp") {
+        val di = preInit(stdout = false)
+        MainLogger.i("App version: ${BuildConfig.version}")
         McpCommand(di).main(args.drop(1).toTypedArray())
         return
     }
+
+    val di = preInit()
+    MainLogger.i("App version: ${BuildConfig.version}")
 
     val logPath = if (args.isNotEmpty()) Path(args[0]) else null
     val mappingPath = if (args.size > 1) Path(args[1]) else null
