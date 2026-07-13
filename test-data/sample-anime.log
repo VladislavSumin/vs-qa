@@ -1,0 +1,200 @@
+2026-07-01T+03:00 09:00:00.001 main I App AppInfo version=4.2.1 build=1205 device=Pixel8
+2026-07-01T+03:00 09:00:00.015 main D App starting application
+2026-07-01T+03:00 09:00:00.030 main I BluetoothManager adapter initialized, state=OFF
+2026-07-01T+03:00 09:00:00.045 main I WiFiService scanning disabled on startup
+2026-07-01T+03:00 09:00:00.060 main I NetworkMonitor network callback registered
+2026-07-01T+03:00 09:00:00.075 main D DatabaseHelper opening database: /data/data/com.example/databases/app.db
+2026-07-01T+03:00 09:00:00.090 main D DatabaseHelper database version 15, no migration needed
+2026-07-01T+03:00 09:00:00.105 main I AuthService restoring session from token store
+2026-07-01T+03:00 09:00:00.120 main D AuthService cached token found, expires in 3600s
+2026-07-01T+03:00 09:00:00.135 main I App init complete, took 134ms
+2026-07-01T+03:00 09:00:01.000 main I App APP_START run=1
+2026-07-01T+03:00 09:00:01.001 main V BluetoothManager registering GATT callbacks
+2026-07-01T+03:00 09:00:01.010 main D BluetoothManager service connected, discovering nearby devices
+2026-07-01T+03:00 09:00:02.500 bt-worker I BluetoothManager device discovered: GalaxyBuds (00:11:22:33:AA:BB) rssi=-65
+2026-07-01T+03:00 09:00:02.505 bt-worker D BluetoothManager attempting bond with GalaxyBuds
+2026-07-01T+03:00 09:00:03.200 bt-worker I BluetoothManager bonded successfully: GalaxyBuds
+2026-07-01T+03:00 09:00:03.201 main D App bluetooth device connected, updating UI
+2026-07-01T+03:00 09:00:04.000 io-pool I NetworkMonitor WiFi connected: SSID=Office-Guest signal=-48dBm speed=866Mbps
+2026-07-01T+03:00 09:00:04.100 io-pool I AuthService authenticating with refresh token
+2026-07-01T+03:00 09:00:04.500 io-pool I AuthService authentication successful, user=user123
+2026-07-01T+03:00 09:00:04.501 main I App user session active: user123
+2026-07-01T+03:00 09:00:05.000 sync-worker D DatabaseHelper syncing messages, lastSyncId=0
+2026-07-01T+03:00 09:00:05.200 sync-worker I GcmReceiver upstream message: type=chat_list
+2026-07-01T+03:00 09:00:05.300 sync-worker D DatabaseHelper inserted 42 new messages
+2026-07-01T+03:00 09:00:05.301 main D App notification: new messages from Alice, Bob
+2026-07-01T+03:00 09:00:06.000 ui I MediaPlayer prefetching album art for trackId=A772
+2026-07-01T+03:00 09:00:06.500 ui D MediaPlayer loaded artwork 512x512 in 498ms
+2026-07-01T+03:00 09:00:06.501 ui I MediaPlayer ready to play: "Summer Vibes" by DJ Flow
+2026-07-01T+03:00 09:00:10.000 io-pool W NetworkMonitor WiFi signal dropped to -78dBm, possible interference
+2026-07-01T+03:00 09:00:10.100 io-pool D NetworkMonitor RSSI history: [-45, -48, -55, -62, -70, -78]
+2026-07-01T+03:00 09:00:12.000 main I App user opened screen: ChatListActivity
+2026-07-01T+03:00 09:00:12.010 main D App loading chat list from cache
+2026-07-01T+03:00 09:00:12.100 main I App chat list displayed: 15 conversations
+2026-07-01T+03:00 09:00:15.000 main E PaymentGateway API error: timeout after 30s
+2026-07-01T+03:00 09:00:15.001 main E PaymentGateway request=GET /api/v1/payment/methods endpoint=https://pay.example.com
+2026-07-01T+03:00 09:00:15.002 main W App retrying payment methods fetch in 5s
+2026-07-01T+03:00 09:00:20.000 main I PaymentGateway retry successful, 3 methods available
+2026-07-01T+03:00 09:00:20.001 main D PaymentGateway methods: card, wallet, crypto
+2026-07-01T+03:00 09:00:25.000 bt-worker W BluetoothManager GalaxyBuds battery low: 15%
+2026-07-01T+03:00 09:00:25.001 main D App showing battery warning notification
+2026-07-01T+03:00 09:01:00.000 io-pool I NetworkMonitor cellular fallback: 4G signal=-85dBm
+2026-07-01T+03:00 09:01:00.100 io-pool W NetworkMonitor WiFi disconnected, reason=AP_OUT_OF_RANGE
+2026-07-01T+03:00 09:01:00.200 main W App connectivity changed to cellular, suspending sync
+2026-07-01T+03:00 09:01:30.000 sync-worker D GcmReceiver periodic tick, queue_size=0
+2026-07-01T+03:00 09:02:00.000 main I App user opened screen: SettingsActivity
+2026-07-01T+03:00 09:02:00.050 main D App loading preferences from DataStore
+2026-07-01T+03:00 09:02:01.000 main V App preferences: theme=DARK, lang=ru, notifications=ON
+2026-07-01T+03:00 09:02:10.000 ui D MediaPlayer track ended, next in queue: "Ocean Drive"
+2026-07-01T+03:00 09:02:10.500 ui I MediaPlayer buffering track, source=streaming quality=HIGH
+2026-07-01T+03:00 09:02:11.000 ui I MediaPlayer now playing: "Ocean Drive" by Miami Nights
+2026-07-01T+03:00 09:02:30.000 io-pool E DatabaseHelper SQLiteConstraintException: UNIQUE constraint failed: messages._id
+2026-07-01T+03:00 09:02:30.001 io-pool E DatabaseHelper failed to insert message, duplicate id=998877
+java.lang.RuntimeException: Failed to insert row
+	at androidx.sqlite.db.framework.FrameworkSQLiteDatabase.executeInsert(FrameworkSQLiteDatabase.kt:120)
+	at ru.ok.tamtam.android.messages.RoomMessagesDatabase.insert(RoomMessagesDatabase.kt:346)
+	at one.me.sdk.tasks.msg.MsgGetApiTask.onSuccess(MsgGetApiTask.kt:19)
+	at ru.ok.tamtam.services.TamServiceImpl.handleMessage(TamServiceImpl.java:297)
+Caused by: android.database.sqlite.SQLiteConstraintException: UNIQUE constraint failed: messages._id (code 1555)
+	at android.database.sqlite.SQLiteConnection.nativeExecuteForLastInsertedRowId(Native Method)
+	at android.database.sqlite.SQLiteConnection.executeForLastInsertedRowId(SQLiteConnection.java:910)
+	at android.database.sqlite.SQLiteSession.executeForLastInsertedRowId(SQLiteSession.java:788)
+	... 4 more
+2026-07-01T+03:00 09:02:30.050 io-pool W DatabaseHelper retrying insert with new id
+2026-07-01T+03:00 09:02:30.100 io-pool D DatabaseHelper retry successful, new id=998878
+2026-07-01T+03:00 09:05:00.000 main I App user opened screen: ProfileActivity
+2026-07-01T+03:00 09:05:00.050 main D AuthService checking token validity
+2026-07-01T+03:00 09:05:00.100 main D AuthService token still valid, remaining=1800s
+2026-07-01T+03:00 09:05:01.000 io-pool I AuthService fetching user profile avatar
+2026-07-01T+03:00 09:05:02.000 io-pool D AuthService avatar downloaded 256x256, 48KB
+2026-07-01T+03:00 09:05:02.001 main I App profile screen rendered
+2026-07-01T+03:00 09:06:00.000 bt-worker I BluetoothManager GATT characteristic read: battery_level=15
+2026-07-01T+03:00 09:06:00.001 bt-worker D BluetoothManager service UUID: 0000180f-0000-1000-8000-00805f9b34fb
+2026-07-01T+03:00 09:07:30.000 ui V MediaPlayer waveform computed for track Ocean Drive, peaks=2048
+2026-07-01T+03:00 09:08:00.000 sync-worker I GcmReceiver push notification: type=new_message chatId=A7F3
+2026-07-01T+03:00 09:08:00.001 sync-worker D GcmReceiver payload: {"chatId":"A7F3","from":"Carol","text":"See you at 6!"}
+2026-07-01T+03:00 09:08:00.010 main D App notification: new message from Carol
+2026-07-01T+03:00 09:08:00.500 main I App user opened chat: Carol (chatId=A7F3)
+2026-07-01T+03:00 09:08:01.000 main D App loading chat messages from db, limit=50 offset=0
+2026-07-01T+03:00 09:08:01.200 main I App chat messages displayed: 23 loaded
+2026-07-01T+03:00 09:10:00.000 io-pool I NetworkMonitor WiFi reconnected: SSID=Office-Guest signal=-52dBm
+2026-07-01T+03:00 09:10:00.001 main I App connectivity restored, resuming sync
+2026-07-01T+03:00 09:10:00.010 sync-worker I GcmReceiver sync resumed, pending=3
+2026-07-01T+03:00 09:10:05.000 sync-worker D DatabaseHelper synced chat list, 2 new conversations
+2026-07-01T+03:00 09:10:05.001 main D App notification: 2 new conversations
+2026-07-01T+03:00 09:12:00.000 io-pool E NetworkMonitor SSL handshake failed: api.example.com
+javax.net.ssl.SSLHandshakeException: java.security.cert.CertPathValidatorException: Trust anchor for certification path not found
+	at com.android.org.conscrypt.ConscryptEngine.unwrap(ConscryptEngine.java:322)
+	at com.android.org.conscrypt.Java8EngineWrapper.unwrap(Java8EngineWrapper.java:195)
+	at okhttp3.internal.connection.RealConnection.connectTls(RealConnection.kt:379)
+Caused by: java.security.cert.CertificateException: Certificate expired at 2026-06-30T23:59:59Z
+	at com.android.org.conscrypt.TrustManagerImpl.checkTrustedRecursive(TrustManagerImpl.java:657)
+	at com.android.org.conscrypt.TrustManagerImpl.checkTrusted(TrustManagerImpl.java:508)
+	... 3 more
+2026-07-01T+03:00 09:12:00.100 io-pool W NetworkMonitor API call failed, retry with backup endpoint
+2026-07-01T+03:00 09:12:00.500 io-pool I NetworkMonitor backup endpoint successful: api2.example.com
+2026-07-01T+03:00 09:13:00.000 main W App memory pressure: heap=128MB/256MB, request GC
+2026-07-01T+03:00 09:13:00.100 main D App GC freed 45MB, heap now 83MB/256MB
+2026-07-01T+03:00 09:14:00.000 main E CrashHandler uncaught exception in thread bt-worker
+java.lang.SecurityException: Need BLUETOOTH_CONNECT permission
+	at android.os.Parcel.createExceptionOrNull(Parcel.java:3012)
+	at android.os.Parcel.createException(Parcel.java:2995)
+	at android.os.Parcel.readException(Parcel.java:2978)
+	at android.bluetooth.BluetoothGatt.readCharacteristic(BluetoothGatt.java:876)
+	at com.example.bluetooth.BluetoothManager.readBatteryLevel(BluetoothManager.kt:234)
+	at com.example.bluetooth.BluetoothManager$monitorDevice$1.invokeSuspend(BluetoothManager.kt:189)
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:34)
+	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:108)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:644)
+	at java.lang.Thread.run(Thread.java:1012)
+2026-07-01T+03:00 09:14:00.100 main E CrashHandler terminating process
+2026-07-01T+03:00 09:14:00.200 main F App FATAL: process will be restarted by watchdog
+2026-07-01T+03:00 09:14:05.000 main I App AppInfo version=4.2.1 build=1205 device=Pixel8
+2026-07-01T+03:00 09:14:05.010 main D App restart after crash, previous exit code=1
+2026-07-01T+03:00 09:14:05.020 main I App APP_START run=2
+2026-07-01T+03:00 09:14:05.030 main I BluetoothManager adapter initialized, state=OFF
+2026-07-01T+03:00 09:14:05.050 main I WiFiService scanning disabled on startup
+2026-07-01T+03:00 09:14:05.070 main I NetworkMonitor network callback registered
+2026-07-01T+03:00 09:14:05.090 main D DatabaseHelper opening database: /data/data/com.example/databases/app.db
+2026-07-01T+03:00 09:14:05.100 main D DatabaseHelper database version 15, no migration needed
+2026-07-01T+03:00 09:14:05.120 main W App crash recovery mode, skipping non-essential init
+2026-07-01T+03:00 09:14:05.150 main I AuthService restoring session from token store
+2026-07-01T+03:00 09:14:05.200 main D AuthService cached token found, expires in 1600s
+2026-07-01T+03:00 09:14:05.250 main I App init complete, took 245ms (recovery mode)
+2026-07-01T+03:00 09:14:06.000 main I App user opened screen: ChatListActivity
+2026-07-01T+03:00 09:14:06.100 main D App loading chat list from cache
+2026-07-01T+03:00 09:14:06.500 main I App chat list displayed: 17 conversations
+2026-07-01T+03:00 09:14:10.000 main I App user opened chat: Alice (chatId=B2E1)
+2026-07-01T+03:00 09:14:10.100 main D App loading chat messages from db, limit=50 offset=0
+2026-07-01T+03:00 09:14:10.300 main I App chat messages displayed: 12 loaded
+2026-07-01T+03:00 09:15:00.000 io-pool I NetworkMonitor WiFi connected: SSID=Office-Guest signal=-50dBm speed=780Mbps
+2026-07-01T+03:00 09:15:00.100 io-pool I AuthService authenticating with refresh token
+2026-07-01T+03:00 09:15:00.500 io-pool I AuthService authentication successful, user=user123
+2026-07-01T+03:00 09:15:30.000 sync-worker D GcmReceiver upstream message: type=chat_sync
+2026-07-01T+03:00 09:15:30.500 sync-worker D DatabaseHelper synced messages, 5 new for chat A7F3
+2026-07-01T+03:00 09:15:30.501 main D App notification: 5 new messages from Carol
+2026-07-01T+03:00 09:16:00.000 ui I MediaPlayer resuming playback: "Ocean Drive" position=4:32
+2026-07-01T+03:00 09:16:01.000 ui D MediaPlayer audio focus gained, volume=0.85
+2026-07-01T+03:00 09:17:00.000 main I App user sent message to Carol: "On my way!"
+2026-07-01T+03:00 09:17:00.050 main D DatabaseHelper inserting outgoing message, chatId=A7F3
+2026-07-01T+03:00 09:17:00.100 sync-worker I GcmReceiver sending upstream: type=send_message chatId=A7F3
+2026-07-01T+03:00 09:17:01.000 sync-worker D GcmReceiver message sent, serverId=MSG_998877
+2026-07-01T+03:00 09:17:01.001 main D DatabaseHelper message marked as sent, id=MSG_998877
+2026-07-01T+03:00 09:18:00.000 io-pool E NetworkMonitor DNS resolution failed: api.example.com
+java.net.UnknownHostException: Unable to resolve host "api.example.com": No address associated with hostname
+	at java.net.InetAddress.lookupHostByName(InetAddress.java:1108)
+	at java.net.InetAddress.getAllByNameImpl(InetAddress.java:485)
+	at okhttp3.Dns$Companion$DnsSystem.lookup(Dns.kt:49)
+	at okhttp3.internal.connection.RouteSelector.resetNextInetSocketAddress(RouteSelector.kt:171)
+	at okhttp3.internal.connection.RouteSelector.nextProxy(RouteSelector.kt:135)
+Caused by: android.system.GaiException: android_getaddrinfo failed: EAI_NODATA (No address associated with hostname)
+	at libcore.io.Linux.android_getaddrinfo(Native Method)
+	at libcore.io.ForwardingOs.android_getaddrinfo(ForwardingOs.java:74)
+	... 5 more
+2026-07-01T+03:00 09:18:00.100 io-pool W NetworkMonitor using cached IP for api.example.com: 203.0.113.45
+2026-07-01T+03:00 09:18:00.300 io-pool D NetworkMonitor fallback connection established via cached DNS
+2026-07-01T+03:00 09:19:00.000 bt-worker I BluetoothManager device disconnected: GalaxyBuds reason=link_loss
+2026-07-01T+03:00 09:19:00.010 main D App bluetooth disconnected, updating UI
+2026-07-01T+03:00 09:19:30.000 bt-worker I BluetoothManager attempting reconnect to GalaxyBuds (1/3)
+2026-07-01T+03:00 09:19:32.000 bt-worker I BluetoothManager reconnected: GalaxyBuds
+2026-07-01T+03:00 09:19:32.001 main D App bluetooth reconnected
+2026-07-01T+03:00 09:20:00.000 sync-worker I GcmReceiver push notification: type=friend_request fromId=U556
+2026-07-01T+03:00 09:20:00.001 main D App notification: friend request from Dave
+2026-07-01T+03:00 09:20:10.000 main I App user opened screen: FriendRequestsActivity
+2026-07-01T+03:00 09:20:10.500 main I AuthService fetching friend requests list
+2026-07-01T+03:00 09:20:11.000 io-pool D AuthService friend requests loaded: 1 pending
+2026-07-01T+03:00 09:20:12.000 main I App user accepted friend request from Dave
+2026-07-01T+03:00 09:20:12.100 sync-worker I GcmReceiver sending upstream: type=accept_friend fromId=U556
+2026-07-01T+03:00 09:20:12.500 sync-worker D GcmReceiver friend request accepted, server confirmed
+2026-07-01T+03:00 09:20:13.000 main I App new conversation created: Dave (chatId=D4F9)
+2026-07-01T+03:00 09:21:00.000 main I App user opened screen: SettingsActivity
+2026-07-01T+03:00 09:21:00.100 main V App preferences: theme=DARK, lang=ru, notifications=ON, battery_optimization=DISABLED
+2026-07-01T+03:00 09:21:30.000 main I App user changed setting: theme=AUTO
+2026-07-01T+03:00 09:21:30.001 main D App updating theme, current=night recomputing colors
+2026-07-01T+03:00 09:21:30.200 ui D App theme applied: night colors, accent=blue surface=dark_gray
+2026-07-01T+03:00 09:22:00.000 io-pool W NetworkMonitor cellular signal weak: -105dBm, may drop connection
+2026-07-01T+03:00 09:22:10.000 io-pool W NetworkMonitor cellular signal critical: -112dBm
+2026-07-01T+03:00 09:22:20.000 io-pool E NetworkMonitor cellular connection lost, no networks available
+2026-07-01T+03:00 09:22:20.100 main W App all networks lost, entering offline mode
+2026-07-01T+03:00 09:22:20.500 main D App queueing sync tasks: 2 pending
+2026-07-01T+03:00 09:23:00.000 io-pool I NetworkMonitor WiFi found: SSID=Home-Network signal=-70dBm
+2026-07-01T+03:00 09:23:00.100 io-pool D NetworkMonitor connecting to Home-Network
+2026-07-01T+03:00 09:23:02.000 io-pool I NetworkMonitor WiFi connected: SSID=Home-Network signal=-67dBm speed=144Mbps
+2026-07-01T+03:00 09:23:02.001 main I App connectivity restored, processing offline queue (2 tasks)
+2026-07-01T+03:00 09:23:02.500 sync-worker I GcmReceiver processing queued tasks
+2026-07-01T+03:00 09:23:03.000 sync-worker D GcmReceiver offline queue processed: 2 sent, 0 failed
+2026-07-01T+03:00 09:24:00.000 main I App user opened screen: ChatListActivity
+2026-07-01T+03:00 09:24:00.100 main D App loading chat list from cache
+2026-07-01T+03:00 09:24:00.500 main I App chat list displayed: 18 conversations (3 unread)
+2026-07-01T+03:00 09:25:00.000 ui I MediaPlayer track ended, next in queue: "Neon Lights"
+2026-07-01T+03:00 09:25:00.500 ui I MediaPlayer buffering track, source=streaming quality=HIGH
+2026-07-01T+03:00 09:25:01.000 ui I MediaPlayer now playing: "Neon Lights" by Synthwave
+2026-07-01T+03:00 09:26:00.000 io-pool E PaymentGateway API error: 502 Bad Gateway
+2026-07-01T+03:00 09:26:00.001 io-pool W PaymentGateway request failed, retry 1/3 in 2s
+2026-07-01T+03:00 09:26:02.000 io-pool W PaymentGateway request failed, retry 2/3 in 4s
+2026-07-01T+03:00 09:26:06.000 io-pool W PaymentGateway request failed, retry 3/3 in 8s
+2026-07-01T+03:00 09:26:14.000 io-pool E PaymentGateway all retries exhausted, endpoint unavailable
+2026-07-01T+03:00 09:26:14.001 main W App payment methods unavailable, showing cached data
+2026-07-01T+03:00 09:27:00.000 main I App APP_START run=2
+2026-07-01T+03:00 09:27:00.001 main I App user navigated to home

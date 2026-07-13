@@ -8,6 +8,8 @@
 
 /*.zip
 /**/*.log
+!/test-data/*.log
+!/test-data/*.zip
 
 /local.properties
 /mapping.txt
