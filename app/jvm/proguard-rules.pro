@@ -20,3 +20,10 @@
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
 -dontwarn android.annotation.SuppressLint
 -dontwarn com.jetbrains.JBR
+-dontwarn kotlinx.coroutines.slf4j.**
+-dontwarn ch.qos.logback.classic.**
+-dontwarn aQute.bnd.annotation.spi.ServiceProvider
+-dontwarn org.osgi.annotation.bundle.Export
+-dontwarn org.osgi.annotation.versioning.Version
+-dontwarn org.osgi.annotation.**
+-dontwarn com.oracle.svm.core.annotate.**
