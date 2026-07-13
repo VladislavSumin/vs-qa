@@ -11,6 +11,7 @@ room = "2.8.4"
 sqlite = "2.6.2"
 reorderable = "3.1.0"
 aboutLibraries = "14.1.0"
+mcp-kotlin-sdk = "0.14.0"
 
 [libraries]
 gradlePlugins-sentry = { module = "io.sentry:sentry-kotlin-multiplatform-gradle-plugin", version.ref = "sentry" }
@@ -31,3 +32,4 @@ sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sql
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutLibraries" }
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
+mcp-kotlin-sdk-server = { module = "io.modelcontextprotocol:kotlin-sdk-server", version.ref = "mcp-kotlin-sdk" }

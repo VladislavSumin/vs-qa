@@ -31,6 +31,7 @@ kotlin {
         }
 
         jvmMain.dependencies {
+            implementation(projects.feature.mcp.api)
             implementation(projects.feature.multiWindow.impl)
             implementation(projects.feature.windowTitle.impl)
 

@@ -10,17 +10,21 @@ object TestLogger {
     fun init() {
         if (!isInitialized) {
             isInitialized = true
-            LoggerManager.init(externalLoggerFactory = {
-                object : ExternalLogger {
-                    override fun log(level: LogLevel, msg: String) {
-                        // no_op
-                    }
+            try {
+                LoggerManager.init(externalLoggerFactory = {
+                    object : ExternalLogger {
+                        override fun log(level: LogLevel, msg: String) {
+                            // no_op
+                        }
 
-                    override fun log(level: LogLevel, throwable: Throwable, msg: String) {
-                        // no_op
+                        override fun log(level: LogLevel, throwable: Throwable, msg: String) {
+                            // no_op
+                        }
                     }
-                }
-            })
+                })
+            } catch (_: IllegalStateException) {
+                // Already initialized by another test class
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ import io.sentry.kotlin.multiplatform.Sentry
 import org.kodein.di.instance
 import ru.vladislavsumin.core.decompose.compose.runOnUiThread
 import ru.vladislavsumin.core.logger.manager.LoggerManager
+import ru.vladislavsumin.feature.mcp.domain.McpServer
 import ru.vladislavsumin.qa.feature.multiWindow.ui.component.multiWindowRootScreen.MultiWindowRootScreenComponentFactory
 import kotlin.io.path.Path
 import kotlin.system.exitProcess
@@ -17,9 +18,15 @@ import kotlin.system.exitProcess
 fun main(args: Array<String>) {
     setExitOnUncaughtException()
 
-    // TODO вынести в отдельный core модуль
     Sentry.init { options ->
         options.dsn = "https://ac13621e67953007e14fcfd5642531c4@o512687.ingest.us.sentry.io/4510488819793920"
+    }
+
+    if (args.firstOrNull() == "--mcp-server") {
+        val di = preInit(stdout = false)
+        MainLogger.i("App version: ${BuildConfig.version}")
+        di.instance<McpServer>().start(BuildConfig.version)
+        return
     }
 
     val di = preInit()
@@ -28,7 +35,6 @@ fun main(args: Array<String>) {
     val logPath = if (args.isNotEmpty()) Path(args[0]) else null
     val mappingPath = if (args.size > 1) Path(args[1]) else null
 
-    // Создаем рутовый Decompose lifecycle.
     val lifecycle = LifecycleRegistry()
 
     val rootScreenComponent = runOnUiThread {
@@ -39,8 +45,6 @@ fun main(args: Array<String>) {
     application {
         rootScreenComponent.Render(Modifier)
         LaunchedEffect(lifecycle) {
-            // Тут у нас нет контроля лайфсайкла так как нет окна, поэтому делаем всегда resume()
-            // Окна сами управляют дочерним лайвсайклом.
             lifecycle.resume()
         }
     }
