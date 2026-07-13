@@ -1,6 +1,6 @@
 # VS-QA
 
-Просмотровщик логов.
+Просмотровщик логов с поддержкой AI-анализа через MCP.
 
 ## Установка
 
@@ -27,6 +27,28 @@ brew upgrade vs-qa
 
 * Скачать vs-qa.jar из последнего [релиза](https://github.com/VladislavSumin/vs-qa/releases). (На данный момент поддерживается только macos)
 * Запустить командой `java -jar vs-qa.jar [path_to_log_file] [path_to_mapping_file]`
+
+## AI-анализ логов (MCP)
+
+VS-QA умеет работать как MCP-сервер — AI-ассистент может самостоятельно открывать логи, фильтровать и искать в них ошибки.
+
+### Подключение к OpenCode
+
+Добавьте в конфиг проекта (`.opencode/config.json` или `opencode.json`):
+
+```json
+{
+  "mcp": {
+    "vs-qa": {
+      "type": "local",
+      "command": ["vs-qa", "--mcp-server"],
+      "enabled": true
+    }
+  }
+}
+```
+
+После перезапуска OpenCode агент получит инструменты `open_log`, `query_log`, `get_log_info`, `close_log` и сможет анализировать логи напрямую.
 
 ## Локальная сборка
 
