@@ -2,6 +2,7 @@ package ru.vladislavsumin.feature.logViewer.domain.logs
 
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
 import ru.vladislavsumin.feature.logParser.domain.LogRange
+import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
 import java.time.Instant
 
 /**
@@ -37,6 +38,24 @@ data class LogRecord(
     val logLevel: LogLevel,
     val searchHighlights: List<IntRange>?,
 )
+
+internal fun RawLogRecord.toLogRecord(order: LogOrder) = LogRecord(
+    order = order,
+    raw = raw,
+    time = time,
+    timeDate = timeDate,
+    timeInstant = timeInstant,
+    level = level,
+    processId = processId,
+    thread = thread,
+    tag = tag,
+    message = message,
+    searchHighlights = null,
+    logLevel = logLevel,
+)
+
+internal fun List<RawLogRecord>.toLogRecords(): List<LogRecord> =
+    mapIndexed { index, record -> record.toLogRecord(LogOrder(index)) }
 
 @JvmInline
 value class LogOrder(val value: Int) : Comparable<LogOrder> {

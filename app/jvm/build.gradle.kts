@@ -31,6 +31,7 @@ kotlin {
         }
 
         jvmMain.dependencies {
+            implementation(projects.feature.logViewer.api)
             implementation(projects.feature.multiWindow.impl)
             implementation(projects.feature.windowTitle.impl)
 
@@ -43,6 +44,10 @@ kotlin {
             implementation(vsCoreLibs.decompose.core)
             implementation(vsCoreLibs.decompose.extensions.compose)
             implementation(vsCoreLibs.kodein.core)
+
+            implementation(vsCoreLibs.kotlin.serialization.json)
+
+            implementation(libs.clikt)
         }
     }
 }
