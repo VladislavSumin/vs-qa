@@ -55,7 +55,14 @@ internal class McpServerImpl(private val processor: LogHeadlessProcessor) : McpS
             ),
         ) { request ->
             val logPath = Path(request.arguments?.get("path")?.jsonPrimitive?.content ?: "")
-            val total = processor.parseAndCache(logPath)
+            val total = runCatching {
+                processor.parseAndCache(logPath)
+            }.getOrElse {
+                return@addTool CallToolResult(
+                    content = listOf(TextContent("{\"error\":\"${it.message}\"}")),
+                    isError = true,
+                )
+            }
             state.logPath = logPath
             state.totalRecords = total
             CallToolResult(
@@ -121,7 +128,10 @@ internal class McpServerImpl(private val processor: LogHeadlessProcessor) : McpS
             val offset = request.arguments?.get("offset")?.jsonPrimitive?.content?.toIntOrNull() ?: 0
             val limit = request.arguments?.get("limit")?.jsonPrimitive?.content?.toIntOrNull() ?: 100
             val res = processor.query(filter, offset, limit)
-            CallToolResult(content = listOf(TextContent(mcpJson.encodeToString(res))))
+            CallToolResult(
+                content = listOf(TextContent(mcpJson.encodeToString(res))),
+                isError = res.error != null,
+            )
         }
 
         server.addTool(
@@ -131,7 +141,13 @@ internal class McpServerImpl(private val processor: LogHeadlessProcessor) : McpS
             """.trimMargin(),
             inputSchema = ToolSchema(properties = buildJsonObject {}),
         ) {
-            val logPath = state.logPath ?: error("No log file open.")
+            val logPath = state.logPath
+            if (logPath == null) {
+                return@addTool CallToolResult(
+                    content = listOf(TextContent("{\"error\":\"No log file open. Use open_log first.\"}")),
+                    isError = true,
+                )
+            }
             CallToolResult(
                 content = listOf(
                     TextContent(
