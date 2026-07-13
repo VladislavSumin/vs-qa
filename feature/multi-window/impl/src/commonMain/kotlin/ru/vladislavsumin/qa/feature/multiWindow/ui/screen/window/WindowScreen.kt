@@ -17,11 +17,13 @@ import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
 import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractorImpl
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenFactory
 import ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root.RootScreenParams
+import ru.vladislavsumin.qa.feature.settings.domain.SettingsInteractor
 
 @GenerateScreenFactory
 @Suppress("UnusedPrivateProperty")
 internal class WindowScreen(
     private val yaml: Yaml,
+    private val settingsInteractor: SettingsInteractor,
     private val rootScreenFactory: RootScreenFactory,
     private val params: WindowScreenParams,
     context: ComponentContext,
@@ -49,6 +51,7 @@ internal class WindowScreen(
     override fun Render(modifier: Modifier) = WindowContent(
         screen = screen,
         yaml = yaml,
+        settingsInteractor = settingsInteractor,
         windowTitleInteractor = windowTitleInteractor,
         globalHotkeyDispatcher = globalHotkeyDispatcher,
         lifecycleRegistry = lifecycleRegistry,

@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.getSystemResourceEnvironment
 import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 import ru.vladislavsumin.core.coroutines.utils.LinkedFlow
 import ru.vladislavsumin.core.coroutines.utils.combine
@@ -38,6 +40,11 @@ import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarUiInt
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsEvents
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
 import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarViewState
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.Res
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_bottom_deobfuscate
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_bottom_loading
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_bottom_total_records
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_mapping_expected_one
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Notification
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
@@ -259,11 +266,15 @@ internal class LogViewerViewModel(
                     is LogsInteractor.LoadingStatus.Loaded -> Unit
 
                     is LogsInteractor.LoadingStatus.LoadingLogs -> {
-                        bottomBarUiInteractor.showProgressBar("Loading logs")
+                        bottomBarUiInteractor.showProgressBar(
+                            getString(getSystemResourceEnvironment(), Res.string.log_viewer_bottom_loading),
+                        )
                     }
 
                     is LogsInteractor.LoadingStatus.DeobfuscateLogs -> {
-                        bottomBarUiInteractor.showProgressBar("Deobfuscate logs")
+                        bottomBarUiInteractor.showProgressBar(
+                            getString(getSystemResourceEnvironment(), Res.string.log_viewer_bottom_deobfuscate),
+                        )
                     }
                 }
             }
@@ -272,7 +283,13 @@ internal class LogViewerViewModel(
             state
                 .resubscribeOnUiLifecycle(Lifecycle.State.RESUMED)
                 .collect { state ->
-                    bottomBarUiInteractor.setBottomBarText("Total records: ${state.logRecordsAfterApplyFilter}")
+                    bottomBarUiInteractor.setBottomBarText(
+                        getString(
+                            getSystemResourceEnvironment(),
+                            Res.string.log_viewer_bottom_total_records,
+                            state.logRecordsAfterApplyFilter,
+                        ),
+                    )
                 }
         }
     }
@@ -343,7 +360,7 @@ internal class LogViewerViewModel(
         if (paths.size != 1) {
             notificationsUiInteractor.showNotification(
                 Notification(
-                    "Expected exactly one mapping file, but got ${paths.size}",
+                    getString(getSystemResourceEnvironment(), Res.string.log_viewer_mapping_expected_one, paths.size),
                     Notification.Servility.Error,
                 ),
             )

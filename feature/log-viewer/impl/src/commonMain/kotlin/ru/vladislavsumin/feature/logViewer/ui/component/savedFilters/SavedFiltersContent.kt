@@ -41,12 +41,27 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.Res
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_saved_cancel_cd
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_saved_cancel_hint
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_saved_content_placeholder
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_saved_delete_cd
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_saved_delete_hint
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_saved_edit_cd
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_saved_edit_hint
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_saved_name_placeholder
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_saved_new_filter
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_saved_save_cd
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_saved_save_changes_cd
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_saved_save_changes_hint
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_saved_save_hint
 
 @Composable
 @Suppress("MagicNumber")
@@ -82,17 +97,17 @@ internal fun SavedFiltersContent(
 }
 
 @Composable
-@Suppress("MagicNumber")
+@Suppress("MagicNumber", "LongMethod")
 private fun NewFilterSection(viewModel: SavedFiltersViewModel, state: SavedFiltersViewState) {
     Column {
         Text(
-            "New filter",
+            stringResource(Res.string.log_viewer_saved_new_filter),
             style = MaterialTheme.typography.bodySmall,
             color = QaTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = 8.dp),
         )
         if (state.saveError != null) {
-            SaveError(state.saveError!!)
+            SaveError(state.saveError)
         }
         Row(
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -103,7 +118,7 @@ private fun NewFilterSection(viewModel: SavedFiltersViewModel, state: SavedFilte
             QaTextField(
                 value = state.saveNewFilterName,
                 onValueChange = viewModel::onSavedFilterNameChanged,
-                placeholder = { Text("name") },
+                placeholder = { Text(stringResource(Res.string.log_viewer_saved_name_placeholder)) },
                 modifier = Modifier.weight(1f)
                     .focusRequester(nameFocus)
                     .onPreviewKeyEvent { event ->
@@ -119,7 +134,7 @@ private fun NewFilterSection(viewModel: SavedFiltersViewModel, state: SavedFilte
             QaTextField(
                 value = state.saveNewFilterContent,
                 onValueChange = viewModel::onSavedFilterContentChanged,
-                placeholder = { Text("content") },
+                placeholder = { Text(stringResource(Res.string.log_viewer_saved_content_placeholder)) },
                 modifier = Modifier.weight(5f)
                     .focusRequester(contentFocus)
                     .onPreviewKeyEvent { event ->
@@ -134,9 +149,12 @@ private fun NewFilterSection(viewModel: SavedFiltersViewModel, state: SavedFilte
             Spacer(Modifier.width(4.dp))
             QaIconButton(
                 onClick = viewModel::onClickSaveNewFilter,
-                modifier = Modifier.hint("Save new filter"),
+                modifier = Modifier.hint(stringResource(Res.string.log_viewer_saved_save_hint)),
             ) {
-                Icon(imageVector = Icons.Default.Save, contentDescription = "save")
+                Icon(
+                    imageVector = Icons.Default.Save,
+                    contentDescription = stringResource(Res.string.log_viewer_saved_save_cd),
+                )
             }
         }
     }
@@ -155,9 +173,7 @@ private fun SavedFilterRow(
     val interactionSource = remember { MutableInteractionSource() }
     Row(
         modifier = Modifier
-            .pointerInput(filter) {
-                detectTapGestures { onSavedFilterClick(filter.name) }
-            }
+            .pointerInput(filter) { detectTapGestures { onSavedFilterClick(filter.name) } }
             .hoverable(interactionSource)
             .indication(interactionSource, LocalIndication.current)
             .padding(horizontal = 8.dp, vertical = 4.dp),
@@ -176,17 +192,20 @@ private fun SavedFilterRow(
         Spacer(Modifier.width(4.dp))
         QaIconButton(
             onClick = { viewModel.onStartEditingFilter(filter) },
-            modifier = Modifier.hint("Edit saved filter"),
+            modifier = Modifier.hint(stringResource(Res.string.log_viewer_saved_edit_hint)),
         ) {
-            Icon(imageVector = Icons.Default.Edit, contentDescription = "edit")
+            Icon(
+                imageVector = Icons.Default.Edit,
+                contentDescription = stringResource(Res.string.log_viewer_saved_edit_cd),
+            )
         }
         QaIconButton(
             onClick = { viewModel.onDeleteSavedFilter(filter) },
-            modifier = Modifier.hint("Delete saved filter"),
+            modifier = Modifier.hint(stringResource(Res.string.log_viewer_saved_delete_hint)),
         ) {
             Icon(
                 imageVector = Icons.Default.Delete,
-                contentDescription = "delete",
+                contentDescription = stringResource(Res.string.log_viewer_saved_delete_cd),
                 tint = QaTheme.colorScheme.logError.primary,
             )
         }
@@ -194,7 +213,7 @@ private fun SavedFilterRow(
 }
 
 @Composable
-@Suppress("MagicNumber")
+@Suppress("MagicNumber", "LongMethod")
 private fun EditSavedFilterRow(
     viewModel: SavedFiltersViewModel,
     state: SavedFiltersViewState,
@@ -211,7 +230,7 @@ private fun EditSavedFilterRow(
         QaTextField(
             value = state.editName,
             onValueChange = viewModel::onEditingFilterNameChanged,
-            placeholder = { Text("name") },
+            placeholder = { Text(stringResource(Res.string.log_viewer_saved_name_placeholder)) },
             modifier = Modifier.weight(1f)
                 .focusRequester(nameFocus)
                 .onPreviewKeyEvent { event ->
@@ -227,7 +246,7 @@ private fun EditSavedFilterRow(
         QaTextField(
             value = state.editContent,
             onValueChange = viewModel::onEditingFilterContentChanged,
-            placeholder = { Text("content") },
+            placeholder = { Text(stringResource(Res.string.log_viewer_saved_content_placeholder)) },
             modifier = Modifier.weight(5f)
                 .focusRequester(contentFocus)
                 .onPreviewKeyEvent { event ->
@@ -246,15 +265,21 @@ private fun EditSavedFilterRow(
         Spacer(Modifier.width(4.dp))
         QaIconButton(
             onClick = { viewModel.onClickSaveEditedFilter(filter) },
-            modifier = Modifier.hint("Save changes"),
+            modifier = Modifier.hint(stringResource(Res.string.log_viewer_saved_save_changes_hint)),
         ) {
-            Icon(imageVector = Icons.Default.Check, contentDescription = "save changes")
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = stringResource(Res.string.log_viewer_saved_save_changes_cd),
+            )
         }
         QaIconButton(
             onClick = viewModel::onCancelEditingFilter,
-            modifier = Modifier.hint("Cancel editing"),
+            modifier = Modifier.hint(stringResource(Res.string.log_viewer_saved_cancel_hint)),
         ) {
-            Icon(imageVector = Icons.Default.Close, contentDescription = "cancel editing")
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = stringResource(Res.string.log_viewer_saved_cancel_cd),
+            )
         }
     }
 }

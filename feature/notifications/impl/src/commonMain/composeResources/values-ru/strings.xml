@@ -1,0 +1,4 @@
+<resources>
+    <string name="notifications_dismiss">Скрыть уведомление</string>
+    <string name="notifications_close">закрыть</string>
+</resources>

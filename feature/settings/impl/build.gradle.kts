@@ -6,6 +6,9 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.feature.tabs.api)
+
+            implementation(libs.google.datastore.core)
+            implementation(libs.google.datastore.preferences)
         }
     }
 }

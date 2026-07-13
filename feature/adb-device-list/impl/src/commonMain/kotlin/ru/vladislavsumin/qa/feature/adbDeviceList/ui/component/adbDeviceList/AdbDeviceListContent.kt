@@ -17,7 +17,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.feature.adb_device_list.impl.generated.resources.Res
+import ru.vladislavsumin.feature.adb_device_list.impl.generated.resources.adb_device_list_error
+import ru.vladislavsumin.feature.adb_device_list.impl.generated.resources.adb_device_list_title
 
 @Composable
 internal fun AdbDeviceListContent(
@@ -31,7 +35,7 @@ internal fun AdbDeviceListContent(
 
         AdbDeviceListViewState.Error -> {
             // TODO Сделать нормальный статус ошибки.
-            Text("Adb error, TODO")
+            Text(stringResource(Res.string.adb_device_list_error))
         }
     }
 }
@@ -45,7 +49,7 @@ internal fun DeviceList(
     Box(modifier) {
         LazyColumn {
             item {
-                Text("Adb list")
+                Text(stringResource(Res.string.adb_device_list_title))
             }
             items(items = state.devices, key = { it.name }) {
                 Row(

@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.button.QaToggleIconButton
@@ -37,6 +38,14 @@ import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.core.ui.hotkeyController.resetFocusOnEsc
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerViewModel
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.Res
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_search_bad_pattern
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_search_case_sensitive
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_search_next
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_search_placeholder
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_search_prev
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_search_toggle_side_panel
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_search_use_regex
 
 @Composable
 internal fun SearchBarContent(
@@ -74,7 +83,7 @@ internal fun SearchBarContent(
                 .weight(1f)
                 .onPreviewKeyEvent(hotkeyController::invoke),
             maxLines = 1,
-            placeholder = { Text("Search...") },
+            placeholder = { Text(stringResource(Res.string.log_viewer_search_placeholder)) },
             leadingContent = { Icon(imageVector = Icons.Default.Search, contentDescription = null) },
             isError = state.isBadRegex,
             trailingContent = { TrailingButtons(viewModel, state, showSideMenu) },
@@ -94,12 +103,12 @@ private fun TrailingButtons(
     ) {
         QaIconButton(
             onClick = viewModel::onClickNextIndex,
-            modifier = Modifier.hint("Next match"),
+            modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_next)),
         ) { Icon(Icons.Default.ArrowDownward, null) }
 
         QaIconButton(
             onClick = viewModel::onClickPrevIndex,
-            modifier = Modifier.hint("Previous match"),
+            modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_prev)),
         ) { Icon(Icons.Default.ArrowUpward, null) }
 
         // TODO написать нормально
@@ -115,7 +124,7 @@ private fun TrailingButtons(
 
         Text(
             text = if (state.isBadRegex) {
-                "bad pattern"
+                stringResource(Res.string.log_viewer_search_bad_pattern)
             } else {
                 "${state.currentSearchResultIndex + 1} / ${state.totalSearchResults}"
             },
@@ -127,13 +136,13 @@ private fun TrailingButtons(
         QaToggleIconButton(
             checked = state.isMatchCase,
             onCheckedChange = viewModel::onClickSearchMatchCase,
-            modifier = Modifier.hint("Case sensitive"),
+            modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_case_sensitive)),
         ) { Text("Cc") }
 
         QaToggleIconButton(
             checked = state.isRegex,
             onCheckedChange = viewModel::onClickSearchUseRegex,
-            modifier = Modifier.hint("Use regex"),
+            modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_use_regex)),
         ) { Text(".*") }
 
         val withDp = with(LocalDensity.current) {
@@ -143,7 +152,7 @@ private fun TrailingButtons(
             QaToggleIconButton(
                 checked = showSideMenu.value,
                 onCheckedChange = { showSideMenu.value = it },
-                modifier = Modifier.hint("Toggle side panel"),
+                modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_toggle_side_panel)),
             ) { Icon(Icons.Default.MoreVert, null) }
         }
     }

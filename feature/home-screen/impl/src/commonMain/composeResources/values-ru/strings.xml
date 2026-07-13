@@ -1,0 +1,7 @@
+<resources>
+    <string name="home_open_logs_hint">Откройте логи\nНажмите Command + O чтобы открыть новый</string>
+    <string name="home_open_new_file">Открыть новый файл</string>
+    <string name="home_legal_info">Правовая информация</string>
+    <string name="home_settings">Настройки</string>
+    <string name="home_drop_logs_here">Перетащите логи сюда</string>
+</resources>

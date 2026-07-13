@@ -22,12 +22,19 @@ import com.arkivanov.decompose.Child
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.value.Value
+import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.navigation.IntentScreenParams
 import ru.vladislavsumin.core.navigation.host.ConfigurationHolder
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
+import ru.vladislavsumin.feature.tabs.impl.generated.resources.Res
+import ru.vladislavsumin.feature.tabs.impl.generated.resources.tabs_close
+import ru.vladislavsumin.feature.tabs.impl.generated.resources.tabs_close_hint
+import ru.vladislavsumin.feature.tabs.impl.generated.resources.tabs_detach
+import ru.vladislavsumin.feature.tabs.impl.generated.resources.tabs_detach_hint
+import ru.vladislavsumin.feature.tabs.impl.generated.resources.tabs_icon
 import ru.vladislavsumin.qa.feature.multiWindow.isMultiWindowSupported
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -108,9 +115,9 @@ private fun Tab(
     ) {
         val icon = state.icon
         if (icon != null) {
-            Icon(imageVector = icon, contentDescription = "home")
+            Icon(imageVector = icon, contentDescription = stringResource(Res.string.tabs_icon))
         }
-        val text = state.name
+        val text = state.nameRes?.let { stringResource(it) } ?: state.name
         if (text != null) {
             Text(
                 text = text,
@@ -120,14 +127,19 @@ private fun Tab(
         if (state.allowDetach && isMultiWindowSupported()) {
             QaIconButton(
                 onClick = { onTabClickDetach(item.configuration.screenParams) },
-                modifier = Modifier.hint("Открепить в новое окно"),
-            ) { Icon(imageVector = Icons.Default.OpenInNew, contentDescription = "detach") }
+                modifier = Modifier.hint(stringResource(Res.string.tabs_detach_hint)),
+            ) {
+                Icon(
+                    imageVector = Icons.Default.OpenInNew,
+                    contentDescription = stringResource(Res.string.tabs_detach),
+                )
+            }
         }
         if (state.allowClose) {
             QaIconButton(
                 onClick = { onTabClickClose(item.configuration.screenParams) },
-                modifier = Modifier.hint("Close tab").padding(end = 4.dp),
-            ) { Icon(imageVector = Icons.Default.Close, contentDescription = "close") }
+                modifier = Modifier.hint(stringResource(Res.string.tabs_close_hint)).padding(end = 4.dp),
+            ) { Icon(imageVector = Icons.Default.Close, contentDescription = stringResource(Res.string.tabs_close)) }
         }
     }
 }

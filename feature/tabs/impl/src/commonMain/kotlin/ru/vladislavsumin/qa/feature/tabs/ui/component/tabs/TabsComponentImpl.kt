@@ -7,6 +7,8 @@ import com.arkivanov.decompose.router.pages.ChildPages
 import com.arkivanov.decompose.value.Value
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.getSystemResourceEnvironment
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.components.utils.asStateFlow
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
@@ -34,7 +36,10 @@ internal class TabsComponentImpl(
                     val item = pages.items.getOrNull(pages.selectedIndex)
                     val tab = item?.instance as? TabSupport ?: return@collectLatest
                     tab.tabState.collect {
-                        windowTitleInteractor.setWindowTitleExtension(it.windowName)
+                        val windowName = it.windowNameRes
+                            ?.let { res -> getString(getSystemResourceEnvironment(), res) }
+                            ?: it.windowName
+                        windowTitleInteractor.setWindowTitleExtension(windowName)
                     }
                 }
             }

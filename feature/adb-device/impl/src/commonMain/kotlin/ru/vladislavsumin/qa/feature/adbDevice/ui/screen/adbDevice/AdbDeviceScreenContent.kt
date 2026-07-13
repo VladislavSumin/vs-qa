@@ -17,6 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
+import ru.vladislavsumin.feature.adb_device.impl.generated.resources.Res
+import ru.vladislavsumin.feature.adb_device.impl.generated.resources.adb_device_failed_to_load
+import ru.vladislavsumin.feature.adb_device.impl.generated.resources.adb_device_title
 
 @Composable
 internal fun AdbDeviceScreenContent(deviceName: String, viewModel: DeviceControlViewModel, modifier: Modifier) {
@@ -24,7 +28,7 @@ internal fun AdbDeviceScreenContent(deviceName: String, viewModel: DeviceControl
 
     Column(Modifier.fillMaxSize().then(modifier).verticalScroll(rememberScrollState())) {
         Text(
-            text = "Device: $deviceName",
+            text = stringResource(Res.string.adb_device_title, deviceName),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         )
@@ -36,7 +40,7 @@ internal fun AdbDeviceScreenContent(deviceName: String, viewModel: DeviceControl
 
             DeviceControlViewState.Error -> {
                 Text(
-                    "Failed to load parameters",
+                    stringResource(Res.string.adb_device_failed_to_load),
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
                 )
@@ -64,7 +68,7 @@ private fun ParameterToggleRow(parameter: DeviceParameter.Toggle, onToggle: (Boo
             .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
         Text(
-            text = parameter.name,
+            text = stringResource(parameter.nameRes),
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.weight(1f),
         )

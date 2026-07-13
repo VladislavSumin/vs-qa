@@ -19,11 +19,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ComponentContext
+import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
+import ru.vladislavsumin.feature.notifications.impl.generated.resources.Res
+import ru.vladislavsumin.feature.notifications.impl.generated.resources.notifications_close
+import ru.vladislavsumin.feature.notifications.impl.generated.resources.notifications_dismiss
 
 @GenerateFactory(NotificationsComponentFactory::class)
 internal class NotificationsComponentImpl(viewModelFactory: NotificationsViewModelFactory, context: ComponentContext) :
@@ -52,9 +56,12 @@ internal class NotificationsComponentImpl(viewModelFactory: NotificationsViewMod
                         Text(it.text, Modifier.weight(1f))
                         QaIconButton(
                             onClick = { viewModel.onClickCloseNotification(it.id) },
-                            modifier = Modifier.hint("Dismiss notification"),
+                            modifier = Modifier.hint(stringResource(Res.string.notifications_dismiss)),
                         ) {
-                            Icon(imageVector = Icons.Default.Close, contentDescription = "close")
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = stringResource(Res.string.notifications_close),
+                            )
                         }
                     }
                 }

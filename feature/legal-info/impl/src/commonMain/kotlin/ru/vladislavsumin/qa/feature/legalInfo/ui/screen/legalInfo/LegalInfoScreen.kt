@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.feature.legal_info.impl.generated.resources.Res
+import ru.vladislavsumin.feature.legal_info.impl.generated.resources.legal_info_tab_name
 import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
 
 @GenerateScreenFactory
@@ -17,7 +19,7 @@ internal class LegalInfoScreen(context: ComponentContext) :
     TabSupport {
 
     override val tabState: StateFlow<TabSupport.TabState> = MutableStateFlow(
-        TabSupport.TabState(icon = Icons.Default.Gavel, name = "Правовая информация"),
+        TabSupport.TabState(icon = Icons.Default.Gavel, nameRes = Res.string.legal_info_tab_name),
     )
 
     @Composable

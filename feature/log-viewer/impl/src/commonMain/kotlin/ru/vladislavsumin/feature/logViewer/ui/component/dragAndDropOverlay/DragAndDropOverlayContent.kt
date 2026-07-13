@@ -17,8 +17,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.ui.dragAndDrop.DragAndDropOverlay
 import ru.vladislavsumin.core.ui.dragAndDrop.rememberDragAndDropFilesTarget
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.Res
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_drop_logs
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_drop_mapping
 import java.nio.file.Path
 
 @Composable
@@ -34,12 +38,12 @@ internal fun DragAndDropOverlayContent(
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             DropTargetCard(
-                text = "Drop logs here",
+                text = stringResource(Res.string.log_viewer_drop_logs),
                 onPathSelected = onLogPathsSelected,
             )
 
             DropTargetCard(
-                text = "Drop mapping here",
+                text = stringResource(Res.string.log_viewer_drop_mapping),
                 onPathSelected = onMappingPathsSelected,
             )
         }

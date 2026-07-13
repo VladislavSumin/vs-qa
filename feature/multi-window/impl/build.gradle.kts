@@ -10,6 +10,7 @@ kotlin {
 
                 implementation(projects.feature.rootScreen.api)
                 implementation(projects.feature.logViewer.api)
+                implementation(projects.feature.settings.api)
 
                 implementation(projects.feature.windowTitle.impl)
             }

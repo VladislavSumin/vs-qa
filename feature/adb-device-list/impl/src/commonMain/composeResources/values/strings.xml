@@ -1,0 +1,4 @@
+<resources>
+    <string name="adb_device_list_error">Adb error, TODO</string>
+    <string name="adb_device_list_title">Adb list</string>
+</resources>

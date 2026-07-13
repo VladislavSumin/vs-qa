@@ -1,0 +1,3 @@
+<resources>
+    <string name="memory_indicator_usage">%1$d из %2$d МБ</string>
+</resources>

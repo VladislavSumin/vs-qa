@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.button.QaToggleIconButton
@@ -44,6 +45,14 @@ import ru.vladislavsumin.core.ui.filePicker.FilePickerDialog
 import ru.vladislavsumin.core.ui.hint.HintPlacement
 import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarContent
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.Res
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_attach_mapping
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_copy
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_font_down
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_font_up
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_scroll_bottom
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_strip_date
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_tag_stats
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -105,7 +114,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
                 clipboard.setText(AnnotatedString(data))
             },
             Modifier
-                .hint("Copy filtered logs", placement = HintPlacement.LEFT)
+                .hint(stringResource(Res.string.log_viewer_side_copy), placement = HintPlacement.LEFT)
                 .padding(4.dp),
         ) { Icon(Icons.Default.CopyAll, null) }
         if (state.value.showSelectMappingDialog) {
@@ -115,7 +124,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
             checked = state.value.isMappingApplied,
             onCheckedChange = { viewModel.onClickMappingButton() },
             Modifier
-                .hint("Attach Proguard mapping", placement = HintPlacement.LEFT)
+                .hint(stringResource(Res.string.log_viewer_side_attach_mapping), placement = HintPlacement.LEFT)
                 .padding(4.dp),
         ) {
             Icon(Icons.Default.FilePresent, null)
@@ -124,7 +133,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
             checked = state.value.isStripDate,
             onCheckedChange = { viewModel.onClickStripDate() },
             Modifier
-                .hint("Strip date", placement = HintPlacement.LEFT)
+                .hint(stringResource(Res.string.log_viewer_side_strip_date), placement = HintPlacement.LEFT)
                 .padding(4.dp),
         ) {
             Icon(Icons.Default.DateRange, null)
@@ -133,7 +142,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
             checked = state.value.showTagStat,
             onCheckedChange = { viewModel.onClickShowTagStat() },
             Modifier
-                .hint("Show tag usage statistics", placement = HintPlacement.LEFT)
+                .hint(stringResource(Res.string.log_viewer_side_tag_stats), placement = HintPlacement.LEFT)
                 .padding(4.dp),
         ) {
             Icon(Icons.Default.AutoGraph, null)
@@ -141,7 +150,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
         QaIconButton(
             onClick = { viewModel.onClickFontUp() },
             Modifier
-                .hint("Font size +", placement = HintPlacement.LEFT)
+                .hint(stringResource(Res.string.log_viewer_side_font_up), placement = HintPlacement.LEFT)
                 .padding(4.dp),
         ) {
             Icon(Icons.Default.ZoomIn, null)
@@ -153,7 +162,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
         QaIconButton(
             onClick = { viewModel.onClickFontDown() },
             Modifier
-                .hint("Font size -", placement = HintPlacement.LEFT)
+                .hint(stringResource(Res.string.log_viewer_side_font_down), placement = HintPlacement.LEFT)
                 .padding(4.dp),
         ) {
             Icon(Icons.Default.ZoomOut, null)
@@ -162,7 +171,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
         QaIconButton(
             onClick = { viewModel.onClickScrollToBottom() },
             Modifier
-                .hint("Scroll to bottom", placement = HintPlacement.LEFT)
+                .hint(stringResource(Res.string.log_viewer_side_scroll_bottom), placement = HintPlacement.LEFT)
                 .padding(4.dp),
         ) { Icon(Icons.Default.ArrowDownward, null) }
         HorizontalDivider(color = QaTheme.colorScheme.surface, thickness = 1.5.dp)

@@ -28,11 +28,16 @@ import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyDispatcher
 import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
+import ru.vladislavsumin.qa.feature.multiWindow.ui.locale.AppEnvironment
+import ru.vladislavsumin.qa.feature.multiWindow.ui.locale.toLocaleTag
+import ru.vladislavsumin.qa.feature.settings.domain.AppLanguage
+import ru.vladislavsumin.qa.feature.settings.domain.SettingsInteractor
 
 @Composable
 internal actual fun WindowContent(
     screen: Value<ChildSlot<ConfigurationHolder, GenericScreen<ComponentContext>>>,
     yaml: Yaml,
+    settingsInteractor: SettingsInteractor,
     windowTitleInteractor: WindowTitleInteractor?,
     globalHotkeyDispatcher: GlobalHotkeyDispatcher,
     lifecycleRegistry: LifecycleRegistry,
@@ -42,6 +47,7 @@ internal actual fun WindowContent(
 ) {
     val windowState = rememberWindowState()
     val windowTitleExtension by windowTitleInteractor!!.windowTitleExtension.collectAsState()
+    val language by settingsInteractor.language.collectAsState(AppLanguage.SYSTEM)
     val title = "vs-qa"
     val windowTitle = if (windowTitleExtension == null) title else "$title: $windowTitleExtension"
 
@@ -62,9 +68,11 @@ internal actual fun WindowContent(
 
         LifecycleController(lifecycleRegistry, windowState, windowInfo)
         // TODO вынести тему отдельно
-        QaTheme(yaml) {
-            Surface {
-                screen.value.child?.instance?.Render(modifier)
+        AppEnvironment(language.toLocaleTag()) {
+            QaTheme(yaml) {
+                Surface {
+                    screen.value.child?.instance?.Render(modifier)
+                }
             }
         }
     }

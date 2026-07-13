@@ -1,0 +1,7 @@
+<resources>
+    <string name="settings_tab_name">Настройки</string>
+    <string name="settings_language_title">Язык</string>
+    <string name="settings_language_system">Системный</string>
+    <string name="settings_language_russian">Русский</string>
+    <string name="settings_language_english">Английский</string>
+</resources>

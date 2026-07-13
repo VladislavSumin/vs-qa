@@ -4,6 +4,13 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import ru.vladislavsumin.core.adb.client.AdbClient
+import ru.vladislavsumin.feature.adb_device.impl.generated.resources.Res
+import ru.vladislavsumin.feature.adb_device.impl.generated.resources.adb_device_param_dark_theme
+import ru.vladislavsumin.feature.adb_device.impl.generated.resources.adb_device_param_mobile_data
+import ru.vladislavsumin.feature.adb_device.impl.generated.resources.adb_device_param_pointer_location
+import ru.vladislavsumin.feature.adb_device.impl.generated.resources.adb_device_param_show_taps
+import ru.vladislavsumin.feature.adb_device.impl.generated.resources.adb_device_param_stay_awake
+import ru.vladislavsumin.feature.adb_device.impl.generated.resources.adb_device_param_wifi
 
 internal interface DeviceParameterInteractor {
     suspend fun readParameters(deviceName: String): List<DeviceParameter>
@@ -49,7 +56,7 @@ internal class DeviceParameterInteractorImpl(private val adbClient: AdbClient) :
         val isNight = raw.trim() == "2"
         return DeviceParameter.Toggle(
             id = ID_THEME,
-            name = "Dark theme",
+            nameRes = Res.string.adb_device_param_dark_theme,
             isChecked = isNight,
         )
     }
@@ -62,7 +69,7 @@ internal class DeviceParameterInteractorImpl(private val adbClient: AdbClient) :
         val isOn = raw.trim() == "1"
         return DeviceParameter.Toggle(
             id = ID_WIFI,
-            name = "Wi‑Fi",
+            nameRes = Res.string.adb_device_param_wifi,
             isChecked = isOn,
         )
     }
@@ -79,7 +86,7 @@ internal class DeviceParameterInteractorImpl(private val adbClient: AdbClient) :
         val isOn = result.lineSequence().any { line -> line.trim().endsWith("=1") }
         return DeviceParameter.Toggle(
             id = ID_MOBILE_DATA,
-            name = "Mobile data",
+            nameRes = Res.string.adb_device_param_mobile_data,
             isChecked = isOn,
         )
     }
@@ -92,7 +99,7 @@ internal class DeviceParameterInteractorImpl(private val adbClient: AdbClient) :
         val isOn = raw.trim().toIntOrNull()?.let { it > 0 } ?: false
         return DeviceParameter.Toggle(
             id = ID_STAY_AWAKE,
-            name = "Stay awake",
+            nameRes = Res.string.adb_device_param_stay_awake,
             isChecked = isOn,
         )
     }
@@ -103,7 +110,7 @@ internal class DeviceParameterInteractorImpl(private val adbClient: AdbClient) :
         val isOn = raw.trim() == "1"
         return DeviceParameter.Toggle(
             id = ID_SHOW_TAPS,
-            name = "Show taps",
+            nameRes = Res.string.adb_device_param_show_taps,
             isChecked = isOn,
         )
     }
@@ -114,7 +121,7 @@ internal class DeviceParameterInteractorImpl(private val adbClient: AdbClient) :
         val isOn = raw.trim() == "1"
         return DeviceParameter.Toggle(
             id = ID_POINTER_LOCATION,
-            name = "Pointer location",
+            nameRes = Res.string.adb_device_param_pointer_location,
             isChecked = isOn,
         )
     }

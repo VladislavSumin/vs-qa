@@ -41,9 +41,13 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.feature.logRecent.domain.LogRecent
+import ru.vladislavsumin.feature.log_recent.impl.generated.resources.Res
+import ru.vladislavsumin.feature.log_recent.impl.generated.resources.log_recent_remove
+import ru.vladislavsumin.feature.log_recent.impl.generated.resources.log_recent_rename
 import ru.vladislavsumin.qa.feature.multiWindow.isMultiWindowSupported
 import java.nio.file.Path
 
@@ -177,7 +181,7 @@ private fun LogRecentItem(
                     editing = true
                 }
             },
-            modifier = Modifier.hint("Rename"),
+            modifier = Modifier.hint(stringResource(Res.string.log_recent_rename)),
         ) {
             Icon(
                 if (editing) Icons.Outlined.Save else Icons.Outlined.Edit,
@@ -187,7 +191,7 @@ private fun LogRecentItem(
 
         QaIconButton(
             onClick = { viewModel.onClickRemoveRecent(recentLog) },
-            modifier = Modifier.hint("Remove from recent"),
+            modifier = Modifier.hint(stringResource(Res.string.log_recent_remove)),
         ) {
             Icon(Icons.Outlined.Delete, contentDescription = null)
         }

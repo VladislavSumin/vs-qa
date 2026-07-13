@@ -11,11 +11,13 @@ import ru.vladislavsumin.core.navigation.host.ConfigurationHolder
 import ru.vladislavsumin.core.navigation.screen.GenericScreen
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyDispatcher
 import ru.vladislavsumin.feature.windowTitle.domain.WindowTitleInteractor
+import ru.vladislavsumin.qa.feature.settings.domain.SettingsInteractor
 
 @Composable
 internal expect fun WindowContent(
     screen: Value<ChildSlot<ConfigurationHolder, GenericScreen<ComponentContext>>>,
     yaml: Yaml,
+    settingsInteractor: SettingsInteractor,
     windowTitleInteractor: WindowTitleInteractor?,
     globalHotkeyDispatcher: GlobalHotkeyDispatcher,
     lifecycleRegistry: LifecycleRegistry,

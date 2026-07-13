@@ -21,6 +21,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.button.QaToggleIconButton
@@ -31,6 +32,12 @@ import ru.vladislavsumin.core.ui.hotkeyController.resetFocusOnEsc
 import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.savedFilters.SavedFiltersComponent
 import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.Res
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_filter_help
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_filter_help_cd
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_filter_placeholder
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_filter_saved
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_filter_saved_cd
 
 @Composable
 internal fun FilterBarContent(
@@ -82,16 +89,19 @@ private fun FilterField(
                 usePrimaryDirection = true,
             )
         },
-        placeholder = { Text("Filter...") },
+        placeholder = { Text(stringResource(Res.string.log_viewer_filter_placeholder)) },
         centerContent = { filterHintComponent.Render(Modifier, cursorPosition) },
         leadingContent = { Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null) },
         trailingContent = {
             QaToggleIconButton(
                 checked = state.showSavedFilters,
                 onCheckedChange = { viewModel.onClickSavedFilters() },
-                modifier = Modifier.hint("Saved filters"),
+                modifier = Modifier.hint(stringResource(Res.string.log_viewer_filter_saved)),
             ) {
-                Icon(imageVector = Icons.Default.Bookmarks, contentDescription = "saved filters")
+                Icon(
+                    imageVector = Icons.Default.Bookmarks,
+                    contentDescription = stringResource(Res.string.log_viewer_filter_saved_cd),
+                )
             }
             HelpButton(viewModel, state)
         },
@@ -102,12 +112,15 @@ private fun FilterField(
 private fun HelpButton(viewModel: FilterBarViewModel, state: FilterBarViewState) {
     QaIconButton(
         onClick = viewModel::onClickHelpButton,
-        modifier = Modifier.hint("Filter syntax help"),
+        modifier = Modifier.hint(stringResource(Res.string.log_viewer_filter_help)),
     ) {
         DropdownMenu(
             expanded = state.showHelpMenu,
             onDismissRequest = viewModel::onDismissHelpMenu,
         ) { HelpMenuContent() }
-        Icon(imageVector = Icons.AutoMirrored.Filled.Help, contentDescription = "help")
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.Help,
+            contentDescription = stringResource(Res.string.log_viewer_filter_help_cd),
+        )
     }
 }

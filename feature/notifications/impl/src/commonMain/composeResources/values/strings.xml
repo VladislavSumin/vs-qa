@@ -1,0 +1,4 @@
+<resources>
+    <string name="notifications_dismiss">Dismiss notification</string>
+    <string name="notifications_close">close</string>
+</resources>

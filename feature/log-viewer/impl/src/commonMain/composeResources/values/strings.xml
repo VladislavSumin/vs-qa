@@ -1,0 +1,45 @@
+<resources>
+    <string name="log_viewer_search_placeholder">Search...</string>
+    <string name="log_viewer_search_next">Next match</string>
+    <string name="log_viewer_search_prev">Previous match</string>
+    <string name="log_viewer_search_bad_pattern">bad pattern</string>
+    <string name="log_viewer_search_case_sensitive">Case sensitive</string>
+    <string name="log_viewer_search_use_regex">Use regex</string>
+    <string name="log_viewer_search_toggle_side_panel">Toggle side panel</string>
+
+    <string name="log_viewer_filter_placeholder">Filter...</string>
+    <string name="log_viewer_filter_saved">Saved filters</string>
+    <string name="log_viewer_filter_saved_cd">saved filters</string>
+    <string name="log_viewer_filter_help">Filter syntax help</string>
+    <string name="log_viewer_filter_help_cd">help</string>
+
+    <string name="log_viewer_saved_new_filter">New filter</string>
+    <string name="log_viewer_saved_name_placeholder">name</string>
+    <string name="log_viewer_saved_content_placeholder">content</string>
+    <string name="log_viewer_saved_save_hint">Save new filter</string>
+    <string name="log_viewer_saved_save_cd">save</string>
+    <string name="log_viewer_saved_edit_hint">Edit saved filter</string>
+    <string name="log_viewer_saved_edit_cd">edit</string>
+    <string name="log_viewer_saved_delete_hint">Delete saved filter</string>
+    <string name="log_viewer_saved_delete_cd">delete</string>
+    <string name="log_viewer_saved_save_changes_hint">Save changes</string>
+    <string name="log_viewer_saved_save_changes_cd">save changes</string>
+    <string name="log_viewer_saved_cancel_hint">Cancel editing</string>
+    <string name="log_viewer_saved_cancel_cd">cancel editing</string>
+
+    <string name="log_viewer_side_copy">Copy filtered logs</string>
+    <string name="log_viewer_side_attach_mapping">Attach Proguard mapping</string>
+    <string name="log_viewer_side_strip_date">Strip date</string>
+    <string name="log_viewer_side_tag_stats">Show tag usage statistics</string>
+    <string name="log_viewer_side_font_up">Font size +</string>
+    <string name="log_viewer_side_font_down">Font size -</string>
+    <string name="log_viewer_side_scroll_bottom">Scroll to bottom</string>
+
+    <string name="log_viewer_drop_logs">Drop logs here</string>
+    <string name="log_viewer_drop_mapping">Drop mapping here</string>
+
+    <string name="log_viewer_bottom_loading">Loading logs</string>
+    <string name="log_viewer_bottom_deobfuscate">Deobfuscate logs</string>
+    <string name="log_viewer_bottom_total_records">Total records: %1$d</string>
+    <string name="log_viewer_mapping_expected_one">Expected exactly one mapping file, but got %1$d</string>
+</resources>

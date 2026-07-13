@@ -1,0 +1,10 @@
+<resources>
+    <string name="adb_device_title">Устройство: %1$s</string>
+    <string name="adb_device_failed_to_load">Не удалось загрузить параметры</string>
+    <string name="adb_device_param_dark_theme">Тёмная тема</string>
+    <string name="adb_device_param_wifi">Wi‑Fi</string>
+    <string name="adb_device_param_mobile_data">Мобильные данные</string>
+    <string name="adb_device_param_stay_awake">Не выключать экран</string>
+    <string name="adb_device_param_show_taps">Показывать нажатия</string>
+    <string name="adb_device_param_pointer_location">Положение указателя</string>
+</resources>

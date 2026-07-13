@@ -1,0 +1,7 @@
+<resources>
+    <string name="tabs_icon">tab</string>
+    <string name="tabs_detach">detach</string>
+    <string name="tabs_detach_hint">Detach to a new window</string>
+    <string name="tabs_close">close</string>
+    <string name="tabs_close_hint">Close tab</string>
+</resources>

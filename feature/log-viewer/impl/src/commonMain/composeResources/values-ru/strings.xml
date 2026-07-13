@@ -1,0 +1,45 @@
+<resources>
+    <string name="log_viewer_search_placeholder">Поиск...</string>
+    <string name="log_viewer_search_next">Следующее совпадение</string>
+    <string name="log_viewer_search_prev">Предыдущее совпадение</string>
+    <string name="log_viewer_search_bad_pattern">неверный шаблон</string>
+    <string name="log_viewer_search_case_sensitive">Учитывать регистр</string>
+    <string name="log_viewer_search_use_regex">Регулярное выражение</string>
+    <string name="log_viewer_search_toggle_side_panel">Боковая панель</string>
+
+    <string name="log_viewer_filter_placeholder">Фильтр...</string>
+    <string name="log_viewer_filter_saved">Сохранённые фильтры</string>
+    <string name="log_viewer_filter_saved_cd">сохранённые фильтры</string>
+    <string name="log_viewer_filter_help">Справка по синтаксису фильтра</string>
+    <string name="log_viewer_filter_help_cd">справка</string>
+
+    <string name="log_viewer_saved_new_filter">Новый фильтр</string>
+    <string name="log_viewer_saved_name_placeholder">имя</string>
+    <string name="log_viewer_saved_content_placeholder">содержимое</string>
+    <string name="log_viewer_saved_save_hint">Сохранить новый фильтр</string>
+    <string name="log_viewer_saved_save_cd">сохранить</string>
+    <string name="log_viewer_saved_edit_hint">Редактировать фильтр</string>
+    <string name="log_viewer_saved_edit_cd">редактировать</string>
+    <string name="log_viewer_saved_delete_hint">Удалить фильтр</string>
+    <string name="log_viewer_saved_delete_cd">удалить</string>
+    <string name="log_viewer_saved_save_changes_hint">Сохранить изменения</string>
+    <string name="log_viewer_saved_save_changes_cd">сохранить изменения</string>
+    <string name="log_viewer_saved_cancel_hint">Отменить редактирование</string>
+    <string name="log_viewer_saved_cancel_cd">отменить редактирование</string>
+
+    <string name="log_viewer_side_copy">Копировать отфильтрованные логи</string>
+    <string name="log_viewer_side_attach_mapping">Прикрепить Proguard mapping</string>
+    <string name="log_viewer_side_strip_date">Убрать дату</string>
+    <string name="log_viewer_side_tag_stats">Статистика использования тегов</string>
+    <string name="log_viewer_side_font_up">Размер шрифта +</string>
+    <string name="log_viewer_side_font_down">Размер шрифта -</string>
+    <string name="log_viewer_side_scroll_bottom">Прокрутить вниз</string>
+
+    <string name="log_viewer_drop_logs">Перетащите логи сюда</string>
+    <string name="log_viewer_drop_mapping">Перетащите mapping сюда</string>
+
+    <string name="log_viewer_bottom_loading">Загрузка логов</string>
+    <string name="log_viewer_bottom_deobfuscate">Деобфускация логов</string>
+    <string name="log_viewer_bottom_total_records">Всего записей: %1$d</string>
+    <string name="log_viewer_mapping_expected_one">Ожидался ровно один mapping-файл, но получено %1$d</string>
+</resources>

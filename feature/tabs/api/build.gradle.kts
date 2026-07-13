@@ -8,6 +8,7 @@ kotlin {
         commonMain.dependencies {
             implementation(vsCoreLibs.vs.core.navigation.impl)
             implementation(projects.feature.windowTitle.api)
+            implementation(compose.components.resources)
         }
     }
 }

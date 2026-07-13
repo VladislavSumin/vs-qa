@@ -1,0 +1,10 @@
+<resources>
+    <string name="adb_device_title">Device: %1$s</string>
+    <string name="adb_device_failed_to_load">Failed to load parameters</string>
+    <string name="adb_device_param_dark_theme">Dark theme</string>
+    <string name="adb_device_param_wifi">Wi‑Fi</string>
+    <string name="adb_device_param_mobile_data">Mobile data</string>
+    <string name="adb_device_param_stay_awake">Stay awake</string>
+    <string name="adb_device_param_show_taps">Show taps</string>
+    <string name="adb_device_param_pointer_location">Pointer location</string>
+</resources>

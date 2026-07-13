@@ -18,9 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ComponentContext
+import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
+import ru.vladislavsumin.feature.memory_indicator.impl.generated.resources.Res
+import ru.vladislavsumin.feature.memory_indicator.impl.generated.resources.memory_indicator_usage
 
 @GenerateFactory(MemoryIndicatorComponentFactory::class)
 internal class MemoryIndicatorComponent(context: ComponentContext) :
@@ -44,7 +47,7 @@ internal class MemoryIndicatorComponent(context: ComponentContext) :
                     .fillMaxWidth(state.first.toFloat() / state.second),
             )
             Text(
-                text = "${state.first} of ${state.second}mb",
+                text = stringResource(Res.string.memory_indicator_usage, state.first, state.second),
                 maxLines = 1,
                 style = MaterialTheme.typography.bodySmall,
                 fontFamily = FontFamily.Monospace,

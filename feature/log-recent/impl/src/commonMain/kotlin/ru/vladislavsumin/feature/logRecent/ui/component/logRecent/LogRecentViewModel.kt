@@ -2,11 +2,15 @@ package ru.vladislavsumin.feature.logRecent.ui.component.logRecent
 
 import androidx.compose.runtime.Stable
 import kotlinx.coroutines.flow.map
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.getSystemResourceEnvironment
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.feature.logRecent.domain.LogRecent
 import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractorInternal
+import ru.vladislavsumin.feature.log_recent.impl.generated.resources.Res
+import ru.vladislavsumin.feature.log_recent.impl.generated.resources.log_recent_file_not_found
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Notification
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import kotlin.io.path.exists
@@ -27,7 +31,11 @@ internal class LogRecentViewModel(
             launch {
                 notificationsUiInteractor.showNotification(
                     Notification(
-                        text = "File not found: ${recent.path}",
+                        text = getString(
+                            getSystemResourceEnvironment(),
+                            Res.string.log_recent_file_not_found,
+                            recent.path.toString(),
+                        ),
                         servility = Notification.Servility.Error,
                     ),
                 )

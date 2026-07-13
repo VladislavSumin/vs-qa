@@ -1,0 +1,7 @@
+<resources>
+    <string name="tabs_icon">вкладка</string>
+    <string name="tabs_detach">открепить</string>
+    <string name="tabs_detach_hint">Открепить в новое окно</string>
+    <string name="tabs_close">закрыть</string>
+    <string name="tabs_close_hint">Закрыть вкладку</string>
+</resources>

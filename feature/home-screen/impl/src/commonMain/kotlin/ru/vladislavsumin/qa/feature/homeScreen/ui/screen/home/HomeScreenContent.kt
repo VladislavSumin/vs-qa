@@ -30,10 +30,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.ui.dragAndDrop.DragAndDropOverlay
 import ru.vladislavsumin.core.ui.dragAndDrop.rememberDragAndDropFilesTarget
 import ru.vladislavsumin.core.ui.filePicker.FilePickerDialog
+import ru.vladislavsumin.feature.home_screen.impl.generated.resources.Res
+import ru.vladislavsumin.feature.home_screen.impl.generated.resources.home_drop_logs_here
+import ru.vladislavsumin.feature.home_screen.impl.generated.resources.home_legal_info
+import ru.vladislavsumin.feature.home_screen.impl.generated.resources.home_open_logs_hint
+import ru.vladislavsumin.feature.home_screen.impl.generated.resources.home_open_new_file
+import ru.vladislavsumin.feature.home_screen.impl.generated.resources.home_settings
 import java.nio.file.Path
 
 @Composable
@@ -62,11 +69,11 @@ internal fun HomeScreenContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = "Open logs\nPress Command + O for open new one",
+                        text = stringResource(Res.string.home_open_logs_hint),
                         textAlign = TextAlign.Center,
                     )
                     Spacer(Modifier.height(16.dp))
-                    Button(onClick = viewModel::onClickOpen) { Text("Open new file") }
+                    Button(onClick = viewModel::onClickOpen) { Text(stringResource(Res.string.home_open_new_file)) }
                     Spacer(Modifier.height(16.dp))
                     logRecentComponent.Render(Modifier)
                 }
@@ -86,7 +93,7 @@ internal fun HomeScreenContent(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = "Правовая информация",
+                text = stringResource(Res.string.home_legal_info),
                 style = MaterialTheme.typography.bodySmall,
                 textDecoration = TextDecoration.Underline,
                 modifier = Modifier
@@ -95,7 +102,7 @@ internal fun HomeScreenContent(
             )
             Icon(
                 imageVector = Icons.Default.Settings,
-                contentDescription = "Настройки",
+                contentDescription = stringResource(Res.string.home_settings),
                 modifier = Modifier
                     .clickable(onClick = onOpenSettings)
                     .padding(8.dp),
@@ -127,7 +134,7 @@ private fun DropTargetCard(onLogPathsSelected: (List<Path>) -> Unit) {
                 ),
             contentAlignment = Alignment.Center,
         ) {
-            Text("Drop logs here")
+            Text(stringResource(Res.string.home_drop_logs_here))
         }
     }
 }

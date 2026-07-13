@@ -1,0 +1,5 @@
+<resources>
+    <string name="log_recent_rename">Rename</string>
+    <string name="log_recent_remove">Remove from recent</string>
+    <string name="log_recent_file_not_found">File not found: %1$s</string>
+</resources>
