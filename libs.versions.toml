@@ -12,6 +12,7 @@ sqlite = "2.6.2"
 reorderable = "3.1.0"
 aboutLibraries = "14.1.0"
 clikt = "4.4.0"
+mcp-kotlin-sdk = "0.14.0"
 
 [libraries]
 gradlePlugins-sentry = { module = "io.sentry:sentry-kotlin-multiplatform-gradle-plugin", version.ref = "sentry" }
@@ -33,3 +34,4 @@ reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reo
 aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutLibraries" }
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
 clikt = { module = "com.github.ajalt.clikt:clikt", version.ref = "clikt" }
+mcp-kotlin-sdk-server = { module = "io.modelcontextprotocol:kotlin-sdk-server", version.ref = "mcp-kotlin-sdk" }
