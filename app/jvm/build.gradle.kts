@@ -7,7 +7,6 @@ import java.io.File
 plugins {
     id("ru.vladislavsumin.convention.kmp.jvm")
     id("ru.vladislavsumin.convention.compose")
-    kotlin("plugin.serialization")
     id("com.codingfeline.buildkonfig")
     id("io.sentry.kotlin.multiplatform.gradle")
 }
@@ -33,7 +32,6 @@ kotlin {
 
         jvmMain.dependencies {
             implementation(projects.feature.mcp.api)
-            implementation(projects.feature.logViewer.api)
             implementation(projects.feature.multiWindow.impl)
             implementation(projects.feature.windowTitle.impl)
 
@@ -46,10 +44,6 @@ kotlin {
             implementation(vsCoreLibs.decompose.core)
             implementation(vsCoreLibs.decompose.extensions.compose)
             implementation(vsCoreLibs.kodein.core)
-
-            implementation(vsCoreLibs.kotlin.serialization.json)
-
-            implementation(libs.clikt)
         }
     }
 }

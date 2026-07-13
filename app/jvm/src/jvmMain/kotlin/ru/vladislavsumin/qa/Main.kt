@@ -29,13 +29,6 @@ fun main(args: Array<String>) {
         return
     }
 
-    if (args.firstOrNull() == "--mcp") {
-        val di = preInit(stdout = false)
-        MainLogger.i("App version: ${BuildConfig.version}")
-        McpCommand(di).main(args.drop(1).toTypedArray())
-        return
-    }
-
     val di = preInit()
     MainLogger.i("App version: ${BuildConfig.version}")
 
