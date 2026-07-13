@@ -14,7 +14,11 @@ data class LogHeadlessResult(
     val offset: Int,
     val limit: Int,
     val records: List<LogHeadlessRecord>,
+    val error: LogHeadlessError? = null,
 )
+
+@Serializable
+data class LogHeadlessError(val type: String, val message: String)
 
 @Serializable
 data class LogHeadlessRecord(

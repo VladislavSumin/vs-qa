@@ -24,6 +24,7 @@ kotlin {
             implementation(vsCoreLibs.vs.core.uikit.pieChart)
         }
         commonTest.dependencies {
+            implementation(projects.feature.logParser.anime)
             // TODO порешать с логером в тестах
             implementation(vsCoreLibs.vs.core.logger.manager)
             // TODO вынести в общий код
