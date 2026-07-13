@@ -43,7 +43,7 @@ internal class McpServerImpl(private val processor: LogHeadlessProcessor) : McpS
             description = """Open a log file for analysis. Supports .log and .zip formats.
                 |Must be called before query_log or get_log_info.
                 |Returns: path, total_records, status (loaded or error).
-""".trimMargin(),
+            """.trimMargin(),
             inputSchema = ToolSchema(
                 properties = buildJsonObject {
                     putJsonObject("path") {
@@ -95,7 +95,7 @@ internal class McpServerImpl(private val processor: LogHeadlessProcessor) : McpS
                 |  total (all log records), filtered (after filter), records[] (paginated)
                 |  Each record: order, raw, time, level, pid, tid, tag, message
                 |  On error: error.type (file_error or filter_parse_error), error.message
-""".trimMargin(),
+            """.trimMargin(),
             inputSchema = ToolSchema(
                 properties = buildJsonObject {
                     putJsonObject("filter") {
@@ -129,7 +129,7 @@ internal class McpServerImpl(private val processor: LogHeadlessProcessor) : McpS
             name = "get_log_info",
             description = """Get metadata about the currently opened log file.
                 |Returns: path, total_records. Must call open_log first.
-""".trimMargin(),
+            """.trimMargin(),
             inputSchema = ToolSchema(properties = buildJsonObject {}),
         ) {
             val logPath = state.logPath ?: error("No log file open.")
