@@ -6,6 +6,7 @@ plugins {
     id("ru.vladislavsumin.convention.preset.feature-api-ui")
     id("ru.vladislavsumin.convention.preset.feature-impl")
     id("ru.vladislavsumin.convention.compose")
+    id("ru.vladislavsumin.convention.compose-resources")
 }
 
 kotlin {
