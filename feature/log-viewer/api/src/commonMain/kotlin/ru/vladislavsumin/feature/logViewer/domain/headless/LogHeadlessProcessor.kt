@@ -5,6 +5,12 @@ import java.nio.file.Path
 
 interface LogHeadlessProcessor {
     suspend fun process(logPath: Path, filterExpression: String, offset: Int = 0, limit: Int = 100): LogHeadlessResult
+
+    suspend fun parseAndCache(logPath: Path): Int
+
+    suspend fun query(filterExpression: String, offset: Int = 0, limit: Int = 100): LogHeadlessResult
+
+    fun release()
 }
 
 @Serializable

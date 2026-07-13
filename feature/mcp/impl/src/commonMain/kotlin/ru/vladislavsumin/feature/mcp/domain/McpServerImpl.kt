@@ -55,17 +55,17 @@ internal class McpServerImpl(private val processor: LogHeadlessProcessor) : McpS
             ),
         ) { request ->
             val logPath = Path(request.arguments?.get("path")?.jsonPrimitive?.content ?: "")
-            val res = processor.process(logPath, "", limit = 0)
+            val total = processor.parseAndCache(logPath)
             state.logPath = logPath
-            state.totalRecords = res.total
+            state.totalRecords = total
             CallToolResult(
                 content = listOf(
                     TextContent(
                         mcpJson.encodeToString(
                             buildJsonObject {
                                 put("path", logPath.toString())
-                                put("total_records", res.total)
-                                put("status", if (res.error != null) "error" else "loaded")
+                                put("total_records", total)
+                                put("status", "loaded")
                             },
                         ),
                     ),
@@ -117,11 +117,10 @@ internal class McpServerImpl(private val processor: LogHeadlessProcessor) : McpS
                 },
             ),
         ) { request ->
-            val logPath = state.logPath ?: error("No log file open. Use open_log first.")
             val filter = request.arguments?.get("filter")?.jsonPrimitive?.content ?: ""
             val offset = request.arguments?.get("offset")?.jsonPrimitive?.content?.toIntOrNull() ?: 0
             val limit = request.arguments?.get("limit")?.jsonPrimitive?.content?.toIntOrNull() ?: 100
-            val res = processor.process(logPath, filter, offset, limit)
+            val res = processor.query(filter, offset, limit)
             CallToolResult(content = listOf(TextContent(mcpJson.encodeToString(res))))
         }
 
@@ -154,6 +153,7 @@ internal class McpServerImpl(private val processor: LogHeadlessProcessor) : McpS
         ) {
             state.logPath = null
             state.totalRecords = 0
+            processor.release()
             CallToolResult(
                 content = listOf(TextContent(mcpJson.encodeToString(buildJsonObject { put("status", "closed") }))),
             )

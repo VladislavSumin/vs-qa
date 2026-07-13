@@ -12,24 +12,69 @@ internal class LogHeadlessProcessorImpl(private val logParserProvider: LogParser
 
     private val filterParser = FilterRequestParser(MutableStateFlow(emptyList()))
 
-    override suspend fun process(logPath: Path, filterExpression: String, offset: Int, limit: Int): LogHeadlessResult {
-        val rawLogs = runCatching {
-            logParserProvider.getLogParser().parseLog(logPath)
-        }.getOrElse {
-            return LogHeadlessResult(
+    private var cachedPath: Path? = null
+    private var cachedRecords: List<LogRecord>? = null
+
+    override suspend fun parseAndCache(logPath: Path): Int {
+        val rawLogs = logParserProvider.getLogParser().parseLog(logPath)
+        val records = rawLogs.toLogRecords()
+        cachedPath = logPath
+        cachedRecords = records
+        return records.size
+    }
+
+    override suspend fun query(filterExpression: String, offset: Int, limit: Int): LogHeadlessResult {
+        val records = cachedRecords
+            ?: return LogHeadlessResult(
                 total = 0,
                 filtered = 0,
                 offset = offset,
                 limit = limit,
                 records = emptyList(),
-                error = LogHeadlessError(type = "file_error", message = it.message ?: "Failed to read log file"),
+                error = LogHeadlessError(type = "file_error", message = "No log file cached. Call open_log first."),
             )
+
+        return processRecords(records, filterExpression, offset, limit)
+    }
+
+    override fun release() {
+        cachedPath = null
+        cachedRecords = null
+    }
+
+    override suspend fun process(logPath: Path, filterExpression: String, offset: Int, limit: Int): LogHeadlessResult {
+        val records = if (cachedPath == logPath && cachedRecords != null) {
+            cachedRecords!!
+        } else {
+            val rawLogs = runCatching {
+                logParserProvider.getLogParser().parseLog(logPath)
+            }.getOrElse {
+                return LogHeadlessResult(
+                    total = 0,
+                    filtered = 0,
+                    offset = offset,
+                    limit = limit,
+                    records = emptyList(),
+                    error = LogHeadlessError(type = "file_error", message = it.message ?: "Failed to read log file"),
+                )
+            }
+            rawLogs.toLogRecords().also {
+                cachedPath = logPath
+                cachedRecords = it
+            }
         }
 
-        val logRecords = rawLogs.toLogRecords()
-        val filterResult = applyFilter(logRecords, filterExpression, offset, limit)
-        if (filterResult != null) return filterResult
+        return processRecords(records, filterExpression, offset, limit)
+    }
 
+    private fun processRecords(
+        logRecords: List<LogRecord>,
+        expression: String,
+        offset: Int,
+        limit: Int,
+    ): LogHeadlessResult {
+        val filterResult = applyFilter(logRecords, expression, offset, limit)
+        if (filterResult != null) return filterResult
         return buildResult(logRecords, logRecords, offset, limit)
     }
 
