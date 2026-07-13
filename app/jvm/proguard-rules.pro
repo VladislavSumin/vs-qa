@@ -14,6 +14,7 @@
 -keep class org.jetbrains.skiko.** { *; }
 
 -keep class org.apache.logging.log4j.** { *; }
+-keep class org.apache.logging.slf4j.** { *; }
 
 -dontwarn org.apache.logging.log4j.**
 -dontwarn com.android.tools.r8.**
