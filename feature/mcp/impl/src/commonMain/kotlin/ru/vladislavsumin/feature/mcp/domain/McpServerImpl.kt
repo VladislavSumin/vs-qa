@@ -176,9 +176,9 @@ internal class McpServerImpl(private val processor: LogHeadlessProcessor) : McpS
         }
 
         server.createSession(
-            StdioServerTransport(
-                System.`in`.asSource().buffered(),
-                System.out.asSink().buffered(),
+            transport = StdioServerTransport(
+                input = System.`in`.asSource().buffered(),
+                output = System.out.asSink().buffered(),
             ),
         )
         try {
