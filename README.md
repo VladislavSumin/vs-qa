@@ -34,15 +34,27 @@ VS-QA умеет работать как MCP-сервер — AI-ассисте�
 
 ### Подключение к OpenCode
 
-Добавьте в конфиг проекта (`.opencode/config.json` или `opencode.json`):
+Добавьте в конфиг проекта `opencode.json`:
 
 ```json
 {
+  "$schema": "https://opencode.ai/config.json",
   "mcp": {
-    "vs-qa": {
+    "vs_qa": {
       "type": "local",
-      "command": ["vs-qa", "--mcp-server"],
-      "enabled": true
+      "command": [
+        "vs-qa",
+        "--mcp-server"
+      ],
+      "enabled": true,
+      "timeout": 15000
+    }
+  },
+  "agent": {
+    "explore": {
+      "permission": {
+        "vs_qa_*": "allow"
+      }
     }
   }
 }
