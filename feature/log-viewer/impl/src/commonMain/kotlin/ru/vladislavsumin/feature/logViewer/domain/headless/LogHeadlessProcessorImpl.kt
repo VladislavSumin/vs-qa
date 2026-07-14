@@ -119,11 +119,9 @@ internal class LogHeadlessProcessorImpl(private val logParserProvider: LogParser
         val records = paged.map { log ->
             LogHeadlessRecord(
                 order = log.order.value,
-                raw = log.raw,
                 time = log.raw.substring(log.time),
                 level = log.logLevel.name,
                 pid = log.processId?.let { log.raw.substring(it) },
-                tid = null,
                 tag = log.raw.substring(log.tag),
                 message = log.raw.substring(log.message),
             )

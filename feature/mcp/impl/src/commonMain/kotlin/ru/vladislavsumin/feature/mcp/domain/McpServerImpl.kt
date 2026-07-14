@@ -100,7 +100,7 @@ internal class McpServerImpl(private val processor: LogHeadlessProcessor) : McpS
                 |
                 |Output JSON fields:
                 |  total (all log records), filtered (after filter), records[] (paginated)
-                |  Each record: order, raw, time, level, pid, tid, tag, message
+                |  Each record: order, time, level, pid, tid, tag, message
                 |  On error: error.type (file_error or filter_parse_error), error.message
             """.trimMargin(),
             inputSchema = ToolSchema(

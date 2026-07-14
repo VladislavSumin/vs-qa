@@ -29,11 +29,10 @@ data class LogHeadlessError(val type: String, val message: String)
 @Serializable
 data class LogHeadlessRecord(
     val order: Int,
-    val raw: String,
     val time: String,
     val level: String,
-    val pid: String?,
-    val tid: String?,
+    val pid: String? = null,
+    val tid: String? = null,
     val tag: String,
     val message: String,
 )
