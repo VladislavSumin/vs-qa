@@ -26,7 +26,6 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.FilterRequest
 import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.CurrentTokenPrediction
 import kotlin.map
-import kotlin.sequences.map
 import kotlin.time.measureTimedValue
 
 internal class FilterRequestParser(private val savedFilters: StateFlow<List<SavedFiltersRepository.SavedFilter>>) {
@@ -97,7 +96,7 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
         private val rpar by literalToken(")")
 
         // Строка в кавычках, может содержать экранированные кавычки внутри
-        private val stingLiteral by regexToken("\"(\\\\\"|[^\"])+\"")
+        private val stringLiteral by regexToken("\"(\\\\\"|[^\"])+\"")
 
         // Любая строка без пробелов, скобок и кавычек.
         private val any by regexToken("[^ \n()\"]+")
@@ -124,7 +123,7 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
             rpar,
         )
 
-        val tokenGroupStringLiteral = setOf(stingLiteral)
+        val tokenGroupStringLiteral = setOf(stringLiteral)
         val tokenGroupText = setOf(any)
 
         // Поля по которым можно вести поиск.
@@ -161,7 +160,7 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
         // Фильтры
         val filters = OrCombinator(
             listOf(
-                stingLiteral map {
+                stringLiteral map {
                     it.text
                         .substring(1, it.length - 1) // отрезаем внешние кавычки
                         .replace("\\\"", "\"") // убираем экраны с внутренних кавычек
