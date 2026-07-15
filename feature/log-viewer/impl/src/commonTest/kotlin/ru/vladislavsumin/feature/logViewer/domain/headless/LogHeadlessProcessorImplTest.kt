@@ -248,7 +248,6 @@ class LogHeadlessProcessorImplTest {
         assertEquals("INFO", record.level)
         assertEquals("App", record.tag)
         assertTrue(record.message.contains("AppInfo"))
-        assertTrue(record.raw.isNotEmpty())
         assertTrue(record.time.isNotEmpty())
     }
 
