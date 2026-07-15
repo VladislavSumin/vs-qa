@@ -19,7 +19,6 @@ import com.github.h0tk3y.betterParse.lexer.regexToken
 import com.github.h0tk3y.betterParse.parser.Parser
 import com.github.h0tk3y.betterParse.parser.parseToEnd
 import kotlinx.coroutines.flow.StateFlow
-import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
 import ru.vladislavsumin.feature.logViewer.TokenPredictionLogger
 import ru.vladislavsumin.feature.logViewer.domain.logs.FilterRequest
@@ -27,6 +26,7 @@ import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.CurrentTokenPrediction
 import kotlin.map
 import kotlin.sequences.map
+import kotlin.time.measureTimedValue
 
 internal class FilterRequestParser(private val savedFilters: StateFlow<List<SavedFiltersRepository.SavedFilter>>) {
 
@@ -309,13 +309,13 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
     }
 
     fun parse(request: String, cursorPosition: Int = -1): ParserResult {
-        val (tokenizeTime, tokens) = measureTimeMillisWithResult {
+        val (tokens, tokenizeTime) = measureTimedValue {
             runCatching { grammar.tokenizer.tokenize(request) }
         }
 
         val currentTokenPredictionInfo = tokenPredict(request, cursorPosition)
 
-        val (parseTime, filterRequest) = measureTimeMillisWithResult {
+        val (filterRequest, parseTime) = measureTimedValue {
             tokens.mapCatching { tokens ->
                 val result = grammar.parseToEnd(tokens)
                 FilterRequest(result)
@@ -323,7 +323,7 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
         }
 
         val highlight: RequestHighlight = highlight(request, tokens)
-        FilterLogger.d { "Parsed input, tokenize=${tokenizeTime}ms, parseTime=${parseTime}ms, input=$request}" }
+        FilterLogger.d { "Parsed input, tokenize=$tokenizeTime, parseTime=$parseTime, input=$request}" }
 
         return ParserResult(
             requestHighlight = highlight,

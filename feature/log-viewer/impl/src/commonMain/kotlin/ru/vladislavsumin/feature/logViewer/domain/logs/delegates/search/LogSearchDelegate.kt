@@ -1,12 +1,12 @@
 package ru.vladislavsumin.feature.logViewer.domain.logs.delegates.search
 
 import ru.vladislavsumin.core.boyerMooreSearch.toBoyerMoorePattern
-import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
 import ru.vladislavsumin.feature.logViewer.LogLogger
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 import ru.vladislavsumin.feature.logViewer.domain.logs.SearchRequest
+import kotlin.time.measureTimedValue
 
 internal class LogSearchDelegate {
     @Suppress("LongMethod")
@@ -16,7 +16,7 @@ internal class LogSearchDelegate {
         totalLogRecords: Int,
         runIdOrders: List<RunIdInfo>?,
     ): LogIndex {
-        val (time, result) = measureTimeMillisWithResult {
+        val (result, time) = measureTimedValue {
             // TODO Убрать дублирование кода.
             val searchedLogs: List<LogRecord> = if (search.useRegex) {
                 val regex = runCatching {
@@ -29,7 +29,7 @@ internal class LogSearchDelegate {
                         },
                     )
                 }.getOrElse {
-                    return@measureTimeMillisWithResult LogIndex(
+                    return@measureTimedValue LogIndex(
                         logs = logs,
                         searchIndex = LogIndex.SearchIndex.BadRegex,
                         totalLogRecords = totalLogRecords,
@@ -79,7 +79,7 @@ internal class LogSearchDelegate {
         }
 
         LogLogger.d {
-            "Log searched at ${time}ms, size = ${result.logs.size}, results = ${result.searchIndex.index.size}"
+            "Log searched at $time, size = ${result.logs.size}, results = ${result.searchIndex.index.size}"
         }
 
         return result

@@ -5,12 +5,12 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.transformLatest
-import ru.vladislavsumin.core.utils.measureTimeMillisWithResult
 import ru.vladislavsumin.feature.logViewer.LogLogger
 import ru.vladislavsumin.feature.logViewer.domain.logs.ClearLogState
 import ru.vladislavsumin.feature.logViewer.domain.logs.FilterRequest
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
+import kotlin.time.measureTimedValue
 
 /**
  * Делегат ответственный за все связанное с фильтрацией логов.
@@ -56,13 +56,13 @@ internal class LogFilterDelegate(private val logs: Flow<ClearLogState>) {
         filter: FilterRequest,
         runIdOrders: List<RunIdInfo>?,
     ): List<LogRecord> {
-        val (time, result) = measureTimeMillisWithResult {
+        val (result, time) = measureTimedValue {
             val prepared = filter.operation.prepare(runIdOrders) ?: return logs
             logs.parallelStream()
                 .filter { log -> prepared.check(log) }
                 .toList()
         }
-        LogLogger.d { "Log filtered at ${time}ms, size = ${result.size}" }
+        LogLogger.d { "Log filtered at $time, size = ${result.size}" }
         return result
     }
 }

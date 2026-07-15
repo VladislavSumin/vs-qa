@@ -25,7 +25,6 @@ include(":core:ui:file-picker")
 include(":core:ui:hotkey-controller")
 include(":core:ui:hint")
 include(":core:ui:selection")
-include(":core:utils")
 
 include(":feature:log-parser:api")
 include(":feature:log-parser:anime")
