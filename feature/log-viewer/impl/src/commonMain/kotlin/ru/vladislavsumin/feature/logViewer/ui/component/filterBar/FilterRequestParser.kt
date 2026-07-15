@@ -174,10 +174,11 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
             val level = LogLevel.fromAlias(level) ?: error("Unknown level $level")
             FilterRequest.FilterOperation.MinLogLevel(level)
         }
-        private val runNumberFilter = (-runNumber and -contains and optional(minus) and filters) map { (maybeMinus, value) ->
-            val sign = if (maybeMinus != null) -1 else 1
-            FilterRequest.FilterOperation.RunNumber(sign * value.toInt())
-        }
+        private val runNumberFilter = (-runNumber and -contains and optional(minus) and filters)
+            .map { (maybeMinus, value) ->
+                val sign = if (maybeMinus != null) -1 else 1
+                FilterRequest.FilterOperation.RunNumber(sign * value.toInt())
+            }
         private val timeBeforeFilter = (-timeBefore and -contains and filters) map {
             FilterRequest.FilterOperation.TimeBefore(it)
         }
@@ -394,8 +395,8 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
                 }
             }
 
-            prevToken?.type == grammar.minus && thirdToken?.isFilterTypeGroup() == true
-                && fourthToken?.isFieldGroup() == true -> {
+            prevToken?.type == grammar.minus && thirdToken?.isFilterTypeGroup() == true &&
+                fourthToken?.isFieldGroup() == true -> {
                 when (fourthToken.type) {
                     grammar.runNumber -> CurrentTokenPrediction(
                         startText = "-$currentText",

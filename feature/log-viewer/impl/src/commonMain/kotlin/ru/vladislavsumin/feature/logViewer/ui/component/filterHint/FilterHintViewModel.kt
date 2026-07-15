@@ -55,9 +55,13 @@ internal class FilterHintViewModel(
         if (showHint && currentTokenPrediction != null) {
             val hints = when (currentTokenPrediction.type) {
                 CurrentTokenPrediction.Type.Keyword -> keywordFilterHintItems + savedFilters
+
                 CurrentTokenPrediction.Type.SearchType -> typeFilterHintItems
+
                 CurrentTokenPrediction.Type.LogLevel -> logLevelFilterHintItems
+
                 CurrentTokenPrediction.Type.Tag -> currentTags
+
                 CurrentTokenPrediction.Type.RunNumber -> {
                     if (currentTokenPrediction.startText.startsWith("-")) {
                         currentRuns.reversed().mapIndexed { index, hint ->
