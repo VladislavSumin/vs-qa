@@ -93,6 +93,31 @@ class FilterRequestParserHighlightTest {
     }
 
     @Test
+    fun testMinusAfterOperatorIsText() {
+        assertEquals(
+            expected = listOf(
+                FilterRequestParser.Category.Field to "runNumber",
+                FilterRequestParser.Category.Operator to "=",
+                FilterRequestParser.Category.Text to "-",
+                FilterRequestParser.Category.Text to "1",
+            ),
+            actual = createParser().categories("runNumber=-1"),
+        )
+    }
+
+    @Test
+    fun testRunNumberPositiveHighlight() {
+        assertEquals(
+            expected = listOf(
+                FilterRequestParser.Category.Field to "runNumber",
+                FilterRequestParser.Category.Operator to "=",
+                FilterRequestParser.Category.Text to "1",
+            ),
+            actual = createParser().categories("runNumber=1"),
+        )
+    }
+
+    @Test
     fun testBrackets() {
         assertEquals(
             expected = listOf(

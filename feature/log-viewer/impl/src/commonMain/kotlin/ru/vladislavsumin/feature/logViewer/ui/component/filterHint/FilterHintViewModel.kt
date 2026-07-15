@@ -58,7 +58,15 @@ internal class FilterHintViewModel(
                 CurrentTokenPrediction.Type.SearchType -> typeFilterHintItems
                 CurrentTokenPrediction.Type.LogLevel -> logLevelFilterHintItems
                 CurrentTokenPrediction.Type.Tag -> currentTags
-                CurrentTokenPrediction.Type.RunNumber -> currentRuns
+                CurrentTokenPrediction.Type.RunNumber -> {
+                    if (currentTokenPrediction.startText.startsWith("-")) {
+                        currentRuns.reversed().mapIndexed { index, hint ->
+                            hint.copy(name = (-(index + 1)).toString())
+                        }
+                    } else {
+                        currentRuns
+                    }
+                }
             }
             val items = FilterHintSearcher.search(hints, currentTokenPrediction.startText)
             if (items.isNotEmpty() && (items.size > 1 || items.first().text != currentTokenPrediction.startText)) {

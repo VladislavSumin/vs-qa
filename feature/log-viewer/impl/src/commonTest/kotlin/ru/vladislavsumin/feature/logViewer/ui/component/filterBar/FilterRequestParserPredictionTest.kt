@@ -69,5 +69,75 @@ class FilterRequestParserPredictionTest {
         )
     }
 
+    @Test
+    fun testRunNumberPositivePrediction() {
+        val parser = createParser()
+        val prediction = parser.parse("runNumber=1", cursorPosition = 11).currentTokenPredictionInfo!!
+        assertEquals(
+            expected = "1",
+            actual = prediction.startText,
+        )
+        assertEquals(
+            expected = CurrentTokenPrediction.Type.RunNumber,
+            actual = prediction.type,
+        )
+    }
+
+    @Test
+    fun testRunNumberMinusPrediction() {
+        val parser = createParser()
+        val prediction = parser.parse("runNumber=-", cursorPosition = 11).currentTokenPredictionInfo!!
+        assertEquals(
+            expected = "-",
+            actual = prediction.startText,
+        )
+        assertEquals(
+            expected = CurrentTokenPrediction.Type.RunNumber,
+            actual = prediction.type,
+        )
+    }
+
+    @Test
+    fun testRunNumberPositiveMultiDigit() {
+        val parser = createParser()
+        val prediction = parser.parse("runNumber=12", cursorPosition = 12).currentTokenPredictionInfo!!
+        assertEquals(
+            expected = "12",
+            actual = prediction.startText,
+        )
+        assertEquals(
+            expected = CurrentTokenPrediction.Type.RunNumber,
+            actual = prediction.type,
+        )
+    }
+
+    @Test
+    fun testRunNumberNegativePrediction() {
+        val parser = createParser()
+        val prediction = parser.parse("runNumber=-1", cursorPosition = 12).currentTokenPredictionInfo!!
+        assertEquals(
+            expected = "-1",
+            actual = prediction.startText,
+        )
+        assertEquals(
+            expected = CurrentTokenPrediction.Type.RunNumber,
+            actual = prediction.type,
+        )
+    }
+
+    @Test
+    fun testRunNumberNegativeMultiDigit() {
+        val parser = createParser()
+        val prediction = parser.parse("runNumber=-12", cursorPosition = 13).currentTokenPredictionInfo!!
+        assertEquals(
+            expected = "-12",
+            actual = prediction.startText,
+        )
+        assertEquals(
+            expected = CurrentTokenPrediction.Type.RunNumber,
+            actual = prediction.type,
+        )
+    }
+
     private fun createParser() = FilterRequestParser(savedFilters = MutableStateFlow(emptyList()))
 }

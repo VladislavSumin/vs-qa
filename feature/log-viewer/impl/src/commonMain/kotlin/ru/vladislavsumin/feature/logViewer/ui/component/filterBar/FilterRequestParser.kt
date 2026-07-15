@@ -5,6 +5,7 @@ import com.github.h0tk3y.betterParse.combinators.and
 import com.github.h0tk3y.betterParse.combinators.asJust
 import com.github.h0tk3y.betterParse.combinators.leftAssociative
 import com.github.h0tk3y.betterParse.combinators.map
+import com.github.h0tk3y.betterParse.combinators.optional
 import com.github.h0tk3y.betterParse.combinators.or
 import com.github.h0tk3y.betterParse.combinators.unaryMinus
 import com.github.h0tk3y.betterParse.combinators.zeroOrMore
@@ -87,7 +88,7 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
         private val contains by literalToken("=")
 
         private val not by literalToken("!")
-        private val minus by literalToken("-")
+        val minus by literalToken("-")
 
         private val and by literalToken("&")
         private val or by literalToken("|")
@@ -173,8 +174,9 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
             val level = LogLevel.fromAlias(level) ?: error("Unknown level $level")
             FilterRequest.FilterOperation.MinLogLevel(level)
         }
-        private val runNumberFilter = (-runNumber and -contains and filters) map {
-            FilterRequest.FilterOperation.RunNumber(it.toInt() - 1)
+        private val runNumberFilter = (-runNumber and -contains and optional(minus) and filters) map { (maybeMinus, value) ->
+            val sign = if (maybeMinus != null) -1 else 1
+            FilterRequest.FilterOperation.RunNumber(sign * value.toInt())
         }
         private val timeBeforeFilter = (-timeBefore and -contains and filters) map {
             FilterRequest.FilterOperation.TimeBefore(it)
@@ -263,7 +265,13 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
 
         in grammar.tokenGroupFilterType -> Category.Operator
 
-        in grammar.tokenGroupLogic -> Category.Logic
+        in grammar.tokenGroupLogic -> {
+            if (token.type == grammar.minus && prev?.type in grammar.tokenGroupFilterType) {
+                Category.Text
+            } else {
+                Category.Logic
+            }
+        }
 
         in grammar.tokenGroupBrackets -> Category.Bracket
 
@@ -348,6 +356,7 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
         val currentToken = tokens[currentTokenIndex]!!
         val prevToken = if (currentTokenIndex > 0) tokens[currentTokenIndex - 1] else null
         val thirdToken = if (currentTokenIndex > 1) tokens[currentTokenIndex - 2] else null
+        val fourthToken = if (currentTokenIndex > 2) tokens[currentTokenIndex - 3] else null
 
         val currentText = currentToken.text.substring(0, cursorPosition - currentToken.offset)
 
@@ -375,6 +384,21 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
 
                     grammar.runNumber -> CurrentTokenPrediction(
                         startText = "",
+                        type = CurrentTokenPrediction.Type.RunNumber,
+                    )
+
+                    else -> {
+                        TokenPredictionLogger.w { "Filter content prediction is not supported now" }
+                        null
+                    }
+                }
+            }
+
+            prevToken?.type == grammar.minus && thirdToken?.isFilterTypeGroup() == true
+                && fourthToken?.isFieldGroup() == true -> {
+                when (fourthToken.type) {
+                    grammar.runNumber -> CurrentTokenPrediction(
+                        startText = "-$currentText",
                         type = CurrentTokenPrediction.Type.RunNumber,
                     )
 

@@ -286,7 +286,18 @@ class FilterRequestParserTest {
         val request = parser.parse("runNumber=1").searchRequest
         assertTrue(request.isSuccess)
         assertEquals(
-            expected = "RunNumber(number=0)",
+            expected = "RunNumber(number=1)",
+            actual = request.getOrThrow().operation.toString(),
+        )
+    }
+
+    @Test
+    fun testRunNumberNegative() {
+        val parser = createParser()
+        val request = parser.parse("runNumber=-1").searchRequest
+        assertTrue(request.isSuccess)
+        assertEquals(
+            expected = "RunNumber(number=-1)",
             actual = request.getOrThrow().operation.toString(),
         )
     }

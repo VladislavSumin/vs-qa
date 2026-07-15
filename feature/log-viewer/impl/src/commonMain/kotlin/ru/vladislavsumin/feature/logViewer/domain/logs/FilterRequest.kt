@@ -38,7 +38,13 @@ data class FilterRequest(val operation: FilterOperation) {
 
         data class RunNumber(private val number: Int) : Simple {
             override fun prepare(runIdOrders: List<RunIdInfo>?): PreparedFilterOperation? {
-                val orders = runIdOrders?.getOrNull(number)?.orderRange
+                if (runIdOrders == null) return null
+                val index = when {
+                    number > 0 -> number - 1
+                    number < 0 -> runIdOrders.size + number
+                    else -> return null
+                }
+                val orders = runIdOrders.getOrNull(index)?.orderRange
                 return orders?.let { PreparedRunOrder(orders) }
             }
 
