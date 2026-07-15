@@ -1,13 +1,11 @@
 package ru.vladislavsumin.feature.logViewer.domain.headless
 
-import ru.vladislavsumin.core.logger.common.LogLevel
-import ru.vladislavsumin.core.logger.manager.ExternalLogger
 import ru.vladislavsumin.core.logger.manager.LoggerManager
+import ru.vladislavsumin.core.logger.manager.initTest
 import ru.vladislavsumin.feature.logParser.anime.domain.AnimeLogParserProvider
 import java.nio.file.Files
 import kotlin.io.path.Path
 import kotlin.io.path.writeText
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -29,27 +27,8 @@ class LogHeadlessProcessorImplTest {
         }
     }
 
-    @BeforeTest
-    fun initLogger() {
-        synchronized(TestLoggerInit) {
-            if (!TestLoggerInit.initialized) {
-                TestLoggerInit.initialized = true
-                try {
-                    LoggerManager.init(externalLoggerFactory = {
-                        object : ExternalLogger {
-                            override fun log(level: LogLevel, msg: String) = Unit
-                            override fun log(level: LogLevel, throwable: Throwable, msg: String) = Unit
-                        }
-                    })
-                } catch (_: IllegalStateException) {
-                    // Already initialized by another test class
-                }
-            }
-        }
-    }
-
-    private object TestLoggerInit {
-        var initialized = false
+    init {
+        LoggerManager.initTest()
     }
 
     @Test

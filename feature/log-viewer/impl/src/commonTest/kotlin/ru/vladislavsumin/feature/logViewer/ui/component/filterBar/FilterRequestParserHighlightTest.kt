@@ -1,6 +1,8 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
 import kotlinx.coroutines.flow.MutableStateFlow
+import ru.vladislavsumin.core.logger.manager.LoggerManager
+import ru.vladislavsumin.core.logger.manager.initTest
 import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -8,7 +10,7 @@ import kotlin.test.assertTrue
 
 class FilterRequestParserHighlightTest {
     init {
-        TestLogger.init()
+        LoggerManager.initTest()
     }
 
     @Test

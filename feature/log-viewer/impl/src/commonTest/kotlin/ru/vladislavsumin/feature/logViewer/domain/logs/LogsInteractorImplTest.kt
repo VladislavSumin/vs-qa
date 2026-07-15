@@ -11,6 +11,8 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
+import ru.vladislavsumin.core.logger.manager.LoggerManager
+import ru.vladislavsumin.core.logger.manager.initTest
 import ru.vladislavsumin.feature.logParser.anime.domain.AnimeLogParserProvider
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
 import ru.vladislavsumin.feature.logParser.domain.LogRange
@@ -23,7 +25,6 @@ import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Not
 import java.nio.file.Path
 import java.time.Instant
 import kotlin.io.path.Path
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -46,35 +47,8 @@ class LogsInteractorImplTest {
         }
     }
 
-    @BeforeTest
-    fun initLogger() {
-        synchronized(TestLoggerInit) {
-            if (!TestLoggerInit.initialized) {
-                TestLoggerInit.initialized = true
-                try {
-                    ru.vladislavsumin.core.logger.manager.LoggerManager.init(
-                        externalLoggerFactory = {
-                            object : ru.vladislavsumin.core.logger.manager.ExternalLogger {
-                                override fun log(level: ru.vladislavsumin.core.logger.common.LogLevel, msg: String,) =
-                                    Unit
-
-                                override fun log(
-                                    level: ru.vladislavsumin.core.logger.common.LogLevel,
-                                    throwable: Throwable,
-                                    msg: String,
-                                ) = Unit
-                            }
-                        },
-                    )
-                } catch (_: IllegalStateException) {
-                    // Already initialized
-                }
-            }
-        }
-    }
-
-    private object TestLoggerInit {
-        var initialized = false
+    init {
+        LoggerManager.initTest()
     }
 
     // --- Test infrastructure ---
@@ -93,7 +67,7 @@ class LogsInteractorImplTest {
         }
     }
 
-    private class FakeProguardInteractor(private val warmupResult: Result<Unit> = Result.success(Unit),) :
+    private class FakeProguardInteractor(private val warmupResult: Result<Unit> = Result.success(Unit)) :
         ProguardInteractor {
         var warmupCalled = false
 
@@ -245,8 +219,8 @@ class LogsInteractorImplTest {
         assertEquals(12, last.lastSuccessIndex.logs.size)
         assertTrue(
             last.lastSuccessIndex.logs.all {
-            it.logLevel.rawLevel >= LogLevel.ERROR.rawLevel
-        }
+                it.logLevel.rawLevel >= LogLevel.ERROR.rawLevel
+            },
         )
     }
 
@@ -271,8 +245,8 @@ class LogsInteractorImplTest {
         assertEquals(13, last.lastSuccessIndex.logs.size)
         assertTrue(
             last.lastSuccessIndex.logs.all {
-            it.raw.substring(it.tag).contains("BluetoothManager", ignoreCase = true)
-        }
+                it.raw.substring(it.tag).contains("BluetoothManager", ignoreCase = true)
+            },
         )
     }
 
@@ -300,9 +274,9 @@ class LogsInteractorImplTest {
         assertEquals(4, last.lastSuccessIndex.logs.size)
         assertTrue(
             last.lastSuccessIndex.logs.all {
-            it.raw.substring(it.tag) == "PaymentGateway" &&
-                it.logLevel == LogLevel.ERROR
-        }
+                it.raw.substring(it.tag) == "PaymentGateway" &&
+                    it.logLevel == LogLevel.ERROR
+            },
         )
     }
 
@@ -442,9 +416,9 @@ class LogsInteractorImplTest {
         assertTrue(last.lastSuccessIndex.logs.isNotEmpty())
         assertTrue(
             last.lastSuccessIndex.logs.all {
-            val tag = it.raw.substring(it.tag)
-            tag == "CrashHandler" || tag == "PaymentGateway"
-        }
+                val tag = it.raw.substring(it.tag)
+                tag == "CrashHandler" || tag == "PaymentGateway"
+            },
         )
     }
 
