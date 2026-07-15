@@ -27,6 +27,7 @@ kotlin {
             implementation(projects.feature.logParser.anime)
             // TODO порешать с логером в тестах
             implementation(vsCoreLibs.vs.core.logger.manager)
+            implementation(vsCoreLibs.kotlin.coroutines.test)
             // TODO вынести в общий код
             implementation(kotlin("test"))
         }

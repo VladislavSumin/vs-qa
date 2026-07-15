@@ -239,7 +239,7 @@ class LogsInteractorImpl(
 
 internal data class ClearLogState(val logs: List<LogRecord>, val runIdIndexes: List<RunIdInfo>?)
 
-private fun List<RawRunIdInfo>.toRunIdInfo(obfuscatedLogs: List<RawLogRecord>): List<RunIdInfo> =
+internal fun List<RawRunIdInfo>.toRunIdInfo(obfuscatedLogs: List<RawLogRecord>): List<RunIdInfo> =
     mapIndexed { index, info ->
         val endIndex = if (index + 1 < size) {
             this[index + 1].startIndex - 1
