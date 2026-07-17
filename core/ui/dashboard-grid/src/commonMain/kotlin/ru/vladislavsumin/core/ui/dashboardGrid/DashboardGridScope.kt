@@ -13,3 +13,22 @@ interface DashboardGridScope {
         content: @Composable () -> Unit,
     )
 }
+
+internal class DashboardGridScopeImpl(val gridState: GridState) : DashboardGridScope {
+    @Composable
+    override fun GridItem(
+        placement: GridPlacement,
+        modifier: Modifier,
+        onMove: ((GridPlacement) -> Unit)?,
+        onResize: ((GridPlacement) -> Unit)?,
+        content: @Composable () -> Unit,
+    ) {
+        DashboardGridItem(
+            placement = placement,
+            modifier = modifier,
+            onMove = onMove,
+            onResize = onResize,
+            content = content,
+        )
+    }
+}

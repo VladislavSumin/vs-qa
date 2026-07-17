@@ -27,10 +27,7 @@ internal class GridState(
 
     val items = mutableStateMapOf<Any, Item>()
 
-    data class DragSession(
-        val itemKey: Any,
-        val targetPlacement: GridPlacement,
-    )
+    data class DragSession(val itemKey: Any, val targetPlacement: GridPlacement)
 
     var dragSession: DragSession? by mutableStateOf(null)
         private set
@@ -126,11 +123,7 @@ internal class GridState(
             a.row + a.height + p > b.row
     }
 
-    private fun pushAway(
-        item: GridPlacement,
-        obstacle: GridPlacement,
-        others: List<GridPlacement>,
-    ): GridPlacement {
+    private fun pushAway(item: GridPlacement, obstacle: GridPlacement, others: List<GridPlacement>): GridPlacement {
         val p = collisionPadding
 
         val rightCol = obstacle.column + obstacle.width + p
@@ -174,10 +167,8 @@ internal class GridState(
             ?: item
     }
 
-    private fun isOutOfBounds(p: GridPlacement): Boolean {
-        return p.column < 0 ||
-            p.row < 0 ||
-            p.column + p.width > columns ||
-            p.row + p.height > rows
-    }
+    private fun isOutOfBounds(p: GridPlacement): Boolean = p.column < 0 ||
+        p.row < 0 ||
+        p.column + p.width > columns ||
+        p.row + p.height > rows
 }

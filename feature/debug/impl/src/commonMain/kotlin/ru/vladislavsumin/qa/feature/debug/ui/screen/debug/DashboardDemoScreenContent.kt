@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -27,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -119,43 +117,43 @@ internal fun DashboardDemoScreenContent(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxSize(),
         ) {
             placements.forEachIndexed { index, placement ->
-                    GridItem(
-                        placement = placement,
-                        onMove = if (isEditMode) {
-                            { placements[index] = it }
-                        } else {
-                            null
-                        },
-                        onResize = if (isEditMode) {
-                            { placements[index] = it }
-                        } else {
-                            null
-                        },
-                    ) {
-                        val color = CARD_COLORS[index % CARD_COLORS.size]
-                        Box(Modifier.fillMaxSize().background(color, RoundedCornerShape(6.dp))) {
-                            if (isEditMode) {
-                                IconButton(
-                                    onClick = { placements.removeAt(index) },
-                                    modifier = Modifier.align(Alignment.TopEnd),
-                                ) {
-                                    Icon(
-                                        Icons.Default.Close,
-                                        contentDescription = "Remove card",
-                                        tint = Color.White,
-                                    )
-                                }
+                GridItem(
+                    placement = placement,
+                    onMove = if (isEditMode) {
+                        { placements[index] = it }
+                    } else {
+                        null
+                    },
+                    onResize = if (isEditMode) {
+                        { placements[index] = it }
+                    } else {
+                        null
+                    },
+                ) {
+                    val color = CARD_COLORS[index % CARD_COLORS.size]
+                    Box(Modifier.fillMaxSize().background(color, RoundedCornerShape(6.dp))) {
+                        if (isEditMode) {
+                            IconButton(
+                                onClick = { placements.removeAt(index) },
+                                modifier = Modifier.align(Alignment.TopEnd),
+                            ) {
+                                Icon(
+                                    Icons.Default.Close,
+                                    contentDescription = "Remove card",
+                                    tint = Color.White,
+                                )
                             }
-                            Text(
-                                text = "Card ${index + 1}",
-                                modifier = Modifier.align(Alignment.Center),
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center,
-                            )
                         }
+                        Text(
+                            text = "Card ${index + 1}",
+                            modifier = Modifier.align(Alignment.Center),
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                        )
                     }
+                }
             }
         }
     }

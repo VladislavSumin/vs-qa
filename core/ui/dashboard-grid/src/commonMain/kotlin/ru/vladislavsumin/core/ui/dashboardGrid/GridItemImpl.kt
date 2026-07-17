@@ -61,7 +61,7 @@ internal fun DashboardGridScopeImpl.DashboardGridItem(
         modifier = Modifier
             .offset(animOffsetX, animOffsetY)
             .size(animWidth, animHeight)
-            .padding(2.dp)
+            .padding(2.dp),
     ) {
         Surface(
             modifier = modifier
@@ -104,11 +104,7 @@ internal fun DashboardGridScopeImpl.DashboardGridItem(
 }
 
 @Composable
-private fun DashboardGridItemDragOverlay(
-    gridState: GridState,
-    itemKey: Any,
-    onMove: (GridPlacement) -> Unit,
-) {
+private fun DashboardGridItemDragOverlay(gridState: GridState, itemKey: Any, onMove: (GridPlacement) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -128,10 +124,13 @@ private fun DashboardGridItemDragOverlay(
                         val sp = startPlacement ?: return
                         val dCol = (totalDelta.x / gridState.cellWidthPx).roundToInt()
                         val dRow = (totalDelta.y / gridState.cellHeightPx).roundToInt()
-                        gridState.updateDrag(itemKey, sp.copy(
-                            column = (sp.column + dCol).coerceIn(0, gridState.columns - sp.width),
-                            row = (sp.row + dRow).coerceIn(0, gridState.rows - sp.height),
-                        ))
+                        gridState.updateDrag(
+                            itemKey,
+                            sp.copy(
+                                column = (sp.column + dCol).coerceIn(0, gridState.columns - sp.width),
+                                row = (sp.row + dRow).coerceIn(0, gridState.rows - sp.height),
+                            ),
+                        )
                     }
 
                     fun onEnd() {
@@ -163,7 +162,7 @@ private fun DashboardGridItemDragOverlay(
                         onDragCancel = dragCallbacks::onCancel,
                     )
                 }
-            }
+            },
     )
 }
 
@@ -203,10 +202,13 @@ private fun DashboardGridResizeHandle(
                         val sp = startPlacement ?: return
                         val dCol = (totalDelta.x / gridState.cellWidthPx).roundToInt()
                         val dRow = (totalDelta.y / gridState.cellHeightPx).roundToInt()
-                        gridState.updateDrag(itemKey, sp.copy(
-                            width = (sp.width + dCol).coerceIn(1, gridState.columns - sp.column),
-                            height = (sp.height + dRow).coerceIn(1, gridState.rows - sp.row),
-                        ))
+                        gridState.updateDrag(
+                            itemKey,
+                            sp.copy(
+                                width = (sp.width + dCol).coerceIn(1, gridState.columns - sp.column),
+                                height = (sp.height + dRow).coerceIn(1, gridState.rows - sp.row),
+                            ),
+                        )
                     }
 
                     fun onEnd() {
@@ -238,6 +240,6 @@ private fun DashboardGridResizeHandle(
                         onDragCancel = dragCallbacks::onCancel,
                     )
                 }
-            }
+            },
     )
 }

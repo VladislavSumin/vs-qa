@@ -12,9 +12,8 @@ import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
 
 @GenerateScreenFactory
-internal class DashboardDemoScreen(
-    context: ComponentContext,
-) : Screen(context),
+internal class DashboardDemoScreen(context: ComponentContext) :
+    Screen(context),
     TabSupport {
 
     override val tabState: StateFlow<TabSupport.TabState> = MutableStateFlow(
