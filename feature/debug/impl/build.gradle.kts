@@ -7,6 +7,7 @@ kotlin {
         commonMain.dependencies {
             implementation(vsCoreLibs.vs.core.navigation.debug)
             implementation(projects.feature.tabs.api)
+            implementation(projects.core.ui.dashboardGrid)
         }
     }
 }
