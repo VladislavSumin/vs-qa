@@ -60,6 +60,9 @@ internal class GridState(
 
     fun endDrag(key: Any): GridPlacement {
         val session = dragSession
+        for ((itemKey, resolvedPlacement) in resolvedCache) {
+            items[itemKey]?.committedPlacement = resolvedPlacement
+        }
         dragSession = null
         resolvedCache = emptyMap()
         return session?.targetPlacement
