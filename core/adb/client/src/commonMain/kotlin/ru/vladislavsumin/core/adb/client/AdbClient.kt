@@ -16,6 +16,7 @@ interface AdbClient {
         deviceName: String,
         format: LogcatOutputFormat = LogcatOutputFormat.THREADTIME,
     ): Flow<AdbResult<String>>
+    suspend fun pullFile(deviceName: String, remotePath: String, localPath: String): AdbResult<Unit>
 
     enum class LogcatOutputFormat(val adbFlag: String) {
         BRIEF("brief"),
@@ -118,6 +119,22 @@ internal class AdbClientImpl(dispatchers: VsDispatchers) : AdbClient {
             true
         }
         .catch { emit(AdbClient.AdbResult.Err(it)) }
+
+    @Suppress("TooGenericExceptionCaught")
+    override suspend fun pullFile(
+        deviceName: String,
+        remotePath: String,
+        localPath: String,
+    ): AdbClient.AdbResult<Unit> = try {
+        connection.pullFile(
+            transport = "host:transport:$deviceName",
+            remotePath = remotePath,
+            localPath = localPath,
+        )
+        AdbClient.AdbResult.Ok(Unit)
+    } catch (e: Exception) {
+        AdbClient.AdbResult.Err(e)
+    }
 
     companion object {
         private const val RETRY_DELAY_MS = 100L

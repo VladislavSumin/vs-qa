@@ -8,12 +8,14 @@ import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.ByteWriteChannel
 import io.ktor.utils.io.readByteArray
 import io.ktor.utils.io.readUTF8Line
+import io.ktor.utils.io.writeFully
 import io.ktor.utils.io.writeString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
+import java.io.FileOutputStream
 
 /**
  * Соединение с ADB, позволяет выполнять команды.
@@ -56,6 +58,44 @@ internal class AdbConnection(private val dispatchers: VsDispatchers, private val
             }
         }
     }.flowOn(dispatchers.IO)
+
+    suspend fun pullFile(transport: String, remotePath: String, localPath: String): Unit = withContext(dispatchers.IO) {
+        withConnection { r, w ->
+            w.sendAdbData(transport)
+            r.checkAdbStatus()
+            w.sendAdbData("sync:")
+            r.checkAdbStatus()
+
+            val pathBytes = remotePath.encodeToByteArray()
+            w.writeFully("RECV".encodeToByteArray())
+            w.writeIntLe(pathBytes.size)
+            w.writeFully(pathBytes)
+            w.flush()
+
+            FileOutputStream(localPath).use { fos ->
+                while (true) {
+                    val header = r.readByteArray(8)
+                    val command = header.copyOfRange(0, 4).decodeToString()
+                    val len = header.copyOfRange(4, 8).readIntLe()
+
+                    when (command) {
+                        "DATA" -> {
+                            fos.write(r.readByteArray(len))
+                        }
+
+                        "DONE" -> break
+
+                        "FAIL" -> {
+                            val msg = r.readByteArray(len).decodeToString()
+                            error("ADB sync pull failed: $msg")
+                        }
+
+                        else -> error("Unknown sync response: $command")
+                    }
+                }
+            }
+        }
+    }
 
     private suspend fun ByteWriteChannel.sendAdbData(data: String) {
         val len = data.length
@@ -104,5 +144,23 @@ internal class AdbConnection(private val dispatchers: VsDispatchers, private val
         private const val DATA_LEN_LEN = 4
         private const val DEFAULT_HOST = "127.0.0.1"
         private const val DEFAULT_PORT = 5037
+    }
+
+    @Suppress("MagicNumber")
+    private fun ByteArray.readIntLe(): Int = (this[0].toInt() and 0xFF) or
+        ((this[1].toInt() and 0xFF) shl 8) or
+        ((this[2].toInt() and 0xFF) shl 16) or
+        ((this[3].toInt() and 0xFF) shl 24)
+
+    @Suppress("MagicNumber")
+    private suspend fun ByteWriteChannel.writeIntLe(value: Int) {
+        writeFully(
+            byteArrayOf(
+                (value and 0xFF).toByte(),
+                ((value shr 8) and 0xFF).toByte(),
+                ((value shr 16) and 0xFF).toByte(),
+                ((value shr 24) and 0xFF).toByte(),
+            ),
+        )
     }
 }
