@@ -165,7 +165,10 @@ internal class GridState(
             }
         }
 
-        return item
+        return directions
+            .filter { !isOutOfBounds(it) }
+            .minByOrNull { candidate -> others.count { other -> overlaps(candidate, other) } }
+            ?: item
     }
 
     private fun isOutOfBounds(p: GridPlacement): Boolean {
