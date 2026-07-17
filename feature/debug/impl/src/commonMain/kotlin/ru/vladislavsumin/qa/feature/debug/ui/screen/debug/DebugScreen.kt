@@ -29,5 +29,10 @@ internal class DebugScreen(
     private val umlComponent = umlDiagramComponentFactory.create(context.childContext("uml"))
 
     @Composable
-    override fun Render(modifier: Modifier) = DebugScreenContent(viewModel, umlComponent, modifier)
+    override fun Render(modifier: Modifier) = DebugScreenContent(
+        viewModel = viewModel,
+        umlComponent = umlComponent,
+        onOpenDashboardDemo = { navigator.open(DashboardDemoScreenParams) },
+        modifier = modifier,
+    )
 }
