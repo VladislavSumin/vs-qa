@@ -148,13 +148,13 @@ class AnimeEmbeddedLogParserTest {
     @Test
     fun `tag with dots and special chars`() {
         val input = sequenceOf(
-            "2024-01-01T+00:00 00:00:00.000 pool-1-thread-5 D one.me.sdk.core.Initializer init start",
+            "2024-01-01T+00:00 00:00:00.000 pool-1-thread-5 D com.example.module.Initializer init start",
             "2024-01-01T+00:00 00:00:01.000 main I [Tracker] event sent",
         )
         val result = parse(input)
 
         assertEquals(2, result.size)
-        assertEquals("one.me.sdk.core.Initializer", result[0].raw.substring(result[0].tag))
+        assertEquals("com.example.module.Initializer", result[0].raw.substring(result[0].tag))
         assertEquals("[Tracker]", result[1].raw.substring(result[1].tag))
     }
 
