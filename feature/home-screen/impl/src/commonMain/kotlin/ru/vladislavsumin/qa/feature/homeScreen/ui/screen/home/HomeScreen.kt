@@ -11,10 +11,15 @@ import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.getSystemResourceEnvironment
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
+import ru.vladislavsumin.feature.home_screen.impl.generated.resources.Res
+import ru.vladislavsumin.feature.home_screen.impl.generated.resources.home_dump_failed
+import ru.vladislavsumin.feature.home_screen.impl.generated.resources.home_dump_progress
 import ru.vladislavsumin.feature.logRecent.ui.component.logRecent.LogRecentComponentFactory
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
 import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScreenParams
@@ -73,7 +78,9 @@ internal class HomeScreen(
             onDumpLogsClick = { deviceName ->
                 scope.launch {
                     val progressJob = launch {
-                        bottomBarUiInteractor.showProgressBar("Dumping logs from $deviceName...")
+                        bottomBarUiInteractor.showProgressBar(
+                            getString(getSystemResourceEnvironment(), Res.string.home_dump_progress, deviceName),
+                        )
                     }
                     try {
                         deviceLogDumpInteractor.dumpLogs(deviceName)
@@ -82,7 +89,12 @@ internal class HomeScreen(
                                 HomeLogger.e(error) { "Dump failed for $deviceName" }
                                 notificationsUiInteractor.showNotification(
                                     Notification(
-                                        text = "Dump failed for $deviceName: ${error.message}",
+                                        text = getString(
+                                            getSystemResourceEnvironment(),
+                                            Res.string.home_dump_failed,
+                                            deviceName,
+                                            error.message.orEmpty(),
+                                        ),
                                         servility = Notification.Servility.Error,
                                     ),
                                 )

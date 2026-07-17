@@ -1,4 +1,5 @@
 <resources>
     <string name="adb_device_list_error">Ошибка Adb, TODO</string>
     <string name="adb_device_list_title">Список Adb</string>
+    <string name="adb_device_list_dump_logs">Скачать дамп</string>
 </resources>

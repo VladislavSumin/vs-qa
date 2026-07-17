@@ -23,7 +23,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.feature.adb_device_list.impl.generated.resources.Res
+import ru.vladislavsumin.feature.adb_device_list.impl.generated.resources.adb_device_list_dump_logs
 import ru.vladislavsumin.feature.adb_device_list.impl.generated.resources.adb_device_list_error
 import ru.vladislavsumin.feature.adb_device_list.impl.generated.resources.adb_device_list_title
 
@@ -80,10 +82,13 @@ internal fun DeviceList(
                     }
                     Text(text = it.status, color = color)
                     Spacer(Modifier.weight(1f))
-                    IconButton(onClick = { onDumpLogsClick(it.name) }) {
+                    IconButton(
+                        onClick = { onDumpLogsClick(it.name) },
+                        modifier = Modifier.hint(stringResource(Res.string.adb_device_list_dump_logs)),
+                    ) {
                         Icon(
                             imageVector = Icons.Default.FileDownload,
-                            contentDescription = "Dump logs",
+                            contentDescription = stringResource(Res.string.adb_device_list_dump_logs),
                         )
                     }
                 }

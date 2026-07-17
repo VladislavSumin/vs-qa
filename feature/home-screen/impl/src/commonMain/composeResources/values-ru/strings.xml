@@ -4,4 +4,6 @@
     <string name="home_legal_info">Правовая информация</string>
     <string name="home_settings">Настройки</string>
     <string name="home_drop_logs_here">Перетащите логи сюда</string>
+    <string name="home_dump_progress">Скачивание дампа с %1$s...</string>
+    <string name="home_dump_failed">Ошибка дампа для %1$s: %2$s</string>
 </resources>

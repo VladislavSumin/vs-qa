@@ -4,4 +4,6 @@
     <string name="home_legal_info">Legal information</string>
     <string name="home_settings">Settings</string>
     <string name="home_drop_logs_here">Drop logs here</string>
+    <string name="home_dump_failed">Dump failed for %1$s: %2$s</string>
+    <string name="home_dump_progress">Dumping logs from %1$s...</string>
 </resources>
