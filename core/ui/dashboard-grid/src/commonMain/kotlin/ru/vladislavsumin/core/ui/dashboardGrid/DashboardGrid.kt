@@ -4,17 +4,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 
-internal val LocalGridState = staticCompositionLocalOf<GridState> {
-    error("DashboardGrid: LocalGridState not provided")
-}
-
-internal class DashboardGridScopeImpl(private val gridState: GridState) : DashboardGridScope {
+internal class DashboardGridScopeImpl(val gridState: GridState) : DashboardGridScope {
     @Composable
     override fun GridItem(
         placement: GridPlacement,
@@ -66,17 +60,15 @@ fun DashboardGrid(
         gridState.cellWidth = cellWidth
         gridState.cellHeight = cellHeight
 
-        CompositionLocalProvider(LocalGridState provides gridState) {
-            Box(Modifier.fillMaxSize()) {
-                if (isEditMode) {
-                    GridOverlay(
-                        columns = columns,
-                        rows = rows,
-                    )
-                }
-                val scope = remember(gridState) { DashboardGridScopeImpl(gridState) }
-                scope.content()
+        Box(Modifier.fillMaxSize()) {
+            if (isEditMode) {
+                GridOverlay(
+                    columns = columns,
+                    rows = rows,
+                )
             }
+            val scope = remember(gridState) { DashboardGridScopeImpl(gridState) }
+            scope.content()
         }
     }
 }

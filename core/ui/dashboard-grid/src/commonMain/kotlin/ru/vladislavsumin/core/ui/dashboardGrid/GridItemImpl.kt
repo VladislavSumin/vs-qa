@@ -36,7 +36,7 @@ internal fun DashboardGridScopeImpl.DashboardGridItem(
     onResize: ((GridPlacement) -> Unit)?,
     content: @Composable () -> Unit,
 ) {
-    val gridState = LocalGridState.current
+    val gridState = this.gridState
     val editMode = gridState.isEditMode
     val itemKey = remember { Any() }
 
