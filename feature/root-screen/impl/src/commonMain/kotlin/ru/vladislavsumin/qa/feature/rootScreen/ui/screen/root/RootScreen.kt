@@ -55,6 +55,7 @@ internal class RootScreen(
         registerCustomFactory { context, params, _ ->
             homeScreenFactory.create(
                 notificationsUiInteractor = notificationsComponent.notificationsUiInteractor,
+                bottomBarUiInteractor = bottomBarComponent.bottomBarUiInteractor,
                 globalHotkeyManager = globalHotkeyManager,
                 params = params,
                 context = context,

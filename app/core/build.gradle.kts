@@ -11,6 +11,7 @@ kotlin {
             implementation(projects.core.adb.client)
 
             implementation(projects.feature.debug.impl)
+            implementation(projects.feature.deviceLogDump.impl)
             implementation(projects.feature.adbDevice.impl)
             implementation(projects.feature.adbDeviceList.impl)
             implementation(projects.feature.bottomBar.impl)

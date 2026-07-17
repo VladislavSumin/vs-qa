@@ -10,6 +10,7 @@ import com.arkivanov.decompose.childContext
 import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
@@ -19,9 +20,12 @@ import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenPa
 import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScreenParams
 import ru.vladislavsumin.qa.feature.adbDeviceList.domain.AdbFeatureAvailabilityInteractor
 import ru.vladislavsumin.qa.feature.adbDeviceList.ui.component.adbDeviceList.AdbDeviceListComponentFactory
+import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
+import ru.vladislavsumin.qa.feature.deviceLogDump.domain.DeviceLogDumpInteractor
 import ru.vladislavsumin.qa.feature.homeScreen.HomeLogger
 import ru.vladislavsumin.qa.feature.legalInfo.ui.screen.legalInfo.LegalInfoScreenParams
 import ru.vladislavsumin.qa.feature.multiWindow.ui.screen.window.WindowScreenParams
+import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Notification
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import ru.vladislavsumin.qa.feature.settings.ui.screen.settings.SettingsScreenParams
 import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
@@ -34,7 +38,9 @@ internal class HomeScreen(
     logRecentComponentFactory: LogRecentComponentFactory,
     adbFeatureAvailabilityInteractor: AdbFeatureAvailabilityInteractor,
     adbDeviceListComponentFactory: AdbDeviceListComponentFactory,
+    deviceLogDumpInteractor: DeviceLogDumpInteractor,
     notificationsUiInteractor: NotificationsUiInteractor,
+    bottomBarUiInteractor: BottomBarUiInteractor,
     globalHotkeyManager: GlobalHotkeyManager,
     params: HomeScreenParams,
     context: ComponentContext,
@@ -64,6 +70,28 @@ internal class HomeScreen(
     private val adbDeviceListComponent = if (adbFeatureAvailabilityInteractor.isAvailable) {
         adbDeviceListComponentFactory.create(
             onDeviceClick = { deviceName -> navigator.open(AdbDeviceScreenParams(deviceName)) },
+            onDumpLogsClick = { deviceName ->
+                scope.launch {
+                    val progressJob = launch {
+                        bottomBarUiInteractor.showProgressBar("Dumping logs from $deviceName...")
+                    }
+                    try {
+                        deviceLogDumpInteractor.dumpLogs(deviceName)
+                            .onSuccess { path -> navigator.open(LogViewerScreenParams(path)) }
+                            .onFailure { error ->
+                                HomeLogger.e(error) { "Dump failed for $deviceName" }
+                                notificationsUiInteractor.showNotification(
+                                    Notification(
+                                        text = "Dump failed for $deviceName: ${error.message}",
+                                        servility = Notification.Servility.Error,
+                                    ),
+                                )
+                            }
+                    } finally {
+                        progressJob.cancel()
+                    }
+                }
+            },
             context = context.childContext("adb-list-component"),
         )
     } else {
