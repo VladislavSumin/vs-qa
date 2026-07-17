@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 
 @Composable
+@Suppress("MagicNumber")
 internal fun GridOverlay(columns: Int, rows: Int, modifier: Modifier = Modifier) {
     Canvas(modifier = modifier.fillMaxSize()) {
         val color = Color.Gray.copy(alpha = 0.15f)

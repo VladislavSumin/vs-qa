@@ -28,7 +28,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 
+private const val DRAG_ALPHA = 0.7f
+
 @Composable
+@Suppress("LongMethod")
 internal fun DashboardGridScopeImpl.DashboardGridItem(
     placement: GridPlacement,
     modifier: Modifier,
@@ -66,7 +69,13 @@ internal fun DashboardGridScopeImpl.DashboardGridItem(
         Surface(
             modifier = modifier
                 .fillMaxSize()
-                .then(if (isDragging) Modifier.alpha(0.7f) else Modifier),
+                .then(
+                    if (isDragging) {
+                        Modifier.alpha(DRAG_ALPHA)
+                    } else {
+                        Modifier
+                    },
+                ),
             shape = RoundedCornerShape(8.dp),
             color = MaterialTheme.colorScheme.surface,
             shadowElevation = if (editMode) 4.dp else 0.dp,

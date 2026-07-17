@@ -57,6 +57,7 @@ private val INITIAL_PLACEMENTS = listOf(
 )
 
 @Composable
+@Suppress("LongMethod")
 internal fun DashboardDemoScreenContent(modifier: Modifier = Modifier) {
     val placements = remember { mutableStateListOf<GridPlacement>().also { it.addAll(INITIAL_PLACEMENTS) } }
     var isEditMode by remember { mutableStateOf(false) }

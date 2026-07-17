@@ -92,6 +92,7 @@ internal class GridState(
         val visited = mutableSetOf<Any>()
         queue.add(draggedKey)
 
+        @Suppress("LoopWithTooManyJumpStatements")
         while (queue.isNotEmpty()) {
             val current = queue.removeFirst()
             if (current in visited) continue
