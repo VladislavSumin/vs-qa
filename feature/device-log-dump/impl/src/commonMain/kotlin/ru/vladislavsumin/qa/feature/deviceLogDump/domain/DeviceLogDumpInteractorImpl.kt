@@ -1,10 +1,13 @@
 package ru.vladislavsumin.qa.feature.deviceLogDump.domain
 
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import ru.vladislavsumin.core.adb.client.AdbClient
 import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 import ru.vladislavsumin.qa.feature.deviceLogDump.deviceLogDumpLogger
+import ru.vladislavsumin.qa.feature.settings.domain.DumpPathOption
+import ru.vladislavsumin.qa.feature.settings.domain.SettingsInteractor
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.UUID
@@ -12,8 +15,11 @@ import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
 import kotlin.io.path.Path as KtPath
 
-internal class DeviceLogDumpInteractorImpl(private val adbClient: AdbClient, private val dispatchers: VsDispatchers) :
-    DeviceLogDumpInteractor {
+internal class DeviceLogDumpInteractorImpl(
+    private val adbClient: AdbClient,
+    private val dispatchers: VsDispatchers,
+    private val settingsInteractor: SettingsInteractor,
+) : DeviceLogDumpInteractor {
 
     override suspend fun dumpLogs(deviceName: String): Result<Path> = withContext(dispatchers.IO) {
         runCatching {
@@ -37,7 +43,15 @@ internal class DeviceLogDumpInteractorImpl(private val adbClient: AdbClient, pri
                 error("Dump timed out")
             }
 
-            val localPath = Files.createTempFile("vs-qa-dump-", ".zip").toString()
+            val localPath = when (settingsInteractor.dumpPathOption.first()) {
+                is DumpPathOption.Temp -> Files.createTempFile("vs-qa-dump-", ".zip").toString()
+
+                is DumpPathOption.Custom -> {
+                    val dir = (settingsInteractor.dumpPathOption.first() as DumpPathOption.Custom).path
+                    Files.createDirectories(java.nio.file.Path.of(dir))
+                    Files.createTempFile(java.nio.file.Path.of(dir), "vs-qa-dump-", ".zip").toString()
+                }
+            }
             val pullMs = measureTime {
                 adbClient.pullFile(deviceName, remotePath, localPath).unwrap()
             }

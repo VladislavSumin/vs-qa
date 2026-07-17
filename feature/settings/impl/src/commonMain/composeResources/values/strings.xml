@@ -4,4 +4,8 @@
     <string name="settings_language_system">System</string>
     <string name="settings_language_russian">Russian</string>
     <string name="settings_language_english">English</string>
+    <string name="settings_dump_path_title">Dump location</string>
+    <string name="settings_dump_path_temp">Temp</string>
+    <string name="settings_dump_path_custom">Custom path</string>
+    <string name="settings_dump_path_custom_hint">Path to save dumps</string>
 </resources>

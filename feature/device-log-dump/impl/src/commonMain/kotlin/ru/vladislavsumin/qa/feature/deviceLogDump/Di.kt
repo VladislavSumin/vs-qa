@@ -8,5 +8,5 @@ import ru.vladislavsumin.qa.feature.deviceLogDump.domain.DeviceLogDumpInteractor
 import ru.vladislavsumin.qa.feature.deviceLogDump.domain.DeviceLogDumpInteractorImpl
 
 fun Modules.featureDeviceLogDump() = DI.Module("feature-deviceLogDump") {
-    bindSingleton<DeviceLogDumpInteractor> { DeviceLogDumpInteractorImpl(i(), i()) }
+    bindSingleton<DeviceLogDumpInteractor> { DeviceLogDumpInteractorImpl(i(), i(), i()) }
 }

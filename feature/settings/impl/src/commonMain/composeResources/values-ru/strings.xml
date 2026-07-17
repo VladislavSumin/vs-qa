@@ -4,4 +4,8 @@
     <string name="settings_language_system">Системный</string>
     <string name="settings_language_russian">Русский</string>
     <string name="settings_language_english">Английский</string>
+    <string name="settings_dump_path_title">Расположение дампов</string>
+    <string name="settings_dump_path_temp">Временная папка</string>
+    <string name="settings_dump_path_custom">Своя папка</string>
+    <string name="settings_dump_path_custom_hint">Путь для сохранения дампов</string>
 </resources>

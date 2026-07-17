@@ -10,14 +10,25 @@ import okio.Path.Companion.toPath
 import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 import ru.vladislavsumin.core.fs.FileSystemService
 
+private val DUMP_PATH_DEFAULT_DIR =
+    System.getProperty("user.home") + System.getProperty("file.separator") + "Downloads"
+
 internal interface SettingsInteractorInternal : SettingsInteractor {
     suspend fun setLanguage(language: AppLanguage)
+    suspend fun setDumpPathMode(mode: DumpPathMode)
+    suspend fun setDumpCustomPath(path: String)
+    suspend fun setDumpPathTemp()
+    suspend fun setDumpPathCustom()
 }
+
+internal enum class DumpPathMode { TEMP, CUSTOM }
 
 // TODO Нужно вынести работу с префами с core.
 internal class SettingsInteractorImpl(fileSystemService: FileSystemService, private val dispatchers: VsDispatchers) :
     SettingsInteractorInternal {
     private val languagePreferenceKey = stringPreferencesKey("app_language")
+    private val dumpPathModeKey = stringPreferencesKey("dump_path_mode")
+    private val dumpCustomPathKey = stringPreferencesKey("dump_custom_path")
 
     private val prefs = PreferenceDataStoreFactory.createWithPath(
         produceFile = {
@@ -32,7 +43,31 @@ internal class SettingsInteractorImpl(fileSystemService: FileSystemService, priv
                 ?: AppLanguage.SYSTEM
         }
 
+    override val dumpPathOption: Flow<DumpPathOption> = prefs.data
+        .map { preferences ->
+            val mode = preferences[dumpPathModeKey]
+                ?.let { runCatching { DumpPathMode.valueOf(it) }.getOrNull() }
+                ?: DumpPathMode.TEMP
+            val customPath = preferences[dumpCustomPathKey] ?: DUMP_PATH_DEFAULT_DIR
+            when (mode) {
+                DumpPathMode.TEMP -> DumpPathOption.Temp
+                DumpPathMode.CUSTOM -> DumpPathOption.Custom(customPath)
+            }
+        }
+
     override suspend fun setLanguage(language: AppLanguage): Unit = withContext(dispatchers.IO) {
         prefs.edit { preferences -> preferences[languagePreferenceKey] = language.name }
     }
+
+    override suspend fun setDumpPathMode(mode: DumpPathMode): Unit = withContext(dispatchers.IO) {
+        prefs.edit { preferences -> preferences[dumpPathModeKey] = mode.name }
+    }
+
+    override suspend fun setDumpCustomPath(path: String): Unit = withContext(dispatchers.IO) {
+        prefs.edit { preferences -> preferences[dumpCustomPathKey] = path }
+    }
+
+    override suspend fun setDumpPathTemp(): Unit = setDumpPathMode(DumpPathMode.TEMP)
+
+    override suspend fun setDumpPathCustom(): Unit = setDumpPathMode(DumpPathMode.CUSTOM)
 }
