@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
@@ -16,11 +18,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import ru.vladislavsumin.core.ui.filePicker.DirectoryPickerDialog
 import ru.vladislavsumin.feature.settings.impl.generated.resources.Res
 import ru.vladislavsumin.feature.settings.impl.generated.resources.settings_dump_path_custom
 import ru.vladislavsumin.feature.settings.impl.generated.resources.settings_dump_path_custom_hint
@@ -73,6 +79,8 @@ internal fun SettingsScreenContent(viewModel: SettingsScreenViewModel, modifier:
 
 @Composable
 private fun DumpPathSection(dumpPathOption: DumpPathOption, viewModel: SettingsScreenViewModel) {
+    var showPicker by remember { mutableStateOf(false) }
+
     Text(
         text = stringResource(Res.string.settings_dump_path_title),
         style = MaterialTheme.typography.titleMedium,
@@ -92,12 +100,27 @@ private fun DumpPathSection(dumpPathOption: DumpPathOption, viewModel: SettingsS
     }
     if (dumpPathOption is DumpPathOption.Custom) {
         Spacer(Modifier.height(8.dp))
-        OutlinedTextField(
-            value = dumpPathOption.path,
-            onValueChange = viewModel::onDumpCustomPathChange,
-            label = { Text(stringResource(Res.string.settings_dump_path_custom_hint)) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            OutlinedTextField(
+                value = dumpPathOption.path,
+                onValueChange = viewModel::onDumpCustomPathChange,
+                label = { Text(stringResource(Res.string.settings_dump_path_custom_hint)) },
+                modifier = Modifier.weight(1f),
+                singleLine = true,
+            )
+            Spacer(Modifier.width(8.dp))
+            FilledTonalButton(onClick = { showPicker = true }) {
+                Text("...")
+            }
+        }
+    }
+    if (showPicker) {
+        DirectoryPickerDialog(
+            title = stringResource(Res.string.settings_dump_path_title),
+            onCloseRequest = { path ->
+                showPicker = false
+                if (path != null) viewModel.onDumpCustomPathChange(path)
+            },
         )
     }
 }
