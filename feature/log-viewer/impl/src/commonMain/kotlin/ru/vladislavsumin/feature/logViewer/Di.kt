@@ -42,7 +42,7 @@ fun Modules.featureLogViewer() = DI.Module("feature-logViewer") {
     }
 
     bindSingleton<FilterHintComponentFactory> {
-        val vmf = FilterHintViewModelFactory()
+        val vmf = FilterHintViewModelFactory(i())
         FilterHintComponentFactory(vmf)
     }
 }

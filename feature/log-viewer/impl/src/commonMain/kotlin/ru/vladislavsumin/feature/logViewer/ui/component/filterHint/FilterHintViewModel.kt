@@ -4,9 +4,11 @@ import androidx.compose.runtime.Stable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 import ru.vladislavsumin.core.coroutines.utils.combine
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
@@ -18,6 +20,7 @@ import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 @GenerateFactory
 @Stable
 internal class FilterHintViewModel(
+    dispatchers: VsDispatchers,
     @ByCreate currentTokenPrediction: Flow<CurrentTokenPrediction?>,
     @ByCreate currentTags: Flow<Set<String>>,
     @ByCreate currentPackages: Flow<Set<String>>,
@@ -97,6 +100,7 @@ internal class FilterHintViewModel(
                 selectedItemKey.value = it.items.first().key
             }
         }
+        .flowOn(dispatchers.Default)
         .stateIn(FilterHintViewState.Hidden)
 
     override fun requestShow() {
