@@ -26,6 +26,7 @@ import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Not
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import java.nio.file.Path
 import java.time.temporal.ChronoUnit
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 /**
@@ -94,13 +95,14 @@ class LogsInteractorImpl(
 
     /**
      * Инкрементально накапливает записи из бесконечного потока.
+     * Записи применяются пачками (см. [LIVE_BATCH_INTERVAL]), чтобы не пересчитывать
+     * даунстрим (фильтрацию, поиск, UI) на каждую отдельную запись.
      * Mapping (proguard) в этом режиме не поддерживается.
      */
     private fun loadLiveLogs(records: Flow<RawLogRecord>) {
         scope.launch(dispatchers.IO) {
             loadingStatus.value = LogsInteractor.LoadingStatus.Loaded(isDeobfuscated = false)
-            // TODO оптимизировать, сейчас на каждую запись копируется весь список.
-            val accumulated = mutableListOf<LogRecord>()
+            val accumulated = ArrayList<LogRecord>()
             records
                 .catch { error ->
                     LogLogger.e(error) { "Live log stream failed" }
@@ -111,9 +113,10 @@ class LogsInteractorImpl(
                         ),
                     )
                 }
-                .collect { record ->
-                    accumulated += record.toLogRecord(LogOrder(accumulated.size))
-                    logs.value = ClearLogState(accumulated.toList(), null)
+                .chunked(LIVE_BATCH_INTERVAL, LIVE_BATCH_MAX_SIZE)
+                .collect { batch ->
+                    batch.forEach { record -> accumulated += record.toLogRecord(LogOrder(accumulated.size)) }
+                    logs.value = ClearLogState(ArrayList(accumulated), null)
                 }
         }
     }
@@ -265,6 +268,18 @@ class LogsInteractorImpl(
                 }
             }
         }.flowOn(dispatchers.Default)
+
+    private companion object {
+        /**
+         * Интервал накопления пачки записей live источника перед применением.
+         */
+        private val LIVE_BATCH_INTERVAL = 250.milliseconds
+
+        /**
+         * Максимальный размер пачки, при достижении применяется не дожидаясь [LIVE_BATCH_INTERVAL].
+         */
+        private const val LIVE_BATCH_MAX_SIZE = 10_000
+    }
 }
 
 /**
