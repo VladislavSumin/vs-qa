@@ -46,7 +46,9 @@ fun Modifier.hint(text: String, delayMillis: Long = 450L, placement: HintPlaceme
 
     if (showHint && layoutCoordinates != null) {
         Popup(
-            popupPositionProvider = remember { HintPopupPositionProvider(layoutCoordinates!!, placement) },
+            popupPositionProvider = remember(layoutCoordinates, placement) {
+                HintPopupPositionProvider(layoutCoordinates!!, placement)
+            },
             onDismissRequest = { showHint = false },
             properties = PopupProperties(focusable = false),
         ) {
@@ -85,12 +87,21 @@ private class HintPopupPositionProvider(
     private val preferredPlacement: HintPlacement,
 ) : PopupPositionProvider {
 
+    private var lastPosition: IntOffset? = null
+
     override fun calculatePosition(
         anchorBounds: IntRect,
         windowSize: IntSize,
         layoutDirection: LayoutDirection,
         popupContentSize: IntSize,
     ): IntOffset {
+        if (!elementCoordinates.isAttached) {
+            return lastPosition ?: IntOffset(windowSize.width, windowSize.height)
+        }
+        return computePosition(windowSize, popupContentSize).also { lastPosition = it }
+    }
+
+    private fun computePosition(windowSize: IntSize, popupContentSize: IntSize): IntOffset {
         val pos = elementCoordinates.positionInWindow()
         val size = elementCoordinates.size
 
