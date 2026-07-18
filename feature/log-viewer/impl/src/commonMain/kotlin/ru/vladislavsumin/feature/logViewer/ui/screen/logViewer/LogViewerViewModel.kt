@@ -89,8 +89,8 @@ internal class LogViewerViewModel(
             is LogViewerSource.File -> LogsSource.File(source.path)
 
             is LogViewerSource.DeviceLogcat -> LogsSource.LiveFlow(
-                logParserProvider.getStringFlowLogParser().parseLog(
-                    adbClient.observeLogcat(source.deviceName, AdbClient.LogcatOutputFormat.LONG)
+                logParserProvider.getBinaryFlowLogParser().parseLog(
+                    adbClient.observeBinaryLogcat(source.deviceName)
                         .map { it.unwrap() },
                 ),
             )

@@ -16,6 +16,13 @@ interface AdbClient {
         deviceName: String,
         format: LogcatOutputFormat = LogcatOutputFormat.THREADTIME,
     ): Flow<AdbResult<String>>
+
+    /**
+     * Захватывает logcat в бинарном виде (`logcat --binary`), эмитит сырые чанки данных.
+     *
+     * Использует `exec:` сервис вместо `shell:`, так как pty искажает бинарные данные.
+     */
+    fun observeBinaryLogcat(deviceName: String): Flow<AdbResult<ByteArray>>
     suspend fun pullFile(deviceName: String, remotePath: String, localPath: String): AdbResult<Unit>
 
     enum class LogcatOutputFormat(val adbFlag: String) {
@@ -90,6 +97,21 @@ internal class AdbClientImpl(dispatchers: VsDispatchers) : AdbClient {
         )
         .map { data ->
             AdbClient.AdbResult.Ok(data) as AdbClient.AdbResult<String>
+        }
+        .retry(retries = 3) {
+            delay(RETRY_DELAY_MS)
+            localAdbServerController.startAdbServer()
+            true
+        }
+        .catch { emit(AdbClient.AdbResult.Err(it)) }
+
+    override fun observeBinaryLogcat(deviceName: String): Flow<AdbClient.AdbResult<ByteArray>> = connection
+        .executeContinuousTransportCommandRaw(
+            transport = "host:transport:$deviceName",
+            command = "exec:logcat --binary",
+        )
+        .map { data ->
+            AdbClient.AdbResult.Ok(data) as AdbClient.AdbResult<ByteArray>
         }
         .retry(retries = 3) {
             delay(RETRY_DELAY_MS)

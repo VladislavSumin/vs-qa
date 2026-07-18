@@ -6,6 +6,7 @@ import io.ktor.network.sockets.openReadChannel
 import io.ktor.network.sockets.openWriteChannel
 import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.ByteWriteChannel
+import io.ktor.utils.io.readAvailable
 import io.ktor.utils.io.readByteArray
 import io.ktor.utils.io.readUTF8Line
 import io.ktor.utils.io.writeFully
@@ -55,6 +56,24 @@ internal class AdbConnection(private val dispatchers: VsDispatchers, private val
             while (true) {
                 val line = r.readUTF8Line() ?: break
                 emit(line)
+            }
+        }
+    }.flowOn(dispatchers.IO)
+
+    /**
+     * Аналог [executeContinuousTransportCommand], но отдает сырые байты без построчной интерпретации.
+     */
+    fun executeContinuousTransportCommandRaw(transport: String, command: String): Flow<ByteArray> = flow {
+        withConnection { r, w ->
+            w.sendAdbData(transport)
+            r.checkAdbStatus()
+            w.sendAdbData(command)
+            r.checkAdbStatus()
+            val buffer = ByteArray(RAW_READ_BUFFER_SIZE)
+            while (true) {
+                val read = r.readAvailable(buffer, 0, buffer.size)
+                if (read == -1) break
+                if (read > 0) emit(buffer.copyOf(read))
             }
         }
     }.flowOn(dispatchers.IO)
@@ -144,6 +163,7 @@ internal class AdbConnection(private val dispatchers: VsDispatchers, private val
         private const val DATA_LEN_LEN = 4
         private const val DEFAULT_HOST = "127.0.0.1"
         private const val DEFAULT_PORT = 5037
+        private const val RAW_READ_BUFFER_SIZE = 16 * 1024
     }
 
     @Suppress("MagicNumber")
