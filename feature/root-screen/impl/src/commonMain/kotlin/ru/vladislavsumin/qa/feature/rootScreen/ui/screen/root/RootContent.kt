@@ -85,45 +85,12 @@ private fun ColumnScope.TabsContent(tabs: Value<ChildPages<ConfigurationHolder, 
 /**
  * Кастомная замена [HorizontalPager], убирающая ВСЕ механизмы скролла.
  *
- * ## Проблема
+ * Решает следующую проблему:
  *
  * При выделении текста мышью в [SelectionContainer] внутри страницы и уводе курсора далеко
  * влево за границы контейнера — [HorizontalPager] переключает страницу, несмотря на
  * `userScrollEnabled = false`. Таб-бар не знает о переключении (`onPageSelected = {}`),
  * навигация Decompose не обновляется — визуальный рассинхрон.
- *
- * ## Что перепробовали (НЕ сработало)
- *
- * | Подход | Результат |
- * |--------|-----------|
- * | `NestedScrollConnection` внутри `LogsContent` | Не видит горизонтальных событий |
- * | `NestedScrollConnection` на `ChildPages` | Табы не переключаются, но бесконечный флуд |
- * | `pageNestedScrollConnection` на `HorizontalPager` | Не видит горизонтальных событий |
- * | Dummy `ScrollableState` между `SelectionContainer` и pager'ом | Табы не переключаются, но бесконечный флуд |
- * | `NestedScrollConnection` без `onPreFling` | Бесконечный флуд |
- * | `NestedScrollConnection` с потреблением 99.9% вместо 100% | Медленно едет + бесконечный флуд |
- * | `NestedScrollConnection` (100%) + no-op `flingBehavior` | Бесконечный флуд |
- * | `pointerInput` в `VsSelectionContainer` (Main-pass) | Не видит событий |
- * | `pointerInput` в `VsSelectionContainer` (Initial-pass с consume) | Ломает выделение |
- * | `pointerInput` в `VsSelectionContainer` (Initial-pass без consume) | Не влияет |
- * | `LaunchedEffect` + `scrollToPage` для коррекции | Дёргается туда-сюда, ломает выделение |
- *
- * ## Решение
- *
- * Не `HorizontalPager` — чистый `Box` с ручной композицией страниц.
- *
- * - `state.awaitLayoutModifier` / `state.remeasurementModifier` — внутренние модификаторы
- *   `PagerState`, без которых `scrollToPage()` из Decompose зависает на `awaitFirstLayout()`.
- * - `PagerScopeImpl` — internal-синглтон `PagerScope`, доступен через
- *   `@Suppress("INVISIBLE_REFERENCE")` (уже используется в проекте).
- * - `rememberSaveableStateHolder` + `SaveableStateProvider(key)` — штатное Compose API
- *   для сохранения `rememberSaveable`-состояния при переключении страниц (скролл-позиции и т.д.).
- * - `expectedPage` = `tabsState.selectedIndex` — один Int из Decompose для предотвращения
- *   мерцания при reorder табов (аналог `LazyLayoutKeyIndexMap.findIndexByKey()` в библиотечном
- *   пейджере, только вместо 200 строк `LazyLayout`-инфраструктуры).
- *
- * Никаких `ScrollableState`, `scrollableArea`, `dragDirectionDetector`, `nestedScroll`.
- * Проблема решена на корню.
  */
 
 @Composable
