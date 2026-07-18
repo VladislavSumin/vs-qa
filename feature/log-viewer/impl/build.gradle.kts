@@ -7,6 +7,7 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.adb.client)
             implementation(projects.core.boyerMooreSearch)
             implementation(projects.core.searchUtils)
             implementation(projects.core.ui.hint)

@@ -7,6 +7,7 @@ interface AdbDeviceListComponentFactory {
     fun create(
         onDeviceClick: (deviceName: String) -> Unit,
         onDumpLogsClick: (deviceName: String) -> Unit,
+        onViewLogcatClick: (deviceName: String) -> Unit,
         context: ComponentContext,
     ): ComposeComponent
 }

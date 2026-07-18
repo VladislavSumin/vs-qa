@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flowOn
@@ -72,7 +73,7 @@ interface LogsInteractor {
 class LogsInteractorImpl(
     private val scope: CoroutineScope,
     private val dispatchers: VsDispatchers,
-    private val logPath: Path,
+    private val source: LogsSource,
     private val logParserProvider: LogParserProvider,
     private val notificationsUiInteractor: NotificationsUiInteractor,
     proguardInteractor: ProguardInteractor?,
@@ -85,11 +86,40 @@ class LogsInteractorImpl(
     private val searchDelegate = LogSearchDelegate()
 
     init {
-        loadLogs()
+        when (source) {
+            is LogsSource.File -> loadFileLogs(source.path)
+            is LogsSource.LiveFlow -> loadLiveLogs(source.records)
+        }
+    }
+
+    /**
+     * Инкрементально накапливает записи из бесконечного потока.
+     * Mapping (proguard) в этом режиме не поддерживается.
+     */
+    private fun loadLiveLogs(records: Flow<RawLogRecord>) {
+        scope.launch(dispatchers.IO) {
+            loadingStatus.value = LogsInteractor.LoadingStatus.Loaded(isDeobfuscated = false)
+            // TODO оптимизировать, сейчас на каждую запись копируется весь список.
+            val accumulated = mutableListOf<LogRecord>()
+            records
+                .catch { error ->
+                    LogLogger.e(error) { "Live log stream failed" }
+                    notificationsUiInteractor.showNotification(
+                        Notification(
+                            "Log stream failed: ${error.message}",
+                            Notification.Servility.Error,
+                        ),
+                    )
+                }
+                .collect { record ->
+                    accumulated += record.toLogRecord(LogOrder(accumulated.size))
+                    logs.value = ClearLogState(accumulated.toList(), null)
+                }
+        }
     }
 
     @Suppress("LongMethod") // TODO разгрести эту помойку на костылях
-    private fun loadLogs() {
+    private fun loadFileLogs(logPath: Path) {
         scope.launch(dispatchers.IO) {
             proguardState.collectLatest { proguard ->
                 if (proguard == null &&
@@ -235,6 +265,21 @@ class LogsInteractorImpl(
                 }
             }
         }.flowOn(dispatchers.Default)
+}
+
+/**
+ * Источник логов для [LogsInteractorImpl].
+ */
+sealed interface LogsSource {
+    /**
+     * Лог файл на диске, парсится целиком за один раз.
+     */
+    data class File(val path: Path) : LogsSource
+
+    /**
+     * Бесконечный поток записей (например, live logcat), записи накапливаются по мере поступления.
+     */
+    data class LiveFlow(val records: Flow<RawLogRecord>) : LogsSource
 }
 
 internal data class ClearLogState(val logs: List<LogRecord>, val runIdIndexes: List<RunIdInfo>?)

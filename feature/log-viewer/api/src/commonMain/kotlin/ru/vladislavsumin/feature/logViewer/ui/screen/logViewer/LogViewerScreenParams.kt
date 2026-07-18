@@ -12,10 +12,27 @@ import java.nio.file.Path
 import kotlin.io.path.Path
 
 @Serializable
-data class LogViewerScreenParams(
-    @Serializable(PathSerializer::class)
-    val logPath: Path,
-) : IntentScreenParams<LogViewerScreenIntent>
+data class LogViewerScreenParams(val source: LogViewerSource) : IntentScreenParams<LogViewerScreenIntent> {
+    constructor(logPath: Path) : this(LogViewerSource.File(logPath))
+}
+
+@Serializable
+sealed interface LogViewerSource {
+    /**
+     * Просмотр лог файла с диска.
+     */
+    @Serializable
+    data class File(
+        @Serializable(PathSerializer::class)
+        val path: Path,
+    ) : LogViewerSource
+
+    /**
+     * Просмотр logcat подключенного устройства в реальном времени.
+     */
+    @Serializable
+    data class DeviceLogcat(val deviceName: String) : LogViewerSource
+}
 
 sealed interface LogViewerScreenIntent : ScreenIntent {
     /**

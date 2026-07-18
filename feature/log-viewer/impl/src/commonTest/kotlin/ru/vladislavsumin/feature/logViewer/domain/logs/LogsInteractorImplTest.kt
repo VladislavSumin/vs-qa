@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainCoroutineDispatcher
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -83,10 +84,11 @@ class LogsInteractorImplTest {
     private fun createInteractor(
         testDispatcher: CoroutineDispatcher,
         proguardInteractor: ProguardInteractor? = null,
+        source: LogsSource = LogsSource.File(logPath),
     ): LogsInteractorImpl = LogsInteractorImpl(
         scope = CoroutineScope(testDispatcher + Job()),
         dispatchers = TestDispatchers(Default = testDispatcher, IO = testDispatcher),
-        logPath = logPath,
+        source = source,
         logParserProvider = logParserProvider,
         notificationsUiInteractor = FakeNotificationsUiInteractor(),
         proguardInteractor = proguardInteractor,
@@ -172,6 +174,52 @@ class LogsInteractorImplTest {
 
         val runs = interactor.observeRuns().first()
         assertNull(runs)
+    }
+
+    @Test
+    fun `live source accumulates records incrementally`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+
+        fun record(index: Int): RawLogRecord {
+            val raw = "2026-07-01T09:00:0${index}Z I Tag message $index"
+            return RawLogRecord(
+                raw = raw,
+                time = LogRange(0, raw.indexOf(' ') - 1),
+                timeDate = LogRange(0, 9),
+                timeInstant = Instant.parse("2026-07-01T09:00:0$index.000Z"),
+                level = LogRange(raw.indexOf('I'), raw.indexOf('I')),
+                logLevel = LogLevel.INFO,
+                processId = null,
+                thread = LogRange(0, 0),
+                tag = LogRange(0, 0),
+                message = LogRange(0, raw.length - 1),
+                lines = 1,
+            )
+        }
+
+        val records = MutableSharedFlow<RawLogRecord>()
+        val interactor = createInteractor(
+            testDispatcher = dispatcher,
+            source = LogsSource.LiveFlow(records),
+        )
+        advanceUntilIdle()
+
+        assertTrue(interactor.observeLoadingStatus().value is LogsInteractor.LoadingStatus.Loaded)
+        assertEquals(0, interactor.observeLogs().first().size)
+
+        records.emit(record(0))
+        advanceUntilIdle()
+        assertEquals(1, interactor.observeLogs().first().size)
+
+        records.emit(record(1))
+        records.emit(record(2))
+        advanceUntilIdle()
+
+        val logs = interactor.observeLogs().first()
+        assertEquals(3, logs.size)
+        assertEquals(listOf(LogOrder(0), LogOrder(1), LogOrder(2)), logs.map { it.order })
+        assertTrue(logs[2].raw.endsWith("message 2"))
+        assertNull(interactor.observeRuns().first())
     }
 
     // --- Group 2: observeLogIndex ---

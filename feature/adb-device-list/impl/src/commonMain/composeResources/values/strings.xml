@@ -2,4 +2,5 @@
     <string name="adb_device_list_error">Adb error, TODO</string>
     <string name="adb_device_list_title">Adb list</string>
     <string name="adb_device_list_dump_logs">Dump logs</string>
+    <string name="adb_device_list_view_logcat">View logcat</string>
 </resources>

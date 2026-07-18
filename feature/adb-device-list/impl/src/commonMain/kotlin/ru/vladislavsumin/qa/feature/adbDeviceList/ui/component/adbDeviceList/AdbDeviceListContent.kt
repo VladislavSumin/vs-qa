@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -28,17 +29,20 @@ import ru.vladislavsumin.feature.adb_device_list.impl.generated.resources.Res
 import ru.vladislavsumin.feature.adb_device_list.impl.generated.resources.adb_device_list_dump_logs
 import ru.vladislavsumin.feature.adb_device_list.impl.generated.resources.adb_device_list_error
 import ru.vladislavsumin.feature.adb_device_list.impl.generated.resources.adb_device_list_title
+import ru.vladislavsumin.feature.adb_device_list.impl.generated.resources.adb_device_list_view_logcat
 
 @Composable
 internal fun AdbDeviceListContent(
     onDeviceClick: (deviceName: String) -> Unit,
     onDumpLogsClick: (deviceName: String) -> Unit,
+    onViewLogcatClick: (deviceName: String) -> Unit,
     viewModel: AdbDeviceListViewModel,
     modifier: Modifier,
 ) {
     val state by viewModel.state.collectAsState()
     when (val state = state) {
-        is AdbDeviceListViewState.DeviceList -> DeviceList(state, onDeviceClick, onDumpLogsClick, modifier)
+        is AdbDeviceListViewState.DeviceList ->
+            DeviceList(state, onDeviceClick, onDumpLogsClick, onViewLogcatClick, modifier)
 
         AdbDeviceListViewState.Error -> {
             Text(stringResource(Res.string.adb_device_list_error))
@@ -51,6 +55,7 @@ internal fun DeviceList(
     state: AdbDeviceListViewState.DeviceList,
     onDeviceClick: (deviceName: String) -> Unit,
     onDumpLogsClick: (deviceName: String) -> Unit,
+    onViewLogcatClick: (deviceName: String) -> Unit,
     modifier: Modifier,
 ) {
     Box(modifier) {
@@ -82,6 +87,15 @@ internal fun DeviceList(
                     }
                     Text(text = it.status, color = color)
                     Spacer(Modifier.weight(1f))
+                    IconButton(
+                        onClick = { onViewLogcatClick(it.name) },
+                        modifier = Modifier.hint(stringResource(Res.string.adb_device_list_view_logcat)),
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Terminal,
+                            contentDescription = stringResource(Res.string.adb_device_list_view_logcat),
+                        )
+                    }
                     IconButton(
                         onClick = { onDumpLogsClick(it.name) },
                         modifier = Modifier.hint(stringResource(Res.string.adb_device_list_dump_logs)),

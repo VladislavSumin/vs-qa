@@ -54,7 +54,7 @@ internal class AdbConnection(private val dispatchers: VsDispatchers, private val
             r.checkAdbStatus()
             while (true) {
                 val line = r.readUTF8Line() ?: break
-                if (line.isNotEmpty()) emit(line)
+                emit(line)
             }
         }
     }.flowOn(dispatchers.IO)

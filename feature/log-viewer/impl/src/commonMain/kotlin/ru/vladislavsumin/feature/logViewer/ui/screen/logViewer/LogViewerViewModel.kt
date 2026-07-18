@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.getSystemResourceEnvironment
+import ru.vladislavsumin.core.adb.client.AdbClient
 import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 import ru.vladislavsumin.core.coroutines.utils.LinkedFlow
 import ru.vladislavsumin.core.coroutines.utils.combine
@@ -32,6 +33,7 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.LogOrder
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
+import ru.vladislavsumin.feature.logViewer.domain.logs.LogsSource
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 import ru.vladislavsumin.feature.logViewer.domain.logs.SearchRequest
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
@@ -60,7 +62,8 @@ internal class LogViewerViewModel(
     private val logViewerSettingsRepository: LogViewerSettingsRepository,
     private val logRecentInteractor: LogRecentInteractor,
     private val dispatchers: VsDispatchers,
-    @ByCreate private val logPath: Path,
+    adbClient: AdbClient,
+    @ByCreate private val source: LogViewerSource,
     @ByCreate mappingPath: Path?,
     @ByCreate currentTags: LinkedFlow<Set<String>>,
     @ByCreate currentRuns: LinkedFlow<List<RunIdInfo>>,
@@ -68,6 +71,11 @@ internal class LogViewerViewModel(
     @ByCreate private val filterBarUiInteractor: FilterBarUiInteractor,
     @ByCreate private val notificationsUiInteractor: NotificationsUiInteractor,
 ) : NavigationViewModel() {
+    /**
+     * Путь до лог файла, null если открыт live источник.
+     */
+    private val logPath: Path? = (source as? LogViewerSource.File)?.path
+
     private val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
     private val selectedSearchIndex = MutableStateFlow(0)
     private val showSelectMappingDialog = MutableStateFlow(false)
@@ -77,45 +85,56 @@ internal class LogViewerViewModel(
     private val logsInteractor: LogsInteractor = LogsInteractorImpl(
         scope = viewModelScope,
         dispatchers = dispatchers,
-        logPath = logPath,
+        source = when (source) {
+            is LogViewerSource.File -> LogsSource.File(source.path)
+
+            is LogViewerSource.DeviceLogcat -> LogsSource.LiveFlow(
+                logParserProvider.getStringFlowLogParser().parseLog(
+                    adbClient.observeLogcat(source.deviceName, AdbClient.LogcatOutputFormat.LONG)
+                        .map { it.unwrap() },
+                ),
+            )
+        },
         logParserProvider = logParserProvider,
         notificationsUiInteractor = notificationsUiInteractor,
         proguardInteractor = mappingPath?.let { ProguardInteractorImpl(it) },
     )
 
     init {
-        launch {
-            logRecentInteractor.addOrUpdateRecent(logPath)
-            if (mappingPath != null) {
-                logRecentInteractor.updateMappingPath(logPath, mappingPath)
-            } else {
-                val mapping = logRecentInteractor.getMappingPath(logPath)
-                if (mapping != null) {
-                    logsInteractor.attachMapping(mapping)
+        if (logPath != null) {
+            launch {
+                logRecentInteractor.addOrUpdateRecent(logPath)
+                if (mappingPath != null) {
+                    logRecentInteractor.updateMappingPath(logPath, mappingPath)
+                } else {
+                    val mapping = logRecentInteractor.getMappingPath(logPath)
+                    if (mapping != null) {
+                        logsInteractor.attachMapping(mapping)
+                    }
+                }
+
+                val searchState = logRecentInteractor.getLogViewerState(logPath)
+                if (searchState != null) {
+                    onSearchChange(searchState.searchRequest)
+                    filterBarUiInteractor.setFilter(searchState.filterRequest)
                 }
             }
 
-            val searchState = logRecentInteractor.getLogViewerState(logPath)
-            if (searchState != null) {
-                onSearchChange(searchState.searchRequest)
-                filterBarUiInteractor.setFilter(searchState.filterRequest)
-            }
-        }
-
-        // TODO подумать и сделать нормально
-        relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
-            try {
-                delay(Long.MAX_VALUE)
-            } catch (_: CancellationException) {
-                LogViewerLogger.d { "Saving current search && filter data into recents" }
-                withContext(NonCancellable) {
-                    logRecentInteractor.updateLogViewerState(
-                        path = logPath,
-                        searchRequest = search.value.search,
-                        filterRequest = filterBarUiInteractor.filterState.first().requestHighlight.raw,
-                        selectedSearchIndex = selectedSearchIndex.value,
-                        scrollPosition = firstVisibleIndex.value,
-                    )
+            // TODO подумать и сделать нормально
+            relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
+                try {
+                    delay(Long.MAX_VALUE)
+                } catch (_: CancellationException) {
+                    LogViewerLogger.d { "Saving current search && filter data into recents" }
+                    withContext(NonCancellable) {
+                        logRecentInteractor.updateLogViewerState(
+                            path = logPath,
+                            searchRequest = search.value.search,
+                            filterRequest = filterBarUiInteractor.filterState.first().requestHighlight.raw,
+                            selectedSearchIndex = selectedSearchIndex.value,
+                            scrollPosition = firstVisibleIndex.value,
+                        )
+                    }
                 }
             }
         }
@@ -131,9 +150,15 @@ internal class LogViewerViewModel(
 
     private var isOpenedOnce = false
 
-    val tabState = logRecentInteractor.observeCustomName(logPath)
-        .map { TabSupport.TabState(name = it ?: logPath.name, allowDetach = true) }
-        .stateIn(TabSupport.TabState(allowDetach = true))
+    val tabState = when (source) {
+        is LogViewerSource.File -> logRecentInteractor.observeCustomName(source.path)
+            .map { TabSupport.TabState(name = it ?: source.path.name, allowDetach = true) }
+            .stateIn(TabSupport.TabState(allowDetach = true))
+
+        is LogViewerSource.DeviceLogcat -> MutableStateFlow(
+            TabSupport.TabState(name = "logcat: ${source.deviceName}", allowDetach = true),
+        )
+    }
 
     val state: StateFlow<LogViewerViewState> = combine(
         logsInteractor.observeLogIndex(
@@ -150,7 +175,7 @@ internal class LogViewerViewModel(
                     it.lastSuccessIndex.logs.isNotEmpty()
                 ) {
                     isOpenedOnce = true
-                    val state = logRecentInteractor.getLogViewerState(logPath)
+                    val state = logPath?.let { logRecentInteractor.getLogViewerState(it) }
                     if (state != null) {
                         if (state.selectedSearchIndex >= 0) selectedSearchIndex.value = state.selectedSearchIndex
                         if (state.scrollPosition >= 0) scrollToIndex(state.scrollPosition)
@@ -322,7 +347,7 @@ internal class LogViewerViewModel(
     fun onClickMappingButton() = launch {
         if (state.value.isMappingApplied) {
             logsInteractor.detachMapping()
-            logRecentInteractor.updateMappingPath(logPath, null)
+            logPath?.let { logRecentInteractor.updateMappingPath(it, null) }
         } else {
             showSelectMappingDialog.value = true
         }
@@ -332,7 +357,7 @@ internal class LogViewerViewModel(
         showSelectMappingDialog.value = false
         paths.firstOrNull()?.let { result ->
             logsInteractor.attachMapping(result)
-            logRecentInteractor.updateMappingPath(logPath, result)
+            logPath?.let { logRecentInteractor.updateMappingPath(it, result) }
         }
     }
 

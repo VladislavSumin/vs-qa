@@ -22,6 +22,7 @@ import ru.vladislavsumin.feature.home_screen.impl.generated.resources.home_dump_
 import ru.vladislavsumin.feature.home_screen.impl.generated.resources.home_dump_progress
 import ru.vladislavsumin.feature.logRecent.ui.component.logRecent.LogRecentComponentFactory
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
+import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerSource
 import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScreenParams
 import ru.vladislavsumin.qa.feature.adbDeviceList.domain.AdbFeatureAvailabilityInteractor
 import ru.vladislavsumin.qa.feature.adbDeviceList.ui.component.adbDeviceList.AdbDeviceListComponentFactory
@@ -103,6 +104,9 @@ internal class HomeScreen(
                         progressJob.cancel()
                     }
                 }
+            },
+            onViewLogcatClick = { deviceName ->
+                navigator.open(LogViewerScreenParams(LogViewerSource.DeviceLogcat(deviceName)))
             },
             context = context.childContext("adb-list-component"),
         )

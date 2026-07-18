@@ -53,7 +53,7 @@ internal class LogViewerScreen(
 
     private val viewModel: LogViewerViewModel = viewModel {
         viewModelFactory.create(
-            logPath = params.logPath,
+            source = params.source,
             mappingPath = (intents.tryReceive().getOrNull() as? LogViewerScreenIntent.OpenMapping)?.mappingPath,
             currentTags = currentTagsLink,
             currentRuns = currentRunsLink,
