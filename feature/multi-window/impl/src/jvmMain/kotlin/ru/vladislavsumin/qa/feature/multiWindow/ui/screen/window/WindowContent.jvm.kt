@@ -2,9 +2,11 @@ package ru.vladislavsumin.qa.feature.multiWindow.ui.screen.window
 
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.LocalSaveableStateRegistry
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -51,27 +53,33 @@ internal actual fun WindowContent(
     val title = "vs-qa"
     val windowTitle = if (windowTitleExtension == null) title else "$title: $windowTitleExtension"
 
+    // Окно переопределяет LocalSaveableStateRegistry на свой, но мы хотим сами сохранять состояние
+    // поэтому возвращаем на наше.
+    val currentSaveable = LocalSaveableStateRegistry.current
+
     Window(
         title = windowTitle,
         onCloseRequest = onCloseRequest,
         state = windowState,
         onKeyEvent = globalHotkeyDispatcher::onKeyEvent,
     ) {
-        val windowInfo = LocalWindowInfo.current
-        val isFocused = windowInfo.isWindowFocused
+        CompositionLocalProvider(LocalSaveableStateRegistry provides currentSaveable) {
+            val windowInfo = LocalWindowInfo.current
+            val isFocused = windowInfo.isWindowFocused
 
-        LaunchedEffect(isFocused) {
-            if (isFocused) {
-                onFocused()
+            LaunchedEffect(isFocused) {
+                if (isFocused) {
+                    onFocused()
+                }
             }
-        }
 
-        LifecycleController(lifecycleRegistry, windowState, windowInfo)
-        // TODO вынести тему отдельно
-        AppEnvironment(language.toLocaleTag()) {
-            QaTheme(yaml) {
-                Surface {
-                    screen.value.child?.instance?.Render(modifier)
+            LifecycleController(lifecycleRegistry, windowState, windowInfo)
+            // TODO вынести тему отдельно
+            AppEnvironment(language.toLocaleTag()) {
+                QaTheme(yaml) {
+                    Surface {
+                        screen.value.child?.instance?.Render(modifier)
+                    }
                 }
             }
         }
