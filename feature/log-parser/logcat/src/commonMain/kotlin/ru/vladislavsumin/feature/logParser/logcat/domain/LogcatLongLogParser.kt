@@ -1,4 +1,4 @@
-package ru.vladislavsumin.feature.logParser.anime.domain
+package ru.vladislavsumin.feature.logParser.logcat.domain
 
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
 import ru.vladislavsumin.feature.logParser.domain.LogRange
@@ -7,8 +7,11 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.Year
 
+/**
+ * Парсер logcat формата `-v long` (`[ MM-DD HH:MM:SS.mmm PID:TID L/TAG ]`).
+ */
 @Suppress("MagicNumber")
-object AnimeLogcatLogParser {
+object LogcatLongLogParser {
     fun parseLines(lines: Sequence<String>, result: MutableList<RawLogRecord>) {
         val session = Session()
         for (line in lines) {

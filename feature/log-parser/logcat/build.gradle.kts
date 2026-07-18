@@ -8,10 +8,10 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             api(projects.feature.logParser.api)
-            implementation(projects.feature.logParser.logcat)
         }
         commonTest.dependencies {
             implementation(vsCoreLibs.vs.core.logger.manager)
+            implementation(vsCoreLibs.kotlin.coroutines.test)
             implementation(kotlin("test"))
         }
     }

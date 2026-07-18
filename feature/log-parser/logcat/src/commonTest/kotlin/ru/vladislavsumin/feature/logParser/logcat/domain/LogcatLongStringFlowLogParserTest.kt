@@ -1,4 +1,4 @@
-package ru.vladislavsumin.feature.logParser.anime.domain
+package ru.vladislavsumin.feature.logParser.logcat.domain
 
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.first
@@ -13,13 +13,13 @@ import ru.vladislavsumin.feature.logParser.domain.substring
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class AnimeFileLogParserTest {
+class LogcatLongStringFlowLogParserTest {
 
     init {
         LoggerManager.initTest()
     }
 
-    private val parser = AnimeFileLogParser()
+    private val parser = LogcatLongStringFlowLogParser()
 
     @Test
     fun `parses string flow in logcat format`() = runTest {

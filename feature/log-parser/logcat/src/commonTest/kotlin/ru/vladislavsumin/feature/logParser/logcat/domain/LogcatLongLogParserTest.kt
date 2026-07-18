@@ -1,7 +1,5 @@
-package ru.vladislavsumin.feature.logParser.anime.domain
+package ru.vladislavsumin.feature.logParser.logcat.domain
 
-import ru.vladislavsumin.core.logger.manager.LoggerManager
-import ru.vladislavsumin.core.logger.manager.initTest
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
 import ru.vladislavsumin.feature.logParser.domain.substring
@@ -10,11 +8,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @Suppress("MaximumLineLength", "MaxLineLength")
-class AnimeLogcatLogParserTest {
-
-    init {
-        LoggerManager.initTest()
-    }
+class LogcatLongLogParserTest {
 
     @Test
     fun `entries with meta headers`() {
@@ -304,7 +298,7 @@ class AnimeLogcatLogParserTest {
 
     private fun parse(lines: Sequence<String>): List<RawLogRecord> {
         val result = mutableListOf<RawLogRecord>()
-        AnimeLogcatLogParser.parseLines(lines, result)
+        LogcatLongLogParser.parseLines(lines, result)
         return result
     }
 }

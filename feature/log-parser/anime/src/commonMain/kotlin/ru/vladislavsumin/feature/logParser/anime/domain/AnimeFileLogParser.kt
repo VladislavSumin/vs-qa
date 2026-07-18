@@ -1,10 +1,8 @@
 package ru.vladislavsumin.feature.logParser.anime.domain
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import ru.vladislavsumin.feature.logParser.domain.FileLogParser
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
-import ru.vladislavsumin.feature.logParser.domain.StringFlowLogParser
+import ru.vladislavsumin.feature.logParser.logcat.domain.LogcatLongLogParser
 import java.nio.file.Path
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
@@ -13,9 +11,7 @@ import kotlin.io.path.bufferedReader
 import kotlin.io.path.extension
 import kotlin.system.measureTimeMillis
 
-internal class AnimeFileLogParser :
-    FileLogParser,
-    StringFlowLogParser {
+internal class AnimeFileLogParser : FileLogParser {
     override suspend fun parseLog(filePath: Path): List<RawLogRecord> {
         // Производительность тут примерно 1,2кк строк в секунду, поэтому дополнительные оптимизации пока не нужны.
         AnimeLogger.i { "Start parsing file $filePath with ${this.javaClass.simpleName}" }
@@ -30,15 +26,6 @@ internal class AnimeFileLogParser :
         }
         AnimeLogger.d { "Parsed file $filePath at ${totalParseTime}ms. logs = ${result.size}}" }
         return result
-    }
-
-    override fun parseLog(lines: Flow<String>): Flow<RawLogRecord> = flow {
-        AnimeLogger.i { "Start parsing string flow with ${this@AnimeFileLogParser.javaClass.simpleName}" }
-        val session = AnimeLogcatLogParser.Session()
-        lines.collect { line ->
-            session.onLine(line)?.let { emit(it) }
-        }
-        session.finish()?.let { emit(it) }
     }
 
     @Suppress("NestedBlockDepth")
@@ -72,7 +59,7 @@ internal class AnimeFileLogParser :
             names.forEach {
                 zip.getInputStream(zip.getEntry(it)).use { internalZipStream ->
                     val lines = internalZipStream.bufferedReader().lineSequence()
-                    AnimeLogcatLogParser.parseLines(lines, result)
+                    LogcatLongLogParser.parseLines(lines, result)
                 }
             }
         }

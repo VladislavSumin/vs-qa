@@ -4,11 +4,12 @@ import ru.vladislavsumin.feature.logParser.domain.FileLogParser
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logParser.domain.StringFlowLogParser
 import ru.vladislavsumin.feature.logParser.domain.runId.RunIdParser
+import ru.vladislavsumin.feature.logParser.logcat.domain.LogcatLongStringFlowLogParser
 
 class AnimeLogParserProvider : LogParserProvider {
     override val name: String = "Anime"
 
     override fun getFileLogParser(): FileLogParser = AnimeFileLogParser()
-    override fun getStringFlowLogParser(): StringFlowLogParser = AnimeFileLogParser()
+    override fun getStringFlowLogParser(): StringFlowLogParser = LogcatLongStringFlowLogParser()
     override fun getRunIdParser(): RunIdParser = AnimeRunIdParser()
 }
