@@ -11,6 +11,7 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(vsCoreLibs.vs.core.logger.manager)
+            implementation(vsCoreLibs.kotlin.coroutines.test)
             implementation(kotlin("test"))
         }
     }

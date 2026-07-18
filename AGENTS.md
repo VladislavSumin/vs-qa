@@ -2,6 +2,7 @@
 
 ## Prerequisites
 - Clone [vs-core](https://github.com/VladislavSumin/vs-core) to a **sibling directory** (`../vs-core`) relative to this repo — only needed when `ru.vs.core.useVsCoreSources=true`. When `false` (default), all dependencies and convention plugins are resolved from Maven artifacts in `mavenLocal()`.
+- Gradle requires **Java 21**. Run all Gradle commands with `JAVA_HOME=$(/usr/libexec/java_home -v 21) ./gradlew <task>` (macOS), otherwise the build fails with "Project require java 21".
 
 ## Build & Run
 

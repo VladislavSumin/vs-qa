@@ -9,67 +9,34 @@ import java.time.Year
 
 @Suppress("MagicNumber")
 object AnimeLogcatLogParser {
-    @Suppress("CyclomaticComplexMethod", "ReturnCount")
     fun parseLines(lines: Sequence<String>, result: MutableList<RawLogRecord>) {
-        var cache: RawLogRecord? = null
-        var singleLineRaw: String? = null
-        var rawBuilder: StringBuilder? = null
-        var linesCount = 0
-
-        fun dumpCache() {
-            cache?.let { cache ->
-                val raw: String
-                if (rawBuilder != null) {
-                    val builder = rawBuilder!!
-                    builder.deleteCharAt(builder.length - 1)
-
-                    while (true) {
-                        val index = builder.lastIndexOf('\n')
-                        if (index == -1) error("Unexpected format!")
-
-                        if (
-                            index + LOGCAT_META_HEADER.length < builder.length &&
-                            builder.substring(index + 1, index + LOGCAT_META_HEADER.length + 1) == LOGCAT_META_HEADER
-                        ) {
-                            linesCount--
-                            builder.deleteRange(index, builder.length)
-                        } else {
-                            break
-                        }
-                    }
-
-                    if (builder[builder.length - 1] == '\n') {
-                        builder.deleteCharAt(builder.length - 1)
-                        linesCount--
-                    }
-                    raw = builder.toString()
-                } else {
-                    raw = singleLineRaw!!.substring(0, singleLineRaw!!.length - 1)
-                }
-
-                val record = cache.copy(
-                    raw = raw,
-                    message = LogRange(
-                        start = cache.tag.last + 2,
-                        endInclusive = raw.length - 1,
-                    ),
-                    lines = linesCount,
-                )
-                check(record.lines == record.raw.lines().size) {
-                    "Debug compare real && calculated string count failed, please report to author"
-                }
-                result.add(record)
-                singleLineRaw = null
-                rawBuilder = null
-                linesCount = 0
-            }
-            cache = null
-        }
-
+        val session = Session()
         for (line in lines) {
+            session.onLine(line)?.let(result::add)
+        }
+        session.finish()?.let(result::add)
+    }
+
+    /**
+     * Построчный stateful обработчик logcat формата.
+     *
+     * Запись коммитится только при появлении заголовка следующей записи (или при вызове [finish]).
+     */
+    class Session {
+        private var cache: RawLogRecord? = null
+        private var singleLineRaw: String? = null
+        private var rawBuilder: StringBuilder? = null
+        private var linesCount = 0
+
+        /**
+         * Обрабатывает очередную строку лога.
+         *
+         * @return завершенную предыдущую запись, если [line] оказалась заголовком новой записи, иначе null.
+         */
+        fun onLine(line: String): RawLogRecord? {
             val header = tryParseLogcatHeader(line)
             if (header != null) {
-                dumpCache()
+                val completed = dumpCache()
                 val headerLine = "${header.date} ${header.pid}:${header.tid} ${header.levelAlias} ${header.tag} "
                 singleLineRaw = headerLine
 
@@ -93,6 +60,7 @@ object AnimeLogcatLogParser {
                         ?: error("UNKNOWN LEVEL ${header.levelAlias}"),
                     lines = 1,
                 )
+                return completed
             } else if (cache != null) {
                 if (rawBuilder == null) {
                     rawBuilder = StringBuilder()
@@ -102,9 +70,63 @@ object AnimeLogcatLogParser {
                 rawBuilder!!.appendLine(line)
                 linesCount++
             }
+            return null
         }
 
-        dumpCache()
+        /**
+         * Завершает обработку, возвращая последнюю накопленную запись, если она есть.
+         */
+        fun finish(): RawLogRecord? = dumpCache()
+
+        private fun dumpCache(): RawLogRecord? {
+            val cache = cache ?: return null
+            this.cache = null
+
+            val raw: String
+            if (rawBuilder != null) {
+                val builder = rawBuilder!!
+                builder.deleteCharAt(builder.length - 1)
+
+                while (true) {
+                    val index = builder.lastIndexOf('\n')
+                    if (index == -1) error("Unexpected format!")
+
+                    if (
+                        index + LOGCAT_META_HEADER.length < builder.length &&
+                        builder.substring(index + 1, index + LOGCAT_META_HEADER.length + 1) == LOGCAT_META_HEADER
+                    ) {
+                        linesCount--
+                        builder.deleteRange(index, builder.length)
+                    } else {
+                        break
+                    }
+                }
+
+                if (builder[builder.length - 1] == '\n') {
+                    builder.deleteCharAt(builder.length - 1)
+                    linesCount--
+                }
+                raw = builder.toString()
+            } else {
+                raw = singleLineRaw!!.substring(0, singleLineRaw!!.length - 1)
+            }
+
+            val record = cache.copy(
+                raw = raw,
+                message = LogRange(
+                    start = cache.tag.last + 2,
+                    endInclusive = raw.length - 1,
+                ),
+                lines = linesCount,
+            )
+            check(record.lines == record.raw.lines().size) {
+                "Debug compare real && calculated string count failed, please report to author"
+            }
+            singleLineRaw = null
+            rawBuilder = null
+            linesCount = 0
+            return record
+        }
     }
 
     private class LogcatHeader(
