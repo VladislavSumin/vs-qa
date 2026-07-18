@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
+import kotlin.random.Random
 
 @Composable
 internal fun DebugScreenContent(
@@ -29,6 +31,9 @@ internal fun DebugScreenContent(
             Button(onClick = onOpenDashboardDemo) {
                 Text("Dashboard Demo")
             }
+            Spacer(Modifier.weight(1f))
+            val random = rememberSaveable { Random.nextInt() }
+            Text("Compose state $random")
         }
         Spacer(Modifier.height(8.dp))
         umlComponent.Render(Modifier.weight(1f))
