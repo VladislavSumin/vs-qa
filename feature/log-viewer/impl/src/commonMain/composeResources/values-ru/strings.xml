@@ -33,6 +33,7 @@
     <string name="log_viewer_side_tag_stats">Статистика использования тегов</string>
     <string name="log_viewer_side_font_up">Размер шрифта +</string>
     <string name="log_viewer_side_font_down">Размер шрифта -</string>
+    <string name="log_viewer_side_follow_tail">Автопрокрутка вниз</string>
     <string name="log_viewer_side_scroll_bottom">Прокрутить вниз</string>
 
     <string name="log_viewer_drop_logs">Перетащите логи сюда</string>

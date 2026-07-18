@@ -13,6 +13,7 @@ internal class LogsComponent(
     private val logsEvents: ReceiveChannel<LogsEvents>,
     private val state: StateFlow<LogsViewState>,
     private val onFirstVisibleIndexChange: (Int) -> Unit,
+    private val onUserScroll: () -> Unit,
     private val onAddTimeFilter: (LogOrder, Boolean) -> Unit,
     context: ComponentContext,
 ) : Component(context),
@@ -21,6 +22,7 @@ internal class LogsComponent(
     @Composable
     override fun Render(modifier: Modifier) = LogsContent(
         onFirstVisibleIndexChange = onFirstVisibleIndexChange,
+        onUserScroll = onUserScroll,
         events = logsEvents,
         state = state,
         onAddTimeFilter = onAddTimeFilter,

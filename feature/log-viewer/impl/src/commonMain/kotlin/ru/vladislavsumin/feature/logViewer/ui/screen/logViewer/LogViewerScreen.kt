@@ -72,6 +72,7 @@ internal class LogViewerScreen(
         logsEvents = viewModel.logsEvents,
         state = viewModel.state.mapState { it.logsViewState },
         onFirstVisibleIndexChange = viewModel::onFirstVisibleIndexUpdate,
+        onUserScroll = viewModel::onUserScroll,
         onAddTimeFilter = viewModel::onAddTimeFilter,
         context = context.childContext("logs"),
     )

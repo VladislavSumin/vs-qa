@@ -85,6 +85,7 @@ import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
 @Suppress("LongMethod")
 internal fun LogsContent(
     onFirstVisibleIndexChange: (Int) -> Unit,
+    onUserScroll: () -> Unit,
     events: ReceiveChannel<LogsEvents>,
     state: StateFlow<LogsViewState>,
     onAddTimeFilter: (LogOrder, Boolean) -> Unit,
@@ -105,6 +106,34 @@ internal fun LogsContent(
     LaunchedEffect(lazyListState) {
         snapshotFlow { lazyListState.firstVisibleItemIndex }
             .collect(onFirstVisibleIndexChange)
+    }
+
+    // Автоскролл к концу списка при появлении новых записей (follow tail).
+    val totalLogsCount = state.rawLogs.size
+    LaunchedEffect(state.followTail, totalLogsCount) {
+        if (state.followTail && totalLogsCount > 0) {
+            lazyListState.scrollToItem(Int.MAX_VALUE)
+        }
+    }
+
+    // Детект ручного скролла вверх, выключает follow tail. Автоскролл двигает список только вниз,
+    // поэтому ложных срабатываний не дает. Проверка isAtBottom защищает от клампа позиции
+    // при уменьшении списка (смена фильтра).
+    LaunchedEffect(lazyListState) {
+        var lastIndex = lazyListState.firstVisibleItemIndex
+        var lastScroll = lazyListState.firstVisibleItemScrollOffset
+        snapshotFlow { lazyListState.firstVisibleItemIndex to lazyListState.firstVisibleItemScrollOffset }
+            .collect { (currentIndex, currentScroll) ->
+                val scrolledUp = currentIndex < lastIndex ||
+                    (currentIndex == lastIndex && currentScroll < lastScroll)
+                lastIndex = currentIndex
+                lastScroll = currentScroll
+                val layoutInfo = lazyListState.layoutInfo
+                val isAtBottom = layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
+                if (scrolledUp && !isAtBottom && state.followTail) {
+                    onUserScroll()
+                }
+            }
     }
 
     val density = LocalDensity.current

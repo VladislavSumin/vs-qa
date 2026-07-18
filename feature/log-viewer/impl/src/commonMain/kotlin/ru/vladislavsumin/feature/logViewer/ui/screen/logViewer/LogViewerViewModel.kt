@@ -84,6 +84,7 @@ internal class LogViewerViewModel(
     private val showSelectMappingDialog = MutableStateFlow(false)
     private val firstVisibleIndex = MutableStateFlow(0)
     private val showTagStat = MutableStateFlow(false)
+    private val followTail = MutableStateFlow(source is LogViewerSource.DeviceLogcat)
 
     private val logsInteractor: LogsInteractor = LogsInteractorImpl(
         scope = viewModelScope,
@@ -215,6 +216,7 @@ internal class LogViewerViewModel(
         logViewerSettingsRepository.isStripDateEnabled,
         logViewerSettingsRepository.logFontSize,
         showTagStat,
+        followTail,
     ) {
             logIndexProgress,
             search,
@@ -224,6 +226,7 @@ internal class LogViewerViewModel(
             stripDate,
             logFontSize,
             showTagStat,
+            followTail,
         ->
 
         val runIdOrders = logIndexProgress.lastSuccessIndex.runIdOrders
@@ -269,6 +272,7 @@ internal class LogViewerViewModel(
                 maxLogNumberDigits = (logIndexProgress.lastSuccessIndex.totalLogRecords + 1).toString().length,
                 stripDate = stripDate,
                 logFontSize = logFontSize,
+                followTail = followTail,
             ),
             searchState = SearchBarViewState(
                 searchRequest = search.search,
@@ -284,6 +288,7 @@ internal class LogViewerViewModel(
                 LogsInteractor.MappingStatus.NotAttached -> false
             },
             isMappingSupported = source is LogViewerSource.File,
+            isFollowTailSupported = source is LogViewerSource.DeviceLogcat,
             isStripDate = stripDate,
             showSelectMappingDialog = showSelectMappingDialog,
             logRecordsAfterApplyFilter = logIndexProgress.lastSuccessIndex.logs.size,
@@ -334,6 +339,7 @@ internal class LogViewerViewModel(
      * Скролит к записи логов по ее индексу автоматически добавляет офсет заголовка
      */
     private fun scrollToRecordIndex(index: Int) = launch {
+        followTail.value = false
         val logs = state.value.logsViewState
         val additionalIndex = logs.runIdOrders?.let { runs ->
             val order = logs.rawLogs[index].order
@@ -386,6 +392,14 @@ internal class LogViewerViewModel(
 
     fun onClickShowTagStat() {
         showTagStat.update { !it }
+    }
+
+    fun onClickFollowTail() {
+        followTail.update { !it }
+    }
+
+    fun onUserScroll() {
+        followTail.value = false
     }
 
     fun onDragAndDropLogsFiles(paths: List<Path>) {

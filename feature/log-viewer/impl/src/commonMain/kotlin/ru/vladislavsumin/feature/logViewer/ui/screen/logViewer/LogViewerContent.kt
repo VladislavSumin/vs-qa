@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.AutoGraph
 import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.FilePresent
+import androidx.compose.material.icons.filled.VerticalAlignBottom
 import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material.icons.filled.ZoomOut
 import androidx.compose.material3.HorizontalDivider
@@ -48,6 +49,7 @@ import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarConte
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.Res
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_attach_mapping
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_copy
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_follow_tail
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_font_down
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_font_up
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_scroll_bottom
@@ -170,6 +172,17 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
             Icon(Icons.Default.ZoomOut, null)
         }
         Spacer(Modifier.weight(1f))
+        if (state.value.isFollowTailSupported) {
+            QaToggleIconButton(
+                checked = state.value.logsViewState.followTail,
+                onCheckedChange = { viewModel.onClickFollowTail() },
+                Modifier
+                    .hint(stringResource(Res.string.log_viewer_side_follow_tail), placement = HintPlacement.LEFT)
+                    .padding(4.dp),
+            ) {
+                Icon(Icons.Default.VerticalAlignBottom, null)
+            }
+        }
         QaIconButton(
             onClick = { viewModel.onClickScrollToBottom() },
             Modifier

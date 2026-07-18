@@ -20,6 +20,7 @@ internal data class LogsViewState(
     val maxLogNumberDigits: Int,
     val stripDate: Boolean,
     val logFontSize: Int,
+    val followTail: Boolean,
 ) {
 
     data class SectionInfo(val logs: List<LogRecord>, val meta: Map<String, String>?)
@@ -34,6 +35,7 @@ internal data class LogsViewState(
             maxLogNumberDigits = 0,
             stripDate = false,
             logFontSize = 14,
+            followTail = false,
         )
     }
 }
