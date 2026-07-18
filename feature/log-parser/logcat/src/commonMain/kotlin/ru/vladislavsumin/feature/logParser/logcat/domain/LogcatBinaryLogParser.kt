@@ -138,7 +138,7 @@ object LogcatBinaryLogParser {
         return RawLogRecord(
             raw = raw,
             time = dateRange,
-            timeDate = LogRange(0, 0),
+            timeDate = LogRange(0, DATE_PART_LAST_INDEX),
             timeInstant = timeInstant,
             processId = pidRange,
             thread = tidRange,
@@ -191,6 +191,9 @@ object LogcatBinaryLogParser {
 
     // prio + пустой tag с \0 + минимум 1 байт сообщения
     private const val MIN_PAYLOAD_SIZE = 3
+
+    // Индекс последнего символа датной части "MM-dd" в строке времени "MM-dd HH:mm:ss.SSS"
+    private const val DATE_PART_LAST_INDEX = 4
 
     private const val LID_MAIN = 0L
     private const val LID_EVENTS = 2L

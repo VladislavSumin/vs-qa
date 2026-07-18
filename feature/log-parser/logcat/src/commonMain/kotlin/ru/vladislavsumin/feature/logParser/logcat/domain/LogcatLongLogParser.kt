@@ -52,7 +52,7 @@ object LogcatLongLogParser {
                 cache = RawLogRecord(
                     raw = "",
                     time = dateRange,
-                    timeDate = LogRange(0, 0),
+                    timeDate = LogRange(0, DATE_PART_LAST_INDEX),
                     timeInstant = parseLogcatInstant(header.date),
                     processId = pidRange,
                     thread = tidRange,
@@ -232,4 +232,7 @@ object LogcatLongLogParser {
     }
 
     private const val LOGCAT_META_HEADER = "--------- "
+
+    // Индекс последнего символа датной части "MM-DD" в строке времени "MM-DD HH:MM:SS.mmm"
+    private const val DATE_PART_LAST_INDEX = 4
 }

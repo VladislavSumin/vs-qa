@@ -28,6 +28,7 @@ class LogcatLongLogParserTest {
         val first = result[0]
         assertEquals(2, first.lines)
         assertEquals("01-02 10:20:30.123", first.raw.substring(first.time))
+        assertEquals("01-02", first.raw.substring(first.timeDate))
         assertEquals("12345", first.raw.substring(first.processId!!))
         assertEquals("67890", first.raw.substring(first.thread))
         assertEquals("D", first.raw.substring(first.level))

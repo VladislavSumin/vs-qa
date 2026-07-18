@@ -43,6 +43,10 @@ class LogcatBinaryLogParserTest {
             record.raw.substring(record.time).matches(TIME_REGEX),
             "Unexpected time format: ${record.raw.substring(record.time)}",
         )
+        assertTrue(
+            record.raw.substring(record.timeDate).matches(DATE_REGEX),
+            "Unexpected timeDate format: ${record.raw.substring(record.timeDate)}",
+        )
         assertEquals(1, record.lines)
     }
 
@@ -236,5 +240,6 @@ class LogcatBinaryLogParserTest {
 
     private companion object {
         val TIME_REGEX = Regex("""\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}""")
+        val DATE_REGEX = Regex("""\d{2}-\d{2}""")
     }
 }
