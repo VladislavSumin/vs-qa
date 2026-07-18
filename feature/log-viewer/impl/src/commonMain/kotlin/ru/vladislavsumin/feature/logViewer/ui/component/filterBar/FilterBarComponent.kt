@@ -33,6 +33,7 @@ internal class FilterBarComponent(
     filterHintComponentFactory: FilterHintComponentFactory,
     savedFiltersComponentFactory: SavedFiltersComponentFactory,
     @ByCreate currentTags: Flow<Set<String>>,
+    @ByCreate currentPackages: Flow<Set<String>>,
     @ByCreate currentRuns: Flow<List<RunIdInfo>>,
     @ByCreate globalHotkeyManager: GlobalHotkeyManager,
     @ByCreate context: ComponentContext,
@@ -49,6 +50,7 @@ internal class FilterBarComponent(
     private val filterHintComponent = filterHintComponentFactory.create(
         currentTokenPrediction = viewModel.filterState.map { it.currentTokenPredictionInfo },
         currentTags = currentTags,
+        currentPackages = currentPackages,
         currentRuns = currentRuns,
         savedFilters = savedFiltersComponent.savedFilters,
         context = context.childContext("filter-hint"),

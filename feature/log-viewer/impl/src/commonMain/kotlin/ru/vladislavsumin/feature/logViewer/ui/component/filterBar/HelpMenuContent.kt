@@ -64,6 +64,7 @@ internal fun HelpMenuContent() {
 
                 appendLine("Available filter functions:")
                 appendRecord("tag", "filter by log tag")
+                appendRecord("package", "filter by process (package) name")
                 appendRecord("level", "filter by log level or above")
                 appendRecord("pid", "filter by process id")
                 appendRecord("thread|tid", "filter by thread name or tid")

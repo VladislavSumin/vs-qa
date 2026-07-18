@@ -89,6 +89,14 @@ data class FilterRequest(val operation: FilterOperation) {
                 record.processId?.let { operation.check(record.raw.substring(it)) } ?: false
         }
 
+        data class Package(private val operation: Operation) :
+            Simple,
+            PreparedFilterOperation {
+            override fun prepare(runIdOrders: List<RunIdInfo>?): PreparedFilterOperation = this
+            override fun check(record: LogRecord): Boolean =
+                record.processName?.let { operation.check(record.raw.substring(it)) } ?: false
+        }
+
         data class Thread(private val operation: Operation) :
             Simple,
             PreparedFilterOperation {

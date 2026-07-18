@@ -20,6 +20,7 @@ import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 internal class FilterHintViewModel(
     @ByCreate currentTokenPrediction: Flow<CurrentTokenPrediction?>,
     @ByCreate currentTags: Flow<Set<String>>,
+    @ByCreate currentPackages: Flow<Set<String>>,
     @ByCreate currentRuns: Flow<List<RunIdInfo>>,
     @ByCreate savedFilters: Flow<List<SavedFiltersRepository.SavedFilter>>,
 ) : ViewModel(),
@@ -40,6 +41,9 @@ internal class FilterHintViewModel(
         currentTags.map { currentTags ->
             currentTags.map { KeywordFilterHint(it) }
         },
+        currentPackages.map { currentPackages ->
+            currentPackages.map { KeywordFilterHint(it) }
+        },
         currentRuns.map { currentRuns ->
             currentRuns.mapIndexed { index, info ->
                 KeywordFilterHint(
@@ -51,7 +55,7 @@ internal class FilterHintViewModel(
         savedFilters.map { savedFilters ->
             savedFilters.map { KeywordFilterHint(name = it.name, hint = it.content) }
         },
-    ) { showHint, selectedItemKey, currentTokenPrediction, currentTags, currentRuns, savedFilters ->
+    ) { showHint, selectedItemKey, currentTokenPrediction, currentTags, currentPackages, currentRuns, savedFilters ->
         if (showHint && currentTokenPrediction != null) {
             val hints = when (currentTokenPrediction.type) {
                 CurrentTokenPrediction.Type.Keyword -> keywordFilterHintItems + savedFilters
@@ -61,6 +65,8 @@ internal class FilterHintViewModel(
                 CurrentTokenPrediction.Type.LogLevel -> logLevelFilterHintItems
 
                 CurrentTokenPrediction.Type.Tag -> currentTags
+
+                CurrentTokenPrediction.Type.Package -> currentPackages
 
                 CurrentTokenPrediction.Type.RunNumber -> {
                     if (currentTokenPrediction.startText.startsWith("-")) {

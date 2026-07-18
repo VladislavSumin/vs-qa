@@ -26,6 +26,11 @@ internal data class CurrentTokenPrediction(val startText: String, val type: Type
         Tag,
 
         /**
+         * Имя процесса из списка всех присутствующих для данных логов.
+         */
+        Package,
+
+        /**
          * Номера доступных запусков.
          */
         RunNumber,

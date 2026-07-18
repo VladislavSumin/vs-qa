@@ -42,10 +42,12 @@ internal class LogViewerScreen(
 
     // TODO подумать нормально ли делать так?
     private val currentTagsLink = LinkedFlow<Set<String>>()
+    private val currentPackagesLink = LinkedFlow<Set<String>>()
     private val currentRunsLink = LinkedFlow<List<RunIdInfo>>()
 
     private val filterBarComponent: FilterBarComponent = filterBarComponentFactory.create(
         currentTags = currentTagsLink,
+        currentPackages = currentPackagesLink,
         currentRuns = currentRunsLink,
         globalHotkeyManager = globalHotkeyManager,
         context = context.childContext("filter-bar"),
@@ -56,6 +58,7 @@ internal class LogViewerScreen(
             source = params.source,
             mappingPath = (intents.tryReceive().getOrNull() as? LogViewerScreenIntent.OpenMapping)?.mappingPath,
             currentTags = currentTagsLink,
+            currentPackages = currentPackagesLink,
             currentRuns = currentRunsLink,
             bottomBarUiInteractor = bottomBarUiInteractor,
             filterBarUiInteractor = filterBarComponent.filterBarUiInteractor,

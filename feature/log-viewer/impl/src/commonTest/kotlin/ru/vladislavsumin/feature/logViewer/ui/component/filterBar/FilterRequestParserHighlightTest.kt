@@ -132,7 +132,7 @@ class FilterRequestParserHighlightTest {
     @Test
     fun testAllFieldKeywords() {
         val fields = listOf(
-            "tag", "pid", "tid", "thread", "message", "level", "runNumber", "timeAfter", "timeBefore",
+            "tag", "package", "pid", "tid", "thread", "message", "level", "runNumber", "timeAfter", "timeBefore",
         )
         fields.forEach { field ->
             assertEquals(

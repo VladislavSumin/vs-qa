@@ -14,6 +14,7 @@ internal data class KeywordFilterHint(val name: String, val hint: String? = null
 
 internal val keywordFilterHintItems = listOf(
     KeywordFilterHint(name = "tag", hint = "Filter by log tag"),
+    KeywordFilterHint(name = "package", hint = "Filter by process (package) name"),
     KeywordFilterHint(name = "pid", hint = "Filter by process ID"),
     KeywordFilterHint(name = "tid", hint = "Filter by thread ID"),
     KeywordFilterHint(name = "thread", hint = "Filter by thread name"),

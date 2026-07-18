@@ -139,5 +139,33 @@ class FilterRequestParserPredictionTest {
         )
     }
 
+    @Test
+    fun testPackageEmptyValuePrediction() {
+        val parser = createParser()
+        val prediction = parser.parse("package=", cursorPosition = 8).currentTokenPredictionInfo!!
+        assertEquals(
+            expected = "",
+            actual = prediction.startText,
+        )
+        assertEquals(
+            expected = CurrentTokenPrediction.Type.Package,
+            actual = prediction.type,
+        )
+    }
+
+    @Test
+    fun testPackageValuePrediction() {
+        val parser = createParser()
+        val prediction = parser.parse("package=com", cursorPosition = 11).currentTokenPredictionInfo!!
+        assertEquals(
+            expected = "com",
+            actual = prediction.startText,
+        )
+        assertEquals(
+            expected = CurrentTokenPrediction.Type.Package,
+            actual = prediction.type,
+        )
+    }
+
     private fun createParser() = FilterRequestParser(savedFilters = MutableStateFlow(emptyList()))
 }

@@ -67,6 +67,7 @@ internal class LogViewerViewModel(
     @ByCreate private val source: LogViewerSource,
     @ByCreate mappingPath: Path?,
     @ByCreate currentTags: LinkedFlow<Set<String>>,
+    @ByCreate currentPackages: LinkedFlow<Set<String>>,
     @ByCreate currentRuns: LinkedFlow<List<RunIdInfo>>,
     @ByCreate private val bottomBarUiInteractor: BottomBarUiInteractor,
     @ByCreate private val filterBarUiInteractor: FilterBarUiInteractor,
@@ -146,6 +147,10 @@ internal class LogViewerViewModel(
             .map { it.map { it.raw.substring(it.tag) }.toSet() }
             .distinctUntilChanged()
             .linkTo(currentTags)
+        logsInteractor.observeLogs()
+            .map { logs -> logs.mapNotNull { log -> log.processName?.let { log.raw.substring(it) } }.toSet() }
+            .distinctUntilChanged()
+            .linkTo(currentPackages)
         logsInteractor.observeRuns()
             .map { it ?: emptyList() }
             .linkTo(currentRuns)

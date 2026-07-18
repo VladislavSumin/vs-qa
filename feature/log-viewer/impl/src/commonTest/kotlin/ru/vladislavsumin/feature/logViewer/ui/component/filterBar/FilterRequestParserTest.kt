@@ -70,6 +70,39 @@ class FilterRequestParserTest {
     }
 
     @Test
+    fun testPackageContains() {
+        val parser = createParser()
+        val request = parser.parse("package=com.example").searchRequest
+        assertTrue(request.isSuccess)
+        assertEquals(
+            expected = "Package(operation=Contains(data=com.example))",
+            actual = request.getOrThrow().operation.toString(),
+        )
+    }
+
+    @Test
+    fun testPackageExactly() {
+        val parser = createParser()
+        val request = parser.parse("package:=com.example:push").searchRequest
+        assertTrue(request.isSuccess)
+        assertEquals(
+            expected = "Package(operation=Exactly(data=com.example:push))",
+            actual = request.getOrThrow().operation.toString(),
+        )
+    }
+
+    @Test
+    fun testPackageAutoOrAndTag() {
+        val parser = createParser()
+        val request = parser.parse("package=a package=b tag=c").searchRequest
+        assertTrue(request.isSuccess)
+        assertEquals(
+            expected = "Auto(operation=And(operations=[Or(operations=[Package(operation=Contains(data=a)), Package(operation=Contains(data=b))]), Tag(operation=Contains(data=c))]))",
+            actual = request.getOrThrow().operation.toString(),
+        )
+    }
+
+    @Test
     fun testNot() {
         val parser = createParser()
         val request = parser.parse("!search").searchRequest

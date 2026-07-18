@@ -66,6 +66,7 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
 
         Tag,
         ProcessId,
+        Package,
         Thread,
         Message,
     }
@@ -73,6 +74,7 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
     @Suppress("UnusedPrivateProperty")
     private val grammar = object : Grammar<FilterRequest.FilterOperation>() {
         val tag by literalToken("tag")
+        val packageToken by literalToken("package")
         private val pid by literalToken("pid")
         private val tid by literalToken("tid")
         private val thread by literalToken("thread")
@@ -106,7 +108,7 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
         private val newLine by literalToken("\n", ignore = true)
 
         val tokenGroupFields = setOf(
-            tag, pid, tid, thread, message, level, runNumber, timeAfter, timeBefore,
+            tag, packageToken, pid, tid, thread, message, level, runNumber, timeAfter, timeBefore,
         )
         val tokenGroupFilterType = setOf(
             exactly,
@@ -130,6 +132,7 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
         val fields = OrCombinator(
             listOf(
                 tag asJust Field.Tag,
+                packageToken asJust Field.Package,
                 pid asJust Field.ProcessId,
                 tid asJust Field.Thread,
                 thread asJust Field.Thread,
@@ -194,6 +197,7 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
                     Field.All -> FilterRequest.FilterOperation.All(operation)
                     Field.Tag -> FilterRequest.FilterOperation.Tag(operation)
                     Field.ProcessId -> FilterRequest.FilterOperation.ProcessId(operation)
+                    Field.Package -> FilterRequest.FilterOperation.Package(operation)
                     Field.Thread -> FilterRequest.FilterOperation.Thread(operation)
                     Field.Message -> FilterRequest.FilterOperation.Message(operation)
                 }
@@ -382,6 +386,11 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
                         type = CurrentTokenPrediction.Type.Tag,
                     )
 
+                    grammar.packageToken -> CurrentTokenPrediction(
+                        startText = "",
+                        type = CurrentTokenPrediction.Type.Package,
+                    )
+
                     grammar.runNumber -> CurrentTokenPrediction(
                         startText = "",
                         type = CurrentTokenPrediction.Type.RunNumber,
@@ -433,6 +442,11 @@ internal class FilterRequestParser(private val savedFilters: StateFlow<List<Save
                     grammar.tag -> CurrentTokenPrediction(
                         startText = currentText,
                         type = CurrentTokenPrediction.Type.Tag,
+                    )
+
+                    grammar.packageToken -> CurrentTokenPrediction(
+                        startText = currentText,
+                        type = CurrentTokenPrediction.Type.Package,
                     )
 
                     grammar.runNumber -> CurrentTokenPrediction(

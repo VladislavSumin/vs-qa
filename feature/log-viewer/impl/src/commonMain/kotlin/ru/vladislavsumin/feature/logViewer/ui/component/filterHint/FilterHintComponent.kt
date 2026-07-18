@@ -18,12 +18,13 @@ internal class FilterHintComponent(
     viewModelFactory: FilterHintViewModelFactory,
     @ByCreate currentTokenPrediction: Flow<CurrentTokenPrediction?>,
     @ByCreate currentTags: Flow<Set<String>>,
+    @ByCreate currentPackages: Flow<Set<String>>,
     @ByCreate currentRuns: Flow<List<RunIdInfo>>,
     @ByCreate savedFilters: Flow<List<SavedFiltersRepository.SavedFilter>>,
     @ByCreate context: ComponentContext,
 ) : Component(context) {
     private val viewModel: FilterHintViewModel = viewModel {
-        viewModelFactory.create(currentTokenPrediction, currentTags, currentRuns, savedFilters)
+        viewModelFactory.create(currentTokenPrediction, currentTags, currentPackages, currentRuns, savedFilters)
     }
 
     val filterHintUiInteractor: FilterHintUiInteractor get() = viewModel
