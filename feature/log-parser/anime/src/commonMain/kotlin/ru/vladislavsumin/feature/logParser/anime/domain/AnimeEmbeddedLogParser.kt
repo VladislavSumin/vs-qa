@@ -1,22 +1,99 @@
 package ru.vladislavsumin.feature.logParser.anime.domain
 
+import ru.vladislavsumin.feature.logParser.domain.LogLevel
 import ru.vladislavsumin.feature.logParser.domain.LogRange
-import ru.vladislavsumin.feature.logParser.generic.GenericLogParser
+import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
 import java.time.Instant
 import java.time.LocalDate
 
 @Suppress("MagicNumber")
-internal object AnimeEmbeddedLogParser : GenericLogParser() {
+internal object AnimeEmbeddedLogParser {
+
+    private class ParsedHeader(
+        val time: LogRange,
+        val timeDate: LogRange,
+        val processId: LogRange?,
+        val thread: LogRange,
+        val level: LogRange,
+        val tag: LogRange,
+        val message: LogRange,
+        val levelAlias: String,
+        val timeInstantValue: String,
+    )
+
+    fun parseLines(lines: Sequence<String>, result: MutableList<RawLogRecord>) {
+        var cache: RawLogRecord? = null
+        var singleLineRaw: String? = null
+        var rawBuilder: StringBuilder? = null
+        var linesCount = 0
+
+        fun dumpCache() {
+            cache?.let { cache ->
+                val raw: String
+                if (rawBuilder != null) {
+                    rawBuilder!!.deleteCharAt(rawBuilder!!.length - 1)
+                    raw = rawBuilder!!.toString()
+                } else {
+                    raw = singleLineRaw!!
+                }
+                val record = cache.copy(
+                    raw = raw,
+                    message = LogRange(
+                        start = cache.tag.last + 2,
+                        endInclusive = raw.length - 1,
+                    ),
+                    lines = linesCount,
+                )
+                result.add(record)
+                singleLineRaw = null
+                rawBuilder = null
+                linesCount = 0
+            }
+            cache = null
+        }
+
+        for (line in lines) {
+            val header = tryParseHeader(line)
+            if (header != null) {
+                dumpCache()
+                cache = RawLogRecord(
+                    raw = "",
+                    time = header.time,
+                    timeDate = header.timeDate,
+                    timeInstant = parseInstant(header.timeInstantValue),
+                    processId = header.processId,
+                    thread = header.thread,
+                    level = header.level,
+                    tag = header.tag,
+                    message = header.message,
+                    logLevel = LogLevel.fromAlias(header.levelAlias)
+                        ?: error("UNKNOWN LEVEL ${header.levelAlias}"),
+                    lines = 1,
+                )
+                singleLineRaw = line
+                linesCount = 1
+            } else if (linesCount > 0) {
+                if (rawBuilder == null) {
+                    rawBuilder = StringBuilder()
+                    rawBuilder!!.appendLine(singleLineRaw!!)
+                    singleLineRaw = null
+                }
+                rawBuilder!!.appendLine(line)
+                linesCount++
+            } else {
+                onOrphanLine(line)
+            }
+        }
+
+        dumpCache()
+    }
 
     /**
      * Ручная проверка заголовка лога формата YYYY-MM-DDTHH:SS±HH:MM HH:MM:SS.mmm THREAD L TAG MESSAGE.
      * Вместо Regex.matchEntire() — ручная проверка символов-разделителей на фиксированных позициях.
-     *
-     * Было:
-     * Regex("^(\\d{4}-\\d{2}-\\d{2}T(\\+\\d{2}:\\d{2}|Z)) \\d{2}:\\d{2}:\\d{2}\\.\\d{3}) ([^ ]+) ([A-Z]) ([^ ]+) (.*)")
      */
     @Suppress("ReturnCount", "CyclomaticComplexMethod")
-    override fun tryParseHeader(line: String): ParsedHeader? {
+    private fun tryParseHeader(line: String): ParsedHeader? {
         if (line.length < 25) return null
 
         if (line[4] != '-' || line[7] != '-' || line[10] != 'T') return null
@@ -71,15 +148,9 @@ internal object AnimeEmbeddedLogParser : GenericLogParser() {
 
     /**
      * Ручной парсинг Instant из строки времени формата YYYY-MM-DDTHH:SS±HH:MM HH:MM:SS.mmm.
-     * Вместо DateTimeFormatter с OffsetDateTime.parse() — извлечение компонентов по известным позициям
-     * и вычисление через LocalDate.toEpochDay().
-     *
-     * Было: DateTimeFormatterBuilder()
-     *           .append(ISO_LOCAL_DATE).appendLiteral('T').appendZoneOrOffsetId()...
-     *       OffsetDateTime.parse(value, DATE_FORMATTER).toInstant()
      */
     @Suppress("MagicNumber", "ReturnCount")
-    override fun parseInstant(value: String): Instant {
+    private fun parseInstant(value: String): Instant {
         val year = parseIntFromChars(value, 0, 4)
         val month = parseIntFromChars(value, 5, 2)
         val day = parseIntFromChars(value, 8, 2)
@@ -125,7 +196,7 @@ internal object AnimeEmbeddedLogParser : GenericLogParser() {
         return i
     }
 
-    override fun onOrphanLine(line: String) {
+    private fun onOrphanLine(line: String) {
         // TODO show user notification about unexpected log format
         AnimeLogger.e { "Orphan line before first header ignored: ${line.take(100)}" }
     }

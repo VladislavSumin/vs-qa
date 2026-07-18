@@ -29,7 +29,6 @@ include(":core:ui:selection")
 
 include(":feature:log-parser:api")
 include(":feature:log-parser:anime")
-include(":feature:log-parser:generic")
 feature("adb-device")
 feature("debug")
 feature("device-log-dump")
