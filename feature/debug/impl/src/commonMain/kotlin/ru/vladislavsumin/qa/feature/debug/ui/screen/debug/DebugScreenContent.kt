@@ -14,6 +14,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
+import kotlin.math.absoluteValue
 import kotlin.random.Random
 
 @Composable
@@ -32,8 +33,9 @@ internal fun DebugScreenContent(
                 Text("Dashboard Demo")
             }
             Spacer(Modifier.weight(1f))
-            val random = rememberSaveable { Random.nextInt() }
-            Text("Compose state $random")
+            val random = rememberSaveable { Random.nextInt().absoluteValue % 100 }
+            val compositionRandom = Random.nextInt().absoluteValue % 100
+            Text("STATE ${viewModel.random}_${random}_$compositionRandom")
         }
         Spacer(Modifier.height(8.dp))
         umlComponent.Render(Modifier.weight(1f))
