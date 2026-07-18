@@ -16,7 +16,7 @@ internal class LogHeadlessProcessorImpl(private val logParserProvider: LogParser
     private var cachedRecords: List<LogRecord>? = null
 
     override suspend fun parseAndCache(logPath: Path): Int {
-        val rawLogs = logParserProvider.getLogParser().parseLog(logPath)
+        val rawLogs = logParserProvider.getFileLogParser().parseLog(logPath)
         val records = rawLogs.toLogRecords()
         cachedPath = logPath
         cachedRecords = records
@@ -47,7 +47,7 @@ internal class LogHeadlessProcessorImpl(private val logParserProvider: LogParser
             cachedRecords!!
         } else {
             val rawLogs = runCatching {
-                logParserProvider.getLogParser().parseLog(logPath)
+                logParserProvider.getFileLogParser().parseLog(logPath)
             }.getOrElse {
                 return LogHeadlessResult(
                     total = 0,

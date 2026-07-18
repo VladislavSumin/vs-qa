@@ -4,6 +4,6 @@ import ru.vladislavsumin.feature.logParser.domain.runId.RunIdParser
 
 interface LogParserProvider {
     val name: String
-    fun getLogParser(): LogParser
+    fun getFileLogParser(): FileLogParser
     fun getRunIdParser(): RunIdParser? = null
 }

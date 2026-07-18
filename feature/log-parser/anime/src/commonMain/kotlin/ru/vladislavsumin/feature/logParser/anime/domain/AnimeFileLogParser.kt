@@ -1,6 +1,6 @@
 package ru.vladislavsumin.feature.logParser.anime.domain
 
-import ru.vladislavsumin.feature.logParser.domain.LogParser
+import ru.vladislavsumin.feature.logParser.domain.FileLogParser
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
 import java.nio.file.Path
 import java.util.zip.ZipFile
@@ -10,7 +10,7 @@ import kotlin.io.path.bufferedReader
 import kotlin.io.path.extension
 import kotlin.system.measureTimeMillis
 
-internal class AnimeLogParser : LogParser {
+internal class AnimeFileLogParser : FileLogParser {
     override suspend fun parseLog(filePath: Path): List<RawLogRecord> {
         // Производительность тут примерно 1,2кк строк в секунду, поэтому дополнительные оптимизации пока не нужны.
         AnimeLogger.i { "Start parsing file $filePath with ${this.javaClass.simpleName}" }

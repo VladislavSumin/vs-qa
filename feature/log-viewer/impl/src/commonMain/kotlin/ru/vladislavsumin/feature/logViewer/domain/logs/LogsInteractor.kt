@@ -101,7 +101,7 @@ class LogsInteractorImpl(
                 loadingStatus.value = LogsInteractor.LoadingStatus.LoadingLogs
                 logs.value = ClearLogState(emptyList(), null)
 
-                val obfuscatedLogs = logParserProvider.getLogParser().parseLog(logPath)
+                val obfuscatedLogs = logParserProvider.getFileLogParser().parseLog(logPath)
                 val runIdIndexes = logParserProvider.getRunIdParser()?.provideRunIdMeta(obfuscatedLogs)
                     ?.toRunIdInfo(obfuscatedLogs)
 
