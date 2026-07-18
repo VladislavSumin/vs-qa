@@ -60,7 +60,7 @@ object LogcatBinaryLogParser {
             val payloadLen = readU16(buf, offset)
             val hdrSize = readU16(buf, offset + 2)
 
-            if (hdrSize < MIN_HEADER_SIZE || hdrSize > MAX_HEADER_SIZE) {
+            if (hdrSize != HEADER_SIZE_V1 && hdrSize != HEADER_SIZE_V3 && hdrSize != HEADER_SIZE_V4) {
                 // Рассинхронизация формата, пробуем ресинхронизироваться со следующего байта.
                 LogcatLogger.e { "Unexpected logcat binary header size $hdrSize, skip one byte" }
                 return 1
@@ -185,9 +185,9 @@ object LogcatBinaryLogParser {
     private val EMPTY_BUFFER = ByteArray(0)
 
     private const val ENTRY_PREFIX_SIZE = 4
-    private const val MIN_HEADER_SIZE = 20
+    private const val HEADER_SIZE_V1 = 20
     private const val HEADER_SIZE_V3 = 24
-    private const val MAX_HEADER_SIZE = 28
+    private const val HEADER_SIZE_V4 = 28
 
     // prio + пустой tag с \0 + минимум 1 байт сообщения
     private const val MIN_PAYLOAD_SIZE = 3
