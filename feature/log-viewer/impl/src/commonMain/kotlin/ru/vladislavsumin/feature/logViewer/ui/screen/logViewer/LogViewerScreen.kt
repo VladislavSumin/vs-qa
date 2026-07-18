@@ -82,6 +82,7 @@ internal class LogViewerScreen(
     )
 
     private val dragAndDropOverlayComponent = DragAndDropOverlayComponent(
+        isMappingSupported = params.source is LogViewerSource.File,
         onMappingPathsSelected = viewModel::onDragAndDropMappingFiles,
         onLogPathsSelected = viewModel::onDragAndDropLogsFiles,
         context = context.childContext("drag-and-drop"),

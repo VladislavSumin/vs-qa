@@ -27,6 +27,7 @@ import java.nio.file.Path
 
 @Composable
 internal fun DragAndDropOverlayContent(
+    isMappingSupported: Boolean,
     onMappingPathsSelected: (List<Path>) -> Unit,
     onLogPathsSelected: (List<Path>) -> Unit,
     modifier: Modifier,
@@ -42,10 +43,12 @@ internal fun DragAndDropOverlayContent(
                 onPathSelected = onLogPathsSelected,
             )
 
-            DropTargetCard(
-                text = stringResource(Res.string.log_viewer_drop_mapping),
-                onPathSelected = onMappingPathsSelected,
-            )
+            if (isMappingSupported) {
+                DropTargetCard(
+                    text = stringResource(Res.string.log_viewer_drop_mapping),
+                    onPathSelected = onMappingPathsSelected,
+                )
+            }
         }
     }
 }

@@ -283,6 +283,7 @@ internal class LogViewerViewModel(
                 LogsInteractor.MappingStatus.Attached -> true
                 LogsInteractor.MappingStatus.NotAttached -> false
             },
+            isMappingSupported = source is LogViewerSource.File,
             isStripDate = stripDate,
             showSelectMappingDialog = showSelectMappingDialog,
             logRecordsAfterApplyFilter = logIndexProgress.lastSuccessIndex.logs.size,

@@ -117,17 +117,19 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
                 .hint(stringResource(Res.string.log_viewer_side_copy), placement = HintPlacement.LEFT)
                 .padding(4.dp),
         ) { Icon(Icons.Default.CopyAll, null) }
-        if (state.value.showSelectMappingDialog) {
-            FilePickerDialog(onCloseRequest = viewModel::onSelectMappingDialogResult)
-        }
-        QaToggleIconButton(
-            checked = state.value.isMappingApplied,
-            onCheckedChange = { viewModel.onClickMappingButton() },
-            Modifier
-                .hint(stringResource(Res.string.log_viewer_side_attach_mapping), placement = HintPlacement.LEFT)
-                .padding(4.dp),
-        ) {
-            Icon(Icons.Default.FilePresent, null)
+        if (state.value.isMappingSupported) {
+            if (state.value.showSelectMappingDialog) {
+                FilePickerDialog(onCloseRequest = viewModel::onSelectMappingDialogResult)
+            }
+            QaToggleIconButton(
+                checked = state.value.isMappingApplied,
+                onCheckedChange = { viewModel.onClickMappingButton() },
+                Modifier
+                    .hint(stringResource(Res.string.log_viewer_side_attach_mapping), placement = HintPlacement.LEFT)
+                    .padding(4.dp),
+            ) {
+                Icon(Icons.Default.FilePresent, null)
+            }
         }
         QaToggleIconButton(
             checked = state.value.isStripDate,
