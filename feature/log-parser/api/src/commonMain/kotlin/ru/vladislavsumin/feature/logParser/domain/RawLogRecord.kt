@@ -28,6 +28,11 @@ data class RawLogRecord(
     val message: LogRange,
 
     val lines: Int,
+
+    /**
+     * Имя процесса, опционально добавляется обогащением через [withProcessName].
+     */
+    val processName: LogRange? = null,
 ) {
     /**
      * Копирует модель с заменой поля [tag] в [raw] записи с корректным сохранением всех [LogRange]
@@ -44,6 +49,33 @@ data class RawLogRecord(
             level = level.moveIfAfterPosition(newTagRange.first, lenDelta),
             thread = thread.moveIfAfterPosition(newTagRange.first, lenDelta),
             message = message.moveIfAfterPosition(newTagRange.first, lenDelta),
+            processName = processName?.moveIfAfterPosition(newTagRange.first, lenDelta),
+        )
+    }
+
+    /**
+     * Копирует модель, вставляя имя процесса в [raw] сразу после блока `PID:TID`
+     * с корректным сдвигом всех последующих [LogRange].
+     */
+    fun withProcessName(name: String): RawLogRecord {
+        if (name.isEmpty()) return this
+
+        val insertPosition = thread.last + 2
+        val newRaw = buildString {
+            append(raw, 0, insertPosition)
+            append(name)
+            append(' ')
+            append(raw, insertPosition, raw.length)
+        }
+        val delta = name.length + 1
+
+        return copy(
+            raw = newRaw,
+            processName = LogRange(insertPosition, insertPosition + name.length - 1),
+            time = time.moveIfAfterPosition(insertPosition, delta),
+            level = level.moveIfAfterPosition(insertPosition, delta),
+            tag = tag.moveIfAfterPosition(insertPosition, delta),
+            message = message.moveIfAfterPosition(insertPosition, delta),
         )
     }
 }

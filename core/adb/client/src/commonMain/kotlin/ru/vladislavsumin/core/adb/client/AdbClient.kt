@@ -23,6 +23,11 @@ interface AdbClient {
      * Использует `exec:` сервис вместо `shell:`, так как pty искажает бинарные данные.
      */
     fun observeBinaryLogcat(deviceName: String): Flow<AdbResult<ByteArray>>
+
+    /**
+     * Возвращает список запущенных на устройстве процессов в виде `pid -> имя процесса`.
+     */
+    suspend fun listProcesses(deviceName: String): AdbResult<Map<Int, String>>
     suspend fun pullFile(deviceName: String, remotePath: String, localPath: String): AdbResult<Unit>
 
     enum class LogcatOutputFormat(val adbFlag: String) {
@@ -119,6 +124,24 @@ internal class AdbClientImpl(dispatchers: VsDispatchers) : AdbClient {
             true
         }
         .catch { emit(AdbClient.AdbResult.Err(it)) }
+
+    override suspend fun listProcesses(deviceName: String): AdbClient.AdbResult<Map<Int, String>> =
+        when (val result = executeShellCommand(deviceName, "ps -A -o PID,NAME")) {
+            is AdbClient.AdbResult.Err -> AdbClient.AdbResult.Err(result.t)
+
+            is AdbClient.AdbResult.Ok -> {
+                val processes = result.data.lineSequence()
+                    .mapNotNull { line ->
+                        val trimmed = line.trim()
+                        val spaceIndex = trimmed.indexOf(' ')
+                        if (spaceIndex == -1) return@mapNotNull null
+                        val pid = trimmed.substring(0, spaceIndex).toIntOrNull() ?: return@mapNotNull null
+                        pid to trimmed.substring(spaceIndex + 1).trim()
+                    }
+                    .toMap()
+                AdbClient.AdbResult.Ok(processes)
+            }
+        }
 
     override fun observeDevices(): Flow<AdbClient.AdbResult<List<AdbClient.DeviceInfo>>> = connection
         .executeContinuousCommand("host:track-devices")

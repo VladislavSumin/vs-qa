@@ -30,6 +30,7 @@ data class LogRecord(
 
     val level: LogRange,
     val processId: LogRange?,
+    val processName: LogRange?,
     val thread: LogRange,
     val tag: LogRange,
     val message: LogRange,
@@ -47,6 +48,7 @@ internal fun RawLogRecord.toLogRecord(order: LogOrder) = LogRecord(
     timeInstant = timeInstant,
     level = level,
     processId = processId,
+    processName = processName,
     thread = thread,
     tag = tag,
     message = message,

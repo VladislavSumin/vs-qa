@@ -28,6 +28,7 @@ import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logParser.domain.substring
 import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractor
+import ru.vladislavsumin.feature.logViewer.domain.logs.LiveProcessNameEnricher
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogOrder
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
@@ -89,9 +90,11 @@ internal class LogViewerViewModel(
             is LogViewerSource.File -> LogsSource.File(source.path)
 
             is LogViewerSource.DeviceLogcat -> LogsSource.LiveFlow(
-                logParserProvider.getBinaryFlowLogParser().parseLog(
-                    adbClient.observeBinaryLogcat(source.deviceName)
-                        .map { it.unwrap() },
+                LiveProcessNameEnricher(adbClient, source.deviceName).enrich(
+                    logParserProvider.getBinaryFlowLogParser().parseLog(
+                        adbClient.observeBinaryLogcat(source.deviceName)
+                            .map { it.unwrap() },
+                    ),
                 ),
             )
         },
