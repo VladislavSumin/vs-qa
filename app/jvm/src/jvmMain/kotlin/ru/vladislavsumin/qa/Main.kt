@@ -11,8 +11,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.application
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.DefaultComponentContext
+import com.arkivanov.essenty.instancekeeper.InstanceKeeperDispatcher
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
+import com.arkivanov.essenty.lifecycle.destroy
 import com.arkivanov.essenty.lifecycle.resume
+import com.arkivanov.essenty.statekeeper.SerializableContainer
+import com.arkivanov.essenty.statekeeper.StateKeeperDispatcher
 import io.sentry.kotlin.multiplatform.Sentry
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -93,51 +97,83 @@ fun setExitOnUncaughtException() {
     }
 }
 
-class DebugStateManager(rootComponentFactory: (ComponentContext) -> ComposeComponent) {
+class DebugStateManager(private val rootComponentFactory: (ComponentContext) -> ComposeComponent) {
+
+    enum class Mode { RETAIN_INSTANCE_KEEPER, DESTROY_INSTANCE_KEEPER }
+
+    private class Generation(
+        val lifecycle: LifecycleRegistry,
+        val stateKeeper: StateKeeperDispatcher,
+        val instanceKeeper: InstanceKeeperDispatcher,
+        val component: ComposeComponent,
+        val composeRegistry: SaveableStateRegistry,
+    )
+
+    private val generationFlow = MutableStateFlow<Generation?>(null)
+
+    private var composeSavedState: Map<String, List<Any?>>? = null
+    private var decomposeSavedState: SerializableContainer? = null
+    private var retainedInstanceKeeper: InstanceKeeperDispatcher? = null
 
     init {
+        generationFlow.value = createGeneration()
         GlobalScope.launch(Dispatchers.Main) {
             while (true) {
-                delay(10.seconds)
-                save()
-                destroy()
-                delay(2.seconds)
+                delay(6.seconds)
+                // Режим пока захардкожен, позже сделать настраиваемым.
+                saveAndDestroy(Mode.DESTROY_INSTANCE_KEEPER)
+                delay(1.seconds)
                 restore()
             }
         }
     }
 
-    private val composeSaveableStateRegistryFlow: MutableStateFlow<SaveableStateRegistry?> =
-        MutableStateFlow(createComposeSaveableStateRegistry())
-    private var composeSavedState: Map<String, List<Any?>>? = null
-
-    private var composeContext: ComponentContext? = null
-    private var composeComponent: ComposeComponent? = null
-
-    fun createComposeSaveableStateRegistry(): SaveableStateRegistry = SaveableStateRegistry(
-        restoredValues = composeSavedState,
-        canBeSaved = { true },
-    )
-
-    fun save() {
-        composeSavedState = composeSaveableStateRegistryFlow.value?.performSave()
-    }
-
-    fun destroy() {
-        composeSaveableStateRegistryFlow.value = null
-    }
-
-    fun restore() {
-        composeSaveableStateRegistryFlow.value = createComposeSaveableStateRegistry()
+    private fun createGeneration(): Generation {
+        val lifecycle = LifecycleRegistry()
+        val stateKeeper = StateKeeperDispatcher(decomposeSavedState)
+        decomposeSavedState = null
+        val instanceKeeper = retainedInstanceKeeper ?: InstanceKeeperDispatcher()
+        retainedInstanceKeeper = null
+        val component = runOnUiThread {
+            val context = DefaultComponentContext(
+                lifecycle = lifecycle,
+                stateKeeper = stateKeeper,
+                instanceKeeper = instanceKeeper,
+            )
+            rootComponentFactory(context)
+        }
+        val composeRegistry = SaveableStateRegistry(
+            restoredValues = composeSavedState,
+            canBeSaved = { true },
+        )
         composeSavedState = null
+        return Generation(lifecycle, stateKeeper, instanceKeeper, component, composeRegistry)
+    }
+
+    private suspend fun saveAndDestroy(mode: Mode) {
+        val generation = generationFlow.value ?: return
+        composeSavedState = generation.composeRegistry.performSave()
+        decomposeSavedState = generation.stateKeeper.save()
+        generationFlow.value = null
+        // Даем композиции задиспоузиться до уничтожения компонентов.
+        delay(0.5.seconds)
+        generation.lifecycle.destroy()
+        when (mode) {
+            Mode.RETAIN_INSTANCE_KEEPER -> retainedInstanceKeeper = generation.instanceKeeper
+            Mode.DESTROY_INSTANCE_KEEPER -> generation.instanceKeeper.destroy()
+        }
+    }
+
+    private fun restore() {
+        generationFlow.value = createGeneration()
     }
 
     @Composable
     fun Intercept(content: @Composable (component: ComposeComponent, decomposeLifecycle: LifecycleRegistry) -> Unit) {
-        val registry by composeSaveableStateRegistryFlow.collectAsState()
-        if (registry != null) {
-            CompositionLocalProvider(LocalSaveableStateRegistry provides registry) {
-                content(composeComponent!!, TODO())
+        val generation by generationFlow.collectAsState()
+        generation?.let {
+            CompositionLocalProvider(LocalSaveableStateRegistry provides it.composeRegistry) {
+                content(it.component, it.lifecycle)
             }
         }
     }
