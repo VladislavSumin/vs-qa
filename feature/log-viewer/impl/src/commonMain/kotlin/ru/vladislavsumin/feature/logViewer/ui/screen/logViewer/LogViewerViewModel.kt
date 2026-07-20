@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
@@ -295,7 +294,8 @@ internal class LogViewerViewModel(
             showTagStat = showTagStat,
         )
     }
-        .flowOn(dispatchers.Default)
+        // TODO ломает строку поиска.
+        // .flowOn(dispatchers.Default)
         .stateIn(LogViewerViewState.STUB)
 
     val logsEvents = Channel<LogsEvents>()
