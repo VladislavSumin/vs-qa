@@ -21,6 +21,8 @@ import kotlin.random.Random
 internal fun DebugScreenContent(
     viewModel: DebugScreenViewModel,
     umlComponent: ComposeComponent,
+    componentRandom: Int,
+    stateKeeperRandom: Int,
     onOpenDashboardDemo: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -35,7 +37,7 @@ internal fun DebugScreenContent(
             Spacer(Modifier.weight(1f))
             val random = rememberSaveable { Random.nextInt().absoluteValue % 100 }
             val compositionRandom = Random.nextInt().absoluteValue % 100
-            Text("STATE ${viewModel.random}_${random}_$compositionRandom")
+            Text("STATE VM:${viewModel.random} C:${componentRandom} S:${stateKeeperRandom} VS:${random} VC:$compositionRandom")
         }
         Spacer(Modifier.height(8.dp))
         umlComponent.Render(Modifier.weight(1f))
