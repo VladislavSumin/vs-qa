@@ -27,5 +27,5 @@ internal class MultiWindowRootScreen(context: ComponentContext) : Screen(context
     private val windows = windowsResult.pages
 
     @Composable
-    override fun Render(modifier: Modifier) = MultiWindowRootContent(windows, modifier)
+    override fun RenderScreen(modifier: Modifier) = MultiWindowRootContent(windows, modifier)
 }

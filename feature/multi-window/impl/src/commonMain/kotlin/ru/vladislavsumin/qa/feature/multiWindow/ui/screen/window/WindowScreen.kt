@@ -48,7 +48,7 @@ internal class WindowScreen(
     )
 
     @Composable
-    override fun Render(modifier: Modifier) = WindowContent(
+    override fun RenderScreen(modifier: Modifier) = WindowContent(
         screen = screen,
         yaml = yaml,
         settingsInteractor = settingsInteractor,

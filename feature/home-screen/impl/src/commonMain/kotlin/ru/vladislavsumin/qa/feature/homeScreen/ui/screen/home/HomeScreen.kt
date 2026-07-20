@@ -127,7 +127,7 @@ internal class HomeScreen(
     }
 
     @Composable
-    override fun Render(modifier: Modifier) = HomeScreenContent(
+    override fun RenderScreen(modifier: Modifier) = HomeScreenContent(
         viewModel = viewModel,
         onLogPathsSelected = viewModel::onDragAndDropLogsFiles,
         logRecentComponent = logRecentComponent,

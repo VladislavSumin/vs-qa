@@ -23,5 +23,5 @@ internal class LegalInfoScreen(context: ComponentContext) :
     )
 
     @Composable
-    override fun Render(modifier: Modifier) = LegalInfoScreenContent(modifier)
+    override fun RenderScreen(modifier: Modifier) = LegalInfoScreenContent(modifier)
 }

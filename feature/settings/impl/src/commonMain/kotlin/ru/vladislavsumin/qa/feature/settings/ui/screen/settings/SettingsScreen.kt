@@ -25,5 +25,5 @@ internal class SettingsScreen(viewModelFactory: SettingsScreenViewModelFactory, 
     )
 
     @Composable
-    override fun Render(modifier: Modifier) = SettingsScreenContent(viewModel, modifier)
+    override fun RenderScreen(modifier: Modifier) = SettingsScreenContent(viewModel, modifier)
 }

@@ -21,5 +21,5 @@ internal class DashboardDemoScreen(context: ComponentContext) :
     )
 
     @Composable
-    override fun Render(modifier: Modifier) = DashboardDemoScreenContent(modifier)
+    override fun RenderScreen(modifier: Modifier) = DashboardDemoScreenContent(modifier)
 }

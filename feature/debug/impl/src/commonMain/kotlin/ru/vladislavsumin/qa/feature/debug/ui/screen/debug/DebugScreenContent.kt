@@ -37,7 +37,9 @@ internal fun DebugScreenContent(
             Spacer(Modifier.weight(1f))
             val random = rememberSaveable { Random.nextInt().absoluteValue % 100 }
             val compositionRandom = Random.nextInt().absoluteValue % 100
-            Text("STATE VM:${viewModel.random} C:${componentRandom} S:${stateKeeperRandom} VS:${random} VC:$compositionRandom")
+            Text(
+                "STATE VM:${viewModel.random} C:$componentRandom S:$stateKeeperRandom VS:$random VC:$compositionRandom",
+            )
         }
         Spacer(Modifier.height(8.dp))
         umlComponent.Render(Modifier.weight(1f))

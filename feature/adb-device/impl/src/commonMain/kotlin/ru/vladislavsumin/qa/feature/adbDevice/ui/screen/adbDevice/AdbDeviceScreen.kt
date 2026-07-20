@@ -23,7 +23,7 @@ internal class AdbDeviceScreen(
     private val viewModel: DeviceControlViewModel = viewModel { viewModelFactory.create(params) }
 
     @Composable
-    override fun Render(modifier: Modifier) = AdbDeviceScreenContent(
+    override fun RenderScreen(modifier: Modifier) = AdbDeviceScreenContent(
         deviceName = params.deviceName,
         viewModel,
         modifier,

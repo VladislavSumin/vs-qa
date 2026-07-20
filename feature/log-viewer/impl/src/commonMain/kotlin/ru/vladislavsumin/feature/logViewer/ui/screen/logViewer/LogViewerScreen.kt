@@ -105,17 +105,15 @@ internal class LogViewerScreen(
     }
 
     @Composable
-    override fun Render(modifier: Modifier) {
-        SaveableRegistryProvider {
-            LogViewerContent(
-                viewModel = viewModel,
-                searchFocusRequester = searchFocusRequester,
-                filterBarComponent = filterBarComponent,
-                dragAndDropOverlayComponent = dragAndDropOverlayComponent,
-                logsComponent = logsComponent,
-                tagStatComponent = tagStatComponent,
-                modifier = modifier,
-            )
-        }
+    override fun RenderScreen(modifier: Modifier) {
+        LogViewerContent(
+            viewModel = viewModel,
+            searchFocusRequester = searchFocusRequester,
+            filterBarComponent = filterBarComponent,
+            dragAndDropOverlayComponent = dragAndDropOverlayComponent,
+            logsComponent = logsComponent,
+            tagStatComponent = tagStatComponent,
+            modifier = modifier,
+        )
     }
 }

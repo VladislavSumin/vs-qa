@@ -37,12 +37,13 @@ internal class DebugScreen(
 
     init {
         val saved = context.stateKeeper.consume("debug_screen_random", Int.serializer())
-        stateKeeperRandom = (saved as? Int) ?: (Random.nextInt().absoluteValue % 100)
+        @Suppress("MagicNumber")
+        stateKeeperRandom = saved ?: (Random.nextInt().absoluteValue % 100)
         context.stateKeeper.register("debug_screen_random", Int.serializer()) { stateKeeperRandom }
     }
 
     @Composable
-    override fun Render(modifier: Modifier) = DebugScreenContent(
+    override fun RenderScreen(modifier: Modifier) = DebugScreenContent(
         viewModel = viewModel,
         umlComponent = umlComponent,
         componentRandom = componentRandom,

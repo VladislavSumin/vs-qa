@@ -125,7 +125,7 @@ internal class RootScreen(
     }
 
     @Composable
-    override fun Render(modifier: Modifier) = RootContent(
+    override fun RenderScreen(modifier: Modifier) = RootContent(
         tabs,
         tabsComponent,
         bottomBarComponent,
