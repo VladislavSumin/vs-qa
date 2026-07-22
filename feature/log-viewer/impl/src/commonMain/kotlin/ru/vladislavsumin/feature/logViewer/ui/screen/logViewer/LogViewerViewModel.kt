@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import ru.vladislavsumin.core.adb.client.AdbClient
-import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 import ru.vladislavsumin.core.coroutines.utils.LinkedFlow
 import ru.vladislavsumin.core.coroutines.utils.combine
 import ru.vladislavsumin.core.coroutines.utils.linkTo
@@ -32,7 +31,7 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogOrder
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
-import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorImpl
+import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorFactory
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsSource
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
 import ru.vladislavsumin.feature.logViewer.domain.logs.SearchRequest
@@ -59,9 +58,9 @@ import kotlin.io.path.name
 @GenerateFactory
 internal class LogViewerViewModel(
     logParserProvider: LogParserProvider,
+    logsInteractorFactory: LogsInteractorFactory,
     private val logViewerSettingsRepository: LogViewerSettingsRepository,
     private val logRecentInteractor: LogRecentInteractor,
-    private val dispatchers: VsDispatchers,
     adbClient: AdbClient,
     @ByCreate private val source: LogViewerSource,
     @ByCreate mappingPath: Path?,
@@ -84,9 +83,8 @@ internal class LogViewerViewModel(
     private val showTagStat = MutableStateFlow(false)
     private val followTail = MutableStateFlow(source is LogViewerSource.DeviceLogcat)
 
-    private val logsInteractor: LogsInteractor = LogsInteractorImpl(
+    private val logsInteractor: LogsInteractor = logsInteractorFactory.create(
         scope = viewModelScope,
-        dispatchers = dispatchers,
         source = when (source) {
             is LogViewerSource.File -> LogsSource.File(source.path)
 
@@ -99,7 +97,6 @@ internal class LogViewerViewModel(
                 ),
             )
         },
-        logParserProvider = logParserProvider,
         notificationsUiInteractor = notificationsUiInteractor,
         proguardInteractor = mappingPath?.let { ProguardInteractorImpl(it) },
     )

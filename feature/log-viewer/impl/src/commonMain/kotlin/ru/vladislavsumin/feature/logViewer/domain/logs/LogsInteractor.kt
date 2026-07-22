@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 import ru.vladislavsumin.core.coroutines.utils.mapState
+import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.resources.asResourceString
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logParser.domain.LogRange
@@ -74,7 +75,17 @@ interface LogsInteractor {
     }
 }
 
+interface LogsInteractorFactory {
+    fun create(
+        scope: CoroutineScope,
+        source: LogsSource,
+        notificationsUiInteractor: NotificationsUiInteractor,
+        proguardInteractor: ProguardInteractor?,
+    ): LogsInteractor
+}
+
 // TODO тут нужно оптимизировать количество копирований списка, а так же equals проверки.
+@GenerateFactory(LogsInteractorFactory::class)
 class LogsInteractorImpl(
     private val scope: CoroutineScope,
     private val dispatchers: VsDispatchers,

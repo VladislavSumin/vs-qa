@@ -7,6 +7,8 @@ import ru.vladislavsumin.core.di.i
 import ru.vladislavsumin.core.navigation.registration.bindGenericNavigation
 import ru.vladislavsumin.feature.logViewer.domain.headless.LogHeadlessProcessor
 import ru.vladislavsumin.feature.logViewer.domain.headless.LogHeadlessProcessorImpl
+import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorFactory
+import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorFactoryImpl
 import ru.vladislavsumin.feature.logViewer.repository.LogViewerSettingsRepository
 import ru.vladislavsumin.feature.logViewer.repository.LogViewerSettingsRepositoryImpl
 import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
@@ -27,6 +29,8 @@ fun Modules.featureLogViewer() = DI.Module("feature-logViewer") {
     bindSingleton<LogViewerSettingsRepository> { LogViewerSettingsRepositoryImpl(i()) }
 
     bindSingleton<LogHeadlessProcessor> { LogHeadlessProcessorImpl(i()) }
+
+    bindSingleton<LogsInteractorFactory> { LogsInteractorFactoryImpl(i(), i()) }
 
     bindGenericNavigation { NavigationRegistrarImpl() }
 
