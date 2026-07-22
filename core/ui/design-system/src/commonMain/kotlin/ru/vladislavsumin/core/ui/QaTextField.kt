@@ -100,7 +100,10 @@ fun QaTextField(
         decorationBox = { text ->
             Row(
                 Modifier
-                    .border(border = BorderStroke(width = 1.dp, color = borderColor))
+                    .border(
+                        border = BorderStroke(width = 1.dp, color = borderColor),
+                        shape = QaTheme.shapes.extraSmall,
+                    )
                     .padding(2.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
