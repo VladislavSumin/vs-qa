@@ -43,4 +43,6 @@
     <string name="log_viewer_bottom_deobfuscate">Деобфускация логов</string>
     <string name="log_viewer_bottom_total_records">Всего записей: %1$d</string>
     <string name="log_viewer_mapping_expected_one">Ожидался ровно один mapping-файл, но получено %1$d</string>
+    <string name="log_viewer_log_stream_failed">Поток логов прерван: %1$s</string>
+    <string name="log_viewer_failed_load_mapping">Не удалось загрузить mapping</string>
 </resources>

@@ -27,6 +27,7 @@ kotlin {
         commonTest.dependencies {
             implementation(projects.feature.logParser.anime)
             implementation(vsCoreLibs.vs.core.logger.manager)
+            implementation(vsCoreLibs.vs.core.navigation.test)
             implementation(vsCoreLibs.kotlin.coroutines.test)
             // TODO вынести в общий код
             implementation(kotlin("test"))

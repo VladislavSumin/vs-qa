@@ -22,7 +22,11 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.delegates.filter.LogFilte
 import ru.vladislavsumin.feature.logViewer.domain.logs.delegates.search.LogSearchDelegate
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractor
 import ru.vladislavsumin.feature.logViewer.domain.proguard.ProguardInteractorImpl
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.Res
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_failed_load_mapping
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_log_stream_failed
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Notification
+import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationText
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import java.nio.file.Path
 import java.time.temporal.ChronoUnit
@@ -108,7 +112,7 @@ class LogsInteractorImpl(
                     LogLogger.e(error) { "Live log stream failed" }
                     notificationsUiInteractor.showNotification(
                         Notification(
-                            "Log stream failed: ${error.message}",
+                            NotificationText(Res.string.log_viewer_log_stream_failed, listOf(error.message.orEmpty())),
                             Notification.Servility.Error,
                         ),
                     )
@@ -182,7 +186,7 @@ class LogsInteractorImpl(
                     } else {
                         notificationsUiInteractor.showNotification(
                             Notification(
-                                "Failed to loading mapping",
+                                NotificationText(Res.string.log_viewer_failed_load_mapping),
                                 Notification.Servility.Error,
                             ),
                         )

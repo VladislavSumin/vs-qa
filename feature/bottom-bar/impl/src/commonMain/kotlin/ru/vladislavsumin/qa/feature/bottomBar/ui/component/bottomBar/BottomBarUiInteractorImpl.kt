@@ -11,17 +11,16 @@ import kotlin.concurrent.withLock
 internal class BottomBarUiInteractorImpl :
     ViewModel(),
     BottomBarUiInteractor {
-    val additionalText = MutableStateFlow("")
+    val additionalText = MutableStateFlow<BottomBarText?>(null)
 
     private val lock = ReentrantLock()
 
     @Volatile
     private var progressBarSequence = 0
-    private val progressBarTexts: LinkedHashMap<Int, String> = LinkedHashMap<Int, String>()
-    val progressBarState = MutableStateFlow<String?>(null)
+    private val progressBarTexts: LinkedHashMap<Int, BottomBarText> = LinkedHashMap<Int, BottomBarText>()
+    val progressBarState = MutableStateFlow<BottomBarText?>(null)
 
-    override suspend fun showProgressBar(text: String): Nothing {
-        // TODO ерунда если честно, нужно потом переписать
+    override suspend fun showProgressBar(text: BottomBarText): Nothing {
         val id = lock.withLock {
             val id = progressBarSequence++
             progressBarTexts[id] = text
@@ -44,7 +43,7 @@ internal class BottomBarUiInteractorImpl :
         progressBarState.value = text
     }
 
-    override fun setBottomBarText(text: String) {
+    override fun setBottomBarText(text: BottomBarText) {
         additionalText.value = text
     }
 }

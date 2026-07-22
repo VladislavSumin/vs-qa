@@ -15,8 +15,6 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
-import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.getSystemResourceEnvironment
 import ru.vladislavsumin.core.adb.client.AdbClient
 import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 import ru.vladislavsumin.core.coroutines.utils.LinkedFlow
@@ -48,8 +46,10 @@ import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_bottom_loading
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_bottom_total_records
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_mapping_expected_one
+import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarText
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Notification
+import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationText
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
 import java.nio.file.Path
@@ -308,13 +308,13 @@ internal class LogViewerViewModel(
 
                     is LogsInteractor.LoadingStatus.LoadingLogs -> {
                         bottomBarUiInteractor.showProgressBar(
-                            getString(getSystemResourceEnvironment(), Res.string.log_viewer_bottom_loading),
+                            BottomBarText(Res.string.log_viewer_bottom_loading),
                         )
                     }
 
                     is LogsInteractor.LoadingStatus.DeobfuscateLogs -> {
                         bottomBarUiInteractor.showProgressBar(
-                            getString(getSystemResourceEnvironment(), Res.string.log_viewer_bottom_deobfuscate),
+                            BottomBarText(Res.string.log_viewer_bottom_deobfuscate),
                         )
                     }
                 }
@@ -325,10 +325,9 @@ internal class LogViewerViewModel(
                 .resubscribeOnUiLifecycle(Lifecycle.State.RESUMED)
                 .collect { state ->
                     bottomBarUiInteractor.setBottomBarText(
-                        getString(
-                            getSystemResourceEnvironment(),
+                        BottomBarText(
                             Res.string.log_viewer_bottom_total_records,
-                            state.logRecordsAfterApplyFilter,
+                            listOf(state.logRecordsAfterApplyFilter),
                         ),
                     )
                 }
@@ -410,7 +409,7 @@ internal class LogViewerViewModel(
         if (paths.size != 1) {
             notificationsUiInteractor.showNotification(
                 Notification(
-                    getString(getSystemResourceEnvironment(), Res.string.log_viewer_mapping_expected_one, paths.size),
+                    NotificationText(Res.string.log_viewer_mapping_expected_one, listOf(paths.size)),
                     Notification.Servility.Error,
                 ),
             )

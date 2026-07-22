@@ -11,8 +11,6 @@ import com.arkivanov.essenty.lifecycle.Lifecycle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.getString
-import org.jetbrains.compose.resources.getSystemResourceEnvironment
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
@@ -26,12 +24,14 @@ import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerSource
 import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScreenParams
 import ru.vladislavsumin.qa.feature.adbDeviceList.domain.AdbFeatureAvailabilityInteractor
 import ru.vladislavsumin.qa.feature.adbDeviceList.ui.component.adbDeviceList.AdbDeviceListComponentFactory
+import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarText
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import ru.vladislavsumin.qa.feature.deviceLogDump.domain.DeviceLogDumpInteractor
 import ru.vladislavsumin.qa.feature.homeScreen.HomeLogger
 import ru.vladislavsumin.qa.feature.legalInfo.ui.screen.legalInfo.LegalInfoScreenParams
 import ru.vladislavsumin.qa.feature.multiWindow.ui.screen.window.WindowScreenParams
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Notification
+import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationText
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import ru.vladislavsumin.qa.feature.settings.ui.screen.settings.SettingsScreenParams
 import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
@@ -80,7 +80,7 @@ internal class HomeScreen(
                 scope.launch {
                     val progressJob = launch {
                         bottomBarUiInteractor.showProgressBar(
-                            getString(getSystemResourceEnvironment(), Res.string.home_dump_progress, deviceName),
+                            BottomBarText(Res.string.home_dump_progress, listOf(deviceName)),
                         )
                     }
                     try {
@@ -90,11 +90,9 @@ internal class HomeScreen(
                                 HomeLogger.e(error) { "Dump failed for $deviceName" }
                                 notificationsUiInteractor.showNotification(
                                     Notification(
-                                        text = getString(
-                                            getSystemResourceEnvironment(),
+                                        text = NotificationText(
                                             Res.string.home_dump_failed,
-                                            deviceName,
-                                            error.message.orEmpty(),
+                                            listOf(deviceName, error.message.orEmpty()),
                                         ),
                                         servility = Notification.Servility.Error,
                                     ),

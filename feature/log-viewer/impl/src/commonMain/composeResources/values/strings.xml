@@ -43,4 +43,6 @@
     <string name="log_viewer_bottom_deobfuscate">Deobfuscate logs</string>
     <string name="log_viewer_bottom_total_records">Total records: %1$d</string>
     <string name="log_viewer_mapping_expected_one">Expected exactly one mapping file, but got %1$d</string>
+    <string name="log_viewer_log_stream_failed">Log stream failed: %1$s</string>
+    <string name="log_viewer_failed_load_mapping">Failed to load mapping</string>
 </resources>

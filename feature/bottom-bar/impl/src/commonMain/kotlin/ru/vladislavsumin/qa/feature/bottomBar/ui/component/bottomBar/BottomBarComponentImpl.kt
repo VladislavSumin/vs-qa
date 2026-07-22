@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
+import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
@@ -42,20 +43,23 @@ internal class BottomBarComponentImpl(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(Modifier.weight(1f))
-            Text(
-                text = bottomBarUiInteractor.additionalText.collectAsState().value,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(
-                    vertical = 2.dp,
-                    horizontal = 8.dp,
-                ),
-            )
+            val additionalText = bottomBarUiInteractor.additionalText.collectAsState().value
+            if (additionalText != null) {
+                Text(
+                    text = stringResource(additionalText.res, *additionalText.args.toTypedArray()),
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(
+                        vertical = 2.dp,
+                        horizontal = 8.dp,
+                    ),
+                )
+            }
 
             val progressBarState = bottomBarUiInteractor.progressBarState.collectAsState().value
             if (progressBarState != null) {
                 VerticalDivider(Modifier.padding(vertical = 2.dp))
                 Text(
-                    text = progressBarState,
+                    text = stringResource(progressBarState.res, *progressBarState.args.toTypedArray()),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(
                         vertical = 2.dp,

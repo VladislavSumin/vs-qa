@@ -53,7 +53,10 @@ internal class NotificationsComponentImpl(viewModelFactory: NotificationsViewMod
                     ),
                 ) {
                     Row(Modifier.padding(vertical = 16.dp, horizontal = 24.dp)) {
-                        Text(it.text, Modifier.weight(1f))
+                        Text(
+                            text = stringResource(it.text.res, *it.text.args.toTypedArray()),
+                            modifier = Modifier.weight(1f),
+                        )
                         QaIconButton(
                             onClick = { viewModel.onClickCloseNotification(it.id) },
                             modifier = Modifier.hint(stringResource(Res.string.notifications_dismiss)),
