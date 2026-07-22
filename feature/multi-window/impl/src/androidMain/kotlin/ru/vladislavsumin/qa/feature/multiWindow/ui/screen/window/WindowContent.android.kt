@@ -1,6 +1,5 @@
 package ru.vladislavsumin.qa.feature.multiWindow.ui.screen.window
 
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,9 +42,9 @@ internal actual fun WindowContent(
     // TODO вынести тему отдельно
     AppEnvironment(language.toLocaleTag()) {
         QaTheme(yaml) {
-            Surface(Modifier.onKeyEvent(globalHotkeyDispatcher::onKeyEvent)) {
-                screen.value.child?.instance?.Render(modifier)
-            }
+            screen.value.child?.instance?.Render(
+                modifier = modifier.onKeyEvent(globalHotkeyDispatcher::onKeyEvent),
+            )
         }
     }
 }

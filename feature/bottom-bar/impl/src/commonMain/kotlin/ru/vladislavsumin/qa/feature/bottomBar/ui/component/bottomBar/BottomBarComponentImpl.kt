@@ -1,6 +1,5 @@
 package ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -20,7 +19,6 @@ import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
-import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.resources.resolve
 import ru.vladislavsumin.qa.feature.memoryIndicator.ui.component.memoryIndicator.MemoryIndicatorComponentFactory
 
@@ -37,9 +35,7 @@ internal class BottomBarComponentImpl(
     @Composable
     override fun Render(modifier: Modifier) {
         Row(
-            Modifier
-                .height(IntrinsicSize.Min)
-                .background(QaTheme.colorScheme.surfaceVariant),
+            modifier.height(IntrinsicSize.Min),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(Modifier.weight(1f))

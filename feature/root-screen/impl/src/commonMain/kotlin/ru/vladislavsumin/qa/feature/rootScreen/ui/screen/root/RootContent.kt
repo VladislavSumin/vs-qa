@@ -1,5 +1,6 @@
 package ru.vladislavsumin.qa.feature.rootScreen.ui.screen.root
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
@@ -23,6 +25,7 @@ import com.arkivanov.decompose.value.Value
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.navigation.host.ConfigurationHolder
 import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 
 @Composable
 internal fun RootContent(
@@ -32,10 +35,12 @@ internal fun RootContent(
     notificationsComponent: ComposeComponent,
     modifier: Modifier,
 ) {
-    Box(
-        modifier
+    Surface(
+        modifier = modifier
             .windowInsetsPadding(WindowInsets.statusBars)
             .windowInsetsPadding(WindowInsets.navigationBars),
+        color = QaTheme.colorScheme.background1,
+        contentColor = QaTheme.colorScheme.onSurface,
     ) {
         Column(modifier) {
             Box(Modifier.weight(1f)) {
@@ -65,7 +70,9 @@ private fun ColumnScope.TabsContent(tabs: Value<ChildPages<ConfigurationHolder, 
             NonScrollablePager(modifier, state, key, pageContent, expectedPage)
         },
         onPageSelected = { _ -> },
-        modifier = Modifier.weight(1f),
+        modifier = Modifier
+            .weight(1f)
+            .background(QaTheme.colorScheme.background2),
     ) { _, page ->
         val hackyContent = remember(page) {
             movableContentOf {

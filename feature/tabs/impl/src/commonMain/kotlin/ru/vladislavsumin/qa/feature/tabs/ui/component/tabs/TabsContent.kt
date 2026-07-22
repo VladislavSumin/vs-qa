@@ -105,7 +105,7 @@ private fun Tab(
     val state = provider?.tabState?.collectAsState()?.value ?: UNKNOWN_TAB
 
     val colorScheme = QaTheme.colorScheme
-    val background = if (index == pages.selectedIndex) colorScheme.surfaceVariant else colorScheme.surface
+    val background = if (index == pages.selectedIndex) colorScheme.background2 else colorScheme.background1
 
     Row(
         modifier = modifier
