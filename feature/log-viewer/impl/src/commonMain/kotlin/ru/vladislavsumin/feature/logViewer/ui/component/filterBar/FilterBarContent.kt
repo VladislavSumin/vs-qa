@@ -1,6 +1,5 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -49,11 +48,7 @@ internal fun FilterBarContent(
     modifier: Modifier,
 ) {
     val state by viewModel.state.collectAsState()
-    Column(
-        modifier
-            .background(QaTheme.colorScheme.surfaceVariant)
-            .padding(vertical = 4.dp, horizontal = 8.dp),
-    ) {
+    Column(modifier.padding(vertical = 4.dp, horizontal = 8.dp)) {
         if (state.showSavedFilters) {
             savedFiltersComponent.Render(Modifier)
         }
