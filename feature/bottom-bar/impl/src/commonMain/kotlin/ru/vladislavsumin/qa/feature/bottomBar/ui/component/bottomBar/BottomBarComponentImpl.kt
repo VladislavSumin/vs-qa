@@ -18,10 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.decompose.childContext
-import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.resources.resolve
 import ru.vladislavsumin.qa.feature.memoryIndicator.ui.component.memoryIndicator.MemoryIndicatorComponentFactory
 
 @GenerateFactory(BottomBarComponentFactory::class)
@@ -46,7 +46,7 @@ internal class BottomBarComponentImpl(
             val additionalText = bottomBarUiInteractor.additionalText.collectAsState().value
             if (additionalText != null) {
                 Text(
-                    text = stringResource(additionalText.res, *additionalText.args.toTypedArray()),
+                    text = additionalText.resolve(),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(
                         vertical = 2.dp,
@@ -59,7 +59,7 @@ internal class BottomBarComponentImpl(
             if (progressBarState != null) {
                 VerticalDivider(Modifier.padding(vertical = 2.dp))
                 Text(
-                    text = stringResource(progressBarState.res, *progressBarState.args.toTypedArray()),
+                    text = progressBarState.resolve(),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(
                         vertical = 2.dp,

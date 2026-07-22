@@ -25,6 +25,7 @@ import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
+import ru.vladislavsumin.core.ui.resources.resolve
 import ru.vladislavsumin.feature.notifications.impl.generated.resources.Res
 import ru.vladislavsumin.feature.notifications.impl.generated.resources.notifications_close
 import ru.vladislavsumin.feature.notifications.impl.generated.resources.notifications_dismiss
@@ -54,7 +55,7 @@ internal class NotificationsComponentImpl(viewModelFactory: NotificationsViewMod
                 ) {
                     Row(Modifier.padding(vertical = 16.dp, horizontal = 24.dp)) {
                         Text(
-                            text = stringResource(it.text.res, *it.text.args.toTypedArray()),
+                            text = it.text.resolve(),
                             modifier = Modifier.weight(1f),
                         )
                         QaIconButton(

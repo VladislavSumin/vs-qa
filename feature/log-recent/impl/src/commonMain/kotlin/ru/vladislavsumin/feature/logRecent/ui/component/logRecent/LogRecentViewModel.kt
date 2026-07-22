@@ -5,12 +5,12 @@ import kotlinx.coroutines.flow.map
 import ru.vladislavsumin.core.decompose.components.ViewModel
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
+import ru.vladislavsumin.core.ui.resources.asResourceString
 import ru.vladislavsumin.feature.logRecent.domain.LogRecent
 import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractorInternal
 import ru.vladislavsumin.feature.log_recent.impl.generated.resources.Res
 import ru.vladislavsumin.feature.log_recent.impl.generated.resources.log_recent_file_not_found
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Notification
-import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationText
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import kotlin.io.path.exists
 
@@ -30,10 +30,7 @@ internal class LogRecentViewModel(
             launch {
                 notificationsUiInteractor.showNotification(
                     Notification(
-                        text = NotificationText(
-                            Res.string.log_recent_file_not_found,
-                            listOf(recent.path.toString()),
-                        ),
+                        text = Res.string.log_recent_file_not_found.asResourceString(recent.path.toString()),
                         servility = Notification.Servility.Error,
                     ),
                 )

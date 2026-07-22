@@ -4,6 +4,7 @@ import androidx.compose.runtime.Stable
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import ru.vladislavsumin.core.decompose.components.ViewModel
+import ru.vladislavsumin.core.ui.resources.ResourceString
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
@@ -11,16 +12,16 @@ import kotlin.concurrent.withLock
 internal class BottomBarUiInteractorImpl :
     ViewModel(),
     BottomBarUiInteractor {
-    val additionalText = MutableStateFlow<BottomBarText?>(null)
+    val additionalText = MutableStateFlow<ResourceString?>(null)
 
     private val lock = ReentrantLock()
 
     @Volatile
     private var progressBarSequence = 0
-    private val progressBarTexts: LinkedHashMap<Int, BottomBarText> = LinkedHashMap<Int, BottomBarText>()
-    val progressBarState = MutableStateFlow<BottomBarText?>(null)
+    private val progressBarTexts: LinkedHashMap<Int, ResourceString> = LinkedHashMap<Int, ResourceString>()
+    val progressBarState = MutableStateFlow<ResourceString?>(null)
 
-    override suspend fun showProgressBar(text: BottomBarText): Nothing {
+    override suspend fun showProgressBar(text: ResourceString): Nothing {
         val id = lock.withLock {
             val id = progressBarSequence++
             progressBarTexts[id] = text
@@ -43,7 +44,7 @@ internal class BottomBarUiInteractorImpl :
         progressBarState.value = text
     }
 
-    override fun setBottomBarText(text: BottomBarText) {
+    override fun setBottomBarText(text: ResourceString) {
         additionalText.value = text
     }
 }

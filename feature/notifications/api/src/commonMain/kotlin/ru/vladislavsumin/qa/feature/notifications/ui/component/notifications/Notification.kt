@@ -1,11 +1,12 @@
 package ru.vladislavsumin.qa.feature.notifications.ui.component.notifications
 
+import ru.vladislavsumin.core.ui.resources.ResourceString
 import java.util.concurrent.atomic.AtomicInteger
 
 @ConsistentCopyVisibility
-data class Notification private constructor(val id: Int, val text: NotificationText, val servility: Servility) {
+data class Notification private constructor(val id: Int, val text: ResourceString, val servility: Servility) {
     constructor(
-        text: NotificationText,
+        text: ResourceString,
         servility: Servility,
     ) : this(ids.getAndIncrement(), text, servility)
 

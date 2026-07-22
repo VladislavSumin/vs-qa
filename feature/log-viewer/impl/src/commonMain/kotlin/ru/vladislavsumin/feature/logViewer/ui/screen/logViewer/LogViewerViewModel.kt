@@ -23,6 +23,7 @@ import ru.vladislavsumin.core.coroutines.utils.linkTo
 import ru.vladislavsumin.core.factoryGenerator.ByCreate
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.viewModel.NavigationViewModel
+import ru.vladislavsumin.core.ui.resources.asResourceString
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logParser.domain.substring
 import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractor
@@ -46,10 +47,8 @@ import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_bottom_loading
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_bottom_total_records
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_mapping_expected_one
-import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarText
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Notification
-import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationText
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
 import java.nio.file.Path
@@ -308,13 +307,13 @@ internal class LogViewerViewModel(
 
                     is LogsInteractor.LoadingStatus.LoadingLogs -> {
                         bottomBarUiInteractor.showProgressBar(
-                            BottomBarText(Res.string.log_viewer_bottom_loading),
+                            Res.string.log_viewer_bottom_loading.asResourceString(),
                         )
                     }
 
                     is LogsInteractor.LoadingStatus.DeobfuscateLogs -> {
                         bottomBarUiInteractor.showProgressBar(
-                            BottomBarText(Res.string.log_viewer_bottom_deobfuscate),
+                            Res.string.log_viewer_bottom_deobfuscate.asResourceString(),
                         )
                     }
                 }
@@ -325,9 +324,8 @@ internal class LogViewerViewModel(
                 .resubscribeOnUiLifecycle(Lifecycle.State.RESUMED)
                 .collect { state ->
                     bottomBarUiInteractor.setBottomBarText(
-                        BottomBarText(
-                            Res.string.log_viewer_bottom_total_records,
-                            listOf(state.logRecordsAfterApplyFilter),
+                        Res.string.log_viewer_bottom_total_records.asResourceString(
+                            state.logRecordsAfterApplyFilter,
                         ),
                     )
                 }
@@ -409,7 +407,7 @@ internal class LogViewerViewModel(
         if (paths.size != 1) {
             notificationsUiInteractor.showNotification(
                 Notification(
-                    NotificationText(Res.string.log_viewer_mapping_expected_one, listOf(paths.size)),
+                    Res.string.log_viewer_mapping_expected_one.asResourceString(paths.size),
                     Notification.Servility.Error,
                 ),
             )

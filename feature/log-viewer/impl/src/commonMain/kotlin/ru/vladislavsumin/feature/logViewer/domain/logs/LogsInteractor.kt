@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 import ru.vladislavsumin.core.coroutines.utils.mapState
+import ru.vladislavsumin.core.ui.resources.asResourceString
 import ru.vladislavsumin.feature.logParser.domain.LogParserProvider
 import ru.vladislavsumin.feature.logParser.domain.LogRange
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
@@ -26,7 +27,6 @@ import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.Res
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_failed_load_mapping
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_log_stream_failed
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.Notification
-import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationText
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import java.nio.file.Path
 import java.time.temporal.ChronoUnit
@@ -112,7 +112,7 @@ class LogsInteractorImpl(
                     LogLogger.e(error) { "Live log stream failed" }
                     notificationsUiInteractor.showNotification(
                         Notification(
-                            NotificationText(Res.string.log_viewer_log_stream_failed, listOf(error.message.orEmpty())),
+                            Res.string.log_viewer_log_stream_failed.asResourceString(error.message.orEmpty()),
                             Notification.Servility.Error,
                         ),
                     )
@@ -186,7 +186,7 @@ class LogsInteractorImpl(
                     } else {
                         notificationsUiInteractor.showNotification(
                             Notification(
-                                NotificationText(Res.string.log_viewer_failed_load_mapping),
+                                Res.string.log_viewer_failed_load_mapping.asResourceString(),
                                 Notification.Servility.Error,
                             ),
                         )
