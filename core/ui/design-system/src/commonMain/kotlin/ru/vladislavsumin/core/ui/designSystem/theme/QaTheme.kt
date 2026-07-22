@@ -2,6 +2,7 @@ package ru.vladislavsumin.core.ui.designSystem.theme
 
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -46,4 +47,8 @@ object QaTheme {
     val colorScheme: QaColorScheme
         @Composable @ReadOnlyComposable
         get() = LocalQaColorScheme.current
+
+    val shapes: Shapes
+        @Composable @ReadOnlyComposable
+        get() = MaterialTheme.shapes
 }

@@ -29,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
@@ -75,6 +76,8 @@ internal fun LogViewerContent(
             Row(Modifier.weight(1f)) {
                 val modifier = Modifier
                     .weight(1f)
+                    .padding(start = 2.dp)
+                    .clip(QaTheme.shapes.extraSmall)
                     .background(QaTheme.colorScheme.background3)
                 // TODO скрол не должен сбрасываться а тут будет.
                 if (state.value.showTagStat) {
