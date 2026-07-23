@@ -207,7 +207,7 @@ internal fun LogsContent(
                     }
                 }
             }
-            VerticalDivider(Modifier.padding(start = textSizeDp + 8.dp))
+            VerticalDivider(Modifier.padding(start = textSizeDp + 8.dp), color = QaTheme.colorScheme.content3)
             VsVerticalScrollbar(lazyListState, Modifier.align(Alignment.CenterEnd))
         }
     }
@@ -301,7 +301,7 @@ private fun Record(
             Text(
                 // order нумеруется с 0, но визуально записи более правильно нумеровать с единицы.
                 text = "${log.order.value + 1}",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = QaTheme.colorScheme.content2,
                 style = MaterialTheme.typography.bodyMedium,
                 fontSize = fontSize.sp,
                 // TODO вынести в константу что ли?

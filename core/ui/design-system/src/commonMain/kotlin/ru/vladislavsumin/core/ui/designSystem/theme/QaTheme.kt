@@ -9,6 +9,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.charleskorn.kaml.Yaml
 import kotlinx.serialization.decodeFromString
@@ -33,6 +34,7 @@ fun QaTheme(yaml: Yaml, content: @Composable () -> Unit) {
         LocalMinimumInteractiveComponentSize provides 24.dp,
     ) {
         MaterialTheme(
+//            colorScheme = stubMaterialColorScheme(),
             colorScheme = darkColorScheme(
                 surface = colorScheme.surface,
                 onSurface = colorScheme.onSurface,
@@ -52,3 +54,54 @@ object QaTheme {
         @Composable @ReadOnlyComposable
         get() = MaterialTheme.shapes
 }
+
+fun stubMaterialColorScheme() = darkColorScheme(
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+)

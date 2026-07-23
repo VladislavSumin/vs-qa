@@ -22,6 +22,7 @@ import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
+import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.feature.memory_indicator.impl.generated.resources.Res
 import ru.vladislavsumin.feature.memory_indicator.impl.generated.resources.memory_indicator_usage
 
@@ -42,7 +43,7 @@ internal class MemoryIndicatorComponent(context: ComponentContext) :
             val state by viewModel.state.collectAsState()
             Box(
                 Modifier
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = .5f))
+                    .background(QaTheme.colorScheme.backgroundAccent1)
                     .fillMaxHeight()
                     .fillMaxWidth(state.first.toFloat() / state.second),
             )
