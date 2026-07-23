@@ -94,6 +94,7 @@ internal fun HelpMenuContent() {
                 append("Allowed to use new line for separate filters.")
             },
             style = MaterialTheme.typography.bodyMedium,
+            color = QaTheme.colorScheme.content1,
         )
     }
 }

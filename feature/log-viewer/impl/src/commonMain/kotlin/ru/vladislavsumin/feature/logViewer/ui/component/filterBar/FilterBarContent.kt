@@ -112,6 +112,7 @@ private fun HelpButton(viewModel: FilterBarViewModel, state: FilterBarViewState)
         DropdownMenu(
             expanded = state.showHelpMenu,
             onDismissRequest = viewModel::onDismissHelpMenu,
+            containerColor = QaTheme.colorScheme.background1,
         ) { HelpMenuContent() }
         Icon(
             imageVector = Icons.AutoMirrored.Filled.Help,
