@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -66,7 +67,17 @@ private fun ColumnScope.TabsContent(tabs: Value<ChildPages<ConfigurationHolder, 
     val expectedPage = tabsState.selectedIndex.coerceAtLeast(0)
 
     val isTabExists = tabsState.items.size > 1
-    val shape = if (isTabExists) QaTheme.shapes.small else RectangleShape
+    val isFirst = tabsState.selectedIndex == 0
+
+    val shape = if (isTabExists) {
+        if (isFirst) {
+            QaTheme.shapes.small.copy(topStart = CornerSize(0.dp))
+        } else {
+            QaTheme.shapes.small
+        }
+    } else {
+        RectangleShape
+    }
 
     ChildPages(
         pages = tabs,

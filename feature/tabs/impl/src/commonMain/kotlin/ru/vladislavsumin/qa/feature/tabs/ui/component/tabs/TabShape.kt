@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
-internal class TabShape(private val topCornerRadius: Dp = 4.dp, private val bottomOutwardRadius: Dp = 4.dp,) : Shape {
+internal class TabShape(private val topCornerRadius: Dp = 4.dp, private val bottomOutwardRadius: Dp = 4.dp) : Shape {
     override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
         val topR = with(density) { topCornerRadius.toPx() }
         val bottomR = with(density) { bottomOutwardRadius.toPx() }
