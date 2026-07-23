@@ -87,7 +87,7 @@ fun QaTextField(
     leadingContent: (@Composable RowScope.() -> Unit)? = null,
     trailingContent: (@Composable RowScope.() -> Unit)? = null,
 ) {
-    val textColor = QaTheme.colorScheme.onSurface
+    val textColor = QaTheme.colorScheme.content1
     val borderColor = if (isError) QaTheme.colorScheme.logError.primary else QaTheme.colorScheme.content3
     BasicTextField(
         value = value,
@@ -117,7 +117,7 @@ fun QaTextField(
                     text()
                     if (placeholder != null && value.text.isEmpty()) {
                         val placeholderTextStyle =
-                            LocalTextStyle.current.copy(color = QaTheme.colorScheme.onSurfaceVariant)
+                            LocalTextStyle.current.copy(color = QaTheme.colorScheme.content2)
                         CompositionLocalProvider(LocalTextStyle provides placeholderTextStyle) {
                             placeholder()
                         }

@@ -42,7 +42,7 @@ internal fun RootContent(
             .windowInsetsPadding(WindowInsets.statusBars)
             .windowInsetsPadding(WindowInsets.navigationBars),
         color = QaTheme.colorScheme.background1,
-        contentColor = QaTheme.colorScheme.onSurface,
+        contentColor = QaTheme.colorScheme.content1,
     ) {
         Column(modifier) {
             Box(Modifier.weight(1f)) {

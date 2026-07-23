@@ -33,15 +33,6 @@ data class QaColorScheme(
     val content3: Color = Color(0xFF5E5E63),
 
     @Serializable(with = ColorAsStringSerializer::class)
-    val surface: Color = Color(0xFF1E1F22),
-    @Serializable(with = ColorAsStringSerializer::class)
-    val surfaceVariant: Color = Color(0xFF2B2D30),
-    @Serializable(with = ColorAsStringSerializer::class)
-    val onSurface: Color = Color(0xFFDFE1E5),
-    @Serializable(with = ColorAsStringSerializer::class)
-    val onSurfaceVariant: Color = Color(0xFFA1A2AA),
-
-    @Serializable(with = ColorAsStringSerializer::class)
     val logHighlight: Color = Color(0x80A0A0A0),
     @Serializable(with = ColorAsStringSerializer::class)
     val logHighlightSelected: Color = Color(0xCC373AB1),

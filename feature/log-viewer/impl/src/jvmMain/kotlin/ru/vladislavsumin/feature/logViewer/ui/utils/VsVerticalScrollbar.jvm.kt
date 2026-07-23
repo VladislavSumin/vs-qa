@@ -14,8 +14,8 @@ actual fun VsVerticalScrollbar(lazyListState: LazyListState, modifier: Modifier)
     VerticalScrollbar(
         adapter = rememberScrollbarAdapter(lazyListState),
         style = LocalScrollbarStyle.current.copy(
-            hoverColor = QaTheme.colorScheme.onSurface,
-            unhoverColor = QaTheme.colorScheme.onSurfaceVariant,
+            hoverColor = QaTheme.colorScheme.content1,
+            unhoverColor = QaTheme.colorScheme.content2,
         ),
         modifier = modifier.fillMaxHeight(),
     )

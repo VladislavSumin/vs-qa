@@ -25,9 +25,9 @@ internal fun FilterRequestParser.RequestHighlight.colorize(): AnnotatedString {
 }
 
 private fun FilterRequestParser.Category.toSpanStyle(colors: QaColorScheme): SpanStyle = when (this) {
-    FilterRequestParser.Category.Field -> SpanStyle(color = colors.onSurfaceVariant)
+    FilterRequestParser.Category.Field -> SpanStyle(color = colors.content2)
 
-    FilterRequestParser.Category.Operator -> SpanStyle(color = colors.onSurfaceVariant)
+    FilterRequestParser.Category.Operator -> SpanStyle(color = colors.content2)
 
     FilterRequestParser.Category.Logic -> SpanStyle(color = colors.logWarn.primary)
 
@@ -38,5 +38,5 @@ private fun FilterRequestParser.Category.toSpanStyle(colors: QaColorScheme): Spa
     FilterRequestParser.Category.SavedFilterRef ->
         SpanStyle(color = colors.logDebug.primary, fontStyle = FontStyle.Italic)
 
-    FilterRequestParser.Category.Text -> SpanStyle(color = colors.onSurface)
+    FilterRequestParser.Category.Text -> SpanStyle(color = colors.content1)
 }

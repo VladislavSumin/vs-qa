@@ -243,7 +243,7 @@ private fun Header(runNumber: Int, meta: Map<String, String>?, fontSize: Int, te
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .background(QaTheme.colorScheme.surfaceVariant),
+                    .background(QaTheme.colorScheme.background1),
             ) {
                 val text = buildAnnotatedString {
                     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {

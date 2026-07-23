@@ -84,13 +84,13 @@ internal fun SavedFiltersContent(
                 }
                 HorizontalDivider(
                     thickness = 1.dp,
-                    color = QaTheme.colorScheme.surface,
+                    color = QaTheme.colorScheme.background2,
                 )
             }
         }
 
         Spacer(Modifier.height(4.dp))
-        HorizontalDivider(thickness = 1.5.dp, color = QaTheme.colorScheme.surfaceVariant)
+        HorizontalDivider(thickness = 1.5.dp, color = QaTheme.colorScheme.content3)
         Spacer(Modifier.height(4.dp))
         NewFilterSection(viewModel, state)
     }
@@ -103,7 +103,7 @@ private fun NewFilterSection(viewModel: SavedFiltersViewModel, state: SavedFilte
         Text(
             stringResource(Res.string.log_viewer_saved_new_filter),
             style = MaterialTheme.typography.bodySmall,
-            color = QaTheme.colorScheme.onSurfaceVariant,
+            color = QaTheme.colorScheme.content2,
             modifier = Modifier.padding(horizontal = 8.dp),
         )
         if (state.saveError != null) {
@@ -182,7 +182,7 @@ private fun SavedFilterRow(
         Text(
             filter.name,
             style = MaterialTheme.typography.bodySmall,
-            color = QaTheme.colorScheme.onSurfaceVariant,
+            color = QaTheme.colorScheme.content2,
             modifier = Modifier.weight(1f),
         )
         Spacer(Modifier.width(4.dp))
@@ -221,7 +221,7 @@ private fun EditSavedFilterRow(
 ) {
     Row(
         modifier = Modifier
-            .background(QaTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+            .background(QaTheme.colorScheme.background1)
             .padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
