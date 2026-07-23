@@ -28,7 +28,7 @@ data class QaColorScheme(
     @Serializable(with = ColorAsStringSerializer::class)
     val content1: Color = Color(0xFFDFE1E5),
     @Serializable(with = ColorAsStringSerializer::class)
-    val content2: Color = Color(0xFFA1A2AA),
+    val content2: Color = Color(0xFFA4A5AD),
     @Serializable(with = ColorAsStringSerializer::class)
     val content3: Color = Color(0xFF5E5E63),
 
