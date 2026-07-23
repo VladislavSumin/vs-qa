@@ -13,6 +13,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 
 @Composable
 fun QaToggleIconButton(
@@ -23,7 +24,12 @@ fun QaToggleIconButton(
     interactionSource: MutableInteractionSource? = null,
     content: @Composable () -> Unit,
 ) {
-    val colors = IconButtonDefaults.outlinedIconToggleButtonColors()
+    val colors = IconButtonDefaults
+        .outlinedIconToggleButtonColors()
+        .copy(
+            checkedContainerColor = QaTheme.colorScheme.backgroundAccent1,
+            checkedContentColor = QaTheme.colorScheme.content1,
+        )
     Surface(
         checked = checked,
         onCheckedChange = onCheckedChange,
