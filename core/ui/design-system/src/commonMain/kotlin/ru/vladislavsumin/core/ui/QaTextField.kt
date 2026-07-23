@@ -110,8 +110,8 @@ fun QaTextField(
                 if (leadingContent != null) {
                     Spacer(Modifier.width(2.dp))
                     leadingContent()
-                    Spacer(Modifier.width(4.dp))
                 }
+                Spacer(Modifier.width(4.dp))
                 Box(Modifier.weight(1f)) {
                     // TODO с весом как то грустно
                     text()
