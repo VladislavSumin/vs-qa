@@ -1,6 +1,5 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.searchBar
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
@@ -94,63 +93,58 @@ private fun TrailingButtons(
     state: SearchBarViewState,
     showSideMenu: MutableState<Boolean>,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.padding(horizontal = 4.dp),
-    ) {
-        QaIconButton(
-            onClick = viewModel::onClickNextIndex,
-            modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_next)),
-        ) { Icon(Icons.Default.ArrowDownward, null) }
+    QaIconButton(
+        onClick = viewModel::onClickNextIndex,
+        modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_next)),
+    ) { Icon(Icons.Default.ArrowDownward, null) }
 
-        QaIconButton(
-            onClick = viewModel::onClickPrevIndex,
-            modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_prev)),
-        ) { Icon(Icons.Default.ArrowUpward, null) }
+    QaIconButton(
+        onClick = viewModel::onClickPrevIndex,
+        modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_prev)),
+    ) { Icon(Icons.Default.ArrowUpward, null) }
 
-        // TODO написать нормально
-        val textMeasurer = rememberTextMeasurer()
-        val density = LocalDensity.current
-        val style = LocalTextStyle.current
-        val size = remember(textMeasurer, density, state.totalSearchResults) {
-            val count = "9".repeat(state.totalSearchResults.toString().length)
-            val testString = "$count / $count"
-            val widthPx = textMeasurer.measure(testString, style).size.width
-            with(density) { widthPx.toDp() }
-        }
+    // TODO написать нормально
+    val textMeasurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    val style = LocalTextStyle.current
+    val size = remember(textMeasurer, density, state.totalSearchResults) {
+        val count = "9".repeat(state.totalSearchResults.toString().length)
+        val testString = "$count / $count"
+        val widthPx = textMeasurer.measure(testString, style).size.width
+        with(density) { widthPx.toDp() }
+    }
 
-        Text(
-            text = if (state.isBadRegex) {
-                stringResource(Res.string.log_viewer_search_bad_pattern)
-            } else {
-                "${state.currentSearchResultIndex + 1} / ${state.totalSearchResults}"
-            },
-            Modifier
-                .padding(horizontal = 4.dp)
-                .defaultMinSize(minWidth = size),
-        )
+    Text(
+        text = if (state.isBadRegex) {
+            stringResource(Res.string.log_viewer_search_bad_pattern)
+        } else {
+            "${state.currentSearchResultIndex + 1} / ${state.totalSearchResults}"
+        },
+        Modifier
+            .padding(horizontal = 4.dp)
+            .defaultMinSize(minWidth = size),
+    )
 
+    QaToggleIconButton(
+        checked = state.isMatchCase,
+        onCheckedChange = viewModel::onClickSearchMatchCase,
+        modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_case_sensitive)),
+    ) { Text("Cc") }
+
+    QaToggleIconButton(
+        checked = state.isRegex,
+        onCheckedChange = viewModel::onClickSearchUseRegex,
+        modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_use_regex)),
+    ) { Text(".*") }
+
+    val withDp = with(LocalDensity.current) {
+        LocalWindowInfo.current.containerSize.width.toDp()
+    }
+    if (withDp <= 600.dp) {
         QaToggleIconButton(
-            checked = state.isMatchCase,
-            onCheckedChange = viewModel::onClickSearchMatchCase,
-            modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_case_sensitive)),
-        ) { Text("Cc") }
-
-        QaToggleIconButton(
-            checked = state.isRegex,
-            onCheckedChange = viewModel::onClickSearchUseRegex,
-            modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_use_regex)),
-        ) { Text(".*") }
-
-        val withDp = with(LocalDensity.current) {
-            LocalWindowInfo.current.containerSize.width.toDp()
-        }
-        if (withDp <= 600.dp) {
-            QaToggleIconButton(
-                checked = showSideMenu.value,
-                onCheckedChange = { showSideMenu.value = it },
-                modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_toggle_side_panel)),
-            ) { Icon(Icons.Default.MoreVert, null) }
-        }
+            checked = showSideMenu.value,
+            onCheckedChange = { showSideMenu.value = it },
+            modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_toggle_side_panel)),
+        ) { Icon(Icons.Default.MoreVert, null) }
     }
 }
