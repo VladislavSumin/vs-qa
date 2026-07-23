@@ -17,6 +17,7 @@ import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.extensions.compose.pages.ChildPages
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
@@ -64,6 +65,8 @@ private fun ColumnScope.TabsContent(tabs: Value<ChildPages<ConfigurationHolder, 
     val tabsState by tabs.subscribeAsState()
     val expectedPage = tabsState.selectedIndex.coerceAtLeast(0)
 
+    val isTabExists = tabsState.items.size > 1
+
     ChildPages(
         pages = tabs,
         pager = { modifier, state, key, pageContent ->
@@ -72,6 +75,10 @@ private fun ColumnScope.TabsContent(tabs: Value<ChildPages<ConfigurationHolder, 
         onPageSelected = { _ -> },
         modifier = Modifier
             .weight(1f)
+            .let {
+                if (isTabExists) it.clip(QaTheme.shapes.small)
+                else it
+            }
             .background(QaTheme.colorScheme.background2),
     ) { _, page ->
         val hackyContent = remember(page) {
