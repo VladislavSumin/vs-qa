@@ -44,6 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -207,8 +208,8 @@ internal fun LogsContent(
                 }
             }
             VerticalDivider(Modifier.padding(start = textSizeDp + 8.dp))
+            VsVerticalScrollbar(lazyListState, Modifier.align(Alignment.CenterEnd))
         }
-        LogsVerticalScrollBar(lazyListState)
     }
 }
 
@@ -292,7 +293,9 @@ private fun Record(
     }
 
     Box(
-        modifier = Modifier.onRightClick(onShowContextMenu),
+        modifier = Modifier
+            .padding(end = 6.dp)
+            .onRightClick(onShowContextMenu),
     ) {
         DisableSelection {
             Text(
@@ -390,11 +393,6 @@ private class MenuPositionProvider(private val localPosition: Offset) : PopupPos
             .coerceIn(0, (windowSize.height - popupContentSize.height).coerceAtLeast(0))
         return IntOffset(x, y)
     }
-}
-
-@Composable
-private fun LogsVerticalScrollBar(lazyListState: LazyListState) {
-    VsVerticalScrollbar(lazyListState)
 }
 
 @Composable
