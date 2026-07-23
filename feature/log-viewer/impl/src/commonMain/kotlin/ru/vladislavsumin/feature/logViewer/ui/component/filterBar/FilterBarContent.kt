@@ -4,8 +4,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.automirrored.outlined.Help
 import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.FilterAlt
+import androidx.compose.material.icons.outlined.Bookmarks
+import androidx.compose.material.icons.outlined.FilterAlt
+import androidx.compose.material.icons.rounded.Bookmarks
+import androidx.compose.material.icons.rounded.FilterAlt
+import androidx.compose.material.icons.sharp.FilterAlt
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -86,7 +92,7 @@ private fun FilterField(
         },
         placeholder = { Text(stringResource(Res.string.log_viewer_filter_placeholder)) },
         centerContent = { filterHintComponent.Render(Modifier, cursorPosition) },
-        leadingContent = { Icon(imageVector = Icons.Default.FilterAlt, contentDescription = null) },
+        leadingContent = { Icon(imageVector = Icons.Outlined.FilterAlt, contentDescription = null) },
         trailingContent = {
             QaToggleIconButton(
                 checked = state.showSavedFilters,
@@ -94,7 +100,7 @@ private fun FilterField(
                 modifier = Modifier.hint(stringResource(Res.string.log_viewer_filter_saved)),
             ) {
                 Icon(
-                    imageVector = Icons.Default.Bookmarks,
+                    imageVector = Icons.Outlined.Bookmarks,
                     contentDescription = stringResource(Res.string.log_viewer_filter_saved_cd),
                 )
             }
@@ -115,7 +121,7 @@ private fun HelpButton(viewModel: FilterBarViewModel, state: FilterBarViewState)
             containerColor = QaTheme.colorScheme.background1,
         ) { HelpMenuContent() }
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.Help,
+            imageVector = Icons.AutoMirrored.Outlined.Help,
             contentDescription = stringResource(Res.string.log_viewer_filter_help_cd),
         )
     }
