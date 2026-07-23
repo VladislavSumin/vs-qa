@@ -1,6 +1,5 @@
 package ru.vladislavsumin.qa.feature.multiWindow.ui.screen.window
 
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -77,9 +76,7 @@ internal actual fun WindowContent(
             // TODO вынести тему отдельно
             AppEnvironment(language.toLocaleTag()) {
                 QaTheme(yaml) {
-                    Surface {
-                        screen.value.child?.instance?.Render(modifier)
-                    }
+                    screen.value.child?.instance?.Render(modifier)
                 }
             }
         }

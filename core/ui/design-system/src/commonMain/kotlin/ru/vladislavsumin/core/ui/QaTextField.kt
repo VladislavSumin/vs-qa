@@ -87,8 +87,8 @@ fun QaTextField(
     leadingContent: (@Composable RowScope.() -> Unit)? = null,
     trailingContent: (@Composable RowScope.() -> Unit)? = null,
 ) {
-    val textColor = QaTheme.colorScheme.onSurface
-    val borderColor = if (isError) QaTheme.colorScheme.logError.primary else QaTheme.colorScheme.onSurfaceVariant
+    val textColor = QaTheme.colorScheme.content1
+    val borderColor = if (isError) QaTheme.colorScheme.logError.primary else QaTheme.colorScheme.content3
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
@@ -100,20 +100,24 @@ fun QaTextField(
         decorationBox = { text ->
             Row(
                 Modifier
-                    .border(border = BorderStroke(width = 1.dp, color = borderColor))
+                    .border(
+                        border = BorderStroke(width = 1.dp, color = borderColor),
+                        shape = QaTheme.shapes.extraSmall,
+                    )
                     .padding(2.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (leadingContent != null) {
+                    Spacer(Modifier.width(2.dp))
                     leadingContent()
-                    Spacer(Modifier.width(4.dp))
                 }
+                Spacer(Modifier.width(4.dp))
                 Box(Modifier.weight(1f)) {
                     // TODO с весом как то грустно
                     text()
                     if (placeholder != null && value.text.isEmpty()) {
                         val placeholderTextStyle =
-                            LocalTextStyle.current.copy(color = QaTheme.colorScheme.onSurfaceVariant)
+                            LocalTextStyle.current.copy(color = QaTheme.colorScheme.content2)
                         CompositionLocalProvider(LocalTextStyle provides placeholderTextStyle) {
                             placeholder()
                         }

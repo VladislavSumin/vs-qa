@@ -44,6 +44,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -206,9 +207,9 @@ internal fun LogsContent(
                     }
                 }
             }
-            VerticalDivider(Modifier.padding(start = textSizeDp + 8.dp))
+            VerticalDivider(Modifier.padding(start = textSizeDp + 8.dp), color = QaTheme.colorScheme.content3)
+            VsVerticalScrollbar(lazyListState, Modifier.align(Alignment.CenterEnd))
         }
-        LogsVerticalScrollBar(lazyListState)
     }
 }
 
@@ -242,7 +243,7 @@ private fun Header(runNumber: Int, meta: Map<String, String>?, fontSize: Int, te
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .background(QaTheme.colorScheme.surfaceVariant),
+                    .background(QaTheme.colorScheme.background1),
             ) {
                 val text = buildAnnotatedString {
                     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
@@ -292,13 +293,15 @@ private fun Record(
     }
 
     Box(
-        modifier = Modifier.onRightClick(onShowContextMenu),
+        modifier = Modifier
+            .padding(end = 6.dp)
+            .onRightClick(onShowContextMenu),
     ) {
         DisableSelection {
             Text(
                 // order нумеруется с 0, но визуально записи более правильно нумеровать с единицы.
                 text = "${log.order.value + 1}",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = QaTheme.colorScheme.content2,
                 style = MaterialTheme.typography.bodyMedium,
                 fontSize = fontSize.sp,
                 // TODO вынести в константу что ли?
@@ -390,11 +393,6 @@ private class MenuPositionProvider(private val localPosition: Offset) : PopupPos
             .coerceIn(0, (windowSize.height - popupContentSize.height).coerceAtLeast(0))
         return IntOffset(x, y)
     }
-}
-
-@Composable
-private fun LogsVerticalScrollBar(lazyListState: LazyListState) {
-    VsVerticalScrollbar(lazyListState)
 }
 
 @Composable

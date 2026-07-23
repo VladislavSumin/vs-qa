@@ -7,6 +7,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(compose.material3)
+            implementation(projects.core.ui.designSystem)
         }
     }
 }

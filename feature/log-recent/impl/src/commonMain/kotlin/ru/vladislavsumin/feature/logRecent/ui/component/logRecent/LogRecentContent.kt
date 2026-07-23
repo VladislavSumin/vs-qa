@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.ui.button.QaIconButton
+import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.feature.logRecent.domain.LogRecent
 import ru.vladislavsumin.feature.log_recent.impl.generated.resources.Res
@@ -115,7 +116,7 @@ private fun LogRecentItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (editing) {
-            val textColor = MaterialTheme.colorScheme.onSurface
+            val textColor = QaTheme.colorScheme.content1
             BasicTextField(
                 value = editText,
                 onValueChange = { editText = it },
@@ -162,7 +163,7 @@ private fun LogRecentItem(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = QaTheme.colorScheme.content2,
                     )
                 }
             }

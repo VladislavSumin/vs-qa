@@ -16,13 +16,21 @@ import kotlinx.serialization.encoding.Encoder
 @Serializable
 data class QaColorScheme(
     @Serializable(with = ColorAsStringSerializer::class)
-    val surface: Color = Color(0xFF1E1F22),
+    val background1: Color = Color(0xFF2A2C31),
     @Serializable(with = ColorAsStringSerializer::class)
-    val surfaceVariant: Color = Color(0xFF2B2D30),
+    val background2: Color = Color(0xFF191A1C),
     @Serializable(with = ColorAsStringSerializer::class)
-    val onSurface: Color = Color(0xFFDFE1E5),
+    val background3: Color = Color(0xFF1E1F22),
+
     @Serializable(with = ColorAsStringSerializer::class)
-    val onSurfaceVariant: Color = Color(0xFFA1A2AA),
+    val backgroundAccent1: Color = Color(0xFF273D6A),
+
+    @Serializable(with = ColorAsStringSerializer::class)
+    val content1: Color = Color(0xFFDFE1E5),
+    @Serializable(with = ColorAsStringSerializer::class)
+    val content2: Color = Color(0xFFA4A5AD),
+    @Serializable(with = ColorAsStringSerializer::class)
+    val content3: Color = Color(0xFF5E5E63),
 
     @Serializable(with = ColorAsStringSerializer::class)
     val logHighlight: Color = Color(0x80A0A0A0),

@@ -1,12 +1,12 @@
 package ru.vladislavsumin.feature.logViewer.ui.screen.logViewer
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
@@ -19,9 +19,7 @@ import androidx.compose.material.icons.filled.FilePresent
 import androidx.compose.material.icons.filled.VerticalAlignBottom
 import androidx.compose.material.icons.filled.ZoomIn
 import androidx.compose.material.icons.filled.ZoomOut
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -31,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
@@ -67,7 +66,7 @@ internal fun LogViewerContent(
     tagStatComponent: ComposeComponent,
     modifier: Modifier,
 ) {
-    Surface(modifier = modifier) {
+    Box(modifier = modifier) {
         val state = viewModel.state.collectAsState()
         val searchState = remember { derivedStateOf { state.value.searchState } }
         // TODO вынести эту логику в viewModel.
@@ -75,11 +74,16 @@ internal fun LogViewerContent(
         Column {
             SearchBarContent(viewModel, searchState, showSideMenu, searchFocusRequester)
             Row(Modifier.weight(1f)) {
+                val modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 2.dp)
+                    .clip(QaTheme.shapes.extraSmall)
+                    .background(QaTheme.colorScheme.background3)
                 // TODO скрол не должен сбрасываться а тут будет.
                 if (state.value.showTagStat) {
-                    tagStatComponent.Render(Modifier.weight(1f))
+                    tagStatComponent.Render(modifier)
                 } else {
-                    logsComponent.Render(Modifier.weight(1f))
+                    logsComponent.Render(modifier)
                 }
                 // TODO сделать нормальные расширения для адаптивной верстки
                 val withDp = with(LocalDensity.current) {
@@ -90,11 +94,6 @@ internal fun LogViewerContent(
                 }
             }
             filterBarComponent.Render(Modifier)
-            HorizontalDivider(
-                modifier = Modifier.fillMaxWidth(),
-                color = QaTheme.colorScheme.surface,
-                thickness = 1.5.dp,
-            )
         }
 
         dragAndDropOverlayComponent.Render(Modifier)
@@ -106,9 +105,8 @@ internal fun LogViewerContent(
 private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogViewerViewState>) {
     val clipboard = LocalClipboardManager.current
     Column(
-        Modifier.fillMaxHeight().width(IntrinsicSize.Min).background(QaTheme.colorScheme.surfaceVariant),
+        Modifier.fillMaxHeight().width(IntrinsicSize.Min),
     ) {
-        HorizontalDivider(color = QaTheme.colorScheme.surface, thickness = 1.5.dp)
         QaIconButton(
             onClick = {
                 // TODO провести через вью модель.
@@ -189,7 +187,6 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
                 .hint(stringResource(Res.string.log_viewer_side_scroll_bottom), placement = HintPlacement.LEFT)
                 .padding(4.dp),
         ) { Icon(Icons.Default.ArrowDownward, null) }
-        HorizontalDivider(color = QaTheme.colorScheme.surface, thickness = 1.5.dp)
     }
 }
 

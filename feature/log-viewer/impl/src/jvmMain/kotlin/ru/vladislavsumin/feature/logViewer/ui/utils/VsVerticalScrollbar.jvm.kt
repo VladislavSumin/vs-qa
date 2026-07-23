@@ -10,13 +10,13 @@ import androidx.compose.ui.Modifier
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 
 @Composable
-actual fun VsVerticalScrollbar(lazyListState: LazyListState) {
+actual fun VsVerticalScrollbar(lazyListState: LazyListState, modifier: Modifier) {
     VerticalScrollbar(
         adapter = rememberScrollbarAdapter(lazyListState),
         style = LocalScrollbarStyle.current.copy(
-            hoverColor = QaTheme.colorScheme.onSurface,
-            unhoverColor = QaTheme.colorScheme.onSurfaceVariant,
+            hoverColor = QaTheme.colorScheme.content1,
+            unhoverColor = QaTheme.colorScheme.content2,
         ),
-        modifier = Modifier.fillMaxHeight(),
+        modifier = modifier.fillMaxHeight(),
     )
 }

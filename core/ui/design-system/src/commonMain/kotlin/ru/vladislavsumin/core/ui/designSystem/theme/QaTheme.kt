@@ -2,12 +2,14 @@ package ru.vladislavsumin.core.ui.designSystem.theme
 
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.charleskorn.kaml.Yaml
 import kotlinx.serialization.decodeFromString
@@ -32,10 +34,11 @@ fun QaTheme(yaml: Yaml, content: @Composable () -> Unit) {
         LocalMinimumInteractiveComponentSize provides 24.dp,
     ) {
         MaterialTheme(
+//            colorScheme = stubMaterialColorScheme(colorScheme),
             colorScheme = darkColorScheme(
-                surface = colorScheme.surface,
-                onSurface = colorScheme.onSurface,
-                onSurfaceVariant = colorScheme.onSurfaceVariant,
+                surface = colorScheme.background1,
+                onSurface = colorScheme.content1,
+                onSurfaceVariant = colorScheme.content2,
             ),
             content = content,
         )
@@ -46,4 +49,59 @@ object QaTheme {
     val colorScheme: QaColorScheme
         @Composable @ReadOnlyComposable
         get() = LocalQaColorScheme.current
+
+    val shapes: Shapes
+        @Composable @ReadOnlyComposable
+        get() = MaterialTheme.shapes
 }
+
+fun stubMaterialColorScheme(scheme: QaColorScheme) = darkColorScheme(
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    surfaceContainerHighest = scheme.background1,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+    Color.Magenta,
+)

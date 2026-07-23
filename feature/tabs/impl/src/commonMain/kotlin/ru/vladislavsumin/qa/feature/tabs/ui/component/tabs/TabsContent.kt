@@ -17,7 +17,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.arkivanov.decompose.Child
 import com.arkivanov.decompose.extensions.compose.subscribeAsState
 import com.arkivanov.decompose.router.pages.ChildPages
@@ -67,6 +70,7 @@ internal fun TabsContent(
                 ReorderableItem(
                     reorderableState,
                     key = item.configuration.screenParams.toString(),
+                    modifier = Modifier.zIndex(if (index == pages.selectedIndex) 1f else 0f),
                     animateItemModifier = Modifier.animateItem(
                         fadeInSpec = null,
                         fadeOutSpec = null,
@@ -103,13 +107,17 @@ private fun Tab(
 ) {
     val provider = (item.instance as? TabSupport)
     val state = provider?.tabState?.collectAsState()?.value ?: UNKNOWN_TAB
-
+    val isSelected = index == pages.selectedIndex
     val colorScheme = QaTheme.colorScheme
-    val background = if (index == pages.selectedIndex) colorScheme.surfaceVariant else colorScheme.surface
+
+    val background = if (isSelected) colorScheme.background2 else colorScheme.background1
+    val shape = if (isSelected) TabShape() else RectangleShape
 
     Row(
         modifier = modifier
-            .background(background)
+            .background(background, shape = shape)
+            .padding(2.dp)
+            .clip(QaTheme.shapes.extraSmall)
             .clickable(onClick = { onTabClick((item.configuration.screenParams)) }),
         verticalAlignment = Alignment.CenterVertically,
     ) {

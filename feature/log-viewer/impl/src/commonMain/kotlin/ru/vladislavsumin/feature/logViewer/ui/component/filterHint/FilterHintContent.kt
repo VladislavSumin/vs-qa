@@ -82,18 +82,18 @@ private fun HintContent(
                                 append(it.text)
                                 it.highlights.forEach { highlight ->
                                     this.addStyle(
-                                        SpanStyle(fontWeight = FontWeight.Bold),
+                                        SpanStyle(fontWeight = FontWeight.W600),
                                         highlight.first,
                                         highlight.last + 1,
                                     )
                                 }
                             }
-                            Text(span)
+                            Text(span, color = QaTheme.colorScheme.content1)
                             Spacer(modifier.weight(1f))
                             if (it.hint != null) {
                                 Text(
                                     it.hint,
-                                    color = QaTheme.colorScheme.logTrace.primary,
+                                    color = QaTheme.colorScheme.content2,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
                                 )

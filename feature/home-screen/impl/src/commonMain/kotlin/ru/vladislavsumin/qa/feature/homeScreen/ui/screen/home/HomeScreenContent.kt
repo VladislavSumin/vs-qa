@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
+import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.dragAndDrop.DragAndDropOverlay
 import ru.vladislavsumin.core.ui.dragAndDrop.rememberDragAndDropFilesTarget
 import ru.vladislavsumin.core.ui.filePicker.FilePickerDialog
@@ -75,12 +76,12 @@ internal fun HomeScreenContent(
                     Spacer(Modifier.height(16.dp))
                     Button(onClick = viewModel::onClickOpen) { Text(stringResource(Res.string.home_open_new_file)) }
                     Spacer(Modifier.height(16.dp))
-                    logRecentComponent.Render(Modifier)
+                    logRecentComponent.Render(Modifier.padding(16.dp))
                 }
             }
             if (adbDeviceListComponent != null) {
-                VerticalDivider(Modifier.fillMaxHeight())
-                adbDeviceListComponent.Render(Modifier.fillMaxHeight().weight(1f))
+                VerticalDivider(Modifier.fillMaxHeight(), color = QaTheme.colorScheme.background1)
+                adbDeviceListComponent.Render(Modifier.fillMaxHeight().weight(1f).padding(16.dp))
             }
         }
 
