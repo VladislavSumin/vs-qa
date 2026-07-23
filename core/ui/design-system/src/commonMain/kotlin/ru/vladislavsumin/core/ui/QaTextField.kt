@@ -108,6 +108,7 @@ fun QaTextField(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 if (leadingContent != null) {
+                    Spacer(Modifier.width(2.dp))
                     leadingContent()
                     Spacer(Modifier.width(4.dp))
                 }
