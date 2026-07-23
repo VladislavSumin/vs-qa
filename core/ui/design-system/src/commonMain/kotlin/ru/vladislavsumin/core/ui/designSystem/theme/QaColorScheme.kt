@@ -23,6 +23,9 @@ data class QaColorScheme(
     val background3: Color = Color(0xFF1E1F22),
 
     @Serializable(with = ColorAsStringSerializer::class)
+    val content3: Color = Color(0xFF5E5E63),
+
+    @Serializable(with = ColorAsStringSerializer::class)
     val surface: Color = Color(0xFF1E1F22),
     @Serializable(with = ColorAsStringSerializer::class)
     val surfaceVariant: Color = Color(0xFF2B2D30),
