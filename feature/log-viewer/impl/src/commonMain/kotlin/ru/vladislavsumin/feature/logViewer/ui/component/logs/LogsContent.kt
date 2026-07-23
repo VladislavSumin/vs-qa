@@ -82,8 +82,10 @@ import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.TextSelectionSepa
 import ru.vladislavsumin.feature.logViewer.ui.utils.VsVerticalScrollbar
 import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
 
+private const val MAX_LOG_LINE_LENGTH = 8192
+
 @Composable
-@Suppress("LongMethod")
+@Suppress("LongMethod", "CyclomaticComplexMethod")
 internal fun LogsContent(
     onFirstVisibleIndexChange: (Int) -> Unit,
     onUserScroll: () -> Unit,
@@ -152,6 +154,7 @@ internal fun LogsContent(
 
     var contextMenuTarget by remember { mutableStateOf<LogOrder?>(null) }
     var contextMenuPosition by remember { mutableStateOf<Offset?>(null) }
+    val expandedRecords = remember { mutableStateOf<Set<LogOrder>>(emptySet()) }
 
     Row(modifier) {
         Box(Modifier.weight(1f)) {
@@ -179,6 +182,9 @@ internal fun LogsContent(
                                 }
                             }
                             items(sectionInfo.logs, { it.order.value }) {
+                                val isTooLong = it.raw.length > MAX_LOG_LINE_LENGTH
+                                val expanded = it.order in expandedRecords.value
+                                val isTruncated = isTooLong && !expanded
                                 Record(
                                     hasSelection = hasSelection.value,
                                     log = it,
@@ -201,6 +207,8 @@ internal fun LogsContent(
                                         contextMenuPosition = null
                                     },
                                     onAddTimeFilter = onAddTimeFilter,
+                                    isTruncated = isTruncated,
+                                    onExpand = { expandedRecords.value += it.order },
                                 )
                             }
                         }
@@ -270,6 +278,7 @@ private fun Header(runNumber: Int, meta: Map<String, String>?, fontSize: Int, te
 }
 
 @Composable
+@Suppress("LongMethod")
 private fun Record(
     hasSelection: Boolean,
     log: LogRecord,
@@ -282,6 +291,8 @@ private fun Record(
     onShowContextMenu: (Offset) -> Unit,
     onDismissContextMenu: () -> Unit,
     onAddTimeFilter: (LogOrder, Boolean) -> Unit,
+    isTruncated: Boolean = false,
+    onExpand: () -> Unit,
 ) {
     if (hasSelection) {
         val pinner = LocalPinnableContainer.current
@@ -292,10 +303,30 @@ private fun Record(
         }
     }
 
+    val fullAnnotated = log.colorize(isSelected, stripDate)
+    val displayText = if (isTruncated) {
+        val truncateAt = minOf(MAX_LOG_LINE_LENGTH, fullAnnotated.length)
+        buildAnnotatedString {
+            append(fullAnnotated.subSequence(0, truncateAt))
+            withStyle(SpanStyle(color = QaTheme.colorScheme.logWarn.primary)) {
+                append("\n... [truncated]")
+            }
+        }
+    } else {
+        fullAnnotated
+    }
+
     Box(
         modifier = Modifier
-            .padding(end = 6.dp)
-            .onRightClick(onShowContextMenu),
+            .onRightClick(onShowContextMenu)
+            .then(
+                if (isTruncated) {
+                    Modifier.background(QaTheme.colorScheme.logWarn.background.copy(alpha = 0.08f))
+                } else {
+                    Modifier
+                },
+            )
+            .padding(end = 6.dp),
     ) {
         DisableSelection {
             Text(
@@ -313,16 +344,35 @@ private fun Record(
                     .defaultMinSize(minWidth = textSizeDp),
             )
         }
-        Text(
-            text = log.colorize(isSelected, stripDate),
-            style = MaterialTheme.typography.bodyMedium,
-            fontSize = fontSize.sp,
-            lineHeight = fontSize.sp * 1.42,
-            fontFamily = FontFamily.Monospace,
-            modifier = Modifier
-                .fillMaxWidth() // Что бы выделение работало после конца текста
-                .padding(start = textSizeDp + 13.dp),
-        )
+        Column(
+            Modifier.padding(start = textSizeDp + 13.dp),
+        ) {
+            if (isTruncated) {
+                Row(Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "⚠ Truncated ($MAX_LOG_LINE_LENGTH of ${log.raw.length} chars)",
+                        fontSize = (fontSize - 1).sp,
+                        color = QaTheme.colorScheme.logWarn.primary,
+                        fontFamily = FontFamily.Monospace,
+                    )
+                    Text(
+                        text = " [Show full (may lag)] ",
+                        fontSize = (fontSize - 1).sp,
+                        color = QaTheme.colorScheme.logWarn.primary,
+                        fontFamily = FontFamily.Monospace,
+                        modifier = Modifier.clickable(onClick = onExpand),
+                    )
+                }
+            }
+            Text(
+                text = displayText,
+                style = MaterialTheme.typography.bodyMedium,
+                fontSize = fontSize.sp,
+                lineHeight = fontSize.sp * 1.42,
+                fontFamily = FontFamily.Monospace,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
         TextSelectionSeparator()
 
         LogItemDropDownMenu(showContextMenu, contextMenuPosition, onDismissContextMenu, log, onAddTimeFilter)
