@@ -16,7 +16,7 @@ import kotlinx.serialization.encoding.Encoder
 @Serializable
 data class QaColorScheme(
     @Serializable(with = ColorAsStringSerializer::class)
-    val background1: Color = Color(0xFF26282C),
+    val background1: Color = Color(0xFF2A2C31),
     @Serializable(with = ColorAsStringSerializer::class)
     val background2: Color = Color(0xFF191A1C),
     @Serializable(with = ColorAsStringSerializer::class)
