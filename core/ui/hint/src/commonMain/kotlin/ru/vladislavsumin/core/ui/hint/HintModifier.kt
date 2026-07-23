@@ -27,6 +27,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import kotlinx.coroutines.delay
+import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import kotlin.math.roundToInt
 
 @Composable
@@ -59,6 +60,7 @@ fun Modifier.hint(text: String, delayMillis: Long = 450L, placement: HintPlaceme
                 Text(
                     text = text,
                     style = MaterialTheme.typography.bodySmall,
+                    color = QaTheme.colorScheme.content1,
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
                 )
             }
