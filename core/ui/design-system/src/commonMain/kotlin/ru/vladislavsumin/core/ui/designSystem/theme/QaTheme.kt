@@ -34,11 +34,11 @@ fun QaTheme(yaml: Yaml, content: @Composable () -> Unit) {
         LocalMinimumInteractiveComponentSize provides 24.dp,
     ) {
         MaterialTheme(
-//            colorScheme = stubMaterialColorScheme(),
+//            colorScheme = stubMaterialColorScheme(colorScheme),
             colorScheme = darkColorScheme(
-                surface = colorScheme.surface,
-                onSurface = colorScheme.onSurface,
-                onSurfaceVariant = colorScheme.onSurfaceVariant,
+                surface = colorScheme.background1,
+                onSurface = colorScheme.content1,
+                onSurfaceVariant = colorScheme.content2,
             ),
             content = content,
         )
@@ -55,7 +55,7 @@ object QaTheme {
         get() = MaterialTheme.shapes
 }
 
-fun stubMaterialColorScheme() = darkColorScheme(
+fun stubMaterialColorScheme(scheme: QaColorScheme) = darkColorScheme(
     Color.Magenta,
     Color.Magenta,
     Color.Magenta,
@@ -88,7 +88,7 @@ fun stubMaterialColorScheme() = darkColorScheme(
     Color.Magenta,
     Color.Magenta,
     Color.Magenta,
-    Color.Magenta,
+    surfaceContainerHighest = scheme.background1,
     Color.Magenta,
     Color.Magenta,
     Color.Magenta,
