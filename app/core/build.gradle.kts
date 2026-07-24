@@ -20,6 +20,7 @@ kotlin {
             implementation(projects.feature.mcp.impl)
             implementation(projects.feature.logViewer.impl)
             implementation(projects.feature.logRecent.impl)
+            implementation(projects.feature.logsDashboard.impl)
             implementation(projects.feature.logParser.anime)
             implementation(projects.feature.memoryIndicator.impl)
             implementation(projects.feature.notifications.impl)

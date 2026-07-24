@@ -28,6 +28,7 @@
     <string name="log_viewer_saved_cancel_cd">cancel editing</string>
 
     <string name="log_viewer_side_copy">Copy filtered logs</string>
+    <string name="log_viewer_side_dashboard">Logs Dashboard</string>
     <string name="log_viewer_side_attach_mapping">Attach Proguard mapping</string>
     <string name="log_viewer_side_strip_date">Strip date</string>
     <string name="log_viewer_side_tag_stats">Show tag usage statistics</string>

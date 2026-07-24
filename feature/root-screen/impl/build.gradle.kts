@@ -13,6 +13,7 @@ kotlin {
             implementation(projects.feature.legalInfo.api)
             implementation(projects.feature.logViewer.api)
             implementation(projects.feature.logRecent.api)
+            implementation(projects.feature.logsDashboard.api)
             implementation(projects.feature.settings.api)
             implementation(projects.feature.tabs.api)
             implementation(projects.feature.notifications.api)

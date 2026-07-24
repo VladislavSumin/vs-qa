@@ -4,6 +4,7 @@ import com.arkivanov.decompose.ComponentContext
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistrar
 import ru.vladislavsumin.core.navigation.registration.NavigationRegistry
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerScreenParams
+import ru.vladislavsumin.feature.logsDashboard.ui.screen.logsDashboard.LogsDashboardScreenParams
 import ru.vladislavsumin.qa.feature.adbDevice.ui.screen.adbDevice.AdbDeviceScreenParams
 import ru.vladislavsumin.qa.feature.debug.ui.screen.debug.DashboardDemoScreenParams
 import ru.vladislavsumin.qa.feature.debug.ui.screen.debug.DebugScreenParams
@@ -23,6 +24,7 @@ internal class NavigationRegistrarImpl : NavigationRegistrar {
                     DebugScreenParams::class,
                     DashboardDemoScreenParams::class,
                     HomeScreenParams::class,
+                    LogsDashboardScreenParams::class,
                     LogViewerScreenParams::class,
                     AdbDeviceScreenParams::class,
                     LegalInfoScreenParams::class,

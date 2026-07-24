@@ -22,9 +22,13 @@ import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarCompo
 import ru.vladislavsumin.feature.logViewer.ui.component.filterBar.FilterBarComponentFactory
 import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.tagStat.TagStatComponent
+import ru.vladislavsumin.feature.logsDashboard.ui.screen.logsDashboard.LogsDashboardScreenFactory
+import ru.vladislavsumin.feature.logsDashboard.ui.screen.logsDashboard.LogsDashboardScreenParams
 import ru.vladislavsumin.qa.feature.bottomBar.ui.component.bottomBar.BottomBarUiInteractor
+import ru.vladislavsumin.qa.feature.multiWindow.ui.screen.window.WindowScreenParams
 import ru.vladislavsumin.qa.feature.notifications.ui.component.notifications.NotificationsUiInteractor
 import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
+import kotlin.random.Random
 
 @GenerateFactory(LogViewerScreenFactory::class)
 internal class LogViewerScreen(
@@ -33,6 +37,7 @@ internal class LogViewerScreen(
     bottomBarUiInteractor: BottomBarUiInteractor,
     notificationsUiInteractor: NotificationsUiInteractor,
     globalHotkeyManager: GlobalHotkeyManager,
+    logsDashboardScreenFactory: LogsDashboardScreenFactory,
     params: LogViewerScreenParams,
     intents: ReceiveChannel<LogViewerScreenIntent>,
     context: ComponentContext,
@@ -90,6 +95,12 @@ internal class LogViewerScreen(
     )
 
     init {
+        registerCustomFactory { context, params, _ ->
+            logsDashboardScreenFactory.create(params, context)
+        }
+    }
+
+    init {
         relaunchOnUiLifecycle(Lifecycle.State.RESUMED) {
             globalHotkeyManager.subscribe(
                 KeyModifier.Command + Key.W to {
@@ -113,6 +124,16 @@ internal class LogViewerScreen(
             dragAndDropOverlayComponent = dragAndDropOverlayComponent,
             logsComponent = logsComponent,
             tagStatComponent = tagStatComponent,
+            onOpenDashboard = { openInNewWindow ->
+                if (openInNewWindow) {
+                    navigator.openWithCustomFactory(
+                        screenParams = LogsDashboardScreenParams,
+                        hints = listOf(WindowScreenParams(Random.nextLong().toString())),
+                    )
+                } else {
+                    navigator.openWithCustomFactory(LogsDashboardScreenParams)
+                }
+            },
             modifier = modifier,
         )
     }

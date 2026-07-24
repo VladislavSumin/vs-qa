@@ -28,6 +28,7 @@
     <string name="log_viewer_saved_cancel_cd">отменить редактирование</string>
 
     <string name="log_viewer_side_copy">Копировать отфильтрованные логи</string>
+    <string name="log_viewer_side_dashboard">Дашборд</string>
     <string name="log_viewer_side_attach_mapping">Прикрепить Proguard mapping</string>
     <string name="log_viewer_side_strip_date">Убрать дату</string>
     <string name="log_viewer_side_tag_stats">Статистика использования тегов</string>

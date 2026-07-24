@@ -16,12 +16,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.input.pointer.isShiftPressed
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -40,12 +44,14 @@ import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarConte
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.Res
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_attach_mapping
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_copy
+import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_dashboard
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_follow_tail
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_font_down
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_font_up
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_scroll_bottom
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_strip_date
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_tag_stats
+import ru.vladislavsumin.qa.feature.multiWindow.isMultiWindowSupported
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -56,6 +62,7 @@ internal fun LogViewerContent(
     dragAndDropOverlayComponent: ComposeComponent,
     logsComponent: ComposeComponent,
     tagStatComponent: ComposeComponent,
+    onOpenDashboard: (Boolean) -> Unit,
     modifier: Modifier,
 ) {
     Box(modifier = modifier) {
@@ -82,7 +89,7 @@ internal fun LogViewerContent(
                     LocalWindowInfo.current.containerSize.width.toDp()
                 }
                 if (withDp > 600.dp || showSideMenu.value) {
-                    SidePanelContent(viewModel, state)
+                    SidePanelContent(viewModel, state, onOpenDashboard)
                 }
             }
             filterBarComponent.Render(Modifier)
@@ -94,11 +101,30 @@ internal fun LogViewerContent(
 
 @Composable
 @Suppress("LongMethod")
-private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogViewerViewState>) {
+private fun SidePanelContent(
+    viewModel: LogViewerViewModel,
+    state: State<LogViewerViewState>,
+    onOpenDashboard: (Boolean) -> Unit,
+) {
     val clipboard = LocalClipboardManager.current
+    var isShiftPressed by remember { mutableStateOf(false) }
     Column(
         Modifier.fillMaxHeight().width(IntrinsicSize.Min),
     ) {
+        QaIconButton(
+            onClick = { onOpenDashboard(isShiftPressed && isMultiWindowSupported()) },
+            Modifier
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            isShiftPressed = event.keyboardModifiers.isShiftPressed
+                        }
+                    }
+                }
+                .hint(stringResource(Res.string.log_viewer_side_dashboard), placement = HintPlacement.LEFT)
+                .padding(4.dp),
+        ) { Icon(QaIcons.Dashboard, null) }
         QaIconButton(
             onClick = {
                 // TODO провести через вью модель.
