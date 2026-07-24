@@ -16,12 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +40,7 @@ import ru.vladislavsumin.core.ui.QaTextField
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
+import ru.vladislavsumin.core.ui.icons.QaIcons
 import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.Res
@@ -152,7 +147,7 @@ private fun NewFilterSection(viewModel: SavedFiltersViewModel, state: SavedFilte
                 modifier = Modifier.hint(stringResource(Res.string.log_viewer_saved_save_hint)),
             ) {
                 Icon(
-                    imageVector = Icons.Default.Save,
+                    imageVector = QaIcons.Save,
                     contentDescription = stringResource(Res.string.log_viewer_saved_save_cd),
                 )
             }
@@ -195,7 +190,7 @@ private fun SavedFilterRow(
             modifier = Modifier.hint(stringResource(Res.string.log_viewer_saved_edit_hint)),
         ) {
             Icon(
-                imageVector = Icons.Default.Edit,
+                imageVector = QaIcons.Edit,
                 contentDescription = stringResource(Res.string.log_viewer_saved_edit_cd),
             )
         }
@@ -204,7 +199,7 @@ private fun SavedFilterRow(
             modifier = Modifier.hint(stringResource(Res.string.log_viewer_saved_delete_hint)),
         ) {
             Icon(
-                imageVector = Icons.Default.Delete,
+                imageVector = QaIcons.Delete,
                 contentDescription = stringResource(Res.string.log_viewer_saved_delete_cd),
                 tint = QaTheme.colorScheme.logError.primary,
             )
@@ -268,7 +263,7 @@ private fun EditSavedFilterRow(
             modifier = Modifier.hint(stringResource(Res.string.log_viewer_saved_save_changes_hint)),
         ) {
             Icon(
-                imageVector = Icons.Default.Check,
+                imageVector = QaIcons.Check,
                 contentDescription = stringResource(Res.string.log_viewer_saved_save_changes_cd),
             )
         }
@@ -277,7 +272,7 @@ private fun EditSavedFilterRow(
             modifier = Modifier.hint(stringResource(Res.string.log_viewer_saved_cancel_hint)),
         ) {
             Icon(
-                imageVector = Icons.Default.Close,
+                imageVector = QaIcons.Close,
                 contentDescription = stringResource(Res.string.log_viewer_saved_cancel_cd),
             )
         }

@@ -25,7 +25,6 @@ kotlin {
             implementation(vsCoreLibs.decompose.extensions.compose)
 
             implementation(compose.material3)
-            implementation(compose.materialIconsExtended)
         }
     }
 }

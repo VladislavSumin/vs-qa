@@ -8,10 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Android
-import androidx.compose.material.icons.filled.FileDownload
-import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -25,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
+import ru.vladislavsumin.core.ui.icons.QaIcons
 import ru.vladislavsumin.feature.adb_device_list.impl.generated.resources.Res
 import ru.vladislavsumin.feature.adb_device_list.impl.generated.resources.adb_device_list_dump_logs
 import ru.vladislavsumin.feature.adb_device_list.impl.generated.resources.adb_device_list_error
@@ -72,7 +69,7 @@ internal fun DeviceList(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Android,
+                        imageVector = QaIcons.Android,
                         contentDescription = null,
                         Modifier.padding(end = 8.dp),
                     )
@@ -92,7 +89,7 @@ internal fun DeviceList(
                         modifier = Modifier.hint(stringResource(Res.string.adb_device_list_view_logcat)),
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Terminal,
+                            imageVector = QaIcons.Terminal,
                             contentDescription = stringResource(Res.string.adb_device_list_view_logcat),
                         )
                     }
@@ -101,7 +98,7 @@ internal fun DeviceList(
                         modifier = Modifier.hint(stringResource(Res.string.adb_device_list_dump_logs)),
                     ) {
                         Icon(
-                            imageVector = Icons.Default.FileDownload,
+                            imageVector = QaIcons.Download,
                             contentDescription = stringResource(Res.string.adb_device_list_dump_logs),
                         )
                     }

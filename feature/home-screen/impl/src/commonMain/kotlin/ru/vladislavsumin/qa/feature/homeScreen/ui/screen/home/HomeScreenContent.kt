@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -36,6 +34,7 @@ import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.dragAndDrop.DragAndDropOverlay
 import ru.vladislavsumin.core.ui.dragAndDrop.rememberDragAndDropFilesTarget
 import ru.vladislavsumin.core.ui.filePicker.FilePickerDialog
+import ru.vladislavsumin.core.ui.icons.QaIcons
 import ru.vladislavsumin.feature.home_screen.impl.generated.resources.Res
 import ru.vladislavsumin.feature.home_screen.impl.generated.resources.home_drop_logs_here
 import ru.vladislavsumin.feature.home_screen.impl.generated.resources.home_legal_info
@@ -102,7 +101,7 @@ internal fun HomeScreenContent(
                     .padding(8.dp),
             )
             Icon(
-                imageVector = Icons.Default.Settings,
+                imageVector = QaIcons.Settings,
                 contentDescription = stringResource(Res.string.home_settings),
                 modifier = Modifier
                     .clickable(onClick = onOpenSettings)

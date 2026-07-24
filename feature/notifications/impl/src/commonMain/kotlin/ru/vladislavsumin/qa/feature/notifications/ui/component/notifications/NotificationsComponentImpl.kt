@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -25,6 +23,7 @@ import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
+import ru.vladislavsumin.core.ui.icons.QaIcons
 import ru.vladislavsumin.core.ui.resources.resolve
 import ru.vladislavsumin.feature.notifications.impl.generated.resources.Res
 import ru.vladislavsumin.feature.notifications.impl.generated.resources.notifications_close
@@ -63,7 +62,7 @@ internal class NotificationsComponentImpl(viewModelFactory: NotificationsViewMod
                             modifier = Modifier.hint(stringResource(Res.string.notifications_dismiss)),
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Close,
+                                imageVector = QaIcons.Close,
                                 contentDescription = stringResource(Res.string.notifications_close),
                             )
                         }

@@ -2,15 +2,6 @@ package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.automirrored.filled.Help
-import androidx.compose.material.icons.automirrored.outlined.Help
-import androidx.compose.material.icons.filled.Bookmarks
-import androidx.compose.material.icons.filled.FilterAlt
-import androidx.compose.material.icons.outlined.Bookmarks
-import androidx.compose.material.icons.outlined.FilterAlt
-import androidx.compose.material.icons.rounded.Bookmarks
-import androidx.compose.material.icons.rounded.FilterAlt
-import androidx.compose.material.icons.sharp.FilterAlt
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text

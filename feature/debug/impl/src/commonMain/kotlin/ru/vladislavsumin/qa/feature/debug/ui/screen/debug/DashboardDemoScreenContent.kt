@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -33,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.vladislavsumin.core.ui.dashboardGrid.DashboardGrid
 import ru.vladislavsumin.core.ui.dashboardGrid.GridPlacement
+import ru.vladislavsumin.core.ui.icons.QaIcons
 
 private val CARD_COLORS = listOf(
     Color(0xFFE57373), // red
@@ -96,7 +94,7 @@ internal fun DashboardDemoScreenContent(modifier: Modifier = Modifier) {
                     val newRow = (0..12).random()
                     placements.add(GridPlacement(column = newCol, row = newRow, width = 2, height = 2))
                 }) {
-                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.padding(end = 4.dp))
+                    Icon(QaIcons.Add, contentDescription = null, modifier = Modifier.padding(end = 4.dp))
                     Text("Add Card")
                 }
             }
@@ -139,7 +137,7 @@ internal fun DashboardDemoScreenContent(modifier: Modifier = Modifier) {
                                 modifier = Modifier.align(Alignment.TopEnd),
                             ) {
                                 Icon(
-                                    Icons.Default.Close,
+                                    QaIcons.Close,
                                     contentDescription = "Remove card",
                                     tint = Color.White,
                                 )

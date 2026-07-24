@@ -3,11 +3,6 @@ package ru.vladislavsumin.feature.logViewer.ui.component.searchBar
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
@@ -146,6 +141,6 @@ private fun TrailingButtons(
             checked = showSideMenu.value,
             onCheckedChange = { showSideMenu.value = it },
             modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_toggle_side_panel)),
-        ) { Icon(Icons.Default.MoreVert, null) }
+        ) { Icon(QaIcons.MoreVert, null) }
     }
 }

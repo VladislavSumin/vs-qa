@@ -1,7 +1,5 @@
 package ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key
@@ -15,6 +13,7 @@ import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.ui.hotkeyController.GlobalHotkeyManager
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
+import ru.vladislavsumin.core.ui.icons.QaIcons
 import ru.vladislavsumin.core.ui.resources.asResourceString
 import ru.vladislavsumin.feature.home_screen.impl.generated.resources.Res
 import ru.vladislavsumin.feature.home_screen.impl.generated.resources.home_dump_failed
@@ -54,7 +53,7 @@ internal class HomeScreen(
     private val viewModel: HomeScreenViewModel = viewModel { viewModelFactory.create() }
 
     override val tabState: StateFlow<TabSupport.TabState> = MutableStateFlow(
-        TabSupport.TabState(icon = Icons.Default.Home, allowClose = false),
+        TabSupport.TabState(icon = QaIcons.Home, allowClose = false),
     )
     private val logRecentComponent = logRecentComponentFactory.create(
         notificationsUiInteractor = notificationsUiInteractor,

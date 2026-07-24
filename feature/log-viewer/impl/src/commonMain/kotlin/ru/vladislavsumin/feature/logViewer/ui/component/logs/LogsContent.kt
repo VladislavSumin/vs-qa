@@ -23,8 +23,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -74,6 +72,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.icons.QaIcons
 import ru.vladislavsumin.core.ui.selection.VsSelectionContainer
 import ru.vladislavsumin.feature.logParser.domain.substring
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogOrder
@@ -237,7 +236,7 @@ private fun ScrollToBottom(lazyListState: LazyListState) {
             FloatingActionButton(
                 onClick = { scope.launch { lazyListState.scrollToItem(Int.MAX_VALUE, 0) } },
             ) {
-                Icon(Icons.Default.ArrowDropDown, null)
+                Icon(QaIcons.ArrowDropDown, null)
             }
         }
     }

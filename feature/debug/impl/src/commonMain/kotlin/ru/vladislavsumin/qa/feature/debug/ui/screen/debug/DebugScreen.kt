@@ -1,7 +1,5 @@
 package ru.vladislavsumin.qa.feature.debug.ui.screen.debug
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.arkivanov.decompose.ComponentContext
@@ -12,6 +10,7 @@ import kotlinx.serialization.builtins.serializer
 import ru.vladislavsumin.core.navigation.factoryGenerator.GenerateScreenFactory
 import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.navigation.ui.debug.uml.NavigationGraphUmlDiagramComponentFactory
+import ru.vladislavsumin.core.ui.icons.QaIcons
 import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
 import kotlin.math.absoluteValue
 import kotlin.random.Random
@@ -25,7 +24,7 @@ internal class DebugScreen(
     TabSupport {
 
     override val tabState: StateFlow<TabSupport.TabState> = MutableStateFlow(
-        TabSupport.TabState(icon = Icons.Default.BugReport, allowClose = false),
+        TabSupport.TabState(icon = QaIcons.BugReport, allowClose = false),
     )
 
     private val viewModel: DebugScreenViewModel = viewModel { viewModelFactory.create() }
