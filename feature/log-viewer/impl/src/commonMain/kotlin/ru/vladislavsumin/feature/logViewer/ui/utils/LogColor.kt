@@ -26,7 +26,7 @@ fun LogRecord.colorize(isSelected: Boolean, stripDate: Boolean): AnnotatedString
         processName?.let {
             addStyle(SpanStyle(color = QaTheme.colorScheme.content2, fontStyle = FontStyle.Italic), it)
         }
-        addStyle(SpanStyle(color = tagColor, fontWeight = FontWeight.Bold), tag)
+        addStyle(SpanStyle(color = tagColor, fontWeight = FontWeight.W600), tag)
         addStyle(SpanStyle(color = logColor.primary), message)
         searchHighlights?.forEach { index ->
             addStyle(

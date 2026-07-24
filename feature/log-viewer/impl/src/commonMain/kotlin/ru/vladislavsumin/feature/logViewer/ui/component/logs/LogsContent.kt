@@ -253,7 +253,7 @@ private fun Header(runNumber: Int, meta: Map<String, String>?, fontSize: Int, te
                     .background(QaTheme.colorScheme.background1),
             ) {
                 val text = buildAnnotatedString {
-                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                    withStyle(SpanStyle(fontWeight = FontWeight.W600)) {
                         append("Run $runNumber  ")
                     }
                     meta?.forEach { (k, v) ->
