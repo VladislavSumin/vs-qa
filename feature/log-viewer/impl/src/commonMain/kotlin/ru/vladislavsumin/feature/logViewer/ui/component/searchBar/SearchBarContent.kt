@@ -34,6 +34,7 @@ import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.KeyModifier
 import ru.vladislavsumin.core.ui.hotkeyController.resetFocusOnEsc
+import ru.vladislavsumin.core.ui.icons.QaIcons
 import ru.vladislavsumin.feature.logViewer.ui.screen.logViewer.LogViewerViewModel
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.Res
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_search_bad_pattern
@@ -80,7 +81,7 @@ internal fun SearchBarContent(
                 .onPreviewKeyEvent(hotkeyController::invoke),
             maxLines = 1,
             placeholder = { Text(stringResource(Res.string.log_viewer_search_placeholder)) },
-            leadingContent = { Icon(imageVector = Icons.Default.Search, contentDescription = null) },
+            leadingContent = { Icon(imageVector = QaIcons.Search, contentDescription = null) },
             isError = state.isBadRegex,
             trailingContent = { TrailingButtons(viewModel, state, showSideMenu) },
         )
@@ -96,12 +97,12 @@ private fun TrailingButtons(
     QaIconButton(
         onClick = viewModel::onClickNextIndex,
         modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_next)),
-    ) { Icon(Icons.Default.ArrowDownward, null) }
+    ) { Icon(QaIcons.ArrowDownward, null) }
 
     QaIconButton(
         onClick = viewModel::onClickPrevIndex,
         modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_prev)),
-    ) { Icon(Icons.Default.ArrowUpward, null) }
+    ) { Icon(QaIcons.ArrowUpward, null) }
 
     // TODO написать нормально
     val textMeasurer = rememberTextMeasurer()
@@ -129,13 +130,13 @@ private fun TrailingButtons(
         checked = state.isMatchCase,
         onCheckedChange = viewModel::onClickSearchMatchCase,
         modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_case_sensitive)),
-    ) { Text("Cc") }
+    ) { Icon(QaIcons.MatchCase, null) }
 
     QaToggleIconButton(
         checked = state.isRegex,
         onCheckedChange = viewModel::onClickSearchUseRegex,
         modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_use_regex)),
-    ) { Text(".*") }
+    ) { Icon(QaIcons.RegularExpression, null) }
 
     val withDp = with(LocalDensity.current) {
         LocalWindowInfo.current.containerSize.width.toDp()

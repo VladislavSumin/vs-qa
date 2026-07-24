@@ -1,6 +1,7 @@
 package ru.vladislavsumin.core.ui.icons
 
 import ru.vladislavsumin.core.ui.icons.icons.arrow_downward
+import ru.vladislavsumin.core.ui.icons.icons.arrow_upward
 import ru.vladislavsumin.core.ui.icons.icons.bar_chart_4_bars
 import ru.vladislavsumin.core.ui.icons.icons.bookmarks
 import ru.vladislavsumin.core.ui.icons.icons.calendar_clock
@@ -9,6 +10,9 @@ import ru.vladislavsumin.core.ui.icons.icons.file_present
 import ru.vladislavsumin.core.ui.icons.icons.filter_alt
 import ru.vladislavsumin.core.ui.icons.icons.help
 import ru.vladislavsumin.core.ui.icons.icons.keyboard_double_arrow_down
+import ru.vladislavsumin.core.ui.icons.icons.match_case
+import ru.vladislavsumin.core.ui.icons.icons.regular_expression
+import ru.vladislavsumin.core.ui.icons.icons.search
 import ru.vladislavsumin.core.ui.icons.icons.text_decrease
 import ru.vladislavsumin.core.ui.icons.icons.text_increase
 
@@ -24,4 +28,8 @@ object QaIcons {
     val FilterAlt = filter_alt
     val Bookmarks = bookmarks
     val Help = help
+    val Search = search
+    val ArrowUpward = arrow_upward
+    val MatchCase = match_case
+    val RegularExpression = regular_expression
 }
