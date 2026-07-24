@@ -2,7 +2,6 @@ package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Help
 import androidx.compose.material.icons.automirrored.outlined.Help
 import androidx.compose.material.icons.filled.Bookmarks
@@ -34,6 +33,7 @@ import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.core.ui.hotkeyController.HotkeyController
 import ru.vladislavsumin.core.ui.hotkeyController.resetFocusOnEsc
+import ru.vladislavsumin.core.ui.icons.QaIcons
 import ru.vladislavsumin.feature.logViewer.ui.component.filterHint.FilterHintComponent
 import ru.vladislavsumin.feature.logViewer.ui.component.savedFilters.SavedFiltersComponent
 import ru.vladislavsumin.feature.logViewer.ui.utils.colorize
@@ -92,7 +92,7 @@ private fun FilterField(
         },
         placeholder = { Text(stringResource(Res.string.log_viewer_filter_placeholder)) },
         centerContent = { filterHintComponent.Render(Modifier, cursorPosition) },
-        leadingContent = { Icon(imageVector = Icons.Outlined.FilterAlt, contentDescription = null) },
+        leadingContent = { Icon(imageVector = QaIcons.FilterAlt, contentDescription = null) },
         trailingContent = {
             QaToggleIconButton(
                 checked = state.showSavedFilters,
@@ -100,7 +100,7 @@ private fun FilterField(
                 modifier = Modifier.hint(stringResource(Res.string.log_viewer_filter_saved)),
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Bookmarks,
+                    imageVector = QaIcons.Bookmarks,
                     contentDescription = stringResource(Res.string.log_viewer_filter_saved_cd),
                 )
             }
@@ -121,7 +121,8 @@ private fun HelpButton(viewModel: FilterBarViewModel, state: FilterBarViewState)
             containerColor = QaTheme.colorScheme.background1,
         ) { HelpMenuContent() }
         Icon(
-            imageVector = Icons.AutoMirrored.Outlined.Help,
+
+            imageVector = QaIcons.Help,
             contentDescription = stringResource(Res.string.log_viewer_filter_help_cd),
         )
     }
