@@ -16,6 +16,7 @@ kotlin {
             implementation(project(":core:ui:drag-and-drop"))
             implementation(project(":core:ui:file-picker"))
             implementation(project(":core:ui:design-system"))
+            implementation(project(":core:ui:icons"))
 
             implementation(vsCoreLibs.vs.core.navigation.impl)
             implementation(vsCoreLibs.vs.core.navigation.di)

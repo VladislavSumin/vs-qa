@@ -56,6 +56,9 @@ Apply the right convention plugin when creating a new module (all from namespace
 - **Sentry** for crash reporting
 - **Two version catalogs**: `libs` (from local `libs.versions.toml`) and `vsCoreLibs` (from vs-core — resolved from sibling `../vs-core/libs.versions.toml` when `useVsCoreSources=true`, otherwise from Maven artifact)
 
+## Code style
+- Never delete existing comments from source code unless explicitly asked. Preserve all inline documentation, TODOs, and explanatory comments. When editing code, keep the surrounding comments intact.
+
 ## Testing
 - Tests live in `commonTest`/`jvmTest`/`androidTest` sourcesets alongside main code.
 - No test fixtures or integration test prerequisites in this repo.

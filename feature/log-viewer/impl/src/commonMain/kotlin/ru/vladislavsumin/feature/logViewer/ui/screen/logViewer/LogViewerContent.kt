@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.AutoGraph
-import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.FilePresent
 import androidx.compose.material.icons.filled.VerticalAlignBottom
@@ -44,6 +43,7 @@ import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.filePicker.FilePickerDialog
 import ru.vladislavsumin.core.ui.hint.HintPlacement
 import ru.vladislavsumin.core.ui.hint.hint
+import ru.vladislavsumin.core.ui.icons.QaIcons
 import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarContent
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.Res
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_attach_mapping
@@ -116,7 +116,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
             Modifier
                 .hint(stringResource(Res.string.log_viewer_side_copy), placement = HintPlacement.LEFT)
                 .padding(4.dp),
-        ) { Icon(Icons.Default.CopyAll, null) }
+        ) { Icon(QaIcons.ContentCopy, null) }
         if (state.value.isMappingSupported) {
             if (state.value.showSelectMappingDialog) {
                 FilePickerDialog(onCloseRequest = viewModel::onSelectMappingDialogResult)
