@@ -9,7 +9,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Save
@@ -45,6 +44,7 @@ import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
+import ru.vladislavsumin.core.ui.icons.QaIcons
 import ru.vladislavsumin.feature.logRecent.domain.LogRecent
 import ru.vladislavsumin.feature.log_recent.impl.generated.resources.Res
 import ru.vladislavsumin.feature.log_recent.impl.generated.resources.log_recent_remove
@@ -185,7 +185,7 @@ private fun LogRecentItem(
             modifier = Modifier.hint(stringResource(Res.string.log_recent_rename)),
         ) {
             Icon(
-                if (editing) Icons.Outlined.Save else Icons.Outlined.Edit,
+                if (editing) QaIcons.Save else QaIcons.Edit,
                 contentDescription = null,
             )
         }
@@ -194,7 +194,7 @@ private fun LogRecentItem(
             onClick = { viewModel.onClickRemoveRecent(recentLog) },
             modifier = Modifier.hint(stringResource(Res.string.log_recent_remove)),
         ) {
-            Icon(Icons.Outlined.Delete, contentDescription = null)
+            Icon(QaIcons.Delete, contentDescription = null)
         }
     }
 }

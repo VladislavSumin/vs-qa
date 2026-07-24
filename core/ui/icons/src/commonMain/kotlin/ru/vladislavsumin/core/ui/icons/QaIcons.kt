@@ -7,6 +7,8 @@ import ru.vladislavsumin.core.ui.icons.icons.bookmarks
 import ru.vladislavsumin.core.ui.icons.icons.calendar_clock
 import ru.vladislavsumin.core.ui.icons.icons.close
 import ru.vladislavsumin.core.ui.icons.icons.content_copy
+import ru.vladislavsumin.core.ui.icons.icons.delete
+import ru.vladislavsumin.core.ui.icons.icons.edit
 import ru.vladislavsumin.core.ui.icons.icons.file_present
 import ru.vladislavsumin.core.ui.icons.icons.filter_alt
 import ru.vladislavsumin.core.ui.icons.icons.help
@@ -14,6 +16,7 @@ import ru.vladislavsumin.core.ui.icons.icons.keyboard_double_arrow_down
 import ru.vladislavsumin.core.ui.icons.icons.match_case
 import ru.vladislavsumin.core.ui.icons.icons.open_in_new
 import ru.vladislavsumin.core.ui.icons.icons.regular_expression
+import ru.vladislavsumin.core.ui.icons.icons.save
 import ru.vladislavsumin.core.ui.icons.icons.search
 import ru.vladislavsumin.core.ui.icons.icons.text_decrease
 import ru.vladislavsumin.core.ui.icons.icons.text_increase
@@ -36,4 +39,7 @@ object QaIcons {
     val RegularExpression = regular_expression
     val Close = close
     val OpenInNew = open_in_new
+    val Delete = delete
+    val Edit = edit
+    val Save = save
 }
