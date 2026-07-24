@@ -10,14 +10,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.AutoGraph
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.FilePresent
-import androidx.compose.material.icons.filled.VerticalAlignBottom
-import androidx.compose.material.icons.filled.ZoomIn
-import androidx.compose.material.icons.filled.ZoomOut
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -128,7 +120,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
                     .hint(stringResource(Res.string.log_viewer_side_attach_mapping), placement = HintPlacement.LEFT)
                     .padding(4.dp),
             ) {
-                Icon(Icons.Default.FilePresent, null)
+                Icon(QaIcons.FilePresent, null)
             }
         }
         QaToggleIconButton(
@@ -138,7 +130,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
                 .hint(stringResource(Res.string.log_viewer_side_strip_date), placement = HintPlacement.LEFT)
                 .padding(4.dp),
         ) {
-            Icon(Icons.Default.DateRange, null)
+            Icon(QaIcons.CalendarClock, null)
         }
         QaToggleIconButton(
             checked = state.value.showTagStat,
@@ -147,7 +139,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
                 .hint(stringResource(Res.string.log_viewer_side_tag_stats), placement = HintPlacement.LEFT)
                 .padding(4.dp),
         ) {
-            Icon(Icons.Default.AutoGraph, null)
+            Icon(QaIcons.BarChart_4Bars, null)
         }
         QaIconButton(
             onClick = { viewModel.onClickFontUp() },
@@ -155,7 +147,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
                 .hint(stringResource(Res.string.log_viewer_side_font_up), placement = HintPlacement.LEFT)
                 .padding(4.dp),
         ) {
-            Icon(Icons.Default.ZoomIn, null)
+            Icon(QaIcons.TextIncrease, null)
         }
         Text(
             state.value.logsViewState.logFontSize.toString(),
@@ -167,7 +159,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
                 .hint(stringResource(Res.string.log_viewer_side_font_down), placement = HintPlacement.LEFT)
                 .padding(4.dp),
         ) {
-            Icon(Icons.Default.ZoomOut, null)
+            Icon(QaIcons.TextDecrease, null)
         }
         Spacer(Modifier.weight(1f))
         if (state.value.isFollowTailSupported) {
@@ -178,7 +170,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
                     .hint(stringResource(Res.string.log_viewer_side_follow_tail), placement = HintPlacement.LEFT)
                     .padding(4.dp),
             ) {
-                Icon(Icons.Default.VerticalAlignBottom, null)
+                Icon(QaIcons.KeyboardDoubleArrowDown, null)
             }
         }
         QaIconButton(
@@ -186,7 +178,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
             Modifier
                 .hint(stringResource(Res.string.log_viewer_side_scroll_bottom), placement = HintPlacement.LEFT)
                 .padding(4.dp),
-        ) { Icon(Icons.Default.ArrowDownward, null) }
+        ) { Icon(QaIcons.ArrowDownward, null) }
     }
 }
 
