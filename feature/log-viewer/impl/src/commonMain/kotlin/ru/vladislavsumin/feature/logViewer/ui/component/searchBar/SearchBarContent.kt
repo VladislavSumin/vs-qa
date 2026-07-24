@@ -96,7 +96,9 @@ private fun TrailingButtons(
 
     QaIconButton(
         onClick = viewModel::onClickPrevIndex,
-        modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_prev)),
+        modifier = Modifier
+            .padding(start = 2.dp)
+            .hint(stringResource(Res.string.log_viewer_search_prev)),
     ) { Icon(QaIcons.ArrowUpward, null) }
 
     // TODO написать нормально
@@ -124,13 +126,17 @@ private fun TrailingButtons(
     QaToggleIconButton(
         checked = state.isMatchCase,
         onCheckedChange = viewModel::onClickSearchMatchCase,
-        modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_case_sensitive)),
+        modifier = Modifier
+            .padding(start = 2.dp)
+            .hint(stringResource(Res.string.log_viewer_search_case_sensitive)),
     ) { Icon(QaIcons.MatchCase, null) }
 
     QaToggleIconButton(
         checked = state.isRegex,
         onCheckedChange = viewModel::onClickSearchUseRegex,
-        modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_use_regex)),
+        modifier = Modifier
+            .padding(start = 2.dp)
+            .hint(stringResource(Res.string.log_viewer_search_use_regex)),
     ) { Icon(QaIcons.RegularExpression, null) }
 
     val withDp = with(LocalDensity.current) {
@@ -140,7 +146,9 @@ private fun TrailingButtons(
         QaToggleIconButton(
             checked = showSideMenu.value,
             onCheckedChange = { showSideMenu.value = it },
-            modifier = Modifier.hint(stringResource(Res.string.log_viewer_search_toggle_side_panel)),
+            modifier = Modifier
+                .padding(start = 2.dp)
+                .hint(stringResource(Res.string.log_viewer_search_toggle_side_panel)),
         ) { Icon(QaIcons.MoreVert, null) }
     }
 }

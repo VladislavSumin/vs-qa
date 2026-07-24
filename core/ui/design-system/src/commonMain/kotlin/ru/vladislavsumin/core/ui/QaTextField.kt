@@ -126,9 +126,10 @@ fun QaTextField(
                         centerContent()
                     }
                 }
+                Spacer(Modifier.width(4.dp))
                 if (trailingContent != null) {
-                    Spacer(Modifier.width(4.dp))
                     trailingContent()
+                    Spacer(Modifier.width(2.dp))
                 }
             }
         },

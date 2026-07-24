@@ -104,7 +104,9 @@ private fun FilterField(
 private fun HelpButton(viewModel: FilterBarViewModel, state: FilterBarViewState) {
     QaIconButton(
         onClick = viewModel::onClickHelpButton,
-        modifier = Modifier.hint(stringResource(Res.string.log_viewer_filter_help)),
+        modifier = Modifier
+            .padding(start = 2.dp)
+            .hint(stringResource(Res.string.log_viewer_filter_help)),
     ) {
         DropdownMenu(
             expanded = state.showHelpMenu,
