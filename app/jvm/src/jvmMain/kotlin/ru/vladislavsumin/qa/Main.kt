@@ -52,6 +52,9 @@ fun main(args: Array<String>) {
     val di = preInit()
     MainLogger.i("App version: ${BuildConfig.version}")
 
+    // Хоть как то красит верхнюю системную часть окна.
+    System.setProperty("apple.awt.application.appearance", "system")
+
     val logPath = if (args.isNotEmpty()) Path(args[0]) else null
     val mappingPath = if (args.size > 1) Path(args[1]) else null
 
