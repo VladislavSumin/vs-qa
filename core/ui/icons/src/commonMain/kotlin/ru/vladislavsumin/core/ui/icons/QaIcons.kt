@@ -5,12 +5,14 @@ import ru.vladislavsumin.core.ui.icons.icons.arrow_upward
 import ru.vladislavsumin.core.ui.icons.icons.bar_chart_4_bars
 import ru.vladislavsumin.core.ui.icons.icons.bookmarks
 import ru.vladislavsumin.core.ui.icons.icons.calendar_clock
+import ru.vladislavsumin.core.ui.icons.icons.close
 import ru.vladislavsumin.core.ui.icons.icons.content_copy
 import ru.vladislavsumin.core.ui.icons.icons.file_present
 import ru.vladislavsumin.core.ui.icons.icons.filter_alt
 import ru.vladislavsumin.core.ui.icons.icons.help
 import ru.vladislavsumin.core.ui.icons.icons.keyboard_double_arrow_down
 import ru.vladislavsumin.core.ui.icons.icons.match_case
+import ru.vladislavsumin.core.ui.icons.icons.open_in_new
 import ru.vladislavsumin.core.ui.icons.icons.regular_expression
 import ru.vladislavsumin.core.ui.icons.icons.search
 import ru.vladislavsumin.core.ui.icons.icons.text_decrease
@@ -32,4 +34,6 @@ object QaIcons {
     val ArrowUpward = arrow_upward
     val MatchCase = match_case
     val RegularExpression = regular_expression
+    val Close = close
+    val OpenInNew = open_in_new
 }

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material3.Icon
@@ -32,6 +31,7 @@ import ru.vladislavsumin.core.navigation.screen.Screen
 import ru.vladislavsumin.core.ui.button.QaIconButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.hint.hint
+import ru.vladislavsumin.core.ui.icons.QaIcons
 import ru.vladislavsumin.feature.tabs.impl.generated.resources.Res
 import ru.vladislavsumin.feature.tabs.impl.generated.resources.tabs_close
 import ru.vladislavsumin.feature.tabs.impl.generated.resources.tabs_close_hint
@@ -138,7 +138,7 @@ private fun Tab(
                 modifier = Modifier.hint(stringResource(Res.string.tabs_detach_hint)),
             ) {
                 Icon(
-                    imageVector = Icons.Default.OpenInNew,
+                    imageVector = QaIcons.OpenInNew,
                     contentDescription = stringResource(Res.string.tabs_detach),
                 )
             }
@@ -147,7 +147,7 @@ private fun Tab(
             QaIconButton(
                 onClick = { onTabClickClose(item.configuration.screenParams) },
                 modifier = Modifier.hint(stringResource(Res.string.tabs_close_hint)).padding(end = 4.dp),
-            ) { Icon(imageVector = Icons.Default.Close, contentDescription = stringResource(Res.string.tabs_close)) }
+            ) { Icon(imageVector = QaIcons.Close, contentDescription = stringResource(Res.string.tabs_close)) }
         }
     }
 }
