@@ -12,5 +12,6 @@ internal data class LogRecent(
     val filterRequest: String,
     val selectedSearchIndex: Int,
     val scrollPosition: Int,
+    val scrollPositionOffset: Int,
     val customName: String? = null,
 )

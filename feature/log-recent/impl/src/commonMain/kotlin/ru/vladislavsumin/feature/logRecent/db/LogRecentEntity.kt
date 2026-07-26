@@ -18,6 +18,7 @@ data class LogRecentEntity(
 
     val selectedSearchIndex: Int,
     val scrollPosition: Int,
+    val scrollPositionOffset: Int = 0,
 
     val customName: String? = null,
 )

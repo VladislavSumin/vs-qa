@@ -34,7 +34,7 @@ internal abstract class LogRecentDao {
 
     @Suppress("MaximumLineLength", "MaxLineLength")
     @Query(
-        "UPDATE log_recent SET searchRequest = :searchRequest, filterRequest = :filterRequest, selectedSearchIndex = :selectedSearchIndex, scrollPosition = :scrollPosition WHERE path = :path",
+        "UPDATE log_recent SET searchRequest = :searchRequest, filterRequest = :filterRequest, selectedSearchIndex = :selectedSearchIndex, scrollPosition = :scrollPosition, scrollPositionOffset = :scrollPositionOffset WHERE path = :path",
     )
     abstract suspend fun updateLogViewerState(
         path: String,
@@ -42,6 +42,7 @@ internal abstract class LogRecentDao {
         filterRequest: String,
         selectedSearchIndex: Int,
         scrollPosition: Int,
+        scrollPositionOffset: Int,
     )
 
     @Transaction
@@ -59,6 +60,7 @@ internal abstract class LogRecentDao {
                     filterRequest = "",
                     selectedSearchIndex = -1,
                     scrollPosition = -1,
+                    scrollPositionOffset = 0,
                 ),
             )
         }

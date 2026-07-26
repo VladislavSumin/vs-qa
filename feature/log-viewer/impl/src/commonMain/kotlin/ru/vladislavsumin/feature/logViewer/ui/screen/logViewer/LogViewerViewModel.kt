@@ -80,6 +80,7 @@ internal class LogViewerViewModel(
     private val selectedSearchIndex = MutableStateFlow(0)
     private val showSelectMappingDialog = MutableStateFlow(false)
     private val firstVisibleIndex = MutableStateFlow(0)
+    private val firstVisibleItemOffset = MutableStateFlow(0)
     private val showTagStat = MutableStateFlow(false)
     private val followTail = MutableStateFlow(source is LogViewerSource.DeviceLogcat)
 
@@ -134,6 +135,7 @@ internal class LogViewerViewModel(
                             filterRequest = filterBarUiInteractor.filterState.first().requestHighlight.raw,
                             selectedSearchIndex = selectedSearchIndex.value,
                             scrollPosition = firstVisibleIndex.value,
+                            scrollPositionOffset = firstVisibleItemOffset.value,
                         )
                     }
                 }
@@ -183,7 +185,9 @@ internal class LogViewerViewModel(
                     val state = logPath?.let { logRecentInteractor.getLogViewerState(it) }
                     if (state != null) {
                         if (state.selectedSearchIndex >= 0) selectedSearchIndex.value = state.selectedSearchIndex
-                        if (state.scrollPosition >= 0) scrollToIndex(state.scrollPosition)
+                        if (state.scrollPosition >= 0) {
+                            restoreScrollPosition(state.scrollPosition, state.scrollPositionOffset)
+                        }
                     }
                 } else {
                     // TODO убрать эту жесть, ну какой onEach?
@@ -435,8 +439,17 @@ internal class LogViewerViewModel(
         }
     }
 
-    fun onFirstVisibleIndexUpdate(index: Int) {
+    fun onFirstVisibleIndexUpdate(index: Int, offset: Int) {
         firstVisibleIndex.value = index
+        firstVisibleItemOffset.value = offset
+    }
+
+    /**
+     * Скролит к сохраненной позиции (восстановление состояния). Не применяет компенсацию sticky header.
+     */
+    private fun restoreScrollPosition(index: Int, scrollOffset: Int) = launch {
+        LogViewerLogger.d { "Restore scroll position: index=$index, offset=$scrollOffset" }
+        logsEvents.send(LogsEvents.ScrollToPosition(index, scrollOffset))
     }
 
     fun onAddTimeFilter(order: LogOrder, isAfter: Boolean) {

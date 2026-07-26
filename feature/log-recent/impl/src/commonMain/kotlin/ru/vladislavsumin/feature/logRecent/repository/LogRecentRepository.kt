@@ -23,6 +23,7 @@ internal interface LogRecentRepository {
         filterRequest: String,
         selectedSearchIndex: Int,
         scrollPosition: Int,
+        scrollPositionOffset: Int,
     )
 
     suspend fun updateCustomName(id: Long, customName: String?)
@@ -51,12 +52,14 @@ internal class LogRecentRepositoryImpl(db: LogRecentDatabase) : LogRecentReposit
         filterRequest: String,
         selectedSearchIndex: Int,
         scrollPosition: Int,
+        scrollPositionOffset: Int,
     ) = logRecentDao.updateLogViewerState(
         path.absolutePathString(),
         searchRequest,
         filterRequest,
         selectedSearchIndex,
         scrollPosition,
+        scrollPositionOffset,
     )
 
     override suspend fun updateCustomName(id: Long, customName: String?) = logRecentDao.updateCustomName(id, customName)
@@ -75,5 +78,6 @@ private fun LogRecentEntity.toDomain(): LogRecent = LogRecent(
     filterRequest = filterRequest,
     selectedSearchIndex = selectedSearchIndex,
     scrollPosition = scrollPosition,
+    scrollPositionOffset = scrollPositionOffset,
     customName = customName,
 )

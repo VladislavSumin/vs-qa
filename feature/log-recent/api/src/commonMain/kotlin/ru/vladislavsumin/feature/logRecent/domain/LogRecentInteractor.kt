@@ -18,6 +18,7 @@ interface LogRecentInteractor {
         filterRequest: String,
         selectedSearchIndex: Int,
         scrollPosition: Int,
+        scrollPositionOffset: Int,
     )
 
     suspend fun getLogViewerState(path: Path): LogViewerState?
@@ -29,5 +30,6 @@ interface LogRecentInteractor {
         val filterRequest: String,
         val selectedSearchIndex: Int,
         val scrollPosition: Int,
+        val scrollPositionOffset: Int,
     )
 }

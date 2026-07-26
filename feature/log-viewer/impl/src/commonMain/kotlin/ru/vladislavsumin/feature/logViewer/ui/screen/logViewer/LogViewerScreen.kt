@@ -71,7 +71,7 @@ internal class LogViewerScreen(
     private val logsComponent = LogsComponent(
         logsEvents = viewModel.logsEvents,
         state = viewModel.state.mapState { it.logsViewState },
-        onFirstVisibleIndexChange = viewModel::onFirstVisibleIndexUpdate,
+        onFirstVisibleIndexChange = { index, offset -> viewModel.onFirstVisibleIndexUpdate(index, offset) },
         onUserScroll = viewModel::onUserScroll,
         onAddTimeFilter = viewModel::onAddTimeFilter,
         context = context.childContext("logs"),

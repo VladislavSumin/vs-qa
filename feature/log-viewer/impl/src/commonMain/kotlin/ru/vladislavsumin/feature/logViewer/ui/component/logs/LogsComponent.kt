@@ -12,7 +12,7 @@ import ru.vladislavsumin.feature.logViewer.domain.logs.LogOrder
 internal class LogsComponent(
     private val logsEvents: ReceiveChannel<LogsEvents>,
     private val state: StateFlow<LogsViewState>,
-    private val onFirstVisibleIndexChange: (Int) -> Unit,
+    private val onFirstVisibleIndexChange: (Int, Int) -> Unit,
     private val onUserScroll: () -> Unit,
     private val onAddTimeFilter: (LogOrder, Boolean) -> Unit,
     context: ComponentContext,

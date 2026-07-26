@@ -89,7 +89,7 @@ private const val MAX_LOG_LINE_LENGTH = 8192
 @Composable
 @Suppress("LongMethod", "CyclomaticComplexMethod")
 internal fun LogsContent(
-    onFirstVisibleIndexChange: (Int) -> Unit,
+    onFirstVisibleIndexChange: (Int, Int) -> Unit,
     onUserScroll: () -> Unit,
     events: ReceiveChannel<LogsEvents>,
     state: StateFlow<LogsViewState>,
@@ -110,8 +110,8 @@ internal fun LogsContent(
     var stickyHeaderHeightPx by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(lazyListState) {
-        snapshotFlow { lazyListState.firstVisibleItemIndex }
-            .collect(onFirstVisibleIndexChange)
+        snapshotFlow { lazyListState.firstVisibleItemIndex to lazyListState.firstVisibleItemScrollOffset }
+            .collect { (index, offset) -> onFirstVisibleIndexChange(index, offset) }
     }
 
     // Автоскролл к концу списка при появлении новых записей (follow tail).
@@ -148,6 +148,11 @@ internal fun LogsContent(
                 is LogsEvents.ScrollToIndex -> lazyListState.scrollToItem(
                     event.index,
                     scrollOffset = -stickyHeaderHeightPx,
+                )
+
+                is LogsEvents.ScrollToPosition -> lazyListState.scrollToItem(
+                    event.index,
+                    scrollOffset = event.scrollOffset,
                 )
             }
         }

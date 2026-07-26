@@ -184,6 +184,7 @@ class LogViewerViewModelTest {
             filterRequest: String,
             selectedSearchIndex: Int,
             scrollPosition: Int,
+            scrollPositionOffset: Int,
         ) {
             updateLogViewerStateCalls.add(
                 LogRecentInteractor.LogViewerState(
@@ -191,6 +192,7 @@ class LogViewerViewModelTest {
                     filterRequest = filterRequest,
                     selectedSearchIndex = selectedSearchIndex,
                     scrollPosition = scrollPosition,
+                    scrollPositionOffset = scrollPositionOffset,
                 ),
             )
         }
@@ -723,6 +725,7 @@ class LogViewerViewModelTest {
             filterRequest = "tag=Test",
             selectedSearchIndex = 5,
             scrollPosition = 42,
+            scrollPositionOffset = 0,
         )
         val vm = createViewModel(deps = deps, source = LogViewerSource.File(KPath("/tmp/test.log")))
         assertEquals("error", vm.state.value.searchState.searchRequest)

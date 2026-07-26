@@ -34,7 +34,17 @@ internal class LogRecentInteractorImpl(private val repository: LogRecentReposito
         filterRequest: String,
         selectedSearchIndex: Int,
         scrollPosition: Int,
-    ) = repository.updateLogViewerState(path, searchRequest, filterRequest, selectedSearchIndex, scrollPosition)
+        scrollPositionOffset: Int,
+    ) {
+        repository.updateLogViewerState(
+            path,
+            searchRequest,
+            filterRequest,
+            selectedSearchIndex,
+            scrollPosition,
+            scrollPositionOffset,
+        )
+    }
 
     override suspend fun getLogViewerState(path: Path): LogRecentInteractor.LogViewerState? =
         repository.get(path)?.let {
@@ -43,6 +53,7 @@ internal class LogRecentInteractorImpl(private val repository: LogRecentReposito
                 filterRequest = it.filterRequest,
                 selectedSearchIndex = it.selectedSearchIndex,
                 scrollPosition = it.scrollPosition,
+                scrollPositionOffset = it.scrollPositionOffset,
             )
         }
 
