@@ -6,6 +6,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.textHighlight.highlightBackground
 import ru.vladislavsumin.feature.logParser.domain.LogRange
@@ -16,29 +17,34 @@ import kotlin.math.abs
 @Composable
 fun LogRecord.colorize(isSelected: Boolean, stripDate: Boolean): AnnotatedString {
     val logColor = LevelColors.getLevelColor(logLevel)
-    val tagColors = QaTheme.colorScheme.tagColors
+    val colorScheme = QaTheme.colorScheme
+    val tagColors = colorScheme.tagColors
     val tagText = raw.substring(tag)
     val tagColor = tagColors[abs(tagText.hashCode()) % tagColors.size]
     val result = buildAnnotatedString {
         append(raw)
-        addStyle(SpanStyle(color = QaTheme.colorScheme.content2), time)
-        highlightBackground(level.first..level.last, logColor.background, logColor.onBackground)
-        addStyle(SpanStyle(color = QaTheme.colorScheme.content1, fontStyle = FontStyle.Italic), thread)
+        addStyle(SpanStyle(color = colorScheme.content2), time)
+        highlightBackground(
+            range = level.first..level.last,
+            background = logColor.background,
+            textColor = logColor.onBackground,
+            cornerRadius = 2.dp,
+            horizontalPadding = 2.dp,
+            verticalPadding = (-1).dp,
+        )
+        addStyle(SpanStyle(color = colorScheme.content1, fontStyle = FontStyle.Italic), thread)
         processName?.let {
-            addStyle(SpanStyle(color = QaTheme.colorScheme.content2, fontStyle = FontStyle.Italic), it)
+            addStyle(SpanStyle(color = colorScheme.content2, fontStyle = FontStyle.Italic), it)
         }
         addStyle(SpanStyle(color = tagColor, fontWeight = FontWeight.W600), tag)
         addStyle(SpanStyle(color = logColor.primary), message)
+
         searchHighlights?.forEach { index ->
-            addStyle(
-                SpanStyle(
-                    background = if (isSelected) {
-                        QaTheme.colorScheme.logHighlightSelected
-                    } else {
-                        QaTheme.colorScheme.logHighlight
-                    },
-                ),
-                index,
+            val background = if (isSelected) colorScheme.logHighlightSelected else colorScheme.logHighlight
+            highlightBackground(
+                range = index.first..index.last,
+                background = background,
+                cornerRadius = 2.dp,
             )
         }
     }

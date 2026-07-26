@@ -386,9 +386,6 @@ private fun Record(
                     fontFamily = FontFamily.Monospace,
                 ),
                 modifier = Modifier.fillMaxWidth(),
-                horizontalPadding = 2.dp,
-                verticalPadding = (-1).dp,
-                cornerRadius = 2.dp,
             )
         }
         TextSelectionSeparator()

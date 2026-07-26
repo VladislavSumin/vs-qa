@@ -27,30 +27,48 @@ import kotlin.math.min
 
 private const val HIGHLIGHT_TAG = "core.ui.text-highlight"
 
-private fun Color.encode(): String = value.toString()
+private data class HighlightParams(
+    val color: Color,
+    val horizontalPadding: Float,
+    val verticalPadding: Float,
+    val cornerRadius: Float,
+)
 
-private fun decode(encoded: String): Color = Color(encoded.toULong())
+private fun HighlightParams.encode(): String = "${color.value}|$horizontalPadding|$verticalPadding|$cornerRadius"
 
-fun AnnotatedString.Builder.highlightBackground(range: IntRange, background: Color, textColor: Color? = null) {
-    if (textColor != null) {
-        addStyle(SpanStyle(color = textColor), range.first, range.last + 1)
-    }
-    addStringAnnotation(HIGHLIGHT_TAG, background.encode(), range.first, range.last + 1)
+private fun decodeHighlight(encoded: String): HighlightParams {
+    val parts = encoded.split("|")
+    return HighlightParams(
+        color = Color(parts[0].toULong()),
+        horizontalPadding = parts[1].toFloat(),
+        verticalPadding = parts[2].toFloat(),
+        cornerRadius = parts[3].toFloat(),
+    )
 }
 
-@Composable
-fun HighlightedText(
-    text: AnnotatedString,
-    modifier: Modifier = Modifier,
-    style: TextStyle = TextStyle.Default,
+fun AnnotatedString.Builder.highlightBackground(
+    range: IntRange,
+    background: Color,
+    textColor: Color? = null,
     horizontalPadding: Dp = 0.dp,
     verticalPadding: Dp = 0.dp,
     cornerRadius: Dp = 0.dp,
 ) {
+    if (textColor != null) {
+        addStyle(SpanStyle(color = textColor), range.first, range.last + 1)
+    }
+    val params = HighlightParams(
+        color = background,
+        horizontalPadding = horizontalPadding.value,
+        verticalPadding = verticalPadding.value,
+        cornerRadius = cornerRadius.value,
+    )
+    addStringAnnotation(HIGHLIGHT_TAG, params.encode(), range.first, range.last + 1)
+}
+
+@Composable
+fun HighlightedText(text: AnnotatedString, modifier: Modifier = Modifier, style: TextStyle = TextStyle.Default) {
     val density = LocalDensity.current
-    val horizontalPaddingPx = with(density) { horizontalPadding.toPx() }
-    val verticalPaddingPx = with(density) { verticalPadding.toPx() }
-    val cornerRadiusPx = with(density) { cornerRadius.toPx() }
 
     var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
 
@@ -61,9 +79,12 @@ fun HighlightedText(
             val annotations = layout.layoutInput.text
                 .getStringAnnotations(HIGHLIGHT_TAG, 0, layout.layoutInput.text.length)
             for (ann in annotations) {
-                val bgColor = decode(ann.item)
+                val params = decodeHighlight(ann.item)
+                val hPadPx = with(density) { params.horizontalPadding.dp.toPx() }
+                val vPadPx = with(density) { params.verticalPadding.dp.toPx() }
+                val rPx = with(density) { params.cornerRadius.dp.toPx() }
                 val rects = getRangeBoundsPerLine(layout, ann.start, ann.end)
-                drawHighlightRects(rects, bgColor, horizontalPaddingPx, verticalPaddingPx, cornerRadiusPx)
+                drawHighlightRects(rects, params.color, hPadPx, vPadPx, rPx)
             }
         },
         style = style,
