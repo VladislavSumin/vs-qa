@@ -18,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -98,6 +99,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
     val clipboard = LocalClipboardManager.current
     Column(
         Modifier.fillMaxHeight().width(IntrinsicSize.Min),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         QaIconButton(
             onClick = {
