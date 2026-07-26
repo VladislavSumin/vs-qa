@@ -1,0 +1,6 @@
+2026-07-01T+03:00 09:00:00.001 main V ColorDebug Verbose level: least important diagnostic
+2026-07-01T+03:00 09:00:00.002 main D ColorDebug Debug level: detailed tracing info
+2026-07-01T+03:00 09:00:00.003 main I ColorDebug Info level: normal operational message
+2026-07-01T+03:00 09:00:00.004 main W ColorDebug Warning level: potential problem detected
+2026-07-01T+03:00 09:00:00.005 main E ColorDebug Error level: recoverable failure occurred
+2026-07-01T+03:00 09:00:00.006 main F ColorDebug Fatal level: unrecoverable, process terminating
