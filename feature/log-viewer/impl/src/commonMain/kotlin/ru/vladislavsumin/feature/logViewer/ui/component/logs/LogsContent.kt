@@ -36,6 +36,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -47,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LocalPinnableContainer
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.SpanStyle
@@ -105,6 +107,7 @@ internal fun LogsContent(
         ),
     )
     val lazyListState = rememberLazyListState()
+    var stickyHeaderHeightPx by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(lazyListState) {
         snapshotFlow { lazyListState.firstVisibleItemIndex }
@@ -139,14 +142,12 @@ internal fun LogsContent(
             }
     }
 
-    val density = LocalDensity.current
     LaunchedEffect(lazyListState) {
         events.receiveAsFlow().collect { event ->
             when (event) {
                 is LogsEvents.ScrollToIndex -> lazyListState.scrollToItem(
                     event.index,
-                    // -24 это высота заголовка. ну если его нет будет небольшой сдвиг в целом ок.
-                    scrollOffset = with(density) { -24.dp.roundToPx() },
+                    scrollOffset = -stickyHeaderHeightPx,
                 )
             }
         }
@@ -178,6 +179,7 @@ internal fun LogsContent(
                                         sectionInfo.meta,
                                         state.logFontSize + 2,
                                         textSizeDp,
+                                        onSizeChanged = { stickyHeaderHeightPx = it },
                                     )
                                 }
                             }
@@ -244,14 +246,21 @@ private fun ScrollToBottom(lazyListState: LazyListState) {
 }
 
 @Composable
-private fun Header(runNumber: Int, meta: Map<String, String>?, fontSize: Int, textSizeDp: Dp) {
+private fun Header(
+    runNumber: Int,
+    meta: Map<String, String>?,
+    fontSize: Int,
+    textSizeDp: Dp,
+    onSizeChanged: (Int) -> Unit,
+) {
     DisableSelection {
         SelectionContainer {
             // Разделяем выделение у заголовков и контента
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .background(QaTheme.colorScheme.background1),
+                    .background(QaTheme.colorScheme.background1)
+                    .onSizeChanged { onSizeChanged(it.height) },
             ) {
                 val text = buildAnnotatedString {
                     withStyle(SpanStyle(fontWeight = FontWeight.W600)) {
