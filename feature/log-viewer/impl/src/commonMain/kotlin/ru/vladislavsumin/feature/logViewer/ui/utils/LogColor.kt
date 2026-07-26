@@ -23,6 +23,10 @@ fun LogRecord.colorize(isSelected: Boolean, stripDate: Boolean): AnnotatedString
     val tagColor = tagColors[abs(tagText.hashCode()) % tagColors.size]
     val result = buildAnnotatedString {
         append(raw)
+
+        // Стиль по умолчанию
+        addStyle(SpanStyle(color = colorScheme.content1), 0..raw.length)
+
         addStyle(SpanStyle(color = colorScheme.content2), time)
         highlightBackground(
             range = level.first..level.last,
