@@ -26,6 +26,7 @@ include(":core:ui:hotkey-controller")
 include(":core:ui:hint")
 include(":core:ui:dashboard-grid")
 include(":core:ui:selection")
+include(":core:ui:text-highlight")
 include(":core:ui:icons")
 include(":core:ui:resources")
 

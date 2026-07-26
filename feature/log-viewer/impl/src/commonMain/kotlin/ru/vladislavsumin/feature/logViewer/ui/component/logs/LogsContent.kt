@@ -74,6 +74,7 @@ import kotlinx.coroutines.launch
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.icons.QaIcons
 import ru.vladislavsumin.core.ui.selection.VsSelectionContainer
+import ru.vladislavsumin.core.ui.textHighlight.HighlightedText
 import ru.vladislavsumin.feature.logParser.domain.substring
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogOrder
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
@@ -363,13 +364,17 @@ private fun Record(
                     )
                 }
             }
-            Text(
+            HighlightedText(
                 text = displayText,
-                style = MaterialTheme.typography.bodyMedium,
-                fontSize = fontSize.sp,
-                lineHeight = fontSize.sp * 1.42,
-                fontFamily = FontFamily.Monospace,
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = fontSize.sp,
+                    lineHeight = fontSize.sp * 1.42,
+                    fontFamily = FontFamily.Monospace,
+                ),
                 modifier = Modifier.fillMaxWidth(),
+                horizontalPadding = 2.dp,
+                verticalPadding = (-1).dp,
+                cornerRadius = 2.dp,
             )
         }
         TextSelectionSeparator()

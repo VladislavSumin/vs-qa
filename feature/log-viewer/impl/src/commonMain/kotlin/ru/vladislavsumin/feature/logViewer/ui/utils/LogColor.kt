@@ -7,6 +7,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
+import ru.vladislavsumin.core.ui.textHighlight.highlightBackground
 import ru.vladislavsumin.feature.logParser.domain.LogRange
 import ru.vladislavsumin.feature.logParser.domain.substring
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
@@ -21,8 +22,8 @@ fun LogRecord.colorize(isSelected: Boolean, stripDate: Boolean): AnnotatedString
     val result = buildAnnotatedString {
         append(raw)
         addStyle(SpanStyle(color = QaTheme.colorScheme.content2), time)
-        addStyle(SpanStyle(background = logColor.background, color = logColor.onBackground), level)
-        addStyle(SpanStyle(fontStyle = FontStyle.Italic), thread)
+        highlightBackground(level.first..level.last, logColor.background, logColor.onBackground)
+        addStyle(SpanStyle(color = QaTheme.colorScheme.content1, fontStyle = FontStyle.Italic), thread)
         processName?.let {
             addStyle(SpanStyle(color = QaTheme.colorScheme.content2, fontStyle = FontStyle.Italic), it)
         }
