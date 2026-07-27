@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
@@ -27,22 +28,32 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import kotlin.math.roundToInt
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
-fun Modifier.hint(text: String, delayMillis: Long = 450L, placement: HintPlacement = HintPlacement.BOTTOM): Modifier {
+fun Modifier.hint(
+    text: String,
+    delayMillis: Duration = 450.milliseconds,
+    placement: HintPlacement = HintPlacement.BOTTOM,
+): Modifier {
     var isHovered by remember { mutableStateOf(false) }
     var showHint by remember { mutableStateOf(false) }
     var layoutCoordinates by remember { mutableStateOf<LayoutCoordinates?>(null) }
 
-    LaunchedEffect(isHovered) {
-        if (isHovered) {
-            delay(delayMillis)
-            showHint = true
-        } else {
-            showHint = false
-        }
+    LaunchedEffect(Unit) {
+        snapshotFlow { isHovered }
+            .collectLatest { hovered ->
+                if (hovered) {
+                    delay(delayMillis)
+                    showHint = true
+                } else {
+                    showHint = false
+                }
+            }
     }
 
     if (showHint && layoutCoordinates != null) {
