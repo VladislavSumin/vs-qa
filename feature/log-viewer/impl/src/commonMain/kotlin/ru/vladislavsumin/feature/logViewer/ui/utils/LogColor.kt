@@ -25,7 +25,7 @@ fun LogRecord.colorize(isSelected: Boolean, stripDate: Boolean): AnnotatedString
         append(raw)
 
         // Стиль по умолчанию
-        addStyle(SpanStyle(color = colorScheme.content1), 0..raw.length)
+        addStyle(SpanStyle(color = colorScheme.content1), raw.indices)
 
         addStyle(SpanStyle(color = colorScheme.content2), time)
         highlightBackground(
