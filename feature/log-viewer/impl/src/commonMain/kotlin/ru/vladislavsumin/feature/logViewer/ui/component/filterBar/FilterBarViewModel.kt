@@ -1,5 +1,6 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.channels.Channel
@@ -17,6 +18,7 @@ import ru.vladislavsumin.core.factoryGenerator.GenerateFactory
 import ru.vladislavsumin.feature.logViewer.repository.SavedFiltersRepository
 
 @GenerateFactory
+@Stable
 internal class FilterBarViewModel(@ByCreate savedFilters: StateFlow<List<SavedFiltersRepository.SavedFilter>>) :
     ViewModel(),
     FilterBarUiInteractor {

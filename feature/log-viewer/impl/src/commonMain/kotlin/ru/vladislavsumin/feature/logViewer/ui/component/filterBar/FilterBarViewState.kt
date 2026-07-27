@@ -1,9 +1,9 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.filterBar
 
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.text.input.TextFieldValue
 
-@Stable
+@Immutable
 internal data class FilterBarViewState(
     val field: TextFieldValue,
     val predictionWordLength: Int,

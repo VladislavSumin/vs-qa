@@ -6,7 +6,9 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -44,9 +46,10 @@ internal fun FilterBarContent(
     focusRequester: FocusRequester,
     modifier: Modifier,
 ) {
-    val state by viewModel.state.collectAsState()
+    val state = viewModel.state.collectAsState()
+    val showSavedFilters by remember { derivedStateOf { state.value.showSavedFilters } }
     Column(modifier.padding(vertical = 4.dp, horizontal = 8.dp)) {
-        if (state.showSavedFilters) {
+        if (showSavedFilters) {
             savedFiltersComponent.Render(Modifier)
         }
         FilterField(viewModel, state, filterHintComponent, filterHintHotkeyController, focusRequester)
@@ -56,11 +59,12 @@ internal fun FilterBarContent(
 @Composable
 private fun FilterField(
     viewModel: FilterBarViewModel,
-    state: FilterBarViewState,
+    state: State<FilterBarViewState>,
     filterHintComponent: FilterHintComponent,
     filterHintHotkeyController: HotkeyController,
     focusRequester: FocusRequester,
 ) {
+    val state = state.value
     var cursorPosition by remember { mutableFloatStateOf(0f) }
 
     if (state.error != null) {
