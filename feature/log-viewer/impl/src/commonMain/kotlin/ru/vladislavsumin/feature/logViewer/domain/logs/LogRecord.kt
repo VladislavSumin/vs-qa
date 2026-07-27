@@ -1,5 +1,6 @@
 package ru.vladislavsumin.feature.logViewer.domain.logs
 
+import androidx.compose.runtime.Immutable
 import ru.vladislavsumin.feature.logParser.domain.LogLevel
 import ru.vladislavsumin.feature.logParser.domain.LogRange
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
@@ -21,6 +22,7 @@ import java.time.Instant
  * @param logLevel уровень логов [level] в удобном формате.
  * @param searchHighlights выделения поисковых вхождений.
  */
+@Immutable
 data class LogRecord(
     val order: LogOrder,
     val raw: String,
