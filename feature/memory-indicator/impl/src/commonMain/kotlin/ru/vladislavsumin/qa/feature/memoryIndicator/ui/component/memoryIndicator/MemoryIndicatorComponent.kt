@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import com.arkivanov.decompose.ComponentContext
+import com.skydoves.compose.stability.runtime.IgnoreStabilityReport
 import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.decompose.components.Component
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
@@ -33,6 +34,7 @@ internal class MemoryIndicatorComponent(context: ComponentContext) :
     private val viewModel = viewModel { MemoryIndicatorViewModel() }
 
     @Composable
+    @IgnoreStabilityReport // обновляется переодически это нормально.
     override fun Render(modifier: Modifier) {
         Box(
             Modifier
