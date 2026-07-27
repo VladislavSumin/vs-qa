@@ -8,6 +8,7 @@ plugins {
 }
 
 composeStabilityAnalyzer {
+    enabled.set(false)
     traceAll {
         enabled.set(true)
         threshold.set(2)
