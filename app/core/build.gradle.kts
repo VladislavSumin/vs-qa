@@ -3,6 +3,7 @@ plugins {
     id("ru.vladislavsumin.convention.kmp.android-library")
     id("ru.vladislavsumin.convention.compose")
     id("ru.vladislavsumin.convention.aboutlibraries")
+    id("ru.vladislavsumin.convention.compose-stability-analyzer")
 }
 
 kotlin {

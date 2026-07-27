@@ -12,6 +12,7 @@ sqlite = "2.7.0"
 reorderable = "3.1.0"
 aboutLibraries = "15.0.4"
 mcp-kotlin-sdk = "0.14.0"
+compose-stability-analyzer = "0.11.1"
 
 [libraries]
 gradlePlugins-sentry = { module = "io.sentry:sentry-kotlin-multiplatform-gradle-plugin", version.ref = "sentry" }
@@ -19,6 +20,7 @@ gradlePlugins-buildkonfig = { module = "com.codingfeline.buildkonfig:com.codingf
 gradlePlugins-proguard = { module = "com.guardsquare:proguard-gradle", version.ref = "proguard" }
 gradlePlugins-room = { module = "androidx.room:room-gradle-plugin", version.ref = "room" }
 gradlePlugins-aboutLibraries = { module = "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin", version.ref = "aboutLibraries" }
+gradlePlugins-compose-stability-analyzer = { module = "com.github.skydoves:compose-stability-gradle", version.ref = "compose-stability-analyzer" }
 
 betterParse = { module = "com.github.h0tk3y.betterParse:better-parse", version.ref = "betterParse" }
 r8 = { module = "com.android.tools:r8", version.ref = "r8" }
@@ -33,3 +35,4 @@ reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reo
 aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutLibraries" }
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
 mcp-kotlin-sdk-server = { module = "io.modelcontextprotocol:kotlin-sdk-server", version.ref = "mcp-kotlin-sdk" }
+compose-stability-runtime = { module = "com.github.skydoves:compose-stability-runtime", version.ref = "compose-stability-analyzer" }

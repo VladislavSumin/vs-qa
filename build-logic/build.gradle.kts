@@ -19,6 +19,7 @@ dependencies {
     implementation(libs.gradlePlugins.buildkonfig)
     implementation(libs.gradlePlugins.proguard)
     implementation(libs.gradlePlugins.aboutLibraries)
+    implementation(libs.gradlePlugins.compose.stability.analyzer)
 }
 
 gradlePlugin {

@@ -7,6 +7,7 @@ plugins {
     id("ru.vladislavsumin.convention.preset.feature-impl")
     id("ru.vladislavsumin.convention.compose")
     id("ru.vladislavsumin.convention.compose-resources")
+    id("ru.vladislavsumin.convention.compose-stability-analyzer")
 }
 
 kotlin {
