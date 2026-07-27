@@ -1,11 +1,11 @@
 package ru.vladislavsumin.qa.core.proguardParser
 
-import com.android.tools.r8.internal.Gk0
+import com.android.tools.r8.internal.iy3
 import com.android.tools.r8.naming.k
 import com.android.tools.r8.retrace.RetraceClassResult
 
 private val FirstFiled by lazy {
-    val first = Gk0::class.java.getDeclaredField("b")
+    val first = iy3::class.java.getDeclaredField("b")
     first.isAccessible = true
     first
 }
