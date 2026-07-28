@@ -228,33 +228,10 @@ internal class LogViewerViewModel(
             followTail,
         ->
 
-        val runIdOrders = logIndexProgress.lastSuccessIndex.runIdOrders
-        val logsWithRunNumber = if (runIdOrders == null) {
-            listOf(
-                LogsViewState.SectionInfo(
-                    logs = logIndexProgress.lastSuccessIndex.logs,
-                    meta = null,
-                ),
-            )
-        } else {
-            val logIterator = logIndexProgress.lastSuccessIndex.logs.listIterator()
-            runIdOrders.map { info ->
-                val items = mutableListOf<LogRecord>()
-                while (logIterator.hasNext()) {
-                    val item = logIterator.next()
-                    if (item.order <= info.orderRange.last) {
-                        items.add(item)
-                    } else {
-                        logIterator.previous()
-                        break
-                    }
-                }
-                LogsViewState.SectionInfo(
-                    logs = items,
-                    meta = info.meta,
-                )
-            }
-        }
+        val logsWithRunNumber = groupLogsByRun(
+            logIndexProgress.lastSuccessIndex.logs,
+            logIndexProgress.lastSuccessIndex.runIdOrders,
+        )
 
         val currentSelectedItemOrder = logIndexProgress.lastSuccessIndex.logs.getOrNull(
             logIndexProgress.lastSuccessIndex.searchIndex.index.getOrNull(selectedSearchIndex) ?: -1,
@@ -267,7 +244,6 @@ internal class LogViewerViewModel(
                 rawLogs = logIndexProgress.lastSuccessIndex.logs,
                 runIdOrders = logIndexProgress.lastSuccessIndex.runIdOrders,
                 currentSelectedItemOrder = currentSelectedItemOrder,
-                showRunNumbers = runIdOrders != null,
                 maxLogNumberDigits = (logIndexProgress.lastSuccessIndex.totalLogRecords + 1).toString().length,
                 stripDate = stripDate,
                 logFontSize = logFontSize,
@@ -330,6 +306,26 @@ internal class LogViewerViewModel(
                         ),
                     )
                 }
+        }
+    }
+
+    private fun groupLogsByRun(logs: List<LogRecord>, runIdOrders: List<RunIdInfo>?,): List<LogsViewState.SectionInfo> {
+        if (runIdOrders == null) {
+            return listOf(LogsViewState.SectionInfo(logs = logs, meta = null))
+        }
+        val logIterator = logs.listIterator()
+        return runIdOrders.map { info ->
+            val items = mutableListOf<LogRecord>()
+            while (logIterator.hasNext()) {
+                val item = logIterator.next()
+                if (item.order <= info.orderRange.last) {
+                    items.add(item)
+                } else {
+                    logIterator.previous()
+                    break
+                }
+            }
+            LogsViewState.SectionInfo(logs = items, meta = info.meta)
         }
     }
 

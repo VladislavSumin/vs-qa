@@ -177,7 +177,7 @@ internal fun LogsContent(
                         modifier = Modifier.fillMaxSize().padding(innerPadding),
                     ) {
                         logs.forEachIndexed { runNumber, sectionInfo ->
-                            if (state.showRunNumbers) {
+                            if (sectionInfo.meta != null) {
                                 stickyHeader(key = -runNumber - 1) {
                                     Header(
                                         runNumber + 1,
@@ -253,7 +253,7 @@ private fun ScrollToBottom(lazyListState: LazyListState) {
 @Composable
 private fun Header(
     runNumber: Int,
-    meta: Map<String, String>?,
+    meta: Map<String, String>,
     fontSize: Int,
     textSizeDp: Dp,
     onSizeChanged: (Int) -> Unit,

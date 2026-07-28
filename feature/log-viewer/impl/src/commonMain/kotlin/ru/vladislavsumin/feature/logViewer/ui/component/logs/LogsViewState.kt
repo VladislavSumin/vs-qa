@@ -16,7 +16,6 @@ internal data class LogsViewState(
     val runIdOrders: List<RunIdInfo>?,
     val currentSelectedItemOrder: LogOrder,
 
-    val showRunNumbers: Boolean,
     val maxLogNumberDigits: Int,
     val stripDate: Boolean,
     val logFontSize: Int,
@@ -31,7 +30,6 @@ internal data class LogsViewState(
             rawLogs = emptyList(),
             runIdOrders = null,
             currentSelectedItemOrder = LogOrder(-1),
-            showRunNumbers = false,
             maxLogNumberDigits = 0,
             stripDate = false,
             logFontSize = 14,
