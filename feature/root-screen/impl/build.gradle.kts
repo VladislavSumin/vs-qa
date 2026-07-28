@@ -5,6 +5,8 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            implementation(projects.core.ui.debug)
+
             implementation(projects.feature.debug.api)
             implementation(projects.feature.windowTitle.api)
             implementation(projects.feature.adbDevice.api)

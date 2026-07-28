@@ -27,6 +27,7 @@ import com.arkivanov.decompose.value.Value
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.navigation.host.ConfigurationHolder
 import ru.vladislavsumin.core.navigation.screen.Screen
+import ru.vladislavsumin.core.ui.debug.FrameMeasureOverlay
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 
 @Composable
@@ -37,26 +38,33 @@ internal fun RootContent(
     notificationsComponent: ComposeComponent,
     modifier: Modifier,
 ) {
-    Surface(
-        modifier = modifier
-            .windowInsetsPadding(WindowInsets.statusBars)
-            .windowInsetsPadding(WindowInsets.navigationBars),
-        color = QaTheme.colorScheme.background1,
-        contentColor = QaTheme.colorScheme.content1,
+    FrameMeasureOverlay(
+        modifier,
+        // TODO добавить автоматику
+        logSlowFrames = false,
+        flashOnSlowFrame = false,
     ) {
-        Column(modifier) {
-            Box(Modifier.weight(1f)) {
-                Column {
-                    tabsComponent.Render(Modifier.fillMaxWidth())
-                    TabsContent(tabs)
+        Surface(
+            modifier = Modifier
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .windowInsetsPadding(WindowInsets.navigationBars),
+            color = QaTheme.colorScheme.background1,
+            contentColor = QaTheme.colorScheme.content1,
+        ) {
+            Column(modifier) {
+                Box(Modifier.weight(1f)) {
+                    Column {
+                        tabsComponent.Render(Modifier.fillMaxWidth())
+                        TabsContent(tabs)
+                    }
+                    notificationsComponent.Render(
+                        Modifier
+                            .padding(bottom = 48.dp, end = 48.dp)
+                            .align(Alignment.BottomEnd),
+                    )
                 }
-                notificationsComponent.Render(
-                    Modifier
-                        .padding(bottom = 48.dp, end = 48.dp)
-                        .align(Alignment.BottomEnd),
-                )
+                bottomBarComponent.Render(Modifier)
             }
-            bottomBarComponent.Render(Modifier)
         }
     }
 }
