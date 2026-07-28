@@ -315,19 +315,16 @@ internal class LogViewerViewModel(
             if (runIdOrders == null) {
                 listOf(LogsViewState.SectionInfo(logs = logs, meta = null))
             } else {
-                val logIterator = logs.listIterator()
+                var logIndex = 0
                 runIdOrders.map { info ->
-                    val items = mutableListOf<LogRecord>()
-                    while (logIterator.hasNext()) {
-                        val item = logIterator.next()
-                        if (item.order <= info.orderRange.last) {
-                            items.add(item)
-                        } else {
-                            logIterator.previous()
-                            break
-                        }
+                    val startIndex = logIndex
+                    while (logIndex < logs.size && logs[logIndex].order <= info.orderRange.last) {
+                        logIndex++
                     }
-                    LogsViewState.SectionInfo(logs = items, meta = info.meta)
+                    LogsViewState.SectionInfo(
+                        logs = logs.subList(startIndex, logIndex),
+                        meta = info.meta,
+                    )
                 }
             }
         }
