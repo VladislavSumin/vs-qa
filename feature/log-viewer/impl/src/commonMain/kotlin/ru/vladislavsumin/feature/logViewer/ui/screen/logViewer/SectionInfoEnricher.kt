@@ -2,6 +2,7 @@ package ru.vladislavsumin.feature.logViewer.ui.screen.logViewer
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndexProgress
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.RunIdInfo
@@ -9,15 +10,31 @@ import ru.vladislavsumin.feature.logViewer.ui.component.logs.LogsViewState
 import kotlin.time.measureTimedValue
 
 internal class SectionInfoEnricher {
-    // TODO map latest + cache
-    fun enrich(searchIndex: Flow<LogIndexProgress>): Flow<EnrichResult> = searchIndex.map { index ->
-        EnrichResult(
-            searchIndexProgress = index,
-            sectionInfos = groupLogsByRun(
-                index.lastSuccessIndex.logs,
-                index.lastSuccessIndex.runIdOrders,
-            ),
-        )
+    fun enrich(searchIndex: Flow<LogIndexProgress>): Flow<EnrichResult> {
+        // Особенности LogIndexProgress у него может быть несколько эмитов с одним lastSuccessIndex,
+        // поэтому кешируем последний результат и если потом lastSuccessIndex равны то возвращаем кешированное значение.
+        var logIndex: LogIndex? = null
+        var cache: List<LogsViewState.SectionInfo>? = null
+
+        return searchIndex.map { index ->
+            val sectionInfos = if (logIndex == index.lastSuccessIndex && cache != null) {
+                LogViewerLogger.t { "SectionInfoEnricher#enrich(): skip, use cache" }
+                cache!!
+            } else {
+                groupLogsByRun(
+                    index.lastSuccessIndex.logs,
+                    index.lastSuccessIndex.runIdOrders,
+                ).also {
+                    cache = it
+                    logIndex = index.lastSuccessIndex
+                }
+            }
+
+            EnrichResult(
+                searchIndexProgress = index,
+                sectionInfos = sectionInfos,
+            )
+        }
     }
 
     private fun groupLogsByRun(logs: List<LogRecord>, runIdOrders: List<RunIdInfo>?): List<LogsViewState.SectionInfo> {
@@ -38,7 +55,7 @@ internal class SectionInfoEnricher {
                 }
             }
         }
-        LogViewerLogger.d { "groupLogsByRun() done at $time" }
+        LogViewerLogger.d { "SectionInfoEnricher#groupLogsByRun() done at $time" }
         return result
     }
 
