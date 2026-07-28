@@ -29,11 +29,12 @@ import kotlin.io.path.Path
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@Suppress("MaximumLineLength", "MaxLineLength")
+@Suppress("MaximumLineLength", "MaxLineLength", "LargeClass")
 class LogsInteractorImplTest {
 
     private val logPath = resolveTestLogPath()
@@ -511,6 +512,461 @@ class LogsInteractorImplTest {
                 tag == "CrashHandler" || tag == "PaymentGateway"
             },
         )
+    }
+
+    // --- Group 2.1: observeLogIndex emission count (lastSuccessIndex) ---
+
+    @Test
+    fun `A1 initial empty filter empty search emits one NoSearch`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val interactor = createInteractor(testDispatcher = dispatcher)
+        advanceUntilIdle()
+
+        val filter = MutableStateFlow(FilterRequest(FilterRequest.FilterOperation.NoOp))
+        val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
+
+        val results = mutableListOf<LogIndexProgress>()
+        val job = launch { interactor.observeLogIndex(filter, search).collect { results.add(it) } }
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(1, results.size, "collectLatest cancels intermediate filter emission")
+        // [0] isFilteringNow=false, NoSearch, isSearchingNow=false, all 160 logs
+        assertFalse(results[0].isFilteringNow)
+        assertFalse(results[0].isSearchingNow)
+        assertTrue(results[0].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.NoSearch)
+        assertEquals(160, results[0].lastSuccessIndex.logs.size)
+    }
+
+    @Test
+    fun `A2 initial empty filter non-empty search emits two times NoSearch Search`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val interactor = createInteractor(testDispatcher = dispatcher)
+        advanceUntilIdle()
+
+        val filter = MutableStateFlow(FilterRequest(FilterRequest.FilterOperation.NoOp))
+        val search = MutableStateFlow(SearchRequest(search = "timeout", matchCase = false, useRegex = false))
+
+        val results = mutableListOf<LogIndexProgress>()
+        val job = launch { interactor.observeLogIndex(filter, search).collect { results.add(it) } }
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(2, results.size, "collectLatest cancels intermediate filter emissions")
+        // [0] isFilteringNow=false, isSearchingNow=true, NoSearch, logs=160
+        assertFalse(results[0].isFilteringNow)
+        assertTrue(results[0].isSearchingNow)
+        assertTrue(results[0].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.NoSearch)
+        assertEquals(160, results[0].lastSuccessIndex.logs.size)
+        // [1] isFilteringNow=false, isSearchingNow=false, Search, logs=160
+        assertFalse(results[1].isFilteringNow)
+        assertFalse(results[1].isSearchingNow)
+        assertTrue(results[1].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.Search)
+        assertEquals(160, results[1].lastSuccessIndex.logs.size)
+    }
+
+    @Test
+    fun `A3 initial ERROR filter empty search emits one NoSearch`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val interactor = createInteractor(testDispatcher = dispatcher)
+        advanceUntilIdle()
+
+        val filter = MutableStateFlow(FilterRequest(FilterRequest.FilterOperation.MinLogLevel(LogLevel.ERROR)))
+        val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
+
+        val results = mutableListOf<LogIndexProgress>()
+        val job = launch { interactor.observeLogIndex(filter, search).collect { results.add(it) } }
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(1, results.size, "collectLatest cancels intermediate filter emission")
+        // [0] isFilteringNow=false, NoSearch, logs=12 (ERROR filtered)
+        assertFalse(results[0].isFilteringNow)
+        assertFalse(results[0].isSearchingNow)
+        assertTrue(results[0].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.NoSearch)
+        assertEquals(12, results[0].lastSuccessIndex.logs.size)
+    }
+
+    @Test
+    fun `A4 initial ERROR filter non-empty search emits two times NoSearch Search`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val interactor = createInteractor(testDispatcher = dispatcher)
+        advanceUntilIdle()
+
+        val filter = MutableStateFlow(FilterRequest(FilterRequest.FilterOperation.MinLogLevel(LogLevel.ERROR)))
+        val search = MutableStateFlow(SearchRequest(search = "timeout", matchCase = false, useRegex = false))
+
+        val results = mutableListOf<LogIndexProgress>()
+        val job = launch { interactor.observeLogIndex(filter, search).collect { results.add(it) } }
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(2, results.size, "collectLatest cancels intermediate filter emissions")
+        // [0] isFilteringNow=false, isSearchingNow=true, NoSearch, logs=12
+        assertFalse(results[0].isFilteringNow)
+        assertTrue(results[0].isSearchingNow)
+        assertTrue(results[0].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.NoSearch)
+        assertEquals(12, results[0].lastSuccessIndex.logs.size)
+        // [1] isFilteringNow=false, isSearchingNow=false, Search, logs=12
+        assertFalse(results[1].isFilteringNow)
+        assertFalse(results[1].isSearchingNow)
+        assertTrue(results[1].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.Search)
+        assertEquals(12, results[1].lastSuccessIndex.logs.size)
+    }
+
+    @Test
+    fun `B1 filter change NoOp to ERROR with empty search adds one NoSearch emission`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val interactor = createInteractor(testDispatcher = dispatcher)
+        advanceUntilIdle()
+
+        val filter = MutableStateFlow(FilterRequest(FilterRequest.FilterOperation.NoOp))
+        val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
+
+        val results = mutableListOf<LogIndexProgress>()
+        val job = launch { interactor.observeLogIndex(filter, search).collect { results.add(it) } }
+        advanceUntilIdle()
+        assertEquals(1, results.size, "Initial should have 1 emission")
+
+        filter.value = FilterRequest(FilterRequest.FilterOperation.MinLogLevel(LogLevel.ERROR))
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(2, results.size, "Filter change adds 1 emission, total 2")
+        val new = results.drop(1)
+        // [+0] isFilteringNow=false, NoSearch, logs=12 (new ERROR filtered)
+        assertFalse(new[0].isFilteringNow)
+        assertFalse(new[0].isSearchingNow)
+        assertTrue(new[0].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.NoSearch)
+        assertEquals(12, new[0].lastSuccessIndex.logs.size)
+    }
+
+    @Test
+    fun `B2 filter change NoOp to ERROR with active search clears cache adds two emissions`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val interactor = createInteractor(testDispatcher = dispatcher)
+        advanceUntilIdle()
+
+        val filter = MutableStateFlow(FilterRequest(FilterRequest.FilterOperation.NoOp))
+        val search = MutableStateFlow(SearchRequest(search = "timeout", matchCase = false, useRegex = false))
+
+        val results = mutableListOf<LogIndexProgress>()
+        val job = launch { interactor.observeLogIndex(filter, search).collect { results.add(it) } }
+        advanceUntilIdle()
+        assertEquals(2, results.size, "Initial should have 2 emissions")
+
+        filter.value = FilterRequest(FilterRequest.FilterOperation.MinLogLevel(LogLevel.ERROR))
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(4, results.size, "Filter change adds 2 emissions, total 4")
+        val new = results.drop(2)
+        // [+0] isFilteringNow=false, isSearchingNow=true, NoSearch, logs=12 (cache cleared)
+        assertFalse(new[0].isFilteringNow)
+        assertTrue(new[0].isSearchingNow)
+        assertTrue(new[0].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.NoSearch)
+        assertEquals(12, new[0].lastSuccessIndex.logs.size)
+        // [+1] isFilteringNow=false, isSearchingNow=false, Search, logs=12 (search re-run)
+        assertFalse(new[1].isFilteringNow)
+        assertFalse(new[1].isSearchingNow)
+        assertTrue(new[1].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.Search)
+        assertEquals(12, new[1].lastSuccessIndex.logs.size)
+    }
+
+    @Test
+    fun `B3 filter change ERROR to NoOp with active search clears cache adds two emissions`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val interactor = createInteractor(testDispatcher = dispatcher)
+        advanceUntilIdle()
+
+        val filter = MutableStateFlow(FilterRequest(FilterRequest.FilterOperation.MinLogLevel(LogLevel.ERROR)))
+        val search = MutableStateFlow(SearchRequest(search = "timeout", matchCase = false, useRegex = false))
+
+        val results = mutableListOf<LogIndexProgress>()
+        val job = launch { interactor.observeLogIndex(filter, search).collect { results.add(it) } }
+        advanceUntilIdle()
+        assertEquals(2, results.size, "Initial should have 2 emissions")
+
+        filter.value = FilterRequest(FilterRequest.FilterOperation.NoOp)
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(4, results.size, "Filter change adds 2 emissions, total 4")
+        val new = results.drop(2)
+        // [+0] isFilteringNow=false, isSearchingNow=true, NoSearch, logs=160
+        assertFalse(new[0].isFilteringNow)
+        assertTrue(new[0].isSearchingNow)
+        assertTrue(new[0].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.NoSearch)
+        assertEquals(160, new[0].lastSuccessIndex.logs.size)
+        // [+1] isFilteringNow=false, isSearchingNow=false, Search, logs=160
+        assertFalse(new[1].isFilteringNow)
+        assertFalse(new[1].isSearchingNow)
+        assertTrue(new[1].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.Search)
+        assertEquals(160, new[1].lastSuccessIndex.logs.size)
+    }
+
+    @Test
+    fun `B4 filter change ERROR to tag with active search clears cache adds two emissions`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val interactor = createInteractor(testDispatcher = dispatcher)
+        advanceUntilIdle()
+
+        val filter = MutableStateFlow(FilterRequest(FilterRequest.FilterOperation.MinLogLevel(LogLevel.ERROR)))
+        val search = MutableStateFlow(SearchRequest(search = "timeout", matchCase = false, useRegex = false))
+
+        val results = mutableListOf<LogIndexProgress>()
+        val job = launch { interactor.observeLogIndex(filter, search).collect { results.add(it) } }
+        advanceUntilIdle()
+        assertEquals(2, results.size, "Initial should have 2 emissions")
+
+        filter.value = FilterRequest(
+            FilterRequest.FilterOperation.Tag(FilterRequest.Operation.Contains("BluetoothManager")),
+        )
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(4, results.size, "Filter change adds 2 emissions, total 4")
+        val new = results.drop(2)
+        // [+0] isFilteringNow=false, isSearchingNow=true, NoSearch, logs=13 (BluetoothManager filtered)
+        assertFalse(new[0].isFilteringNow)
+        assertTrue(new[0].isSearchingNow)
+        assertTrue(new[0].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.NoSearch)
+        assertEquals(13, new[0].lastSuccessIndex.logs.size)
+        // [+1] isFilteringNow=false, isSearchingNow=false, search completed, logs=13
+        assertFalse(new[1].isFilteringNow)
+        assertFalse(new[1].isSearchingNow)
+        assertFalse(new[1].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.NoSearch)
+        assertEquals(13, new[1].lastSuccessIndex.logs.size)
+    }
+
+    @Test
+    fun `C1 search change empty to non-empty adds two emissions NoSearch to Search`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val interactor = createInteractor(testDispatcher = dispatcher)
+        advanceUntilIdle()
+
+        val filter = MutableStateFlow(FilterRequest(FilterRequest.FilterOperation.NoOp))
+        val search = MutableStateFlow(SearchRequest(search = "", matchCase = false, useRegex = false))
+
+        val results = mutableListOf<LogIndexProgress>()
+        val job = launch { interactor.observeLogIndex(filter, search).collect { results.add(it) } }
+        advanceUntilIdle()
+        assertEquals(1, results.size, "Initial should have 1 emission")
+
+        search.value = SearchRequest(search = "timeout", matchCase = false, useRegex = false)
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(3, results.size, "Search change adds 2 emissions, total 3")
+        val new = results.drop(1)
+        // [+0] isFilteringNow=false, isSearchingNow=true, NoSearch, logs=160 (cache null)
+        assertFalse(new[0].isFilteringNow)
+        assertTrue(new[0].isSearchingNow)
+        assertTrue(new[0].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.NoSearch)
+        assertEquals(160, new[0].lastSuccessIndex.logs.size)
+        // [+1] isFilteringNow=false, isSearchingNow=false, Search, logs=160
+        assertFalse(new[1].isFilteringNow)
+        assertFalse(new[1].isSearchingNow)
+        assertTrue(new[1].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.Search)
+        assertEquals(160, new[1].lastSuccessIndex.logs.size)
+    }
+
+    @Test
+    fun `C2 search change non-empty to other sends stale lastSuccessIndex then new results`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val interactor = createInteractor(testDispatcher = dispatcher)
+        advanceUntilIdle()
+
+        val filter = MutableStateFlow(FilterRequest(FilterRequest.FilterOperation.NoOp))
+        val search = MutableStateFlow(SearchRequest(search = "timeout", matchCase = false, useRegex = false))
+
+        val results = mutableListOf<LogIndexProgress>()
+        val job = launch { interactor.observeLogIndex(filter, search).collect { results.add(it) } }
+        advanceUntilIdle()
+        assertEquals(2, results.size, "Initial should have 2 emissions")
+
+        search.value = SearchRequest(search = "payment", matchCase = false, useRegex = false)
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(4, results.size, "Search change adds 2 emissions, total 4")
+        val new = results.drop(2)
+        // [+0] isSearchingNow=true, lastSuccessIndex = stale Search (for "timeout")
+        assertFalse(new[0].isFilteringNow)
+        assertTrue(new[0].isSearchingNow)
+        assertTrue(new[0].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.Search)
+        assertEquals(160, new[0].lastSuccessIndex.logs.size)
+        // [+1] isSearchingNow=false, lastSuccessIndex = new Search (for "payment")
+        assertFalse(new[1].isFilteringNow)
+        assertFalse(new[1].isSearchingNow)
+        assertTrue(new[1].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.Search)
+        assertEquals(160, new[1].lastSuccessIndex.logs.size)
+        // Stale and new search have different match counts
+        val staleIndexSize =
+            (new[0].lastSuccessIndex.searchIndex as LogIndex.SearchIndex.Search).index.size
+        val newIndexSize =
+            (new[1].lastSuccessIndex.searchIndex as LogIndex.SearchIndex.Search).index.size
+        assertNotEquals(staleIndexSize, newIndexSize, "Stale cache should have different match count than new search")
+    }
+
+    @Test
+    fun `C3 search change non-empty to empty clears cache adds one NoSearch`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val interactor = createInteractor(testDispatcher = dispatcher)
+        advanceUntilIdle()
+
+        val filter = MutableStateFlow(FilterRequest(FilterRequest.FilterOperation.NoOp))
+        val search = MutableStateFlow(SearchRequest(search = "timeout", matchCase = false, useRegex = false))
+
+        val results = mutableListOf<LogIndexProgress>()
+        val job = launch { interactor.observeLogIndex(filter, search).collect { results.add(it) } }
+        advanceUntilIdle()
+        assertEquals(2, results.size, "Initial should have 2 emissions")
+
+        search.value = SearchRequest(search = "", matchCase = false, useRegex = false)
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(3, results.size, "Search clear adds 1 emission, total 3")
+        val new = results.drop(2)
+        // [+0] isSearchingNow=false, NoSearch, logs=160 (cache cleared)
+        assertFalse(new[0].isFilteringNow)
+        assertFalse(new[0].isSearchingNow)
+        assertTrue(new[0].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.NoSearch)
+        assertEquals(160, new[0].lastSuccessIndex.logs.size)
+    }
+
+    @Test
+    fun `C4 search change non-empty to other on filtered logs sends stale cache then new results`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val interactor = createInteractor(testDispatcher = dispatcher)
+        advanceUntilIdle()
+
+        val filter = MutableStateFlow(FilterRequest(FilterRequest.FilterOperation.MinLogLevel(LogLevel.ERROR)))
+        val search = MutableStateFlow(SearchRequest(search = "timeout", matchCase = false, useRegex = false))
+
+        val results = mutableListOf<LogIndexProgress>()
+        val job = launch { interactor.observeLogIndex(filter, search).collect { results.add(it) } }
+        advanceUntilIdle()
+        assertEquals(2, results.size, "Initial should have 2 emissions")
+
+        search.value = SearchRequest(search = "payment", matchCase = false, useRegex = false)
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(4, results.size, "Search change adds 2 emissions, total 4")
+        val new = results.drop(2)
+        // [+0] isSearchingNow=true, lastSuccessIndex = stale Search (for "timeout" on 12 ERROR logs)
+        assertFalse(new[0].isFilteringNow)
+        assertTrue(new[0].isSearchingNow)
+        assertTrue(new[0].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.Search)
+        assertEquals(12, new[0].lastSuccessIndex.logs.size)
+        // [+1] isSearchingNow=false, lastSuccessIndex = new Search (for "payment" on 12 ERROR logs)
+        assertFalse(new[1].isFilteringNow)
+        assertFalse(new[1].isSearchingNow)
+        assertTrue(new[1].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.Search)
+        assertEquals(12, new[1].lastSuccessIndex.logs.size)
+        // Stale and new search have different match counts
+        val staleIndexSize =
+            (new[0].lastSuccessIndex.searchIndex as LogIndex.SearchIndex.Search).index.size
+        val newIndexSize =
+            (new[1].lastSuccessIndex.searchIndex as LogIndex.SearchIndex.Search).index.size
+        assertNotEquals(staleIndexSize, newIndexSize, "Stale cache should have different match count than new search")
+    }
+
+    @Test
+    fun `D1 initial empty filter nonexistent search emits EmptySearch as second`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val interactor = createInteractor(testDispatcher = dispatcher)
+        advanceUntilIdle()
+
+        val filter = MutableStateFlow(FilterRequest(FilterRequest.FilterOperation.NoOp))
+        val search = MutableStateFlow(
+            SearchRequest(search = "zzzNonexistentStringzzz", matchCase = false, useRegex = false),
+        )
+
+        val results = mutableListOf<LogIndexProgress>()
+        val job = launch { interactor.observeLogIndex(filter, search).collect { results.add(it) } }
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(2, results.size, "Expected 2 emissions (collectLatest cancels intermediate filter emission)")
+        // [0] isFilteringNow=false, isSearchingNow=true, NoSearch, logs=160
+        assertFalse(results[0].isFilteringNow)
+        assertTrue(results[0].isSearchingNow)
+        assertTrue(results[0].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.NoSearch)
+        assertEquals(160, results[0].lastSuccessIndex.logs.size)
+        // [1] isFilteringNow=false, isSearchingNow=false, EmptySearch, logs=160
+        assertFalse(results[1].isFilteringNow)
+        assertFalse(results[1].isSearchingNow)
+        assertTrue(results[1].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.EmptySearch)
+        assertEquals(160, results[1].lastSuccessIndex.logs.size)
+    }
+
+    @Test
+    fun `D2 initial empty filter bad regex search emits BadRegex as second`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val interactor = createInteractor(testDispatcher = dispatcher)
+        advanceUntilIdle()
+
+        val filter = MutableStateFlow(FilterRequest(FilterRequest.FilterOperation.NoOp))
+        val search = MutableStateFlow(
+            SearchRequest(search = "[invalid(", matchCase = false, useRegex = true),
+        )
+
+        val results = mutableListOf<LogIndexProgress>()
+        val job = launch { interactor.observeLogIndex(filter, search).collect { results.add(it) } }
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(2, results.size, "Expected 2 emissions (collectLatest cancels intermediate filter emission)")
+        // [0] isFilteringNow=false, isSearchingNow=true, NoSearch, logs=160
+        assertFalse(results[0].isFilteringNow)
+        assertTrue(results[0].isSearchingNow)
+        assertTrue(results[0].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.NoSearch)
+        assertEquals(160, results[0].lastSuccessIndex.logs.size)
+        // [1] isFilteringNow=false, isSearchingNow=false, BadRegex, logs=160
+        assertFalse(results[1].isFilteringNow)
+        assertFalse(results[1].isSearchingNow)
+        assertTrue(results[1].lastSuccessIndex.searchIndex is LogIndex.SearchIndex.BadRegex)
+        assertEquals(160, results[1].lastSuccessIndex.logs.size)
+    }
+
+    @Test
+    fun `D3 clear search then change filter emits one NoSearch then one more NoSearch`() = runTest {
+        val dispatcher = UnconfinedTestDispatcher(testScheduler)
+        val interactor = createInteractor(testDispatcher = dispatcher)
+        advanceUntilIdle()
+
+        val filter = MutableStateFlow(FilterRequest(FilterRequest.FilterOperation.NoOp))
+        val search = MutableStateFlow(SearchRequest(search = "timeout", matchCase = false, useRegex = false))
+
+        val results = mutableListOf<LogIndexProgress>()
+        val job = launch { interactor.observeLogIndex(filter, search).collect { results.add(it) } }
+        advanceUntilIdle()
+        assertEquals(2, results.size, "Initial should have 2 emissions")
+
+        // Clear search
+        search.value = SearchRequest(search = "", matchCase = false, useRegex = false)
+        advanceUntilIdle()
+        assertEquals(3, results.size, "Search clear adds 1 emission")
+        val afterClear = results.last()
+        assertFalse(afterClear.isFilteringNow)
+        assertFalse(afterClear.isSearchingNow)
+        assertTrue(afterClear.lastSuccessIndex.searchIndex is LogIndex.SearchIndex.NoSearch)
+        assertEquals(160, afterClear.lastSuccessIndex.logs.size)
+
+        // Change filter (collectLatest cancels intermediate isFilteringNow=true)
+        filter.value = FilterRequest(FilterRequest.FilterOperation.MinLogLevel(LogLevel.ERROR))
+        advanceUntilIdle()
+        job.cancel()
+
+        assertEquals(4, results.size, "Filter change adds 1 emission, total 4")
+        val new = results.last()
+        assertFalse(new.isFilteringNow)
+        assertFalse(new.isSearchingNow)
+        assertTrue(new.lastSuccessIndex.searchIndex is LogIndex.SearchIndex.NoSearch)
+        assertEquals(12, new.lastSuccessIndex.logs.size)
     }
 
     // --- Group 3: toRunIdInfo ---

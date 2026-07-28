@@ -1,7 +1,9 @@
 package ru.vladislavsumin.feature.logViewer.ui.screen.logViewer
 
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.MainCoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,6 +14,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import ru.vladislavsumin.core.adb.client.AdbClient
+import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 import ru.vladislavsumin.core.coroutines.utils.LinkedFlow
 import ru.vladislavsumin.core.logger.manager.LoggerManager
 import ru.vladislavsumin.core.logger.manager.initTest
@@ -275,6 +278,13 @@ class LogViewerViewModelTest {
 
     // --- ViewModel factory ---
 
+    private object TestDispatchers : VsDispatchers {
+        override val Main: MainCoroutineDispatcher get() = Dispatchers.Main
+        override val Default: CoroutineDispatcher get() = Dispatchers.Unconfined
+        override val Unconfined: CoroutineDispatcher get() = Dispatchers.Unconfined
+        override val IO: CoroutineDispatcher get() = Dispatchers.Unconfined
+    }
+
     private data class TestDeps(
         val logsInteractor: FakeLogsInteractor = FakeLogsInteractor(),
         val settings: FakeLogViewerSettingsRepository = FakeLogViewerSettingsRepository(),
@@ -284,6 +294,7 @@ class LogViewerViewModelTest {
         val notifications: FakeNotificationsUiInteractor = FakeNotificationsUiInteractor(),
         val logParserProvider: LogParserProvider = StubLogParserProvider(),
         val adbClient: AdbClient = StubAdbClient(),
+        val dispatchers: VsDispatchers = TestDispatchers,
     )
 
     private fun createViewModel(
@@ -305,6 +316,7 @@ class LogViewerViewModelTest {
             bottomBarUiInteractor = deps.bottomBar,
             filterBarUiInteractor = deps.filterBar,
             notificationsUiInteractor = deps.notifications,
+            dispatchers = deps.dispatchers,
         )
     }
 
@@ -607,6 +619,7 @@ class LogViewerViewModelTest {
                 bottomBarUiInteractor = deps.bottomBar,
                 filterBarUiInteractor = deps.filterBar,
                 notificationsUiInteractor = deps.notifications,
+                dispatchers = deps.dispatchers,
             )
         }
         deps.logsInteractor.logsState.value = listOf(createLogRecord(0, tag = "MyTag"))
@@ -639,6 +652,7 @@ class LogViewerViewModelTest {
                 bottomBarUiInteractor = deps.bottomBar,
                 filterBarUiInteractor = deps.filterBar,
                 notificationsUiInteractor = deps.notifications,
+                dispatchers = deps.dispatchers,
             )
         }
         deps.logsInteractor.logsState.value = listOf(record)
@@ -669,6 +683,7 @@ class LogViewerViewModelTest {
                 bottomBarUiInteractor = deps.bottomBar,
                 filterBarUiInteractor = deps.filterBar,
                 notificationsUiInteractor = deps.notifications,
+                dispatchers = deps.dispatchers,
             )
         }
         deps.logsInteractor.runsState.value = listOf(runInfo)
@@ -833,7 +848,7 @@ class LogViewerViewModelTest {
             ),
         )
         val vm = createViewModel(deps = deps)
-        assertTrue(vm.state.value.logsViewState.showRunNumbers)
+        assertTrue(vm.state.value.logsViewState.runIdOrders != null)
     }
 
     @Test
@@ -851,6 +866,6 @@ class LogViewerViewModelTest {
             ),
         )
         val vm = createViewModel(deps = deps)
-        assertFalse(vm.state.value.logsViewState.showRunNumbers)
+        assertFalse(vm.state.value.logsViewState.runIdOrders != null)
     }
 }
