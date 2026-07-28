@@ -2,10 +2,10 @@
     "libraries": [
         {
             "uniqueId": "androidx.activity:activity",
-            "artifactVersion": "1.10.1",
+            "artifactVersion": "1.13.0",
             "name": "Activity",
             "description": "Provides the base Activity subclass and the relevant hooks to build a composable structure on top.",
-            "website": "https://developer.android.com/jetpack/androidx/releases/activity#1.10.1",
+            "website": "https://developer.android.com/jetpack/androidx/releases/activity#1.13.0",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -27,10 +27,10 @@
         },
         {
             "uniqueId": "androidx.activity:activity-compose",
-            "artifactVersion": "1.10.1",
+            "artifactVersion": "1.13.0",
             "name": "Activity Compose",
             "description": "Compose integration with Activity",
-            "website": "https://developer.android.com/jetpack/androidx/releases/activity#1.10.1",
+            "website": "https://developer.android.com/jetpack/androidx/releases/activity#1.13.0",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -52,10 +52,10 @@
         },
         {
             "uniqueId": "androidx.activity:activity-ktx",
-            "artifactVersion": "1.10.1",
+            "artifactVersion": "1.13.0",
             "name": "Activity Kotlin Extensions",
             "description": "Kotlin extensions for 'activity' artifact",
-            "website": "https://developer.android.com/jetpack/androidx/releases/activity#1.10.1",
+            "website": "https://developer.android.com/jetpack/androidx/releases/activity#1.13.0",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -417,56 +417,6 @@
             ]
         },
         {
-            "uniqueId": "androidx.compose.material:material-icons-core-android",
-            "artifactVersion": "1.7.6",
-            "name": "Compose Material Icons Core",
-            "description": "Compose Material Design core icons. This module contains the most commonly used set of Material icons.",
-            "website": "https://developer.android.com/jetpack/androidx/releases/compose-material#1.7.6",
-            "developers": [
-                {
-                    "name": "The Android Open Source Project"
-                }
-            ],
-            "organization": {
-                "name": "The Android Open Source Project"
-            },
-            "scm": {
-                "connection": "scm:git:https://android.googlesource.com/platform/frameworks/support",
-                "url": "https://cs.android.com/androidx/platform/frameworks/support"
-            },
-            "licenses": [
-                "Apache-2.0"
-            ],
-            "funding": [
-                
-            ]
-        },
-        {
-            "uniqueId": "androidx.compose.material:material-icons-extended-android",
-            "artifactVersion": "1.7.6",
-            "name": "Compose Material Icons Extended",
-            "description": "Compose Material Design extended icons. This module contains all Material icons. It is a very large dependency and should not be included directly.",
-            "website": "https://developer.android.com/jetpack/androidx/releases/compose-material#1.7.6",
-            "developers": [
-                {
-                    "name": "The Android Open Source Project"
-                }
-            ],
-            "organization": {
-                "name": "The Android Open Source Project"
-            },
-            "scm": {
-                "connection": "scm:git:https://android.googlesource.com/platform/frameworks/support",
-                "url": "https://cs.android.com/androidx/platform/frameworks/support"
-            },
-            "licenses": [
-                "Apache-2.0"
-            ],
-            "funding": [
-                
-            ]
-        },
-        {
             "uniqueId": "androidx.compose.material:material-ripple-android",
             "artifactVersion": "1.9.3",
             "name": "Compose Material Ripple",
@@ -790,10 +740,10 @@
         },
         {
             "uniqueId": "androidx.core:core",
-            "artifactVersion": "1.18.0",
+            "artifactVersion": "1.19.0",
             "name": "Core",
             "description": "Provides backward-compatible implementations of Android platform APIs and features.",
-            "website": "https://developer.android.com/jetpack/androidx/releases/core#1.18.0",
+            "website": "https://developer.android.com/jetpack/androidx/releases/core#1.19.0",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -815,10 +765,10 @@
         },
         {
             "uniqueId": "androidx.core:core-ktx",
-            "artifactVersion": "1.18.0",
+            "artifactVersion": "1.19.0",
             "name": "Core Kotlin Extensions",
             "description": "Kotlin extensions for 'core' artifact",
-            "website": "https://developer.android.com/jetpack/androidx/releases/core#1.18.0",
+            "website": "https://developer.android.com/jetpack/androidx/releases/core#1.19.0",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -931,10 +881,10 @@
         },
         {
             "uniqueId": "androidx.datastore:datastore-android",
-            "artifactVersion": "1.1.7",
+            "artifactVersion": "1.2.1",
             "name": "DataStore",
             "description": "Android DataStore - contains the underlying store used by each serialization method along with components that require an Android dependency",
-            "website": "https://developer.android.com/jetpack/androidx/releases/datastore#1.1.7",
+            "website": "https://developer.android.com/jetpack/androidx/releases/datastore#1.2.1",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -956,10 +906,10 @@
         },
         {
             "uniqueId": "androidx.datastore:datastore-core-android",
-            "artifactVersion": "1.1.7",
+            "artifactVersion": "1.2.1",
             "name": "DataStore Core",
             "description": "Android DataStore Core - contains the underlying store used by each serialization method",
-            "website": "https://developer.android.com/jetpack/androidx/releases/datastore#1.1.7",
+            "website": "https://developer.android.com/jetpack/androidx/releases/datastore#1.2.1",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -981,10 +931,10 @@
         },
         {
             "uniqueId": "androidx.datastore:datastore-core-okio-jvm",
-            "artifactVersion": "1.1.7",
+            "artifactVersion": "1.2.1",
             "name": "DataStore Core Okio",
             "description": "Android DataStore Core Okio- contains APIs to use datastore-core in multiplatform via okio",
-            "website": "https://developer.android.com/jetpack/androidx/releases/datastore#1.1.7",
+            "website": "https://developer.android.com/jetpack/androidx/releases/datastore#1.2.1",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -1006,10 +956,10 @@
         },
         {
             "uniqueId": "androidx.datastore:datastore-preferences-android",
-            "artifactVersion": "1.1.7",
+            "artifactVersion": "1.2.1",
             "name": "Preferences DataStore",
             "description": "Android Preferences DataStore",
-            "website": "https://developer.android.com/jetpack/androidx/releases/datastore#1.1.7",
+            "website": "https://developer.android.com/jetpack/androidx/releases/datastore#1.2.1",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -1031,10 +981,10 @@
         },
         {
             "uniqueId": "androidx.datastore:datastore-preferences-core-android",
-            "artifactVersion": "1.1.7",
+            "artifactVersion": "1.2.1",
             "name": "Preferences DataStore Core",
             "description": "Android Preferences DataStore without the Android Dependencies",
-            "website": "https://developer.android.com/jetpack/androidx/releases/datastore#1.1.7",
+            "website": "https://developer.android.com/jetpack/androidx/releases/datastore#1.2.1",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -1056,10 +1006,10 @@
         },
         {
             "uniqueId": "androidx.datastore:datastore-preferences-external-protobuf",
-            "artifactVersion": "1.1.7",
+            "artifactVersion": "1.2.1",
             "name": "Preferences External Protobuf",
             "description": "Repackaged proto-lite dependency for use by datastore preferences",
-            "website": "https://developer.android.com/jetpack/androidx/releases/datastore#1.1.7",
+            "website": "https://developer.android.com/jetpack/androidx/releases/datastore#1.2.1",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -1081,10 +1031,10 @@
         },
         {
             "uniqueId": "androidx.datastore:datastore-preferences-proto",
-            "artifactVersion": "1.1.7",
+            "artifactVersion": "1.2.1",
             "name": "Preferences DataStore Proto",
             "description": "Jarjar the generated proto for use by datastore-preferences.",
-            "website": "https://developer.android.com/jetpack/androidx/releases/datastore#1.1.7",
+            "website": "https://developer.android.com/jetpack/androidx/releases/datastore#1.2.1",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -1672,11 +1622,36 @@
             ]
         },
         {
-            "uniqueId": "androidx.navigationevent:navigationevent-desktop",
-            "artifactVersion": "1.0.1",
+            "uniqueId": "androidx.navigationevent:navigationevent-android",
+            "artifactVersion": "1.0.0",
             "name": "Navigation Event",
             "description": "Provides APIs to easily intercept platform navigation events, including swipes and clicks, to provide a consistent API surface for handling these events.",
-            "website": "https://developer.android.com/jetpack/androidx/releases/navigationevent#1.0.1",
+            "website": "https://developer.android.com/jetpack/androidx/releases/navigationevent#1.0.0",
+            "developers": [
+                {
+                    "name": "The Android Open Source Project"
+                }
+            ],
+            "organization": {
+                "name": "The Android Open Source Project"
+            },
+            "scm": {
+                "connection": "scm:git:https://android.googlesource.com/platform/frameworks/support",
+                "url": "https://cs.android.com/androidx/platform/frameworks/support"
+            },
+            "licenses": [
+                "Apache-2.0"
+            ],
+            "funding": [
+                
+            ]
+        },
+        {
+            "uniqueId": "androidx.navigationevent:navigationevent-compose-android",
+            "artifactVersion": "1.0.0",
+            "name": "NavigationEvent Compose",
+            "description": "Compose integration with NavigationEvent",
+            "website": "https://developer.android.com/jetpack/androidx/releases/navigationevent#1.0.0",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -1892,10 +1867,10 @@
         },
         {
             "uniqueId": "androidx.sqlite:sqlite-android",
-            "artifactVersion": "2.6.2",
+            "artifactVersion": "2.7.0",
             "name": "SQLite",
             "description": "SQLite API",
-            "website": "https://developer.android.com/jetpack/androidx/releases/sqlite#2.6.2",
+            "website": "https://developer.android.com/jetpack/androidx/releases/sqlite#2.7.0",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -1917,10 +1892,10 @@
         },
         {
             "uniqueId": "androidx.sqlite:sqlite-bundled-android",
-            "artifactVersion": "2.6.2",
+            "artifactVersion": "2.7.0",
             "name": "SQLite Bundled Integration",
             "description": "The implementation of SQLite library using the bundled SQLite.",
-            "website": "https://developer.android.com/jetpack/androidx/releases/sqlite#2.6.2",
+            "website": "https://developer.android.com/jetpack/androidx/releases/sqlite#2.7.0",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -1942,10 +1917,10 @@
         },
         {
             "uniqueId": "androidx.sqlite:sqlite-framework-android",
-            "artifactVersion": "2.6.2",
+            "artifactVersion": "2.7.0",
             "name": "SQLite Framework Integration",
             "description": "The implementation of SQLite library using the framework code.",
-            "website": "https://developer.android.com/jetpack/androidx/releases/sqlite#2.6.2",
+            "website": "https://developer.android.com/jetpack/androidx/releases/sqlite#2.7.0",
             "developers": [
                 {
                     "name": "The Android Open Source Project"
@@ -2174,7 +2149,7 @@
         },
         {
             "uniqueId": "com.android.tools:r8",
-            "artifactVersion": "8.11.18",
+            "artifactVersion": "9.1.31",
             "name": "D8 dexer and R8 shrinker",
             "description": "D8 dexer and R8 shrinker.",
             "website": "http://r8.googlesource.com/r8",
@@ -2299,7 +2274,7 @@
         },
         {
             "uniqueId": "com.github.skydoves:compose-stability-runtime-android",
-            "artifactVersion": "0.7.1",
+            "artifactVersion": "0.11.1",
             "name": "Compose Stability Analyzer Runtime",
             "description": "A Compose Compiler plugin that analyzes composable functions and generates stability reports.",
             "website": "https://github.com/skydoves/compose-stability-analyzer/",
@@ -2346,7 +2321,7 @@
         },
         {
             "uniqueId": "com.mikepenz:aboutlibraries-compose-core-android",
-            "artifactVersion": "14.1.0",
+            "artifactVersion": "15.0.4",
             "name": "AboutLibraries Compose UI Library",
             "description": "AboutLibraries automatically detects all dependencies of a project and collects their information including the license. Optionally visualising it via the provided ui components.",
             "website": "https://github.com/mikepenz/AboutLibraries",
@@ -2369,7 +2344,7 @@
         },
         {
             "uniqueId": "com.mikepenz:aboutlibraries-compose-m3-android",
-            "artifactVersion": "14.1.0",
+            "artifactVersion": "15.0.4",
             "name": "AboutLibraries Compose Material 3 Library",
             "description": "AboutLibraries automatically detects all dependencies of a project and collects their information including the license. Optionally visualising it via the provided ui components.",
             "website": "https://github.com/mikepenz/AboutLibraries",
@@ -2392,7 +2367,7 @@
         },
         {
             "uniqueId": "com.mikepenz:aboutlibraries-core-android",
-            "artifactVersion": "14.1.0",
+            "artifactVersion": "15.0.4",
             "name": "AboutLibraries Core Library",
             "description": "AboutLibraries automatically detects all dependencies of a project and collects their information including the license. Optionally visualising it via the provided ui components.",
             "website": "https://github.com/mikepenz/AboutLibraries",
@@ -2554,7 +2529,7 @@
         },
         {
             "uniqueId": "io.ktor:ktor-io-jvm",
-            "artifactVersion": "3.4.3",
+            "artifactVersion": "3.5.1",
             "name": "ktor-io",
             "description": "Ktor is a framework for quickly creating web applications in Kotlin with minimal effort.",
             "website": "https://github.com/ktorio/ktor",
@@ -2576,7 +2551,7 @@
         },
         {
             "uniqueId": "io.ktor:ktor-network-jvm",
-            "artifactVersion": "3.4.3",
+            "artifactVersion": "3.5.1",
             "name": "ktor-network",
             "description": "Ktor is a framework for quickly creating web applications in Kotlin with minimal effort.",
             "website": "https://github.com/ktorio/ktor",
@@ -2774,7 +2749,7 @@
         },
         {
             "uniqueId": "io.ktor:ktor-utils-jvm",
-            "artifactVersion": "3.4.3",
+            "artifactVersion": "3.5.1",
             "name": "ktor-utils",
             "description": "Ktor is a framework for quickly creating web applications in Kotlin with minimal effort.",
             "website": "https://github.com/ktorio/ktor",
@@ -2951,7 +2926,7 @@
         },
         {
             "uniqueId": "org.apache.logging.log4j:log4j-api",
-            "artifactVersion": "2.26.0",
+            "artifactVersion": "2.26.1",
             "name": "Apache Log4j API",
             "description": "The logging API of the Log4j project.\n    Library and application code can log through this API.\n    It contains a simple built-in implementation (`SimpleLogger`) for trivial use cases.\n    Production applications are recommended to use Log4j API in combination with a fully-fledged implementation, such as Log4j Core.",
             "website": "https://logging.apache.org/log4j/2.x/",
@@ -3018,7 +2993,7 @@
         },
         {
             "uniqueId": "org.apache.logging.log4j:log4j-core",
-            "artifactVersion": "2.26.0",
+            "artifactVersion": "2.26.1",
             "name": "Apache Log4j Core",
             "description": "A versatile, industrial-grade, and reference implementation of the Log4j API.\n    It bundles a rich set of components to assist various use cases:\n    Appenders targeting files, network sockets, databases, SMTP servers;\n    Layouts that can render CSV, HTML, JSON, Syslog, etc. formatted outputs;\n    Filters that can be configured using log event rates, regular expressions, scripts, time, etc.\n    It contains several extension points to introduce custom components, if needed.",
             "website": "https://logging.apache.org/log4j/2.x/",
@@ -3721,54 +3696,6 @@
             ]
         },
         {
-            "uniqueId": "org.jetbrains.compose.material:material-icons-core",
-            "artifactVersion": "1.7.3",
-            "name": "Compose Material Icons Core",
-            "description": "Compose Material Design core icons. This module contains the most commonly used set of Material icons.",
-            "website": "https://github.com/JetBrains/compose-jb",
-            "developers": [
-                {
-                    "name": "Compose Multiplatform Team",
-                    "organisationUrl": "https://www.jetbrains.com"
-                }
-            ],
-            "scm": {
-                "connection": "scm:git:https://github.com/JetBrains/compose-jb.git",
-                "developerConnection": "scm:git:https://github.com/JetBrains/compose-jb.git",
-                "url": "https://github.com/JetBrains/compose-jb"
-            },
-            "licenses": [
-                "Apache-2.0"
-            ],
-            "funding": [
-                
-            ]
-        },
-        {
-            "uniqueId": "org.jetbrains.compose.material:material-icons-extended",
-            "artifactVersion": "1.7.3",
-            "name": "Compose Material Icons Extended",
-            "description": "Compose Material Design extended icons. This module contains all Material icons. It is a very large dependency and should not be included directly.",
-            "website": "https://github.com/JetBrains/compose-jb",
-            "developers": [
-                {
-                    "name": "Compose Multiplatform Team",
-                    "organisationUrl": "https://www.jetbrains.com"
-                }
-            ],
-            "scm": {
-                "connection": "scm:git:https://github.com/JetBrains/compose-jb.git",
-                "developerConnection": "scm:git:https://github.com/JetBrains/compose-jb.git",
-                "url": "https://github.com/JetBrains/compose-jb"
-            },
-            "licenses": [
-                "Apache-2.0"
-            ],
-            "funding": [
-                
-            ]
-        },
-        {
             "uniqueId": "org.jetbrains.compose.material:material-ripple",
             "artifactVersion": "1.9.1",
             "name": "Compose Material Ripple",
@@ -3986,10 +3913,10 @@
         },
         {
             "uniqueId": "org.jetbrains.compose.ui:ui-tooling-preview",
-            "artifactVersion": "1.10.3",
+            "artifactVersion": "1.11.1",
             "name": "Compose UI Preview Tooling",
             "description": "Compose tooling library API. This library provides the API required to declare @Preview composables in user apps.",
-            "website": "https://github.com/JetBrains/compose-jb",
+            "website": "https://github.com/JetBrains/compose-multiplatform",
             "developers": [
                 {
                     "name": "Compose Multiplatform Team",
@@ -3997,9 +3924,9 @@
                 }
             ],
             "scm": {
-                "connection": "scm:git:https://github.com/JetBrains/compose-jb.git",
-                "developerConnection": "scm:git:https://github.com/JetBrains/compose-jb.git",
-                "url": "https://github.com/JetBrains/compose-jb"
+                "connection": "scm:git:https://github.com/JetBrains/compose-multiplatform.git",
+                "developerConnection": "scm:git:https://github.com/JetBrains/compose-multiplatform.git",
+                "url": "https://github.com/JetBrains/compose-multiplatform"
             },
             "licenses": [
                 "Apache-2.0"
@@ -4081,54 +4008,6 @@
             ]
         },
         {
-            "uniqueId": "org.jetbrains.kotlin:kotlin-android-extensions-runtime",
-            "artifactVersion": "1.9.22",
-            "name": "Kotlin Android Extensions Runtime",
-            "description": "Kotlin Android Extensions Runtime",
-            "website": "https://kotlinlang.org/",
-            "developers": [
-                {
-                    "name": "Kotlin Team",
-                    "organisationUrl": "https://www.jetbrains.com"
-                }
-            ],
-            "scm": {
-                "connection": "scm:git:https://github.com/JetBrains/kotlin.git",
-                "developerConnection": "scm:git:https://github.com/JetBrains/kotlin.git",
-                "url": "https://github.com/JetBrains/kotlin"
-            },
-            "licenses": [
-                "Apache-2.0"
-            ],
-            "funding": [
-                
-            ]
-        },
-        {
-            "uniqueId": "org.jetbrains.kotlin:kotlin-parcelize-runtime",
-            "artifactVersion": "1.9.22",
-            "name": "Parcelize Runtime",
-            "description": "Runtime library for the Parcelize compiler plugin",
-            "website": "https://kotlinlang.org/",
-            "developers": [
-                {
-                    "name": "Kotlin Team",
-                    "organisationUrl": "https://www.jetbrains.com"
-                }
-            ],
-            "scm": {
-                "connection": "scm:git:https://github.com/JetBrains/kotlin.git",
-                "developerConnection": "scm:git:https://github.com/JetBrains/kotlin.git",
-                "url": "https://github.com/JetBrains/kotlin"
-            },
-            "licenses": [
-                "Apache-2.0"
-            ],
-            "funding": [
-                
-            ]
-        },
-        {
             "uniqueId": "org.jetbrains.kotlin:kotlin-reflect",
             "artifactVersion": "2.3.0",
             "name": "Kotlin Reflect",
@@ -4154,7 +4033,7 @@
         },
         {
             "uniqueId": "org.jetbrains.kotlin:kotlin-stdlib",
-            "artifactVersion": "2.3.21",
+            "artifactVersion": "2.4.10",
             "name": "Kotlin Stdlib",
             "description": "Kotlin Standard Library",
             "website": "https://kotlinlang.org/",
@@ -4178,7 +4057,7 @@
         },
         {
             "uniqueId": "org.jetbrains.kotlin:kotlin-stdlib-common",
-            "artifactVersion": "2.3.21",
+            "artifactVersion": "2.4.10",
             "name": "Kotlin Stdlib Common",
             "description": "Kotlin Common Standard Library (legacy, use kotlin-stdlib instead)",
             "website": "https://kotlinlang.org/",
@@ -4788,7 +4667,7 @@
         },
         {
             "uniqueId": "org.slf4j:slf4j-api",
-            "artifactVersion": "2.0.17",
+            "artifactVersion": "2.0.18",
             "name": "SLF4J API Module",
             "description": "The slf4j API",
             "website": "http://www.slf4j.org",
