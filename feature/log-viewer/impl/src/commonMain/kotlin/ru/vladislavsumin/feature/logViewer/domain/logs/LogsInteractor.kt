@@ -235,15 +235,13 @@ class LogsInteractorImpl(
 
     override fun observeLogIndex(filter: Flow<FilterRequest>, search: Flow<SearchRequest>): Flow<LogIndexProgress> =
         channelFlow {
-            // TODO тут раздельное кеширование search && filter поэтому при изменении фильтра ме теряем кеш search
-            //  и получаем + одну эмиссию lastSuccessIndex
-
             // Если этот кеш не null, то в нем содержаться актуальные или прошлые результаты поиска
-            var searchCache: LogIndex?
+            var searchCache: LogIndex? = null
 
             filterDelegate.createFilterProgressFlow(filter).collectLatest { filterProgress ->
-                // При изменении данных фильтра всегда обнуляем кеш.
-                searchCache = null
+                if (!filterProgress.isFilteringNow) {
+                    searchCache = null
+                }
 
                 val logs = filterProgress.logs
                 search.collectLatest { search ->
