@@ -53,6 +53,7 @@ import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
 import java.nio.file.Path
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.io.path.name
+import kotlin.time.measureTimedValue
 
 @Stable
 @GenerateFactory
@@ -309,24 +310,29 @@ internal class LogViewerViewModel(
         }
     }
 
-    private fun groupLogsByRun(logs: List<LogRecord>, runIdOrders: List<RunIdInfo>?,): List<LogsViewState.SectionInfo> {
-        if (runIdOrders == null) {
-            return listOf(LogsViewState.SectionInfo(logs = logs, meta = null))
-        }
-        val logIterator = logs.listIterator()
-        return runIdOrders.map { info ->
-            val items = mutableListOf<LogRecord>()
-            while (logIterator.hasNext()) {
-                val item = logIterator.next()
-                if (item.order <= info.orderRange.last) {
-                    items.add(item)
-                } else {
-                    logIterator.previous()
-                    break
+    private fun groupLogsByRun(logs: List<LogRecord>, runIdOrders: List<RunIdInfo>?): List<LogsViewState.SectionInfo> {
+        val (result, time) = measureTimedValue {
+            if (runIdOrders == null) {
+                listOf(LogsViewState.SectionInfo(logs = logs, meta = null))
+            } else {
+                val logIterator = logs.listIterator()
+                runIdOrders.map { info ->
+                    val items = mutableListOf<LogRecord>()
+                    while (logIterator.hasNext()) {
+                        val item = logIterator.next()
+                        if (item.order <= info.orderRange.last) {
+                            items.add(item)
+                        } else {
+                            logIterator.previous()
+                            break
+                        }
+                    }
+                    LogsViewState.SectionInfo(logs = items, meta = info.meta)
                 }
             }
-            LogsViewState.SectionInfo(logs = items, meta = info.meta)
         }
+        LogViewerLogger.d { "groupLogsByRun() done at $time" }
+        return result
     }
 
     /**
