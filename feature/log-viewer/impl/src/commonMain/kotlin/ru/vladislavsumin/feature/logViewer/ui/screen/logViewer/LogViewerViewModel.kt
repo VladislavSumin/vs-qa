@@ -10,12 +10,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import ru.vladislavsumin.core.adb.client.AdbClient
+import ru.vladislavsumin.core.coroutines.dispatcher.VsDispatchers
 import ru.vladislavsumin.core.coroutines.utils.LinkedFlow
 import ru.vladislavsumin.core.coroutines.utils.combine
 import ru.vladislavsumin.core.coroutines.utils.linkTo
@@ -29,7 +31,6 @@ import ru.vladislavsumin.feature.logRecent.domain.LogRecentInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LiveProcessNameEnricher
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogIndex
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogOrder
-import ru.vladislavsumin.feature.logViewer.domain.logs.LogRecord
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractor
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsInteractorFactory
 import ru.vladislavsumin.feature.logViewer.domain.logs.LogsSource
@@ -53,7 +54,6 @@ import ru.vladislavsumin.qa.feature.tabs.ui.component.tabs.TabSupport
 import java.nio.file.Path
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.io.path.name
-import kotlin.time.measureTimedValue
 
 @Stable
 @GenerateFactory
@@ -62,6 +62,7 @@ internal class LogViewerViewModel(
     logsInteractorFactory: LogsInteractorFactory,
     private val logViewerSettingsRepository: LogViewerSettingsRepository,
     private val logRecentInteractor: LogRecentInteractor,
+    private val dispatchers: VsDispatchers,
     adbClient: AdbClient,
     @ByCreate private val source: LogViewerSource,
     @ByCreate mappingPath: Path?,
@@ -169,11 +170,14 @@ internal class LogViewerViewModel(
     }
 
     val state: StateFlow<LogViewerViewState> = combine(
-        logsInteractor.observeLogIndex(
-            filter = filterBarUiInteractor.filterState.mapNotNull { it.searchRequest.getOrNull() },
-            search = search,
+        SectionInfoEnricher().enrich(
+            logsInteractor.observeLogIndex(
+                filter = filterBarUiInteractor.filterState.mapNotNull { it.searchRequest.getOrNull() },
+                search = search,
+            ),
         )
-            .onEach {
+            .flowOn(dispatchers.Default)
+            .onEach { (it, _) ->
                 // TODO отлично onEach стал еще больше. Теперь тут двойной костыль.
                 @Suppress("ComplexCondition")
                 if (!isOpenedOnce &&
@@ -218,7 +222,7 @@ internal class LogViewerViewModel(
         showTagStat,
         followTail,
     ) {
-            logIndexProgress,
+            enrichedLogIndexProgress,
             search,
             selectedSearchIndex,
             mappingStatus,
@@ -229,10 +233,7 @@ internal class LogViewerViewModel(
             followTail,
         ->
 
-        val logsWithRunNumber = groupLogsByRun(
-            logIndexProgress.lastSuccessIndex.logs,
-            logIndexProgress.lastSuccessIndex.runIdOrders,
-        )
+        val (logIndexProgress, logsWithRunNumber) = enrichedLogIndexProgress
 
         val currentSelectedItemOrder = logIndexProgress.lastSuccessIndex.logs.getOrNull(
             logIndexProgress.lastSuccessIndex.searchIndex.index.getOrNull(selectedSearchIndex) ?: -1,
@@ -308,28 +309,6 @@ internal class LogViewerViewModel(
                     )
                 }
         }
-    }
-
-    private fun groupLogsByRun(logs: List<LogRecord>, runIdOrders: List<RunIdInfo>?): List<LogsViewState.SectionInfo> {
-        val (result, time) = measureTimedValue {
-            if (runIdOrders == null) {
-                listOf(LogsViewState.SectionInfo(logs = logs, meta = null))
-            } else {
-                var logIndex = 0
-                runIdOrders.map { info ->
-                    val startIndex = logIndex
-                    while (logIndex < logs.size && logs[logIndex].order <= info.orderRange.last) {
-                        logIndex++
-                    }
-                    LogsViewState.SectionInfo(
-                        logs = logs.subList(startIndex, logIndex),
-                        meta = info.meta,
-                    )
-                }
-            }
-        }
-        LogViewerLogger.d { "groupLogsByRun() done at $time" }
-        return result
     }
 
     /**
