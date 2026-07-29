@@ -48,6 +48,30 @@ kotlin {
     }
 }
 
+// afterEvaluate {
+//    val flags = listOf(
+// //        "-XX:+UseZGC",
+// //        "-XX:+ZGenerational",
+// //        "-XX:ZAllocationSpikeTolerance=2",
+// //        "-XX:+UnlockExperimentalVMOptions",
+// //        "-XX:+UseEpsilonGC",
+// //        "-Xms512m",
+// //        "-Xmx64g",
+// //        "-XX:+AlwaysPreTouch",
+//        "-Xms512m",
+//        "-Xmx2g",
+//        "-XX:+AlwaysPreTouch",
+//        "-XX:+UseG1GC",
+//        "-XX:MaxGCPauseMillis=4",
+//        "-XX:G1HeapRegionSize=4m",
+//        "-XX:+ParallelRefProcEnabled",
+//
+//        )
+//    tasks.withType<JavaExec> {
+//        jvmArgs(flags)
+//    }
+// }
+
 buildkonfig {
     packageName = "ru.vladislavsumin.qa"
     objectName = "BuildConfig"
