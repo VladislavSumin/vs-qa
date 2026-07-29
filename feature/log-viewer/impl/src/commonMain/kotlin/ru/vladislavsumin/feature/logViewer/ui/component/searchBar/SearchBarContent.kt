@@ -1,6 +1,5 @@
 package ru.vladislavsumin.feature.logViewer.ui.component.searchBar
 
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -11,7 +10,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -61,26 +59,19 @@ internal fun SearchBarContent(
             },
         )
     }
-    Row(
-        modifier
-            .padding(vertical = 4.dp, horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        QaTextField(
-            value = state.searchRequest,
-            onValueChange = viewModel::onSearchChange,
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .resetFocusOnEsc()
-                .weight(1f)
-                .onPreviewKeyEvent(hotkeyController::invoke),
-            maxLines = 1,
-            placeholder = { Text(stringResource(Res.string.log_viewer_search_placeholder)) },
-            leadingContent = { Icon(imageVector = QaIcons.Search, contentDescription = null) },
-            isError = state.isBadRegex,
-            trailingContent = { TrailingButtons(viewModel, state, showSideMenu) },
-        )
-    }
+    QaTextField(
+        value = state.searchRequest,
+        onValueChange = viewModel::onSearchChange,
+        modifier = modifier
+            .padding(vertical = 4.dp, horizontal = 8.dp)
+            .focusRequester(focusRequester)
+            .resetFocusOnEsc()
+            .onPreviewKeyEvent(hotkeyController::invoke),
+        placeholder = { Text(stringResource(Res.string.log_viewer_search_placeholder)) },
+        leadingContent = { Icon(imageVector = QaIcons.Search, contentDescription = null) },
+        isError = state.isBadRegex,
+        trailingContent = { TrailingButtons(viewModel, state, showSideMenu) },
+    )
 }
 
 @Composable
