@@ -8,4 +8,5 @@
     <string name="settings_dump_path_temp">Temp</string>
     <string name="settings_dump_path_custom">Custom path</string>
     <string name="settings_dump_path_custom_hint">Path to save dumps</string>
+    <string name="settings_liquid_glass_title">Liquid Glass</string>
 </resources>

@@ -8,4 +8,5 @@
     <string name="settings_dump_path_temp">Временная папка</string>
     <string name="settings_dump_path_custom">Своя папка</string>
     <string name="settings_dump_path_custom_hint">Путь для сохранения дампов</string>
+    <string name="settings_liquid_glass_title">Жидкое стекло</string>
 </resources>

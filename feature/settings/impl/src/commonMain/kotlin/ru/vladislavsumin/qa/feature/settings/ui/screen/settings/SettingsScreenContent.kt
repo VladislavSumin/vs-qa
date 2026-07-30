@@ -14,6 +14,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -36,6 +37,7 @@ import ru.vladislavsumin.feature.settings.impl.generated.resources.settings_lang
 import ru.vladislavsumin.feature.settings.impl.generated.resources.settings_language_russian
 import ru.vladislavsumin.feature.settings.impl.generated.resources.settings_language_system
 import ru.vladislavsumin.feature.settings.impl.generated.resources.settings_language_title
+import ru.vladislavsumin.feature.settings.impl.generated.resources.settings_liquid_glass_title
 import ru.vladislavsumin.qa.feature.settings.domain.AppLanguage
 import ru.vladislavsumin.qa.feature.settings.domain.DumpPathOption
 
@@ -43,6 +45,7 @@ import ru.vladislavsumin.qa.feature.settings.domain.DumpPathOption
 internal fun SettingsScreenContent(viewModel: SettingsScreenViewModel, modifier: Modifier = Modifier) {
     val selectedLanguage by viewModel.language.collectAsState(AppLanguage.SYSTEM)
     val dumpPathOption by viewModel.dumpPathOption.collectAsState(DumpPathOption.Temp)
+    val isLiquidGlass by viewModel.isLiquidGlass.collectAsState(true)
 
     Column(modifier.fillMaxSize().padding(16.dp)) {
         Text(
@@ -70,6 +73,10 @@ internal fun SettingsScreenContent(viewModel: SettingsScreenViewModel, modifier:
                 viewModel::onSelectLanguage,
             )
         }
+
+        Spacer(Modifier.height(24.dp))
+
+        LiquidGlassSection(isLiquidGlass, viewModel::onToggleLiquidGlass)
 
         Spacer(Modifier.height(24.dp))
 
@@ -161,5 +168,23 @@ private fun LanguageOption(
             text = stringResource(titleRes),
             modifier = Modifier.padding(start = 8.dp),
         )
+    }
+}
+
+@Composable
+private fun LiquidGlassSection(enabled: Boolean, onToggle: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onToggle(!enabled) }
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(Res.string.settings_liquid_glass_title),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.weight(1f),
+        )
+        Switch(checked = enabled, onCheckedChange = onToggle)
     }
 }

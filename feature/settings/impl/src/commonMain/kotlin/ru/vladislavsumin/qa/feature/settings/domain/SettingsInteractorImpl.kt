@@ -1,6 +1,7 @@
 package ru.vladislavsumin.qa.feature.settings.domain
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +20,7 @@ internal interface SettingsInteractorInternal : SettingsInteractor {
     suspend fun setDumpCustomPath(path: String)
     suspend fun setDumpPathTemp()
     suspend fun setDumpPathCustom()
+    suspend fun setLiquidGlass(enabled: Boolean)
 }
 
 internal enum class DumpPathMode { TEMP, CUSTOM }
@@ -29,6 +31,7 @@ internal class SettingsInteractorImpl(fileSystemService: FileSystemService, priv
     private val languagePreferenceKey = stringPreferencesKey("app_language")
     private val dumpPathModeKey = stringPreferencesKey("dump_path_mode")
     private val dumpCustomPathKey = stringPreferencesKey("dump_custom_path")
+    private val liquidGlassKey = booleanPreferencesKey("liquid_glass")
 
     private val prefs = PreferenceDataStoreFactory.createWithPath(
         produceFile = {
@@ -55,6 +58,9 @@ internal class SettingsInteractorImpl(fileSystemService: FileSystemService, priv
             }
         }
 
+    override val isLiquidGlass: Flow<Boolean> = prefs.data
+        .map { preferences -> preferences[liquidGlassKey] ?: true }
+
     override suspend fun setLanguage(language: AppLanguage): Unit = withContext(dispatchers.IO) {
         prefs.edit { preferences -> preferences[languagePreferenceKey] = language.name }
     }
@@ -70,4 +76,8 @@ internal class SettingsInteractorImpl(fileSystemService: FileSystemService, priv
     override suspend fun setDumpPathTemp(): Unit = setDumpPathMode(DumpPathMode.TEMP)
 
     override suspend fun setDumpPathCustom(): Unit = setDumpPathMode(DumpPathMode.CUSTOM)
+
+    override suspend fun setLiquidGlass(enabled: Boolean): Unit = withContext(dispatchers.IO) {
+        prefs.edit { preferences -> preferences[liquidGlassKey] = enabled }
+    }
 }

@@ -15,4 +15,9 @@ interface SettingsInteractor {
      * Настройка расположения для сохранения дампов логов с устройства.
      */
     val dumpPathOption: Flow<DumpPathOption>
+
+    /**
+     * Включен ли эффект жидкого стекла. По умолчанию `true`.
+     */
+    val isLiquidGlass: Flow<Boolean>
 }

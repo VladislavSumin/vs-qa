@@ -11,6 +11,7 @@ import ru.vladislavsumin.qa.feature.settings.domain.SettingsInteractorInternal
 internal class SettingsScreenViewModel(private val settingsInteractor: SettingsInteractorInternal) : ViewModel() {
     val language = settingsInteractor.language
     val dumpPathOption = settingsInteractor.dumpPathOption
+    val isLiquidGlass = settingsInteractor.isLiquidGlass
 
     fun onSelectLanguage(language: AppLanguage) = launch {
         settingsInteractor.setLanguage(language)
@@ -26,5 +27,9 @@ internal class SettingsScreenViewModel(private val settingsInteractor: SettingsI
 
     fun onDumpCustomPathChange(path: String) = launch {
         settingsInteractor.setDumpCustomPath(path)
+    }
+
+    fun onToggleLiquidGlass(enabled: Boolean) = launch {
+        settingsInteractor.setLiquidGlass(enabled)
     }
 }
