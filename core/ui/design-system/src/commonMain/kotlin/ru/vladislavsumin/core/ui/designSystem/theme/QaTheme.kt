@@ -18,7 +18,11 @@ import kotlin.io.path.Path
 internal val LocalQaColorScheme = staticCompositionLocalOf { QaColorScheme() }
 
 @Composable
-fun QaTheme(yaml: Yaml, content: @Composable () -> Unit) {
+fun QaTheme(
+    yaml: Yaml,
+    isLiquidGlass: Boolean,
+    content: @Composable () -> Unit,
+) {
     val colorScheme = remember {
         // TODO вынести в общий код.
         val home = System.getProperty("user.home")

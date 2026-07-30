@@ -49,6 +49,7 @@ internal actual fun WindowContent(
     val windowState = rememberWindowState()
     val windowTitleExtension by windowTitleInteractor!!.windowTitleExtension.collectAsState()
     val language by settingsInteractor.language.collectAsState(AppLanguage.SYSTEM)
+    val isLiquidGlass by settingsInteractor.isLiquidGlass.collectAsState(false)
     val title = "vs-qa"
     val windowTitle = if (windowTitleExtension == null) title else "$title: $windowTitleExtension"
 
@@ -75,7 +76,7 @@ internal actual fun WindowContent(
             LifecycleController(lifecycleRegistry, windowState, windowInfo)
             // TODO вынести тему отдельно
             AppEnvironment(language.toLocaleTag()) {
-                QaTheme(yaml) {
+                QaTheme(yaml, isLiquidGlass) {
                     screen.value.child?.instance?.Render(modifier)
                 }
             }

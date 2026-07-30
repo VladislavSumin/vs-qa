@@ -39,9 +39,11 @@ internal actual fun WindowContent(
         lifecycleRegistry.resume()
     }
     val language by settingsInteractor.language.collectAsState(AppLanguage.SYSTEM)
+    val isLiquidGlass by settingsInteractor.isLiquidGlass.collectAsState(false)
+
     // TODO вынести тему отдельно
     AppEnvironment(language.toLocaleTag()) {
-        QaTheme(yaml) {
+        QaTheme(yaml, isLiquidGlass) {
             screen.value.child?.instance?.Render(
                 modifier = modifier.onKeyEvent(globalHotkeyDispatcher::onKeyEvent),
             )
