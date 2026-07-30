@@ -13,11 +13,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -48,12 +46,6 @@ private fun HintContent(
     modifier: Modifier,
     cursorOffset: Float,
 ) {
-    val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(focusRequester) {
-        focusRequester.requestFocus()
-    }
-
     Popup(
         popupPositionProvider = remember(cursorOffset) { HintPopupPositionProvider(cursorOffset) },
         onDismissRequest = viewModel::onCloseRequest,
