@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
@@ -66,9 +67,9 @@ internal fun LogViewerContent(
         val showTagStat by remember { derivedStateOf { state.value.showTagStat } }
         // TODO вынести эту логику в viewModel.
         val showSideMenu = remember { mutableStateOf(false) }
-        Column {
-            SearchBarContent(viewModel, searchState, showSideMenu, searchFocusRequester)
-            Row(Modifier.weight(1f)) {
+        Row {
+            Column(Modifier.weight(1f)) {
+                SearchBarContent(viewModel, searchState, showSideMenu, searchFocusRequester)
                 val modifier = Modifier
                     .weight(1f)
                     .padding(start = 2.dp)
@@ -80,15 +81,15 @@ internal fun LogViewerContent(
                 } else {
                     logsComponent.Render(modifier)
                 }
-                // TODO сделать нормальные расширения для адаптивной верстки
-                val withDp = with(LocalDensity.current) {
-                    LocalWindowInfo.current.containerSize.width.toDp()
-                }
-                if (withDp > 600.dp || showSideMenu.value) {
-                    SidePanelContent(viewModel, state)
-                }
+                filterBarComponent.Render(Modifier)
             }
-            filterBarComponent.Render(Modifier)
+            // TODO сделать нормальные расширения для адаптивной верстки
+            val withDp = with(LocalDensity.current) {
+                LocalWindowInfo.current.containerSize.width.toDp()
+            }
+            if (withDp > 600.dp || showSideMenu.value) {
+                SidePanelContent(viewModel, state)
+            }
         }
 
         dragAndDropOverlayComponent.Render(Modifier)
@@ -103,6 +104,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
         Modifier.fillMaxHeight().width(IntrinsicSize.Min),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Spacer(Modifier.height(24.dp))
         QaIconButton(
             onClick = {
                 // TODO провести через вью модель.
@@ -183,6 +185,7 @@ private fun SidePanelContent(viewModel: LogViewerViewModel, state: State<LogView
                 .hint(stringResource(Res.string.log_viewer_side_scroll_bottom), placement = HintPlacement.LEFT)
                 .padding(4.dp),
         ) { Icon(QaIcons.ArrowDownward, null) }
+        Spacer(Modifier.height(24.dp))
     }
 }
 
