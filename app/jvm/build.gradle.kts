@@ -1,13 +1,10 @@
-import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import proguard.gradle.ProGuardTask
-import ru.vladislavsumin.configuration.projectConfiguration
 import ru.vladislavsumin.utils.fatJar
 import java.io.File
 
 plugins {
     id("ru.vladislavsumin.convention.kmp.jvm")
     id("ru.vladislavsumin.convention.compose")
-    id("com.codingfeline.buildkonfig")
     id("io.sentry.kotlin.multiplatform.gradle")
 }
 
@@ -71,15 +68,6 @@ kotlin {
 //        jvmArgs(flags)
 //    }
 // }
-
-buildkonfig {
-    packageName = "ru.vladislavsumin.qa"
-    objectName = "BuildConfig"
-
-    defaultConfigs {
-        buildConfigField(STRING, "version", project.projectConfiguration.version)
-    }
-}
 
 tasks.register<ProGuardTask>("buildFatJarMainMin") {
     dependsOn("buildFatJarMain")

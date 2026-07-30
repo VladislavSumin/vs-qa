@@ -9,7 +9,7 @@ import ru.vladislavsumin.core.logger.platform.initDefault
 
 fun preInit(platformModule: DI.Module? = null, stdout: Boolean = true): DirectDI {
     LoggerManager.initDefault(logPath = LogPath.UserHome(".vs-qa"), stdout = stdout)
-    MainLogger.i("preInit()")
+    MainLogger.i("App version: ${BuildConfig.version}")
 
     ComposeStabilityAnalyzer.setEnabled(false)
 

@@ -44,13 +44,11 @@ fun main(args: Array<String>) {
 
     if (args.firstOrNull() == "--mcp-server") {
         val di = preInit(stdout = false)
-        MainLogger.i("App version: ${BuildConfig.version}")
-        di.instance<McpServer>().start(BuildConfig.version)
+        di.instance<McpServer>().start()
         return
     }
 
     val di = preInit()
-    MainLogger.i("App version: ${BuildConfig.version}")
 
     // Хоть как то красит верхнюю системную часть окна.
     System.setProperty("apple.awt.application.appearance", "system")

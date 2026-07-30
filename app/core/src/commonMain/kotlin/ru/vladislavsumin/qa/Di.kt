@@ -48,7 +48,7 @@ fun createDi(platformModule: DI.Module?): DirectDI = DI {
     importOnce(Modules.featureLegalInfo())
     importOnce(Modules.featureLogRecent())
     importOnce(Modules.featureLogViewer())
-    importOnce(Modules.featureMcp())
+    importOnce(Modules.featureMcp(BuildConfig.version))
     importOnce(Modules.featureMemoryIndicator())
     importOnce(Modules.featureNotifications())
     importOnce(Modules.featureRootScreen())

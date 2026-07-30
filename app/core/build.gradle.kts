@@ -1,9 +1,13 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import ru.vladislavsumin.configuration.projectConfiguration
+
 plugins {
     id("ru.vladislavsumin.convention.kmp.jvm")
     id("ru.vladislavsumin.convention.kmp.android-library")
     id("ru.vladislavsumin.convention.compose")
     id("ru.vladislavsumin.convention.aboutlibraries")
     id("ru.vladislavsumin.convention.compose-stability-analyzer")
+    id("com.codingfeline.buildkonfig")
 }
 
 kotlin {
@@ -50,5 +54,14 @@ kotlin {
 
             implementation(vsCoreLibs.kotlin.coroutines.swing)
         }
+    }
+}
+
+buildkonfig {
+    packageName = "ru.vladislavsumin.qa"
+    objectName = "BuildConfig"
+
+    defaultConfigs {
+        buildConfigField(STRING, "version", project.projectConfiguration.version)
     }
 }
