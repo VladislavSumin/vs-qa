@@ -8,6 +8,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(compose.material3)
+            implementation(libs.backdrop)
             implementation(vsCoreLibs.vs.core.serialization.yaml)
         }
     }
