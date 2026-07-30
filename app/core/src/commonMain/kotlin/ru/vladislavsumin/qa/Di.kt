@@ -44,7 +44,7 @@ fun createDi(platformModule: DI.Module?): DirectDI = DI {
     importOnce(Modules.featureAdbDeviceList())
     importOnce(Modules.featureBottomBar())
     importOnce(Modules.featureDeviceLogDump())
-    importOnce(Modules.featureHomeScreen())
+    importOnce(Modules.featureHomeScreen(BuildConfig.version))
     importOnce(Modules.featureLegalInfo())
     importOnce(Modules.featureLogRecent())
     importOnce(Modules.featureLogViewer())

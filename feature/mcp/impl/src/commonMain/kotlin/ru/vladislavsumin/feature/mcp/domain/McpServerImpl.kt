@@ -24,7 +24,7 @@ import kotlin.io.path.Path
 
 private val mcpJson = Json { encodeDefaults = true }
 
-internal class McpServerImpl(private val version: String, private val processor: LogHeadlessProcessor,) : McpServer {
+internal class McpServerImpl(private val version: String, private val processor: LogHeadlessProcessor) : McpServer {
 
     @Suppress("LongMethod")
     override fun start() = runBlocking {

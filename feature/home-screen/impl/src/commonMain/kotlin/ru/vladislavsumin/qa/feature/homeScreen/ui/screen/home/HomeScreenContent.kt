@@ -44,7 +44,9 @@ import ru.vladislavsumin.feature.home_screen.impl.generated.resources.home_setti
 import java.nio.file.Path
 
 @Composable
+@Suppress("LongMethod")
 internal fun HomeScreenContent(
+    version: String,
     viewModel: HomeScreenViewModel,
     onLogPathsSelected: (List<Path>) -> Unit,
     logRecentComponent: ComposeComponent,
@@ -108,6 +110,13 @@ internal fun HomeScreenContent(
                     .padding(8.dp),
             )
         }
+
+        Text(
+            text = version,
+            style = MaterialTheme.typography.bodySmall,
+            color = QaTheme.colorScheme.content2,
+            modifier = Modifier.align(Alignment.BottomStart).padding(8.dp),
+        )
     }
 }
 

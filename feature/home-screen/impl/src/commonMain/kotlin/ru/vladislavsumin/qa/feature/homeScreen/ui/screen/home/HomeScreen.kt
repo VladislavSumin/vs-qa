@@ -38,6 +38,7 @@ import kotlin.random.Random
 @GenerateFactory(HomeScreenFactory::class)
 @Suppress("UnusedPrivateProperty") // TODO доработать генератор фабрик?
 internal class HomeScreen(
+    private val version: String,
     viewModelFactory: HomeScreenViewModelFactory,
     logRecentComponentFactory: LogRecentComponentFactory,
     adbFeatureAvailabilityInteractor: AdbFeatureAvailabilityInteractor,
@@ -124,6 +125,7 @@ internal class HomeScreen(
 
     @Composable
     override fun RenderScreen(modifier: Modifier) = HomeScreenContent(
+        version = version,
         viewModel = viewModel,
         onLogPathsSelected = viewModel::onDragAndDropLogsFiles,
         logRecentComponent = logRecentComponent,

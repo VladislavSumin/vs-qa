@@ -9,10 +9,10 @@ import ru.vladislavsumin.qa.feature.homeScreen.ui.NavigationRegistrarImpl
 import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenFactoryImpl
 import ru.vladislavsumin.qa.feature.homeScreen.ui.screen.home.HomeScreenViewModelFactory
 
-fun Modules.featureHomeScreen() = DI.Module("feature-homeScreen") {
+fun Modules.featureHomeScreen(version: String) = DI.Module("feature-homeScreen") {
     bindSingleton {
         val viewModelFactory = HomeScreenViewModelFactory()
-        HomeScreenFactoryImpl(viewModelFactory, i(), i(), i(), i())
+        HomeScreenFactoryImpl(version, viewModelFactory, i(), i(), i(), i())
     }
     bindGenericNavigation { NavigationRegistrarImpl() }
 }
