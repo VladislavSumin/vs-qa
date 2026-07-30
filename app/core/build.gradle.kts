@@ -1,5 +1,7 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.BOOLEAN
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import ru.vladislavsumin.configuration.projectConfiguration
+import ru.vladislavsumin.configuration.qaProjectConfiguration
 
 plugins {
     id("ru.vladislavsumin.convention.kmp.jvm")
@@ -63,5 +65,10 @@ buildkonfig {
 
     defaultConfigs {
         buildConfigField(STRING, "version", project.projectConfiguration.version)
+        buildConfigField(
+            BOOLEAN,
+            "composeStabilityAnalyzerEnabled",
+            qaProjectConfiguration.composeStabilityAnalyzer.enabled.toString(),
+        )
     }
 }

@@ -11,7 +11,7 @@ fun preInit(platformModule: DI.Module? = null, stdout: Boolean = true): DirectDI
     LoggerManager.initDefault(logPath = LogPath.UserHome(".vs-qa"), stdout = stdout)
     MainLogger.i("App version: ${BuildConfig.version}")
 
-    ComposeStabilityAnalyzer.setEnabled(false)
+    ComposeStabilityAnalyzer.setEnabled(BuildConfig.composeStabilityAnalyzerEnabled)
 
     // TODO сделать 2 ступени инициализации.
     return createDi(platformModule)
