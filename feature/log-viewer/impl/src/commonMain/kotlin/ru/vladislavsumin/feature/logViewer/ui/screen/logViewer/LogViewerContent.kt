@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -62,6 +63,7 @@ internal fun LogViewerContent(
     Box(modifier = modifier) {
         val state = viewModel.state.collectAsState()
         val searchState = remember { derivedStateOf { state.value.searchState } }
+        val showTagStat by remember { derivedStateOf { state.value.showTagStat } }
         // TODO вынести эту логику в viewModel.
         val showSideMenu = remember { mutableStateOf(false) }
         Column {
@@ -73,7 +75,7 @@ internal fun LogViewerContent(
                     .clip(QaTheme.shapes.extraSmall)
                     .background(QaTheme.colorScheme.background3)
                 // TODO скрол не должен сбрасываться а тут будет.
-                if (state.value.showTagStat) {
+                if (showTagStat) {
                     tagStatComponent.Render(modifier)
                 } else {
                     logsComponent.Render(modifier)
