@@ -14,8 +14,6 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.movableContentOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -97,11 +95,6 @@ private fun ColumnScope.TabsContent(tabs: Value<ChildPages<ConfigurationHolder, 
             .weight(1f)
             .background(QaTheme.colorScheme.background2, shape),
     ) { _, page ->
-        val hackyContent = remember(page) {
-            movableContentOf {
-                page.Render(Modifier)
-            }
-        }
-        hackyContent()
+        page.Render(Modifier)
     }
 }
