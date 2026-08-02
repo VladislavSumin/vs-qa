@@ -20,7 +20,6 @@ kotlin {
             implementation(projects.feature.tabs.api)
             implementation(projects.core.proguardParser)
             implementation(libs.betterParse)
-            implementation(libs.backdrop)
             implementation(libs.google.datastore.core)
             implementation(libs.google.datastore.preferences)
             implementation(vsCoreLibs.kotlin.serialization.json)

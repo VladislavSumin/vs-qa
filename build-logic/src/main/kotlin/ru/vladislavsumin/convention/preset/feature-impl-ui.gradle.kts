@@ -1,5 +1,6 @@
 package ru.vladislavsumin.convention.preset
 
+import ru.vladislavsumin.utils.libs
 import ru.vladislavsumin.utils.vsCoreLibs
 
 plugins {
@@ -24,6 +25,8 @@ kotlin {
             implementation(vsCoreLibs.vs.core.navigation.factoryGenerator.api)
 
             implementation(vsCoreLibs.decompose.extensions.compose)
+
+            implementation(libs.backdrop)
 
             implementation(compose.material3)
         }
