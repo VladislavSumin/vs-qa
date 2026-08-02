@@ -63,7 +63,6 @@ internal fun SearchBarContent(
         value = state.searchRequest,
         onValueChange = viewModel::onSearchChange,
         modifier = modifier
-            .padding(vertical = 4.dp, horizontal = 8.dp)
             .focusRequester(focusRequester)
             .resetFocusOnEsc()
             .onPreviewKeyEvent(hotkeyController::invoke),

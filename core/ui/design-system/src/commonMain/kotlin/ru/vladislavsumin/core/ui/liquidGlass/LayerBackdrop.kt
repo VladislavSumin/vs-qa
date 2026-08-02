@@ -12,7 +12,7 @@ fun vsRememberLayerBackdrop(): LayerBackdrop? {
     if (!QaTheme.isLiquidGlass) return null
     val colors = QaTheme.colorScheme
     return rememberLayerBackdrop {
-        drawRect(colors.background2)
+//        drawRect(colors.background2.copy(alpha = .1f))
         drawContent()
     }
 }

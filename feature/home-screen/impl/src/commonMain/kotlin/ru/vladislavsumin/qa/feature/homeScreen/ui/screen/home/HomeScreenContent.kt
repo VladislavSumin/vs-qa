@@ -76,6 +76,7 @@ internal fun HomeScreenContent(
                     )
                     Spacer(Modifier.height(16.dp))
                     Button(onClick = viewModel::onClickOpen) { Text(stringResource(Res.string.home_open_new_file)) }
+                    OpenLogButton(Modifier.padding(16.dp))
                     Spacer(Modifier.height(16.dp))
                     logRecentComponent.Render(Modifier.padding(16.dp))
                 }

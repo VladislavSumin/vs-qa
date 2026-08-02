@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
@@ -175,18 +176,19 @@ internal fun LogsContent(
                     LazyColumn(
                         state = lazyListState,
                         modifier = Modifier.fillMaxSize().padding(innerPadding),
+                        contentPadding = PaddingValues(vertical = 36.dp)
                     ) {
                         logs.forEachIndexed { runNumber, sectionInfo ->
                             if (sectionInfo.meta != null) {
-                                stickyHeader(key = -runNumber - 1) {
-                                    Header(
-                                        runNumber + 1,
-                                        sectionInfo.meta,
-                                        state.logFontSize + 2,
-                                        textSizeDp,
-                                        onSizeChanged = { stickyHeaderHeightPx = it },
-                                    )
-                                }
+//                                stickyHeader(key = -runNumber - 1) {
+//                                    Header(
+//                                        runNumber + 1,
+//                                        sectionInfo.meta,
+//                                        state.logFontSize + 2,
+//                                        textSizeDp,
+//                                        onSizeChanged = { stickyHeaderHeightPx = it },
+//                                    )
+//                                }
                             }
                             items(sectionInfo.logs, { it.order.value }) {
                                 val isTooLong = it.raw.length > MAX_LOG_LINE_LENGTH

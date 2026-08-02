@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
@@ -24,12 +26,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import com.kyant.backdrop.drawBackdrop
 import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
 import ru.vladislavsumin.core.ui.button.QaIconButton
@@ -39,6 +44,9 @@ import ru.vladislavsumin.core.ui.filePicker.FilePickerDialog
 import ru.vladislavsumin.core.ui.hint.HintPlacement
 import ru.vladislavsumin.core.ui.hint.hint
 import ru.vladislavsumin.core.ui.icons.QaIcons
+import ru.vladislavsumin.core.ui.liquidGlass.vsDrawBackdrop
+import ru.vladislavsumin.core.ui.liquidGlass.vsLayerBackdrop
+import ru.vladislavsumin.core.ui.liquidGlass.vsRememberLayerBackdrop
 import ru.vladislavsumin.feature.logViewer.ui.component.searchBar.SearchBarContent
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.Res
 import ru.vladislavsumin.feature.log_viewer.impl.generated.resources.log_viewer_side_attach_mapping
@@ -67,11 +75,12 @@ internal fun LogViewerContent(
         val showTagStat by remember { derivedStateOf { state.value.showTagStat } }
         // TODO вынести эту логику в viewModel.
         val showSideMenu = remember { mutableStateOf(false) }
+        val backdrop = vsRememberLayerBackdrop()
         Row {
-            Column(Modifier.weight(1f)) {
-                SearchBarContent(viewModel, searchState, showSideMenu, searchFocusRequester)
+            Box(Modifier.weight(1f)) {
                 val modifier = Modifier
-                    .weight(1f)
+                    .vsLayerBackdrop(backdrop)
+                    .fillMaxSize(1f)
                     .padding(start = 2.dp)
                     .clip(QaTheme.shapes.extraSmall)
                     .background(QaTheme.colorScheme.background3)
@@ -81,7 +90,44 @@ internal fun LogViewerContent(
                 } else {
                     logsComponent.Render(modifier)
                 }
-                filterBarComponent.Render(Modifier)
+                val grColor = QaTheme.colorScheme.background2
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(36.dp)
+                        .align(Alignment.TopCenter)
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(grColor, Color.Transparent)
+                            )
+                        )
+                )
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(36.dp)
+                        .align(Alignment.BottomCenter)
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, grColor)
+                            )
+                        )
+                )
+                SearchBarContent(
+                    viewModel,
+                    searchState,
+                    showSideMenu,
+                    searchFocusRequester,
+                    Modifier
+                        .padding(vertical = 4.dp, horizontal = 8.dp)
+                        .vsDrawBackdrop(backdrop),
+                )
+                filterBarComponent.Render(
+                    Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(vertical = 4.dp, horizontal = 8.dp)
+                        .vsDrawBackdrop(backdrop)
+                )
             }
             // TODO сделать нормальные расширения для адаптивной верстки
             val withDp = with(LocalDensity.current) {

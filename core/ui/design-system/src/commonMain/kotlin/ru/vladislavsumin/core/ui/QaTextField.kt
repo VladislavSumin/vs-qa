@@ -102,7 +102,7 @@ fun QaTextField(
                 Modifier
                     .border(
                         border = BorderStroke(width = 1.dp, color = borderColor),
-                        shape = QaTheme.shapes.extraSmall,
+                        shape = QaTheme.shapes.small,
                     )
                     .padding(2.dp),
                 verticalAlignment = Alignment.CenterVertically,

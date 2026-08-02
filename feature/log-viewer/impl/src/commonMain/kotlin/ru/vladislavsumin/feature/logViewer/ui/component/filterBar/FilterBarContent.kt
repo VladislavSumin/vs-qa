@@ -48,7 +48,7 @@ internal fun FilterBarContent(
 ) {
     val state = viewModel.state.collectAsState()
     val showSavedFilters by remember { derivedStateOf { state.value.showSavedFilters } }
-    Column(modifier.padding(vertical = 4.dp, horizontal = 8.dp)) {
+    Column(modifier) {
         if (showSavedFilters) {
             savedFiltersComponent.Render(Modifier)
         }
