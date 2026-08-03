@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -73,8 +74,11 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import ru.vladislavsumin.core.ui.button.QaLiquidButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.icons.QaIcons
+import ru.vladislavsumin.core.ui.liquidGlass.vsLayerBackdrop
+import ru.vladislavsumin.core.ui.liquidGlass.vsRememberLayerBackdrop
 import ru.vladislavsumin.core.ui.selection.VsSelectionContainer
 import ru.vladislavsumin.core.ui.textHighlight.HighlightedText
 import ru.vladislavsumin.feature.logParser.domain.substring
@@ -162,9 +166,11 @@ internal fun LogsContent(
     var contextMenuPosition by remember { mutableStateOf<Offset?>(null) }
     val expandedRecords = remember { mutableStateOf<Set<LogOrder>>(emptySet()) }
 
+    val backdrop = vsRememberLayerBackdrop()
     Row(modifier) {
         Box(Modifier.weight(1f)) {
             Scaffold(
+                Modifier.vsLayerBackdrop(backdrop),
                 containerColor = Color.Unspecified,
                 floatingActionButton = { ScrollToBottom(lazyListState = lazyListState) },
             ) { innerPadding ->
@@ -221,6 +227,19 @@ internal fun LogsContent(
                         }
                     }
                 }
+            }
+            QaLiquidButton(
+                onClick = { /*viewModel::onClickOpen*/ },
+                backdrop = backdrop,
+                Modifier.align(Alignment.Center).size(350.dp,200.dp),
+                tint = QaTheme.colorScheme.backgroundAccent1,
+            ) {
+//                Icon(
+//                    imageVector = QaIcons.FilePresent,
+//                    contentDescription = null,
+//                    modifier = Modifier.size(20.dp),
+//                )
+//                Text("Тут что то написано")
             }
             VerticalDivider(Modifier.padding(start = textSizeDp + 8.dp), color = QaTheme.colorScheme.content3)
             VsVerticalScrollbar(lazyListState, Modifier.align(Alignment.CenterEnd))

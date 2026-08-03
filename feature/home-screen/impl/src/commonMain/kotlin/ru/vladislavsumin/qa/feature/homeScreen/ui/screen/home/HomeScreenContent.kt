@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,11 +30,14 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import ru.vladislavsumin.core.decompose.compose.ComposeComponent
+import ru.vladislavsumin.core.ui.button.QaLiquidButton
 import ru.vladislavsumin.core.ui.designSystem.theme.QaTheme
 import ru.vladislavsumin.core.ui.dragAndDrop.DragAndDropOverlay
 import ru.vladislavsumin.core.ui.dragAndDrop.rememberDragAndDropFilesTarget
 import ru.vladislavsumin.core.ui.filePicker.FilePickerDialog
 import ru.vladislavsumin.core.ui.icons.QaIcons
+import ru.vladislavsumin.core.ui.liquidGlass.vsLayerBackdrop
+import ru.vladislavsumin.core.ui.liquidGlass.vsRememberLayerBackdrop
 import ru.vladislavsumin.feature.home_screen.impl.generated.resources.Res
 import ru.vladislavsumin.feature.home_screen.impl.generated.resources.home_drop_logs_here
 import ru.vladislavsumin.feature.home_screen.impl.generated.resources.home_legal_info
@@ -63,7 +66,13 @@ internal fun HomeScreenContent(
         )
     }
 
+    val backdrop = vsRememberLayerBackdrop()
+
     Box(modifier = Modifier.fillMaxSize()) {
+        // Слой жидкого стекла: записывает фон и аврору (видна только сквозь стекло, экран остаётся чистым).
+        if (backdrop != null) {
+            Box(Modifier.fillMaxSize().vsLayerBackdrop(backdrop))
+        }
         Row {
             Box(Modifier.fillMaxHeight().weight(1f)) {
                 Column(
@@ -73,9 +82,21 @@ internal fun HomeScreenContent(
                     Text(
                         text = stringResource(Res.string.home_open_logs_hint),
                         textAlign = TextAlign.Center,
+                        color = QaTheme.colorScheme.content2,
                     )
                     Spacer(Modifier.height(16.dp))
-                    Button(onClick = viewModel::onClickOpen) { Text(stringResource(Res.string.home_open_new_file)) }
+                    QaLiquidButton(
+                        onClick = { /*viewModel::onClickOpen*/ },
+                        backdrop = backdrop,
+                        tint = QaTheme.colorScheme.backgroundAccent1,
+                    ) {
+                        Icon(
+                            imageVector = QaIcons.FilePresent,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
+                        )
+                        Text(stringResource(Res.string.home_open_new_file))
+                    }
                     Spacer(Modifier.height(16.dp))
                     logRecentComponent.Render(Modifier.padding(16.dp))
                 }

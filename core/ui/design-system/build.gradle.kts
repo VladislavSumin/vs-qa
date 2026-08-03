@@ -9,6 +9,7 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.material3)
             implementation(libs.backdrop)
+            implementation(libs.shapes)
             implementation(vsCoreLibs.vs.core.serialization.yaml)
         }
     }

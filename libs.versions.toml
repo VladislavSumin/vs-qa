@@ -14,6 +14,7 @@ aboutLibraries = "15.0.4"
 mcp-kotlin-sdk = "0.14.0"
 compose-stability-analyzer = "0.11.1"
 backdrop = "2.0.0"
+shapes = "1.2.0"
 
 [libraries]
 gradlePlugins-sentry = { module = "io.sentry:sentry-kotlin-multiplatform-gradle-plugin", version.ref = "sentry" }
@@ -38,3 +39,4 @@ aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3",
 mcp-kotlin-sdk-server = { module = "io.modelcontextprotocol:kotlin-sdk-server", version.ref = "mcp-kotlin-sdk" }
 compose-stability-runtime = { module = "com.github.skydoves:compose-stability-runtime", version.ref = "compose-stability-analyzer" }
 backdrop = { module = "io.github.kyant0:backdrop", version.ref = "backdrop" }
+shapes = { module = "io.github.kyant0:shapes", version.ref = "shapes" }
