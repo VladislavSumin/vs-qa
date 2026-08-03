@@ -25,6 +25,14 @@ data class QaColorScheme(
     @Serializable(with = ColorAsStringSerializer::class)
     val backgroundAccent1: Color = Color(0xFF273D6A),
 
+    // Аврора (жидкое стекло): цвета световых пятен, дрейфующих внутри стекла.
+    @Serializable(with = ColorAsStringSerializer::class)
+    val auroraMain: Color = Color(0xFF273D6A),
+    @Serializable(with = ColorAsStringSerializer::class)
+    val auroraSecondary: Color = Color(0xFF4FC3E8),
+    @Serializable(with = ColorAsStringSerializer::class)
+    val auroraWarm: Color = Color(0xFFE0A84C),
+
     @Serializable(with = ColorAsStringSerializer::class)
     val content1: Color = Color(0xFFDFE1E5),
     @Serializable(with = ColorAsStringSerializer::class)
