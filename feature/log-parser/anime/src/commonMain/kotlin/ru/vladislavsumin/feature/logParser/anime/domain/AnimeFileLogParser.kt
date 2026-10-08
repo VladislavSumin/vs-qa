@@ -12,7 +12,7 @@ import kotlin.io.path.extension
 import kotlin.system.measureTimeMillis
 
 internal class AnimeFileLogParser : FileLogParser {
-    override suspend fun parseLog(filePath: Path): List<RawLogRecord> {
+    override suspend fun parseLog(filePath: Path): FileLogParser.ParseResult {
         // Производительность тут примерно 1,2кк строк в секунду, поэтому дополнительные оптимизации пока не нужны.
         AnimeLogger.i { "Start parsing file $filePath with ${this.javaClass.simpleName}" }
 
@@ -25,7 +25,8 @@ internal class AnimeFileLogParser : FileLogParser {
             }
         }
         AnimeLogger.d { "Parsed file $filePath at ${totalParseTime}ms. logs = ${result.size}}" }
-        return result
+        val runIdInfo = AnimeRunIdParser().provideRunIdMeta(result)
+        return FileLogParser.ParseResult(result, runIdInfo)
     }
 
     @Suppress("NestedBlockDepth")

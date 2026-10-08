@@ -150,11 +150,11 @@ class LogsInteractorImpl(
                 logs.value = ClearLogState(emptyList(), null)
 
                 val obfuscatedLogs = logParserProvider.getFileLogParser().parseLog(logPath)
-                val runIdIndexes = logParserProvider.getRunIdParser()?.provideRunIdMeta(obfuscatedLogs)
-                    ?.toRunIdInfo(obfuscatedLogs)
+                val runIdIndexes = obfuscatedLogs.runIdInfo
+                    ?.toRunIdInfo(obfuscatedLogs.records)
 
                 logs.value = ClearLogState(
-                    logs = obfuscatedLogs.toLogRecords(),
+                    logs = obfuscatedLogs.records.toLogRecords(),
                     runIdIndexes,
                 )
 
@@ -163,7 +163,7 @@ class LogsInteractorImpl(
                     loadingStatus.value = LogsInteractor.LoadingStatus.DeobfuscateLogs
                     val warmup = proguard.warmup()
                     if (warmup.isSuccess) {
-                        val deobfuscated = obfuscatedLogs.parallelStream()
+                        val deobfuscated = obfuscatedLogs.records.parallelStream()
                             .map { log ->
                                 // Обрабатываем теги
                                 val deobfuscatedTag = proguard.deobfuscateClass(log.raw.substring(log.tag))

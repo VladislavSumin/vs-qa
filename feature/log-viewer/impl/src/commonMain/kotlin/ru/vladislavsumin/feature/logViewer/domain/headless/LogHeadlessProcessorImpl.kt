@@ -17,7 +17,7 @@ internal class LogHeadlessProcessorImpl(private val logParserProvider: LogParser
 
     override suspend fun parseAndCache(logPath: Path): Int {
         val rawLogs = logParserProvider.getFileLogParser().parseLog(logPath)
-        val records = rawLogs.toLogRecords()
+        val records = rawLogs.records.toLogRecords()
         cachedPath = logPath
         cachedRecords = records
         return records.size
@@ -58,7 +58,7 @@ internal class LogHeadlessProcessorImpl(private val logParserProvider: LogParser
                     error = LogHeadlessError(type = "file_error", message = it.message ?: "Failed to read log file"),
                 )
             }
-            rawLogs.toLogRecords().also {
+            rawLogs.records.toLogRecords().also {
                 cachedPath = logPath
                 cachedRecords = it
             }

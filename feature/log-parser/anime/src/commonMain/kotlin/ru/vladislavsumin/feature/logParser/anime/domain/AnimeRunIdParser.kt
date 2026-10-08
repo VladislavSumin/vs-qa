@@ -2,11 +2,10 @@ package ru.vladislavsumin.feature.logParser.anime.domain
 
 import ru.vladislavsumin.feature.logParser.domain.RawLogRecord
 import ru.vladislavsumin.feature.logParser.domain.runId.RawRunIdInfo
-import ru.vladislavsumin.feature.logParser.domain.runId.RunIdParser
 import ru.vladislavsumin.feature.logParser.domain.substring
 
-internal class AnimeRunIdParser : RunIdParser {
-    override suspend fun provideRunIdMeta(logs: List<RawLogRecord>): List<RawRunIdInfo>? {
+internal class AnimeRunIdParser {
+    fun provideRunIdMeta(logs: MutableList<RawLogRecord>): List<RawRunIdInfo>? {
         if (logs.isEmpty()) return null
 
         if (logs.first().processId != null) {
@@ -15,14 +14,30 @@ internal class AnimeRunIdParser : RunIdParser {
             return null
         }
 
+        // Исправляем время в заголовках
+        for (i in logs.indices) {
+            if (checkHeader(logs[i]) && i < logs.size - 1) {
+                val record = logs[i]
+                val nextRecord = logs[i + 1]
+                val newRecord = record.copy(
+                    timeInstant = nextRecord.timeInstant,
+                    raw = record.raw.replaceRange(
+                        record.time.first..record.time.endInclusive,
+                        nextRecord.raw.substring(nextRecord.time),
+                    ),
+                )
+                logs[i] = newRecord
+            }
+        }
+
+        // Сортируем логи
+        logs.sortBy { it.timeInstant }
+
         // For embedded logs
         val indexes = mutableListOf<RawRunIdInfo>()
         var prevPid = -1
         logs.forEachIndexed { index, record ->
-            if (
-                record.raw.substring(record.tag) == "OneMeFileLogger" &&
-                record.raw.substring(record.message).startsWith("AppInfo:")
-            ) {
+            if (checkHeader(record)) {
                 val data = record.raw.substring(record.message).lines()
                     .drop(1) // Drop AppInfo header
                     .filter { it.isNotBlank() }
@@ -42,4 +57,7 @@ internal class AnimeRunIdParser : RunIdParser {
         }
         return if (indexes.isEmpty()) null else indexes
     }
+
+    private fun checkHeader(record: RawLogRecord): Boolean = record.raw.substring(record.tag) == "OneMeFileLogger" &&
+        record.raw.substring(record.message).startsWith("AppInfo:")
 }
