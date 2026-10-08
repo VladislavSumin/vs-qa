@@ -31,33 +31,46 @@ internal class AnimeFileLogParser : FileLogParser {
     @Suppress("NestedBlockDepth")
     private fun parseZip(filePath: Path, result: MutableList<RawLogRecord>) {
         val zip = ZipFile(filePath.absolutePathString())
-        val names = zip.entries().toList()
+        val entries = zip.entries().toList()
             // Фильтр нужен для корректной работы с перепакованными на macos архивами.
             // Отрезаем мета информацию из архива.
             .filter { !it.isDirectory && !it.name.startsWith("__MACOSX") }
-            .map { it.name }
-            .sorted()
+            .sortedBy { it.name }
 
-        if (names.all { it.endsWith("zip") }) {
+        if (entries.any { it.name.endsWith("zip") }) {
             AnimeLogger.i { "Use embedded log parser" }
-            names.forEach { name ->
-                zip.getInputStream(zip.getEntry(name)).use { internalZipStream ->
-                    ZipInputStream(internalZipStream).use { zipStream ->
-                        val entry = zipStream.nextEntry
-                        if (entry != null) {
-                            val lines = zipStream.bufferedReader().lineSequence()
-                            AnimeEmbeddedLogParser.parseLines(lines, result)
-                        } else {
-                            // TODO выводить ворнинг о нарушении формата в пользовательский интерфейс
-                            AnimeLogger.e { "Unexpected empty archive $name" }
+            entries.forEach { entry ->
+                // У нас может быть как легаси струкрура где архивы лежат в корне, так и новая где появляется
+                // промежуточная папка с именем процесса
+                val source = if (entry.name.contains("/")) {
+                    entry.name.substringBeforeLast("/").takeIf { it.isNotEmpty() }
+                } else {
+                    null
+                }
+                if (entry.name.endsWith("zip")) {
+                    zip.getInputStream(zip.getEntry(entry.name)).use { internalZipStream ->
+                        ZipInputStream(internalZipStream).use { zipStream ->
+                            val entry = zipStream.nextEntry
+                            if (entry != null) {
+                                val lines = zipStream.bufferedReader().lineSequence()
+                                AnimeEmbeddedLogParser.parseLines(lines, result, source = source)
+                            } else {
+                                // TODO выводить ворнинг о нарушении формата в пользовательский интерфейс
+                                AnimeLogger.e { "Unexpected empty archive $entry" }
+                            }
                         }
+                    }
+                } else {
+                    zip.getInputStream(zip.getEntry(entry.name)).use { zipStream ->
+                        val lines = zipStream.bufferedReader().lineSequence()
+                        AnimeEmbeddedLogParser.parseLines(lines, result, source = source)
                     }
                 }
             }
         } else {
             AnimeLogger.i { "Use logcat log parser" }
-            names.forEach {
-                zip.getInputStream(zip.getEntry(it)).use { internalZipStream ->
+            entries.forEach {
+                zip.getInputStream(zip.getEntry(it.name)).use { internalZipStream ->
                     val lines = internalZipStream.bufferedReader().lineSequence()
                     LogcatLongLogParser.parseLines(lines, result)
                 }
@@ -67,6 +80,6 @@ internal class AnimeFileLogParser : FileLogParser {
 
     private fun parseLogFile(filePath: Path, result: MutableList<RawLogRecord>) {
         val lines = filePath.bufferedReader().lineSequence()
-        AnimeEmbeddedLogParser.parseLines(lines, result)
+        AnimeEmbeddedLogParser.parseLines(lines, result, source = null)
     }
 }

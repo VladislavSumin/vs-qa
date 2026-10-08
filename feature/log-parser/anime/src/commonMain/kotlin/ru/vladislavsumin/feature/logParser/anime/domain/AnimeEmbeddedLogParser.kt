@@ -21,7 +21,7 @@ internal object AnimeEmbeddedLogParser {
         val timeInstantValue: String,
     )
 
-    fun parseLines(lines: Sequence<String>, result: MutableList<RawLogRecord>) {
+    fun parseLines(lines: Sequence<String>, result: MutableList<RawLogRecord>, source: String? = null) {
         var cache: RawLogRecord? = null
         var singleLineRaw: String? = null
         var rawBuilder: StringBuilder? = null
@@ -36,7 +36,7 @@ internal object AnimeEmbeddedLogParser {
                 } else {
                     raw = singleLineRaw!!
                 }
-                val record = cache.copy(
+                var record = cache.copy(
                     raw = raw,
                     message = LogRange(
                         start = cache.tag.last + 2,
@@ -44,6 +44,11 @@ internal object AnimeEmbeddedLogParser {
                     ),
                     lines = linesCount,
                 )
+
+                if (source != null) {
+                    record = record.withProcessName(source)
+                }
+
                 result.add(record)
                 singleLineRaw = null
                 rawBuilder = null
