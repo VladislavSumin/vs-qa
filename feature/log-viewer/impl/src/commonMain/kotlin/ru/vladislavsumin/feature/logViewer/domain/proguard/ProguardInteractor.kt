@@ -2,6 +2,7 @@ package ru.vladislavsumin.feature.logViewer.domain.proguard
 
 import ru.vladislavsumin.qa.core.proguardParser.ProguardRetracer
 import java.nio.file.Path
+import java.util.zip.GZIPInputStream
 import java.util.zip.ZipInputStream
 import kotlin.io.path.extension
 import kotlin.io.path.inputStream
@@ -18,13 +19,13 @@ class ProguardInteractorImpl(path: Path) : ProguardInteractor {
 
     override fun warmup(): Result<Unit> = runCatching { proguardRetracer.warmup() }
 
-    private fun read(path: Path): String = if (path.extension == "zip") {
-        ZipInputStream(path.inputStream()).use { zip ->
+    private fun read(path: Path): String = when (path.extension) {
+        "zip" -> ZipInputStream(path.inputStream()).use { zip ->
             zip.nextEntry
             zip.bufferedReader().readText()
         }
-    } else {
-        path.readText()
+        "gz" -> GZIPInputStream(path.inputStream()).bufferedReader().use { it.readText() }
+        else -> path.readText()
     }
 
     override fun deobfuscateClass(obfuscatedClassName: String): String? =
